@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Tageditor
+GenericName=Tageditor
+Comment=A tag editing utility supporting ID3 and iTunes tags.
+Exec=tageditor
+Icon=tageditor
+Terminal=false
+Type=Application
+Categories=Utility;Audio;Video;

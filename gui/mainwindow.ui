@@ -1,0 +1,558 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::MainWindow</class>
+ <widget class="QMainWindow" name="QtGui::MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1225</width>
+    <height>838</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Tag editor</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../resources/icons.qrc">
+    <normaloff>:/tageditor/icons/hicolor/16x16/apps/tageditor.png</normaloff>:/tageditor/icons/hicolor/16x16/apps/tageditor.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <widget class="QWidget" name="leftWidget" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <property name="spacing">
+         <number>2</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>4</number>
+        </property>
+        <item>
+         <widget class="PathLineEdit" name="pathLineEdit"/>
+        </item>
+        <item>
+         <widget class="QTreeView" name="filesTreeView">
+          <property name="sortingEnabled">
+           <bool>true</bool>
+          </property>
+          <property name="animated">
+           <bool>true</bool>
+          </property>
+          <attribute name="headerShowSortIndicator" stdset="0">
+           <bool>true</bool>
+          </attribute>
+          <attribute name="headerStretchLastSection">
+           <bool>false</bool>
+          </attribute>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCommandLinkButton" name="selectNextCommandLinkButton">
+          <property name="text">
+           <string>Select next file/directory</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="rightWidget" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>4</number>
+        </property>
+        <property name="bottomMargin">
+         <number>4</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="fileNameLabel">
+          <property name="text">
+           <string>No file selected</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="NotificationLabel" name="parsingNotificationWidget" native="true"/>
+        </item>
+        <item>
+         <widget class="QSplitter" name="tagSplitter">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <widget class="QWebView" name="infoWebView"/>
+          <widget class="QWidget" name="layoutWidget">
+           <layout class="QVBoxLayout" name="tagEditVerticalLayout">
+            <item>
+             <layout class="QHBoxLayout" name="tagSelectionHorizontalLayout">
+              <item>
+               <widget class="QComboBox" name="tagSelectionComboBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="keepPreviousValuesPushButton">
+                <property name="toolTip">
+                 <string>Let you choose whether the values of the
+previously opened file should be cleared when
+opening the next file.
+Keeping these values might be useful when
+tagging multiple files of the same album.</string>
+                </property>
+                <property name="text">
+                 <string>Keep previous values</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="tagOptionsPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Let you enable or disable the automatic
+creation or removal of tags (according to
+the settings) when loading a file.
+
+You can also create or remove tags manually.</string>
+                </property>
+                <property name="text">
+                 <string>Tag management</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="restoreEntriesPushButton">
+                <property name="toolTip">
+                 <string>Restores the original values read from
+the file reverting all unsaved changings.</string>
+                </property>
+                <property name="text">
+                 <string>Restore</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="document-revert">
+                  <normaloff/>
+                 </iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="clearEntriesPushButton">
+                <property name="toolTip">
+                 <string>Clears all values.</string>
+                </property>
+                <property name="text">
+                 <string>Clear</string>
+                </property>
+                <property name="icon">
+                 <iconset theme="edit-clear">
+                  <normaloff/>
+                 </iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QStackedWidget" name="stackedWidget"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="NotificationLabel" name="makingNotificationWidget" native="true"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="abortButton">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Aborts the saving process. The tageditor will try to restore the original file from the backup.</string>
+            </property>
+            <property name="text">
+             <string>Abort</string>
+            </property>
+            <property name="icon">
+             <iconset theme="process-stop">
+              <normaloff/>
+             </iconset>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QWidget" name="buttonsWidget" native="true">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="1" column="0">
+            <widget class="QCommandLinkButton" name="saveButton">
+             <property name="text">
+              <string>Save</string>
+             </property>
+             <property name="description">
+              <string>all entered values</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QCommandLinkButton" name="deleteTagsButton">
+             <property name="text">
+              <string>Delete</string>
+             </property>
+             <property name="description">
+              <string>all tags from the file</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QCommandLinkButton" name="nextButton">
+             <property name="text">
+              <string>Open next file</string>
+             </property>
+             <property name="description">
+              <string>and save current before</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QCommandLinkButton" name="closeButton">
+             <property name="text">
+              <string>Close</string>
+             </property>
+             <property name="description">
+              <string>the file and discard changings</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1225</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>Fi&amp;le</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave_file_information"/>
+    <addaction name="separator"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionDelete_all_tags"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose"/>
+   </widget>
+   <widget class="QMenu" name="menuDirectory">
+    <property name="title">
+     <string>Di&amp;rectory</string>
+    </property>
+    <addaction name="actionSelect_next_file"/>
+    <addaction name="actionSelect_next_file_and_save_current"/>
+    <addaction name="actionRename_files"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>?</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuApplication">
+    <property name="title">
+     <string>A&amp;pplication</string>
+    </property>
+    <addaction name="actionSettings"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+    <addaction name="separator"/>
+   </widget>
+   <addaction name="menuApplication"/>
+   <addaction name="menuFile"/>
+   <addaction name="menuDirectory"/>
+   <addaction name="menu"/>
+  </widget>
+  <action name="actionSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="document-save">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Save &amp;entered tags</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionDelete_all_tags">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-delete">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Delete all tags</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="document-revert">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Close</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionSelect_next_file">
+   <property name="icon">
+    <iconset theme="go-next">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Select next file</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
+  <action name="actionRename_files">
+   <property name="text">
+    <string>&amp;Rename files using tags</string>
+   </property>
+   <property name="shortcut">
+    <string>F2</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset theme="document-open">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionSave_file_information">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="edit-copy">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Save file information as HTML document</string>
+   </property>
+  </action>
+  <action name="actionSelect_next_file_and_save_current">
+   <property name="icon">
+    <iconset theme="go-next">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Select &amp;next file and save current</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset theme="help-about">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset theme="application-exit">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="icon">
+    <iconset theme="preferences-other">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Settings</string>
+   </property>
+   <property name="shortcut">
+    <string>F8</string>
+   </property>
+  </action>
+  <action name="actionKeep_previous_values_never">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>No, disable this feature</string>
+   </property>
+  </action>
+  <action name="actionKeep_previous_values_within_same_dir">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Yes, but only if both files are in the same directory</string>
+   </property>
+  </action>
+  <action name="actionKeep_previous_values_always">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Yes, regardless where the files are stored</string>
+   </property>
+  </action>
+  <action name="actionManage_tags_automatically_when_loading_file">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Manage tags automatically when loading file</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKitWidgets/QWebView</header>
+  </customwidget>
+  <customwidget>
+   <class>PathLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>gui/pathlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>NotificationLabel</class>
+   <extends>QWidget</extends>
+   <header>gui/notificationlabel.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>filesTreeView</tabstop>
+  <tabstop>saveButton</tabstop>
+  <tabstop>deleteTagsButton</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../resources/icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

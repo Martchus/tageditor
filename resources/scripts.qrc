@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/scripts/renamefiles">
+        <file alias="example1">scripts/renamefiles/example1.js</file>
+    </qresource>
+</RCC>

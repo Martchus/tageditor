@@ -1,0 +1,23 @@
+pkgname=tageditor
+pkgver=1.1.3
+pkgrel=1
+arch=('i686' 'x86_64')
+pkgdesc="Library for reading and editing meta-data of several media formats."
+license=('GPL')
+depends=('qt5-base' 'qt5-script' 'qt5-webkit' 'qtutilities' 'tagparser')
+makedepends=('qt5-tools')
+install=${pkgname}.install
+url="http://martchus.netai.net/"
+source=("$pkgname.tar.gz")
+md5sums=('3f928ba196940cc539d0af752b69339a')
+# head end
+build() {
+    cd $srcdir/$pkgname
+    INSTALL_ROOT=$pkgdir/usr/ qmake-qt5 "$pkgname.pro" -r -spec linux-g++
+    make && make updateqm
+}
+
+package() {
+    cd $srcdir/$pkgname
+    make install
+}

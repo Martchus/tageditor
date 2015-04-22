@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::EnterTargetDialog</class>
+ <widget class="QDialog" name="QtGui::EnterTargetDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>590</width>
+    <height>467</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Select target</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="mainWidget" native="true">
+     <layout class="QFormLayout" name="formLayout">
+      <item row="1" column="0">
+       <widget class="QLabel" name="levelLabel">
+        <property name="text">
+         <string>Level</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="levelNameLabel">
+        <property name="text">
+         <string>Level name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="Widgets::ClearLineEdit" name="levelNameLineEdit"/>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="tracksLabel">
+        <property name="text">
+         <string>Tracks</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="chaptersLabel">
+        <property name="text">
+         <string>Chapters</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="editionsLabel">
+        <property name="text">
+         <string>Editions</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="attachmentsLabel">
+        <property name="text">
+         <string>Attachments</string>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QListView" name="tracksListView"/>
+      </item>
+      <item row="5" column="1">
+       <widget class="QListView" name="chaptersListView"/>
+      </item>
+      <item row="6" column="1">
+       <widget class="QListView" name="editionsListView"/>
+      </item>
+      <item row="7" column="1">
+       <widget class="QListView" name="attachmentsListView"/>
+      </item>
+      <item row="1" column="1">
+       <widget class="QWidget" name="levelWidget" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QSpinBox" name="levelSpinBox">
+           <property name="accelerated">
+            <bool>true</bool>
+           </property>
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>2147483647</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="levelWarningLabel">
+           <property name="text">
+            <string>The current target level can not be displayed and will be discarded when confirming.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="bottomWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>168</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="abortPushButton">
+        <property name="styleSheet">
+         <string notr="true">background: none;</string>
+        </property>
+        <property name="text">
+         <string>Abort</string>
+        </property>
+        <property name="icon">
+         <iconset theme="window-close">
+          <normaloff>../../martchusqtutilities/enterpassworddialog</normaloff>../../martchusqtutilities/enterpassworddialog</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="confirmPushButton">
+        <property name="styleSheet">
+         <string notr="true">background: none;</string>
+        </property>
+        <property name="text">
+         <string>Confirm</string>
+        </property>
+        <property name="icon">
+         <iconset theme="go-next">
+          <normaloff>../../martchusqtutilities/enterpassworddialog</normaloff>../../martchusqtutilities/enterpassworddialog</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Widgets::ClearLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">qtutilities/widgets/clearlineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

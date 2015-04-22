@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::Id3v2OptionPage</class>
+ <widget class="QWidget" name="QtGui::Id3v2OptionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>434</width>
+    <height>442</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>ID3v2 options page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox { font-weight: bold };</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <item>
+    <widget class="QGroupBox" name="usageGroupBox">
+     <property name="title">
+      <string>Usage when saving MP3 files</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="alwaysCreateRadioButton">
+        <property name="text">
+         <string>Always &amp;create an ID3v2 tag</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="keepExistingRadioButton">
+        <property name="text">
+         <string>Kee&amp;p and update existing ID3v2 tag (but don't create a new one)</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="removeExistingRadioButton">
+        <property name="text">
+         <string>&amp;Never create an ID3v2 tag and remove existing</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="versionGroupBox">
+     <property name="title">
+      <string>Version to be used</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QRadioButton" name="version230radioButton">
+        <property name="text">
+         <string>&amp;2.3.0</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">versionButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="version240radioButton">
+        <property name="text">
+         <string>2.&amp;4.0</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">versionButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="version220radioButton">
+        <property name="text">
+         <string>2.2.&amp;0</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">versionButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="keepExistingVersionCheckBox">
+        <property name="text">
+         <string>Keep version of existing tag if present</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="multipleSuccessiveGroupBox">
+     <property name="title">
+      <string>Behavior when multiple successive ID3v2 tags are found</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QRadioButton" name="mergeRadioButton">
+        <property name="text">
+         <string>&amp;Merge them (recommend)</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">multipleSucessiveButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="keepSeparateRadioButton">
+        <property name="text">
+         <string>Keep &amp;them separate</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">multipleSucessiveButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="usageButtonGroup"/>
+  <buttongroup name="multipleSucessiveButtonGroup"/>
+  <buttongroup name="versionButtonGroup"/>
+ </buttongroups>
+</ui>

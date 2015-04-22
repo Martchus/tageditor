@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::TagProcessingGeneralOptionPage</class>
+ <widget class="QWidget" name="QtGui::TagProcessingGeneralOptionPage">
+  <property name="windowTitle">
+   <string>General options page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox { font-weight: bold };</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="preferredEncodingGroupBox">
+     <property name="title">
+      <string>Preferred text encoding (will be used if the tag format supports it)</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="autoRadioButton">
+        <property name="text">
+         <string>no preference (most appropriate encoding will be used)</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">preferredTextEncodingButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="latin1RadioButton">
+        <property name="text">
+         <string>ISO 8859-1/Latin-1</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">preferredTextEncodingButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="utf8RadioButton">
+        <property name="text">
+         <string>UTF-8</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">preferredTextEncodingButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="utf16leRadioButton">
+        <property name="text">
+         <string>UTF-16 Little Endian</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">preferredTextEncodingButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="utf16beRadioButton">
+        <property name="text">
+         <string>UTF-16 Big Endian</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="unsupportedFieldsGroupBox">
+     <property name="title">
+      <string>Handling of unknown/unsupported fields</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QRadioButton" name="ignoreUnsupportedRadioButton">
+        <property name="text">
+         <string>Ignore them but keep them when saving</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">unsupportedButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="discardUnsupportedRadioButton">
+        <property name="text">
+         <string>Discard them when saving</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">unsupportedButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>&lt;span style=&quot;font-weight: bold;&quot;&gt;Automatic tag management&lt;/span&gt;
+&lt;br&gt;If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually and settings like ID3 usage have no effect.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="autoTagManagementCheckBox">
+     <property name="text">
+      <string>enable automatic tag management (default)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="preferredTextEncodingButtonGroup"/>
+  <buttongroup name="unsupportedButtonGroup"/>
+ </buttongroups>
+</ui>

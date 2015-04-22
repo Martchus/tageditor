@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::RenameFilesDialog</class>
+ <widget class="QDialog" name="QtGui::RenameFilesDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>720</width>
+    <height>561</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Rename files and directories</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item>
+    <widget class="QWidget" name="mainWidget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="directoryLabel">
+          <property name="text">
+           <string>Base directory</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="PathLineEdit" name="directoryLineEdit"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="selectDirectoryPushButton">
+          <property name="text">
+           <string>Select</string>
+          </property>
+          <property name="icon">
+           <iconset theme="folder-open">
+            <normaloff/>
+           </iconset>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="includeSubdirsCheckBox">
+        <property name="text">
+         <string>Include subdirectories</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSplitter" name="scriptSplitter">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="handleWidth">
+         <number>10</number>
+        </property>
+        <widget class="QWidget" name="layoutWidget">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QLabel" name="scriptLabel">
+              <property name="styleSheet">
+               <string notr="true">font-weight: bold;</string>
+              </property>
+              <property name="text">
+               <string>ECMA Script used to generate new file and directory names</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_2">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pasteScriptPushButton">
+              <property name="text">
+               <string>Paste</string>
+              </property>
+              <property name="icon">
+               <iconset theme="edit-paste">
+                <normaloff/>
+               </iconset>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="toggleScriptSourcePushButton">
+              <property name="text">
+               <string>Use external file</string>
+              </property>
+              <property name="icon">
+               <iconset theme="document-open">
+                <normaloff/>
+               </iconset>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QStackedWidget" name="sourceFileStackedWidget">
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <widget class="QWidget" name="scriptEditorPage">
+             <layout class="QVBoxLayout" name="verticalLayout_6">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="CodeEdit" name="javaScriptPlainTextEdit">
+                <property name="verticalScrollBarPolicy">
+                 <enum>Qt::ScrollBarAlwaysOn</enum>
+                </property>
+                <property name="lineWrapMode">
+                 <enum>QPlainTextEdit::NoWrap</enum>
+                </property>
+                <property name="plainText">
+                 <string/>
+                </property>
+                <property name="tabStopWidth">
+                 <number>15</number>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="externalScriptPage">
+             <layout class="QVBoxLayout" name="verticalLayout_7">
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_4">
+                <item>
+                 <widget class="PathLineEdit" name="scriptFilePathLineEdit">
+                  <property name="placeholderText">
+                   <string>select a script file</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="selectScriptFilePushButton">
+                  <property name="text">
+                   <string>Select</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>130</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QSplitter" name="treeviewSplitter">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QWidget" name="layoutWidget_1">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <item>
+            <widget class="QLabel" name="currentLabel">
+             <property name="styleSheet">
+              <string notr="true">font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>Current file and directory names</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTreeView" name="currentTreeView">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::ExtendedSelection</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="layoutWidget_2">
+          <layout class="QVBoxLayout" name="verticalLayout_3">
+           <item>
+            <widget class="QLabel" name="previewLabel">
+             <property name="styleSheet">
+              <string notr="true">font-weight: bold;</string>
+             </property>
+             <property name="text">
+              <string>Preview and notes</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QTreeView" name="previewTreeView">
+             <property name="contextMenuPolicy">
+              <enum>Qt::CustomContextMenu</enum>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::ExtendedSelection</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+     <zorder>scriptSplitter</zorder>
+     <zorder>includeSubdirsCheckBox</zorder>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="bottomWidget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="NotificationLabel" name="notificationLabel" native="true"/>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>463</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="abortClosePushButton">
+        <property name="toolTip">
+         <string>closes the window or aborts the currently running process</string>
+        </property>
+        <property name="text">
+         <string>Close</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="generatePreviewPushButton">
+        <property name="toolTip">
+         <string>generates new file and directory names using the entered script</string>
+        </property>
+        <property name="text">
+         <string>Generate preview</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="applyChangingsPushButton">
+        <property name="toolTip">
+         <string>applies previously generated file and directory names</string>
+        </property>
+        <property name="text">
+         <string>Apply generated names</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PathLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>gui/pathlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>NotificationLabel</class>
+   <extends>QWidget</extends>
+   <header>gui/notificationlabel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CodeEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>gui/codeedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

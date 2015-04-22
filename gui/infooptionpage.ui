@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::InfoOptionPage</class>
+ <widget class="QWidget" name="QtGui::InfoOptionPage">
+  <property name="windowTitle">
+   <string>Info options page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox { font-weight: bold };</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCheckBox" name="forceFullParseCheckBox">
+     <property name="text">
+      <string>Force full parse of the element structure (might cause long loading times)</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="usageButtonGroup"/>
+ </buttongroups>
+</ui>

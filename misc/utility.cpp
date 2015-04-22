@@ -1,0 +1,275 @@
+#include "utility.h"
+
+#include "application/settings.h"
+
+#include <tagparser/exceptions.h>
+#include <tagparser/signature.h>
+#include <tagparser/mediafileinfo.h>
+#include <tagparser/tag.h>
+#include <tagparser/id3/id3v1tag.h>
+#include <tagparser/id3/id3v2tag.h>
+
+#include <c++utilities/io/path.h>
+
+#include <QDir>
+#include <QFileInfo>
+#include <QDirIterator>
+#include <QTextCodec>
+#include <QAbstractItemModel>
+
+#include <ios>
+#include <stdexcept>
+#include <iostream>
+
+using namespace std;
+using namespace Media;
+
+namespace Utility
+{
+
+const char *textEncodingToCodecName(TagTextEncoding textEncoding)
+{
+    switch(textEncoding) {
+    case TagTextEncoding::Latin1:
+        return "ISO 8859-1";
+    case TagTextEncoding::Utf8:
+        return "UTF-8";
+    case TagTextEncoding::Utf16BigEndian:
+        return "UTF-16BE";
+    case TagTextEncoding::Utf16LittleEndian:
+        return "UTF-16LE";
+    case TagTextEncoding::Unspecified:
+        return "ISO 8859-1"; // assumption
+    default:
+        return nullptr;
+    }
+}
+
+QString tagValueToQString(const TagValue &value)
+{
+    if(!value.isEmpty()) {
+        switch(value.type()) {
+        case TagDataType::Text:
+            return dataToQString(value.dataPointer(), value.dataSize(), value.dataEncoding());
+        case TagDataType::Integer:
+            return QStringLiteral("%1").arg(value.toInteger());
+        case TagDataType::StandardGenreIndex:
+        case TagDataType::TimeSpan:
+        case TagDataType::PositionInSet:
+            return QString::fromLocal8Bit(value.toString().c_str());
+        default:
+            ;
+        }
+    }
+    return QString();
+}
+
+QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encoding)
+{
+    if(data && dataSize > 0) {
+        const char* codecName = textEncodingToCodecName(encoding);
+        QTextCodec* codec = QTextCodec::codecForName(codecName);
+        if(!codec) {
+            codec = QTextCodec::codecForLocale();
+        }
+        return codec->toUnicode(data, dataSize);
+    }
+    return QString();
+}
+
+QString stringToQString(const string &value, TagTextEncoding textEncoding)
+{
+    if(!value.empty()) {
+        const char* codecName = textEncodingToCodecName(textEncoding);
+        QTextCodec* codec = QTextCodec::codecForName(codecName);
+        if(!codec) {
+            codec = QTextCodec::codecForLocale();
+        }
+        return codec->toUnicode(value.c_str());
+    }
+    return QString();
+}
+
+string qstringToString(const QString &value, TagTextEncoding textEncoding)
+{
+    if(!value.isEmpty()) {
+        const char *codecName = textEncodingToCodecName(textEncoding);
+        QTextCodec *codec = QTextCodec::codecForName(codecName);
+        if(!codec) {
+            codec = QTextCodec::codecForLocale();
+        }
+        QByteArray encodedString = codec->fromUnicode(value);
+        return string(encodedString.data(), encodedString.size());
+    }
+    return string();
+}
+
+TagValue qstringToTagValue(const QString &value, TagTextEncoding textEncoding)
+{
+    TagValue res;
+    if(!value.isEmpty()) {
+        res = TagValue(qstringToString(value, textEncoding), textEncoding);
+    }
+    return res;
+}
+
+int removeBackupFiles(const QDir &directory, QStringList &affectedFiles, ostream *log, bool recursive)
+{
+    QDirIterator iterator(directory, recursive ? QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags);
+    QString path;
+    int filesFound = 0;
+    while(iterator.hasNext()) {
+        path = iterator.next();
+        QFileInfo fileInfo = iterator.fileInfo();
+        if(fileInfo.isFile()) {
+            if(fileInfo.suffix() == QLatin1String("bak")) {
+                ++filesFound;
+                if(QFile::remove(path)) {
+                    affectedFiles << path;
+                    if(log) {
+                        *log << "\"" << path.toStdString() << "\" has been removed." << endl;
+                    }
+                } else {
+                    if(log) {
+                        *log << "Unable to remove \"" << path.toStdString() << "\"." << endl;
+                    }
+                }
+            }
+        }
+    }
+    return filesFound;
+}
+
+QString formatName(const QString &str, bool underscoreToWhitespace)
+{
+    QString res;
+    bool whitespace = true;
+    QChar current;
+    for(int i = 0, size = str.size(); i < size; ++i) {
+        current = str.at(i);
+        if(current.isSpace() || current == QChar('(') || current == QChar('[')) {
+            whitespace = true;
+            res += current;
+        } else if(underscoreToWhitespace && current == QChar('_')) {
+            whitespace = true;
+            res += ' ';
+        } else if(whitespace) {
+            if(i > 0) {
+                QStringRef rest = str.midRef(i);
+                static const char *const connectingWords[] = {"the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on "};
+                for(const char *word : connectingWords) {
+                    if(rest.startsWith(QLatin1String(word), Qt::CaseInsensitive)) {
+                        res += current.toLower();
+                        whitespace = false;
+                        break;
+                    }
+                }
+            }
+            if(whitespace) {
+                res += current.toUpper();
+                whitespace = false;
+            }
+        } else {
+            res += current.toLower();
+        }
+    }
+    return res;
+}
+
+QString fixUmlauts(const QString &str)
+{
+    static const QLatin1String exceptions[] = {
+        QLatin1String("reggae"), QLatin1String("blues"), QLatin1String("auer"), QLatin1String("manuel"), QLatin1String("duet")
+    };
+    for(const QLatin1String &exception : exceptions) {
+        if(str.endsWith(exception, Qt::CaseInsensitive)) {
+            return str;
+        }
+    }
+    static const QLatin1String pairs[6][2] = {
+        {QLatin1String("ae"), QLatin1String("\xe4")}, {QLatin1String("ue"), QLatin1String("\xfc")}, {QLatin1String("oe"), QLatin1String("\xf6")},
+        {QLatin1String("Ae"), QLatin1String("\xc4")}, {QLatin1String("Ue"), QLatin1String("\xdc")}, {QLatin1String("Oe"), QLatin1String("\xd6")}
+    };
+    QString res = str;
+    for(const QLatin1String *pair : pairs) {
+        res = res.replace(pair[0], pair[1], Qt::CaseSensitive);
+    }
+    return res;
+}
+
+void parseFileName(const QString &fileName, QString &title, int &trackNumber)
+{
+    title = fileName.trimmed();
+    trackNumber = 0;
+    int lastPoint = title.lastIndexOf(QChar('.'));
+    if(lastPoint > 0) {
+        title.truncate(lastPoint);
+    } else if(lastPoint == 0) {
+        title.remove(0, 1);
+    }
+    static const QLatin1String delims[] = {
+        QLatin1String(" - "), QLatin1String(", "), QLatin1String("-"), QLatin1String(" ")
+    };
+    for(const QLatin1String &delim : delims) {
+        int lastDelimIndex = 0;
+        int delimIndex = title.indexOf(delim);
+        while(delimIndex > lastDelimIndex) {
+            bool ok = false;
+            trackNumber = title.midRef(lastDelimIndex, delimIndex - lastDelimIndex).toInt(&ok);
+            if(ok) {
+                int titleStart = delimIndex + delim.size();
+                for(const QLatin1String &delim : delims) {
+                    if(title.midRef(titleStart).startsWith(delim)) {
+                        titleStart += delim.size();
+                        break;
+                    }
+                }
+                title.remove(0, titleStart);
+                return;
+            }
+            delimIndex = title.indexOf(delim, lastDelimIndex = delimIndex + delim.size());
+        }
+    }
+}
+
+QString printModel(QAbstractItemModel *model)
+{
+    QModelIndex index = model->index(0, 0);
+    QString res;
+    printModelIndex(index, res, 0);
+    return res;
+}
+
+void printModelIndex(const QModelIndex &index, QString &res, int level)
+{
+    if(index.isValid()) {
+        QString data = index.data().toString();
+        if(!data.isEmpty()) {
+            switch(index.column()) {
+            case 0:
+                for(int i = 0; i < level; ++i) {
+                    res += "\t";
+                }
+                break;
+            default:
+                res += "\t";
+                break;
+            }
+            res += data;
+        }
+        QModelIndex nextInCol = index.sibling(index.row(), index.column() + 1);
+        QModelIndex child = index.child(0, 0);
+        QModelIndex next = index.sibling(index.row() + 1, 0);
+        if(nextInCol.isValid()) {
+            printModelIndex(nextInCol, res, level);
+        } else {
+            res += "\n";
+        }
+        if(index.column() == 0) {
+            printModelIndex(child, res, level + 1);
+            printModelIndex(next, res, level);
+        }
+    }
+}
+
+}

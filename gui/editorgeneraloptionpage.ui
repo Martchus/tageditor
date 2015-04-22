@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::EditorGeneralOptionPage</class>
+ <widget class="QWidget" name="QtGui::EditorGeneralOptionPage">
+  <property name="windowTitle">
+   <string>General options page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox { font-weight: bold };</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="preferredEncodingGroupBox">
+     <property name="title">
+      <string>Keep field  values from previously shown file when the value of the opened file is empty</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="disableAdoptRadioButton">
+        <property name="text">
+         <string>No, disable this feature</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="enableWithinDirRadioButton">
+        <property name="text">
+         <string>Yes, but only if both files are in the same directory</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="enableForAllRadioButton">
+        <property name="text">
+         <string>Yes, regardless where the files are stored</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="multipleTagsGroupBox">
+     <property name="title">
+      <string>Handling of multiple tags</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QRadioButton" name="multipleTagsOneEditorRadioButton">
+        <property name="text">
+         <string>Use one editor for tags with the same target</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="multipleTagsSeparateEditorsRadioButton">
+        <property name="text">
+         <string>Use always separate editors</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="miscGroupBox">
+     <property name="title">
+      <string>Miscellaneous</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="nextWhenPressingEnterCheckBox">
+        <property name="text">
+         <string>Save changings and open next file when pressing enter</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="askBeforeDeletingCheckBox">
+        <property name="text">
+         <string>Ask before deleting all tags</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="hideTagSelectionComboBoxCheckBox">
+        <property name="text">
+         <string>Hide tag selection combo box when not needed</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="usageButtonGroup"/>
+ </buttongroups>
+</ui>

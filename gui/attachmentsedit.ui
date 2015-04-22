@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::AttachmentsEdit</class>
+ <widget class="QWidget" name="QtGui::AttachmentsEdit">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>682</width>
+    <height>308</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTreeView" name="treeView"/>
+   </item>
+   <item>
+    <widget class="QWidget" name="buttonsWidget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="addPushButton">
+        <property name="text">
+         <string>Add file</string>
+        </property>
+        <property name="icon">
+         <iconset theme="list-add">
+          <normaloff/>
+         </iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="extractPushButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Extract selected file</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="buttonsHorizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>265</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="restorePushButton">
+        <property name="text">
+         <string>Restore attachments</string>
+        </property>
+        <property name="icon">
+         <iconset theme="document-revert">
+          <normaloff/>
+         </iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearPushButton">
+        <property name="text">
+         <string>Clear attachments</string>
+        </property>
+        <property name="icon">
+         <iconset theme="edit-clear">
+          <normaloff/>
+         </iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

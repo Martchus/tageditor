@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::Id3v1OptionPage</class>
+ <widget class="QWidget" name="QtGui::Id3v1OptionPage">
+  <property name="windowTitle">
+   <string>ID3v1 options page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox { font-weight: bold };</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QGroupBox" name="usageGroupBox">
+     <property name="title">
+      <string>Usage when saving MP3 files</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="alwaysCreateRadioButton">
+        <property name="text">
+         <string>Always create an ID3v1 tag</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="keepExistingRadioButton">
+        <property name="text">
+         <string>Keep and update existing ID3v1 tag (but don't create a new one)</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="removeExistingRadioButton">
+        <property name="text">
+         <string>Remove existing ID3v1 tag</string>
+        </property>
+        <attribute name="buttonGroup">
+         <string notr="true">usageButtonGroup</string>
+        </attribute>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="usageButtonGroup"/>
+ </buttongroups>
+</ui>

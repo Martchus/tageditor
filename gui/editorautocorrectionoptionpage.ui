@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::EditorAutoCorrectionOptionPage</class>
+ <widget class="QWidget" name="QtGui::EditorAutoCorrectionOptionPage">
+  <property name="windowTitle">
+   <string>General options page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox { font-weight: bold };</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto correction/completition will be applied when showing the selected tag fields after &lt;span style=&quot; font-style:italic;&quot;&gt;loading&lt;/span&gt; a file but &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; before saving.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="featuresGroupBox">
+     <property name="title">
+      <string>Features to be used</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="insertTitleFromFilenameCheckBox">
+        <property name="text">
+         <string>insert title from filename if none present</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="trimWhitespacesCheckBox">
+        <property name="text">
+         <string>trim whitespaces</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="formatNamesCheckBox">
+        <property name="text">
+         <string>format names like &quot;an example_name&quot; to &quot;An Example Name&quot;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="fixUmlautsCheckBox">
+        <property name="text">
+         <string>fix umlauts (replaces ae with ä for example)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="fieldsLabel">
+     <property name="styleSheet">
+      <string notr="true">font-weight: bold;</string>
+     </property>
+     <property name="text">
+      <string>Fields</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QListView" name="fieldsListView">
+     <property name="frameShape">
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="lineWidth">
+      <number>1</number>
+     </property>
+     <property name="showDropIndicator" stdset="0">
+      <bool>true</bool>
+     </property>
+     <property name="flow">
+      <enum>QListView::LeftToRight</enum>
+     </property>
+     <property name="isWrapping" stdset="0">
+      <bool>true</bool>
+     </property>
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
