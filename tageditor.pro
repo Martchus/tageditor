@@ -89,8 +89,7 @@ FORMS += \
     gui/editortempoptionpage.ui
 
 RESOURCES += resources/icons.qrc \
-    resources/scripts.qrc #\
-#    resources/htmlfragments.qrc
+    resources/scripts.qrc
 
 TRANSLATIONS = translations/tageditor_en_US.ts \
      translations/tageditor_de_DE.ts
