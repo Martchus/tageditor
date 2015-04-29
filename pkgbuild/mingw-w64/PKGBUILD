@@ -9,13 +9,14 @@ depends=('mingw-w64-crt' 'mingw-w64-qt5-base' 'mingw-w64-qt5-script' 'mingw-w64-
 makedepends=('mingw-w64-gcc')
 url="https://github.com/Martchus/tageditor"
 source=("tageditor-${pkgver}.tar.gz::https://github.com/Martchus/tageditor/archive/v${pkgver}.tar.gz")
+_reponame=tageditor
 sha256sums=('4e94aff9225d8873f752995c1bcc5f15')
 _architectures="i686-w64-mingw32 x86_64-w64-mingw32"
 
 # head end
 
 build() {
-    cd $srcdir/$_name
+    cd "$srcdir/${PROJECT_DIR_NAME:-$_reponame-$pkgver}"
     # build utilities for each architecture
     for _arch in ${_architectures}; do
         mkdir -p build-${_arch} && pushd build-${_arch}
@@ -26,7 +27,7 @@ build() {
 }
 
 package() {
-    cd $srcdir/$_name
+    cd "$srcdir/${PROJECT_DIR_NAME:-$_reponame-$pkgver}"
     for _arch in ${_architectures}; do       
         # bin stuff
         pushd build-${_arch}
