@@ -79,6 +79,9 @@
        </layout>
       </widget>
       <widget class="QWidget" name="rightWidget" native="true">
+       <property name="acceptDrops">
+        <bool>true</bool>
+       </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <property name="spacing">
          <number>3</number>
@@ -91,6 +94,9 @@
         </property>
         <item>
          <widget class="QLabel" name="fileNameLabel">
+          <property name="acceptDrops">
+           <bool>true</bool>
+          </property>
           <property name="text">
            <string>No file selected</string>
           </property>
@@ -104,7 +110,11 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWebView" name="infoWebView"/>
+          <widget class="QWebView" name="infoWebView">
+           <property name="acceptDrops">
+            <bool>false</bool>
+           </property>
+          </widget>
           <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="tagEditVerticalLayout">
             <item>
@@ -314,7 +324,7 @@ the file reverting all unsaved changings.</string>
      <x>0</x>
      <y>0</y>
      <width>1225</width>
-     <height>23</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

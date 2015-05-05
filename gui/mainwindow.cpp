@@ -37,6 +37,7 @@
 #include <QFileSystemModel>
 #include <QCompleter>
 #include <QPlainTextEdit>
+#include <QMimeData>
 #include <QTextStream>
 #include <QWebFrame>
 #include <QWebPage>
@@ -129,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // other widgets
     updateUiStatus();
     m_ui->abortButton->setVisible(false);
-    // connect signals and slots
+    // connect signals and slots, install event filter
     //  menu: application
     connect(m_ui->actionSettings, &QAction::triggered, this, &MainWindow::showSettingsDlg);
     connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
@@ -156,6 +157,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->selectNextCommandLinkButton, &QCommandLinkButton::clicked, this, &MainWindow::selectNextFile);
     connect(m_ui->abortButton, &QPushButton::clicked, [this] {m_abortClicked = true; m_ui->abortButton->setEnabled(false); });
     connect(m_ui->tagSelectionComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), m_ui->stackedWidget, &QStackedWidget::setCurrentIndex);
+    //  event filter
+    m_ui->fileNameLabel->installEventFilter(this);
+    m_ui->rightWidget->installEventFilter(this);
     // apply settings
     setCurrentDirectory(Settings::mainWindowCurrentFileBrowserDirectory());
     applySettingsFromDialog();
@@ -193,6 +197,38 @@ void MainWindow::closeEvent(QCloseEvent *)
     Settings::mainWindowGeometry() = saveGeometry();
     Settings::mainWindowState() = saveState();
     Settings::mainWindowCurrentFileBrowserDirectory() = currentDirectory();
+}
+
+bool MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+    if(obj == m_ui->rightWidget || obj == m_ui->fileNameLabel) {
+        switch(event->type()) {
+        case QEvent::DragEnter:
+        case QEvent::Drop:
+            if(QDropEvent *dropEvent = static_cast<QDropEvent *>(event)) {
+                QString data;
+                const QMimeData *mimeData = dropEvent->mimeData();
+                if(mimeData->hasUrls()) {
+                    const QUrl url = mimeData->urls().front();
+                    if(url.scheme() == QLatin1String("file")) {
+                        data = url.path();
+                    }
+                } else if(mimeData->hasText()) {
+                    data = mimeData->text();
+                }
+                if(!data.isEmpty()) {
+                    event->accept();
+                    if(event->type() == QEvent::Drop) {
+                        showFile(data, true);
+                    }
+                }
+                return true;
+            }
+        default:
+            ;
+        }
+    }
+    return QObject::eventFilter(obj, event);
 }
 
 /*!

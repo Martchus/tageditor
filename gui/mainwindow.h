@@ -54,6 +54,7 @@ public:
 
 protected:
     virtual void closeEvent(QCloseEvent *);
+    virtual bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
     // file selection
