@@ -158,7 +158,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->abortButton, &QPushButton::clicked, [this] {m_abortClicked = true; m_ui->abortButton->setEnabled(false); });
     connect(m_ui->tagSelectionComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), m_ui->stackedWidget, &QStackedWidget::setCurrentIndex);
     //  event filter
-    m_ui->fileNameLabel->installEventFilter(this);
     m_ui->rightWidget->installEventFilter(this);
     // apply settings
     setCurrentDirectory(Settings::mainWindowCurrentFileBrowserDirectory());
@@ -201,7 +200,7 @@ void MainWindow::closeEvent(QCloseEvent *)
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-    if(obj == m_ui->rightWidget || obj == m_ui->fileNameLabel) {
+    if(obj == m_ui->rightWidget) {
         switch(event->type()) {
         case QEvent::DragEnter:
         case QEvent::Drop:
