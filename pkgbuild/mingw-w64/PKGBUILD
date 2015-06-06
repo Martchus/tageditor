@@ -1,6 +1,6 @@
 _name=tageditor
 pkgname=mingw-w64-tageditor
-pkgver=1.1.3
+pkgver=1.1.4
 pkgrel=1
 arch=('any')
 pkgdesc="Library for reading and editing meta-data of several media formats (mingw-w64)."
