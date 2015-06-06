@@ -162,7 +162,11 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(track->name())));
     }
     res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Type"), qstr(track->mediaTypeName())));
-    res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format"), qstr(track->formatName())));
+    const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
+    res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format"), qstr(fmtName)));
+    if(strcmp(fmtName, fmtAbbr)) {
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), qstr(fmtAbbr)));
+    }
     if(track->version()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QString::number(track->version())));
     }
