@@ -99,6 +99,8 @@ updateqm.target = updateqm
 QMAKE_EXTRA_TARGETS += updateqm
 
 OTHER_FILES += \
+    README.md \
+    LICENSE \
     pkgbuild/default/PKGBUILD \
     pkgbuild/mingw-w64/PKGBUILD
 
