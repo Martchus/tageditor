@@ -56,9 +56,15 @@ inline QString qstr(const string &stdstr)
 
 inline QString mkRow(const QString &label, const QString &text, bool head = true)
 {
+
     return head
             ? QStringLiteral("<tr><th>%1</th><td>%2</td></tr>").arg(label, text)
             : QStringLiteral("<tr><td>%1</td><td>%2</td></tr>").arg(label, text);
+}
+
+inline QString mkRow(const QString &label, const QString &helpText, const QString &text)
+{
+    return QStringLiteral("<tr><th title=\"%1\">%2</th><td>%3</td></tr>").arg(helpText, label, text);
 }
 
 QString mkFontStyle(const QFont &font)
@@ -153,19 +159,22 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
 {
     res.append(QStringLiteral("<tr><th>%1 #%2</th><td><table class=\"headervertical\"><tbody>").arg(QCoreApplication::translate("HtmlInfo", "Track"), QString::number(trackNumber)));
     if(track->id()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QString::number(track->id())));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QCoreApplication::translate("HtmlInfo", "The unique number used to identify the track in the container file."), QString::number(track->id())));
     }
     if(track->trackNumber()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Number"), QString::number(track->trackNumber())));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Number"), QCoreApplication::translate("HtmlInfo", "The index of the track in the container file."), QString::number(track->trackNumber())));
     }
     if(!track->name().empty()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(track->name())));
     }
     res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Type"), qstr(track->mediaTypeName())));
     const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
-    res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format"), qstr(fmtName)));
+    res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format"), QCoreApplication::translate("HtmlInfo", "The unabbreviated name of the track's format."), qstr(fmtName)));
     if(strcmp(fmtName, fmtAbbr)) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), qstr(fmtAbbr)));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr)));
+    }
+    if(!track->formatId().empty()) {
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format ID"), QCoreApplication::translate("HtmlInfo", "The raw format identifier directly extracted from the container."), qstr(track->formatId())));
     }
     if(track->version()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QString::number(track->version())));
@@ -179,6 +188,9 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
     if(track->bitrate()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Avg. bitrate"), qstr(bitrateToString(track->bitrate()))));
     }
+    if(track->maxBitrate()) {
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Maximum bitrate"), qstr(bitrateToString(track->maxBitrate()))));
+    }
     if(!track->creationTime().isNull()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Creation time"), qstr(track->creationTime().toString(DateTimeOutputFormat::DateAndTime, true))));
     }
@@ -191,8 +203,12 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
     if(!track->compressorName().empty()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Compressor name"), qstr(track->compressorName())));
     }
-    if(track->samplesPerSecond()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Samples per second"), QString::number(track->samplesPerSecond())));
+    if(track->sampleRate()) {
+        if(track->extensionSampleRate()) {
+            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Samplerate"), QStringLiteral("%1 Hz / %2 Hz").arg(track->extensionSampleRate()).arg(track->sampleRate())));
+        } else {
+            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Samplerate"), QStringLiteral("%1 Hz").arg(track->sampleRate())));
+        }
     }
     if(track->sampleCount()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Sample count"), QString::number(track->sampleCount())));
