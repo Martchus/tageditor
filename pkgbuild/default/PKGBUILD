@@ -17,7 +17,7 @@ sha256sums=('3f928ba196940cc539d0af752b69339a')
 build() {
     cd "$srcdir/${PROJECT_DIR_NAME:-$_reponame-$pkgver}"
     INSTALL_ROOT=$pkgdir/usr/ qmake-qt5 "$pkgname.pro" -r -spec linux-g++
-    make && make updateqm
+    make
 }
 
 package() {

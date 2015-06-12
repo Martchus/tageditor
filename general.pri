@@ -12,7 +12,17 @@ unix {
     QMAKE_LFLAGS += "-Wl,--rpath=./"
 }
 # prefix
-targetprefix = .
+targetprefix = $$(TARGET_PREFIX)
+equals(targetprefix, "") {
+    win32 {
+        targetprefix = ../../..
+    } else {
+        targetprefix = ../..
+    }
+}
+message("Using target prefix \"$${targetprefix}\".")
+# print install root
+message("Using install root \"$$(INSTALL_ROOT)\".")
 # target
 CONFIG(debug, debug|release) {
     TARGET = $$targetprefix/$${projectname}d
