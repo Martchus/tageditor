@@ -227,7 +227,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
             ;
         }
     }
-    return QObject::eventFilter(obj, event);
+    return QMainWindow::eventFilter(obj, event);
 }
 
 /*!
