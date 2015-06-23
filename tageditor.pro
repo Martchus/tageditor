@@ -1,4 +1,5 @@
 projectname = tageditor
+VERSION = 1.1.5
 
 # include ../../common.pri when building as part of a subdirs project; otherwise include general.pri
 !include(../../common.pri) {
@@ -128,6 +129,3 @@ INSTALLS += icon
 menu.path = $$(INSTALL_ROOT)/share/applications/
 menu.files = $${PWD}/resources/desktop/applications/$${projectname}.desktop
 INSTALLS += menu
-translations.path = $$(INSTALL_ROOT)/share/$${projectname}/translations/
-translations.files = $${OUT_PWD}/translations/*.qm
-INSTALLS += translations
