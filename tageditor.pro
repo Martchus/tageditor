@@ -98,9 +98,7 @@ include(translations.pri)
 
 OTHER_FILES += \
     README.md \
-    LICENSE \
-    pkgbuild/default/PKGBUILD \
-    pkgbuild/mingw-w64/PKGBUILD
+    LICENSE
 
 CONFIG(debug, debug|release) {
     LIBS += -L../../ -lc++utilitiesd -ltagparserd
