@@ -26,6 +26,7 @@
 #include <c++utilities/io/path.h>
 
 #include <qtutilities/aboutdialog/aboutdialog.h>
+#include <qtutilities/misc/dialogutils.h>
 
 #include <QMessageBox>
 #include <QGraphicsScene>
@@ -54,6 +55,7 @@
 using namespace std;
 using namespace Utility;
 using namespace Media;
+using namespace Dialogs;
 
 namespace QtGui {
 
@@ -492,6 +494,8 @@ void MainWindow::updateUiStatus()
         }
     }
     m_ui->nextButton->setEnabled(nextFileAvailable);
+    // window title
+    setWindowTitle(Dialogs::generateWindowTitle(m_fileInfo.isOpen() ? DocumentStatus::Saved : DocumentStatus::NoDocument, m_currentPath));
 }
 
 /*!
