@@ -42,7 +42,9 @@ tageditor get title album artist --files /some/dir/*.m4a
 Displays title, album and artist of all *.m4a files in the specified directory.
 
 ```
-tageditor set "title=Title of "{1st,2nd,3rd}" file" "title=Title of "{1st,2nd,3rd}" file" "title=Title of "{4..16}"th file" "album=The Album" "artist=The Artist" cover=/path/to/image track={1..16}/16 --files /some/dir/*.m4a
+tageditor set "title=Title of "{1st,2nd,3rd}" file" "title=Title of "{4..16}"th file" \
+    "album=The Album" "artist=The Artist" \
+    cover=/path/to/image track={1..16}/16 --files /some/dir/*.m4a
 ```
 Sets title, album, artist, cover and track number of all *.m4a files in the specified directory.
 The first file will get the name "Title of 1st file", the second file will get the name "Title of 2nd file" and so on.
