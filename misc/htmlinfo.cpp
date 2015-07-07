@@ -64,7 +64,7 @@ inline QString mkRow(const QString &label, const QString &text, bool head = true
 
 inline QString mkRow(const QString &label, const QString &helpText, const QString &text)
 {
-    return QStringLiteral("<tr><th title=\"%1\">%2</th><td>%3</td></tr>").arg(helpText, label, text);
+    return QStringLiteral("<tr title=\"%1\"><th class=\"has-helptext\">%2</th><td>%3</td></tr>").arg(helpText, label, text);
 }
 
 QString mkFontStyle(const QFont &font)
@@ -174,7 +174,7 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr)));
     }
     if(!track->formatId().empty()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format ID"), QCoreApplication::translate("HtmlInfo", "The raw format identifier directly extracted from the container."), qstr(track->formatId())));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format/codec ID"), QCoreApplication::translate("HtmlInfo", "The raw format/codec identifier extracted from the container."), qstr(track->formatId())));
     }
     if(track->version()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QString::number(track->version())));
@@ -230,6 +230,9 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
     }
     if(!track->resolution().isNull()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Resolution"), qstr(track->resolution().toString())));
+    }
+    if(track->channelCount()) {
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Channel count"), QString::number(track->channelCount())));
     }
     if(track->depth()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Bit depth"), QString::number(track->depth())));
@@ -497,10 +500,16 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "border: none;"
                               "background-color: transparent;"
                               "}"
+                              "th {"
+                              "cursor: default;"
+                              "}"
                               "td.warning, td.critical, td.information {"
                               "width: 18px;"
                               "background-repeat: no-repeat;"
                               "background-position:center;"
+                              "}"
+                              ".has-helptext {"
+                              "cursor: help;"
                               "}"));
 #ifdef GUI_QTWIDGETS
     if(ApplicationInstances::hasWidgetsApp()) {
