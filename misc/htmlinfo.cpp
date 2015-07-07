@@ -424,7 +424,7 @@ void mkNotifications(QByteArray &res, NotificationList &notifications, bool repa
 /*!
  * \brief Generates technical information for the specified \a file.
  *
- * The parse methods of the \a file must have already been parsed.
+ * The parse methods of the \a file must have already been called.
  *
  * A QGuiApplication instance should be available for setting fonts.
  * A QApplication instance should be available for standard icons.
