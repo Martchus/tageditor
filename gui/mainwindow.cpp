@@ -65,6 +65,16 @@ namespace QtGui {
 */
 
 /*!
+ * \brief The LoadingResult enum specifies whether the file could be parsed.
+ */
+enum LoadingResult : char
+{
+    ParsingSuccessful,
+    FatalParsingError,
+    IoError
+};
+
+/*!
  * \class QtGui::MainWindow
  * \brief The MainWindow class provides the main window of the Tag Editor's Qt gui.
  */
@@ -220,7 +230,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                 if(!data.isEmpty()) {
                     event->accept();
                     if(event->type() == QEvent::Drop) {
-                        showFile(data, true);
+                        startParsing(data, true);
                     }
                 }
                 return true;
@@ -263,7 +273,7 @@ void MainWindow::fileSelected()
         QString path(m_fileModel->filePath(m_fileFilterModel->mapToSource(selectedIndexes.at(0))));
         QFileInfo fileInfo(path);
         if(fileInfo.isFile()) {
-            showFile(path);
+            startParsing(path);
             m_ui->pathLineEdit->setText(fileInfo.dir().path());
         } else if(fileInfo.isDir()) {
             m_ui->pathLineEdit->setText(path);
@@ -612,21 +622,21 @@ void MainWindow::foreachTagEdit(const std::function<void (TagEdit *)> &function)
 }
 
 /*!
- * \brief Opens a file and shows its tags and general information.
- * A possibly previously opened file will be closed if still open.
+ * \brief Opens and parses a file using another thread.
+ * Shows its tags and general information using the showFile() method.
  * \param path Specifies the \a path of the file.
  * \param forceRefresh Specifies whether the file should be reparsed if it is already opened.
  */
-void MainWindow::showFile(const QString &path, bool forceRefresh)
+bool MainWindow::startParsing(const QString &path, bool forceRefresh)
 {
     // check if file is current file
     bool sameFile = m_currentPath == path;
     if(!forceRefresh && sameFile) {
-        return;
+        return true;
     }
     if(!m_fileOperationMutex.try_lock()) {
         m_ui->statusBar->showMessage(tr("Unable to load the selected file \"%1\" because the current process hasn't finished yet.").arg(path));
-        return;
+        return false;
     }
     lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
     // clear previous results and status
@@ -651,82 +661,120 @@ void MainWindow::showFile(const QString &path, bool forceRefresh)
     if(!m_makingResultsAvailable) {
         m_originalNotifications.clear();
     }
-    // load file info
-    bool sucess;
-    try {
-        m_fileInfo.setForceFullParse(Settings::forceFullParse());
-        m_fileInfo.parseEverything();
-        sucess = true;
-    } catch(Failure &) {
-        // the file has been opened; parsing notifications will be shown in the info box
-        sucess = false;
-    } catch(ios_base::failure &) {
-        // the file could not be opened because an IO error occured
-        m_fileInfo.close(); // ensure file is actually closed
+    // show filename
+    m_ui->fileNameLabel->setText(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()));
+    // define function to parse the file
+    auto startThread = [this] {
+        m_fileOperationMutex.lock();
+        char result;
+        try {
+            m_fileInfo.setForceFullParse(Settings::forceFullParse());
+            m_fileInfo.parseEverything();
+            result = ParsingSuccessful;
+        } catch(Failure &) {
+            // the file has been opened; parsing notifications will be shown in the info box
+            result = FatalParsingError;
+        } catch(ios_base::failure &) {
+            // the file could not be opened because an IO error occured
+            m_fileInfo.close(); // ensure file is closed
+            result = IoError;
+        }
+        m_fileInfo.unregisterAllCallbacks();
+        QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
+        // showFile() will unlock the mutex!
+    };
+    m_fileInfo.unregisterAllCallbacks();
+    //m_fileInfo.registerCallback(showProgress); can't show progress yet
+    // use another thread to perform the operation
+    std::thread thr(startThread);
+    thr.detach();
+    // inform user
+    static const QString statusMsg(tr("The file is beeing parsed ..."));
+    m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Progress);
+    m_ui->parsingNotificationWidget->setText(statusMsg);
+    m_ui->statusBar->showMessage(statusMsg);
+    return true;
+}
+
+/*!
+ * \brief Shows the current file info (technical info, tags, ...).
+ * This private slot is invoked from the thread which performed the
+ * parsing operation using Qt::QueuedConnection.
+ * \param result Specifies whether the file could be load sucessfully.
+ * \remarks Expects m_fileOperationMutex to be locked!
+ */
+void MainWindow::showFile(char result)
+{    
+    lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
+    if(result == IoError) {
         // update status
         updateUiStatus();
         static const QString statusMsg(tr("The file could not be opened because an IO error occurred."));
         QMessageBox::critical(this, windowTitle(), statusMsg);
         m_ui->statusBar->showMessage(statusMsg);
-        return;
-    }
-    // show filename and update info model
-    QString fileName = QString::fromLocal8Bit(m_fileInfo.fileName().c_str());
-    m_ui->fileNameLabel->setText(fileName);
-    updateInfoWebView();
-    // show parsing status/result using parsing notification widget
-    Media::NotificationType worstNotificationType = m_fileInfo.worstNotificationTypeIncludingRelatedObjects();
-    sucess &= worstNotificationType < Media::NotificationType::Critical;
-    if(sucess) {
-        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
-        m_ui->parsingNotificationWidget->setText(tr("File could be parsed correctly."));
     } else {
-        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
-        m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
-    }
-    switch(worstNotificationType) {
-    case Media::NotificationType::Critical:
-        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
-        m_ui->parsingNotificationWidget->appendLine(tr("There are critical parsing notifications."));
-        break;
-    case Media::NotificationType::Warning:
-        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
-        m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
-        break;
-    default:
-        ;
-    }
-    // load existing tags
-    m_tags.clear();
-    m_fileInfo.tags(m_tags);
-    // show notification if there is currently no existing tag(s) could be found
-    if(!m_tags.size()) {
-        m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
-        if(!m_fileInfo.areTagsSupported()) {
-            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
-            m_ui->parsingNotificationWidget->appendLine(tr("File format is not supported (an ID3 tag can be added anyways)."));
+        // update webview
+        updateInfoWebView();
+        // show parsing status/result using parsing notification widget
+        auto worstNotificationType = m_fileInfo.worstNotificationTypeIncludingRelatedObjects();
+        if(worstNotificationType >= Media::NotificationType::Critical) {
+            // we catched no exception, but there are critical notifications
+            // -> treat critical notifications as fatal parsing errors
+            result = LoadingResult::FatalParsingError;
         }
-    }
-    // create appropriate tags according to file type and user preferences when automatic tag management is enabled
-    if(Settings::autoTagManagement()) {
-        if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                         Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed())) {
-            if(confirmCreationOfId3TagForUnsupportedFile()) {
-                m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                                         Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed());
+        switch(result) {
+        case ParsingSuccessful:
+            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
+            m_ui->parsingNotificationWidget->setText(tr("File could be parsed correctly."));
+            break;
+        default:
+            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
+            m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
+        }
+        switch(worstNotificationType) {
+        case Media::NotificationType::Critical:
+            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
+            m_ui->parsingNotificationWidget->appendLine(tr("There are critical parsing notifications."));
+            break;
+        case Media::NotificationType::Warning:
+            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
+            m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
+            break;
+        default:
+            ;
+        }
+        // load existing tags
+        m_tags.clear();
+        m_fileInfo.tags(m_tags);
+        // show notification if there is currently no existing tag(s) could be found
+        if(!m_tags.size()) {
+            m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
+            if(!m_fileInfo.areTagsSupported()) {
+                m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
+                m_ui->parsingNotificationWidget->appendLine(tr("File format is not supported (an ID3 tag can be added anyways)."));
             }
         }
+        // create appropriate tags according to file type and user preferences when automatic tag management is enabled
+        if(Settings::autoTagManagement()) {
+            if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
+                                             Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed())) {
+                if(confirmCreationOfId3TagForUnsupportedFile()) {
+                    m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
+                                                             Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed());
+                }
+            }
+        }
+        m_tags.clear();
+        m_fileInfo.tags(m_tags); // reload tags
+        // update related widgets
+        updateTagEditsAndAttachmentEdits();
+        updateTagSelectionComboBox();
+        updateTagManagementMenu();
+        insertTitleFromFilename();
+        // update status
+        m_ui->statusBar->showMessage(tr("The file %1 has been opened.").arg(QString::fromLocal8Bit(m_fileInfo.fileName().c_str())));
+        updateUiStatus();
     }
-    m_tags.clear();
-    m_fileInfo.tags(m_tags); // reload tags
-    // update related widgets
-    updateTagEditsAndAttachmentEdits();
-    updateTagSelectionComboBox();
-    updateTagManagementMenu();
-    insertTitleFromFilename();
-    // update status
-    m_ui->statusBar->showMessage(tr("The file %1 has been opened.").arg(fileName));
-    updateUiStatus();
 }
 
 /*!
@@ -859,21 +907,19 @@ bool MainWindow::startSaving()
             QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(sender.currentStatus())));
         }
     };
-    auto startThread = [this] (void) -> void {
-        //lock_guard<mutex> guard(m_fileOperationMutex);
-        // Outcommented because the mutex needs to be locked when leaving the method.
+    auto startThread = [this] {
         m_fileOperationMutex.lock();
-        bool sucess;
+        bool success;
         try {
             m_fileInfo.applyChanges();
-            sucess = true;
+            success = true;
         } catch(Failure &) {
-            sucess = false;
+            success = false;
         } catch(ios_base::failure &) {
-            sucess = false;
+            success = false;
         }
         m_fileInfo.unregisterAllCallbacks();
-        QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, sucess));
+        QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, success));
         // showSavingResult() will unlock the mutex!
     };
     m_fileInfo.unregisterAllCallbacks();
@@ -886,14 +932,13 @@ bool MainWindow::startSaving()
 
 /*!
  * \brief Shows the saving results.
- * This slot is invoked from the thread which performed the
+ * This private slot is invoked from the thread which performed the
  * saving operation using Qt::QueuedConnection.
  * \param sucess Specifies whether the file could be saved sucessfully.
  * \remarks Expects m_fileOperationMutex to be locked!
  */
 void MainWindow::showSavingResult(bool sucess)
 {
-    //m_fileOperationMutex.lock();
     m_ui->abortButton->setHidden(true);
     m_ui->makingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
     m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::Saving);
@@ -955,7 +1000,7 @@ void MainWindow::showSavingResult(bool sucess)
             }
         }
         if(!showNextFile) {
-            showFile(m_currentPath, true);
+            startParsing(m_currentPath, true);
         }
     } else {
         static const QString errormsg(tr("The tags couldn't be saved. See the file info box for detail."));
@@ -964,7 +1009,7 @@ void MainWindow::showSavingResult(bool sucess)
         m_ui->makingNotificationWidget->setText(errormsg);
         m_ui->makingNotificationWidget->setNotificationType(NotificationType::Critical);
         m_fileOperationMutex.unlock();
-        showFile(m_currentPath, true);
+        startParsing(m_currentPath, true);
     }
 }
 
@@ -1080,7 +1125,7 @@ void MainWindow::showOpenFileDlg()
 {
     QString path = QFileDialog::getOpenFileName(this, QApplication::applicationName());
     if(!path.isEmpty()) {
-        showFile(path);
+        startParsing(path);
     }
 }
 

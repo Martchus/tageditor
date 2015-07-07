@@ -65,7 +65,8 @@ private slots:
     void showOpenFileDlg();
 
     // opened file: load, save, delete, close
-    void showFile(const QString &path, bool forceRefresh = false);
+    bool startParsing(const QString &path, bool forceRefresh = false);
+    void showFile(char result);
     bool applyEntriesAndSaveChangings();
     bool deleteAllTagsAndSave();
     void closeFile();
