@@ -13,21 +13,14 @@ unix {
 }
 # prefix
 targetprefix = $$(TARGET_PREFIX)
-equals(targetprefix, "") {
-    win32 {
-        targetprefix = ../../..
-    } else {
-        targetprefix = ../..
-    }
-}
 message("Using target prefix \"$${targetprefix}\".")
 # print install root
 message("Using install root \"$$(INSTALL_ROOT)\".")
 # target
 CONFIG(debug, debug|release) {
-    TARGET = $$targetprefix/$${projectname}d
+    TARGET = $${targetprefix}$${projectname}d
 } else {
-    TARGET = $$targetprefix/$$projectname
+    TARGET = $${targetprefix}$${projectname}
 }
 # variables to check target architecture
 win32-g++:QMAKE_TARGET.arch = $$QMAKE_HOST.arch
@@ -78,4 +71,15 @@ guiqtwidgets {
     greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
     DEFINES += GUI_QTWIDGETS
     DEFINES += MODEL_UNDO_SUPPORT
+}
+# configuration for cross compliation with mingw-w64
+mingw-w64-manualstrip-dll {
+    QMAKE_POST_LINK=$${CROSS_COMPILE}strip --strip-unneeded ./release/$(TARGET); \
+        $${CROSS_COMPILE}strip --strip-unneeded ./release/lib$(TARGET).a
+}
+mingw-w64-manualstrip-exe {
+    QMAKE_POST_LINK=$${CROSS_COMPILE}strip --strip-unneeded ./release/$(TARGET)
+}
+mingw-w64-noversion {
+    VERSION = ""
 }

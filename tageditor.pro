@@ -96,6 +96,8 @@ TRANSLATIONS = translations/tageditor_en_US.ts \
      translations/tageditor_de_DE.ts
 include(translations.pri)
 
+win32:include(windowsicon.pri)
+
 OTHER_FILES += \
     README.md \
     LICENSE
@@ -114,16 +116,14 @@ CONFIG(debug, debug|release) {
 
 INCLUDEPATH += ../
 
-win32 {
-    #win32:RC_FILE += windowsicon.rc
-}
-
 # installs
 target.path = $$(INSTALL_ROOT)/bin
 INSTALLS += target
-icon.path = $$(INSTALL_ROOT)/share/icons/hicolor/scalable/apps/
-icon.files = $${PWD}/resources/icons/hicolor/scalable/apps/$${projectname}.svg
-INSTALLS += icon
-menu.path = $$(INSTALL_ROOT)/share/applications/
-menu.files = $${PWD}/resources/desktop/applications/$${projectname}.desktop
-INSTALLS += menu
+!mingw-w64-install {
+    icon.path = $$(INSTALL_ROOT)/share/icons/hicolor/scalable/apps/
+    icon.files = $${PWD}/resources/icons/hicolor/scalable/apps/$${projectname}.svg
+    INSTALLS += icon
+    menu.path = $$(INSTALL_ROOT)/share/applications/
+    menu.files = $${PWD}/resources/desktop/applications/$${projectname}.desktop
+    INSTALLS += menu
+}
