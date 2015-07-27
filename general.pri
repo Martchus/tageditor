@@ -22,6 +22,12 @@ CONFIG(debug, debug|release) {
 } else {
     TARGET = $${targetprefix}$${projectname}
 }
+# add defines
+DEFINES += "'PROJECT_NAME=\"$${projectname}\"'"
+DEFINES += "'APP_NAME=\"$${appname}\"'"
+DEFINES += "'APP_AUTHOR=\"$${appauthor}\"'"
+DEFINES += "'APP_URL=\"$${appurl}\"'"
+DEFINES += "'APP_VERSION=\"$${VERSION}\"'"
 # variables to check target architecture
 win32-g++:QMAKE_TARGET.arch = $$QMAKE_HOST.arch
 win32-g++-32:QMAKE_TARGET.arch = x86
