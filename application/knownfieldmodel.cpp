@@ -42,6 +42,7 @@ const char *KnownFieldModel::fieldName(KnownField field)
     case KnownField::Composer: return QT_TR_NOOP("Composer");
     case KnownField::Rating: return QT_TR_NOOP("Rating");
     case KnownField::Description: return QT_TR_NOOP("Description");
+    case KnownField::Vendor: return QT_TR_NOOP("Vendor");
     default: return "";
     }
 }
