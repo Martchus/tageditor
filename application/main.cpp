@@ -35,7 +35,9 @@ int main(int argc, char *argv[])
     Argument filesArg("files", "f", "specifies the path of the file(s) to be opened");
     filesArg.setValueNames({"path 1", "path 2"});
     filesArg.setRequiredValueCount(-1);
-    filesArg.setRequired(true);
+    filesArg.setRequired(false);
+    filesArg.setImplicit(true);
+    qtConfigArgs.qtWidgetsGuiArg().addSecondaryArgument(&filesArg);
     Argument fileArg("file", "if", "specifies the path of the input file");
     fileArg.setValueNames({"path"});
     fileArg.setRequiredValueCount(1);
@@ -50,6 +52,7 @@ int main(int argc, char *argv[])
     printFieldNamesArg.setCallback(Cli::printFieldNames);
     // display tag info
     Argument displayTagInfoArg("display-tag-info", "get", "displays the values of all specified tag fields (displays all fields if none specified)");
+    displayTagInfoArg.setDenotesOperation(true);
     displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, _1, std::cref(filesArg)));
     displayTagInfoArg.setRequiredValueCount(-1);
     displayTagInfoArg.setValueNames({"title", "album", "artist", "trackpos"});
@@ -78,6 +81,7 @@ int main(int argc, char *argv[])
     encodingArg.setValueNames({"latin1/utf8/utf16le/utf16be"});
     encodingArg.setCombinable(true);
     Argument setTagInfoArg("set-tag-info", "set", "sets the values of all specified tag fields");
+    setTagInfoArg.setDenotesOperation(true);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg)));
     setTagInfoArg.setRequiredValueCount(-1);
     setTagInfoArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
@@ -87,27 +91,30 @@ int main(int argc, char *argv[])
     extractFieldArg.setRequiredValueCount(1);
     extractFieldArg.setValueNames({"field"});
     extractFieldArg.setSecondaryArguments({&fileArg, &outputFileArg});
+    extractFieldArg.setDenotesOperation(true);
     extractFieldArg.setCallback(std::bind(Cli::extractField, _1, std::cref(fileArg), std::cref(outputFileArg)));
     // file info
     Argument validateArg("validate", "v", "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
+    validateArg.setDenotesOperation(true);
     validateArg.setCombinable(true);
     Argument genInfoArg("gen-info", "info", "generates technical information about the specified file as HTML document");
+    genInfoArg.setDenotesOperation(true);
     genInfoArg.setSecondaryArguments({&fileArg, &validateArg, &outputFileArg});
     genInfoArg.setCallback(std::bind(Cli::generateFileInfo, _1, std::cref(fileArg), std::cref(outputFileArg), std::cref(validateArg)));
     // remove backup files
     Argument remBackupFilesArg("remove-backup-files", string(), "removes all files with \".bak\" suffix in the given directory and in subdirectories if recursive option is present");
+    remBackupFilesArg.setDenotesOperation(true);
     remBackupFilesArg.setCallback(std::bind(Cli::removeBackupFiles, _1, std::cref(recursiveArg)));
     remBackupFilesArg.setValueNames({"directory"});
     remBackupFilesArg.setRequiredValueCount(1);
     remBackupFilesArg.setSecondaryArguments({&recursiveArg});
-
     parser.setMainArguments({&printFieldNamesArg, &displayTagInfoArg, &setTagInfoArg, &extractFieldArg, &genInfoArg, &remBackupFilesArg, &qtConfigArgs.qtWidgetsGuiArg(), &helpArg});
     // parse given arguments
     try {
         parser.parseArgs(argc, argv);
         if(qtConfigArgs.areQtGuiArgsPresent()) {
 #ifdef GUI_QTWIDGETS
-            return QtGui::runWidgetsGui(argc, argv);
+            return QtGui::runWidgetsGui(argc, argv, fileArg.values().empty() ? QString() : QString::fromLocal8Bit(fileArg.values().front().data()));
 #else
             cout << "Application has not been build with Qt widgets GUI support." << endl;
 #endif

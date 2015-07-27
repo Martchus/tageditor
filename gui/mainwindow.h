@@ -49,8 +49,15 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     virtual ~MainWindow();
 
+    // file browser
     QString currentDirectory();
     void setCurrentDirectory(const QString &path);
+
+    // opened file: load, save, delete, close
+    bool startParsing(const QString &path, bool forceRefresh = false);
+    bool applyEntriesAndSaveChangings();
+    bool deleteAllTagsAndSave();
+    void closeFile();
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -64,14 +71,8 @@ private slots:
     void selectNextFile();
     void showOpenFileDlg();
 
-    // opened file: load, save, delete, close
-    bool startParsing(const QString &path, bool forceRefresh = false);
-    void showFile(char result);
-    bool applyEntriesAndSaveChangings();
-    bool deleteAllTagsAndSave();
-    void closeFile();
-
     // editor
+    void showFile(char result);
     void saveFileInformation();
     void handleReturnPressed();
     void handleKeepPreviousValuesActionTriggered(QAction *action);
