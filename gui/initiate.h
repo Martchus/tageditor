@@ -9,7 +9,7 @@ QT_END_NAMESPACE
 
 namespace QtGui {
 
-int runWidgetsGui(int argc, char *argv[]);
+int runWidgetsGui(int argc, char *argv[], const QString &path);
 
 }
 

@@ -8,23 +8,20 @@
 
 namespace QtGui {
 
-int runWidgetsGui(int argc, char *argv[])
+int runWidgetsGui(int argc, char *argv[], const QString &path)
 {
-    // set application information
+    SET_APPLICATION_INFO;
     QApplication a(argc, argv);
-    QApplication::setOrganizationName(QStringLiteral("Martchus"));
-    QApplication::setOrganizationDomain(QStringLiteral("http://martchus.netai.net/"));
-    QApplication::setApplicationName(QStringLiteral("Tageditor"));
-    QApplication::setApplicationVersion(QStringLiteral("1.1.5"));
-    // load translation files
-    TranslationFiles::loadQtTranslationFile();
-    TranslationFiles::loadApplicationTranslationFile(QStringLiteral("tageditor"));
+    LOAD_TRANSLATIONS;
     // load resources needed by classes of qtutilities
     QtUtilitiesResources::init();
     Theme::setup();
     Settings::restore();
     MainWindow w;
     w.show();
+    if(!path.isEmpty()) {
+        w.startParsing(path, true);
+    }
     int res = a.exec();
     Settings::save();
     // cleanup resources
