@@ -3,7 +3,7 @@ equals(ffmpegpath, "") {
     exists(/usr/bin/ffmpeg) {
         ffmpegpath = /usr/bin/ffmpeg
     } else {
-        exist(/usr/bin/avconv) {
+        exists(/usr/bin/avconv) {
             ffmpegpath = /usr/bin/avconv
         }
     }
