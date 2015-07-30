@@ -203,11 +203,11 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
     if(!track->compressorName().empty()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Compressor name"), qstr(track->compressorName())));
     }
-    if(track->sampleRate()) {
-        if(track->extensionSampleRate()) {
-            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Samplerate"), QStringLiteral("%1 Hz / %2 Hz").arg(track->extensionSampleRate()).arg(track->sampleRate())));
+    if(track->samplingFrequency()) {
+        if(track->extensionSamplingFrequency()) {
+            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QStringLiteral("%1 Hz / %2 Hz").arg(track->extensionSamplingFrequency()).arg(track->samplingFrequency())));
         } else {
-            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Samplerate"), QStringLiteral("%1 Hz").arg(track->sampleRate())));
+            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QStringLiteral("%1 Hz").arg(track->samplingFrequency())));
         }
     }
     if(track->sampleCount()) {
@@ -231,7 +231,9 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
     if(!track->resolution().isNull()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Resolution"), qstr(track->resolution().toString())));
     }
-    if(track->channelCount()) {
+    if(track->channelConfigString()) {
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromLocal8Bit(track->channelConfigString())));
+    } else if(track->channelCount()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Channel count"), QString::number(track->channelCount())));
     }
     if(track->depth()) {
