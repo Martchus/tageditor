@@ -475,7 +475,7 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "text-align: right;"
                               "border-right: 1px solid #eee;"
                               "border-bottom: none;"
-                              "width: 15%;"
+                              "width: 25%;"
                               "}"
                               "table.headerhorizontal > thead > tr > th {"
                               "text-align: center;"
