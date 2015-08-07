@@ -21,6 +21,11 @@ class QSpinBox;
 class QPlainTextEdit;
 class QGraphicsScene;
 class QFileSystemModel;
+#ifdef TAGEDITOR_USE_WEBENGINE
+class QWebEngineView;
+#else
+class QWebView;
+#endif
 QT_END_NAMESPACE
 
 namespace Media {
@@ -107,6 +112,11 @@ private:
     QMenu *m_addTagMenu;
     QMenu *m_removeTagMenu;
     QMenu *m_changeTargetMenu;
+#ifdef TAGEDITOR_USE_WEBENGINE
+    QWebEngineView *m_infoWebView;
+#else
+    QWebView *m_infoWebView;
+#endif
     // models
     QFileSystemModel *m_fileModel;
     FileFilterProxyModel *m_fileFilterModel;

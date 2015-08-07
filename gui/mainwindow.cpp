@@ -40,9 +40,11 @@
 #include <QPlainTextEdit>
 #include <QMimeData>
 #include <QTextStream>
-#include <QWebFrame>
-#include <QWebPage>
-#include <QDebug>
+#ifdef TAGEDITOR_USE_WEBENGINE
+#include <QWebEngineView>
+#else
+#include <QWebView>
+#endif
 
 #include <list>
 #include <unordered_set>
@@ -90,7 +92,16 @@ MainWindow::MainWindow(QWidget *parent) :
     m_makingResultsAvailable(false),
     m_abortClicked(false)
 {
+    // setup UI
     m_ui->setupUi(this);
+#ifdef TAGEDITOR_USE_WEBENGINE
+    m_infoWebView = new QWebEngineView(m_ui->tagSplitter);
+#else
+    m_infoWebView = new QWebView(m_ui->tagSplitter);
+#endif
+    m_infoWebView->setObjectName(QStringLiteral("infoWebView"));
+    m_infoWebView->setAcceptDrops(false);
+    m_ui->tagSplitter->addWidget(m_infoWebView);
 #ifdef Q_OS_WIN32
     setStyleSheet(QStringLiteral("* { font: 9pt \"Segoe UI\"; } #fileNameLabel, #optionsLabel { font-size: 12pt; color: #003399; } #rightWidget, #rightWidget QSplitter::handle { background-color: white; }"));
 #else
@@ -493,7 +504,7 @@ void MainWindow::updateUiStatus()
     // visibility of m_ui->tagSelectionComboBox is set within updateTagEdits
     m_ui->stackedWidget->setEnabled(hasTag);
     // webview
-    m_ui->infoWebView->setEnabled(opened);
+    m_infoWebView->setEnabled(opened);
     // next button
     bool nextFileAvailable = false;
     if(opened) {
@@ -603,9 +614,9 @@ void MainWindow::updateInfoWebView()
 {
     if(m_fileInfo.isOpen()) {
         m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
-        m_ui->infoWebView->setHtml(m_fileInfoHtml);
+        m_infoWebView->setHtml(m_fileInfoHtml);
     } else {
-        m_ui->infoWebView->setUrl(QUrl("about:blank"));
+        m_infoWebView->setUrl(QStringLiteral("about:blank"));
     }
 }
 
@@ -615,7 +626,7 @@ void MainWindow::updateInfoWebView()
 void MainWindow::foreachTagEdit(const std::function<void (TagEdit *)> &function)
 {
     for(int i = 0, count = m_ui->stackedWidget->count(); i < count; ++i) {
-        if(TagEdit *edit = qobject_cast<TagEdit *>(m_ui->stackedWidget->widget(i))) {
+        if(auto *edit = qobject_cast<TagEdit *>(m_ui->stackedWidget->widget(i))) {
             function(edit);
         }
     }

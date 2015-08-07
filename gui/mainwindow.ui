@@ -110,11 +110,6 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QWebView" name="infoWebView">
-           <property name="acceptDrops">
-            <bool>false</bool>
-           </property>
-          </widget>
           <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="tagEditVerticalLayout">
             <item>
@@ -539,11 +534,6 @@ the file reverting all unsaved changings.</string>
   </action>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKitWidgets/QWebView</header>
-  </customwidget>
   <customwidget>
    <class>PathLineEdit</class>
    <extends>QLineEdit</extends>
