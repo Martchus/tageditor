@@ -101,6 +101,8 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
     m_infoWebView->setObjectName(QStringLiteral("infoWebView"));
     m_infoWebView->setAcceptDrops(false);
+    m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &MainWindow::showInfoWebViewContextMenu);
     m_ui->tagSplitter->addWidget(m_infoWebView);
 #ifdef Q_OS_WIN32
     setStyleSheet(QStringLiteral("* { font: 9pt \"Segoe UI\"; } #fileNameLabel, #optionsLabel { font-size: 12pt; color: #003399; } #rightWidget, #rightWidget QSplitter::handle { background-color: white; }"));
@@ -618,6 +620,27 @@ void MainWindow::updateInfoWebView()
     } else {
         m_infoWebView->setUrl(QStringLiteral("about:blank"));
     }
+}
+
+/*!
+ * \brief Shows the context menu for the info web view.
+ */
+void MainWindow::showInfoWebViewContextMenu(const QPoint &)
+{
+    QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
+    copyAction.setDisabled(m_infoWebView->selectedText().isEmpty());
+    connect(&copyAction, &QAction::triggered, this, &MainWindow::copyInfoWebViewSelection);
+    QMenu menu;
+    menu.addAction(&copyAction);
+    menu.exec(QCursor::pos());
+}
+
+/*!
+ * \brief Copies the current selection of the info web view.
+ */
+void MainWindow::copyInfoWebViewSelection()
+{
+    QApplication::clipboard()->setText(m_infoWebView->selectedText());
 }
 
 /*!

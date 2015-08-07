@@ -95,6 +95,8 @@ private slots:
     void showSettingsDlg();
     void showRenameFilesDlg();
     void updateInfoWebView();
+    void showInfoWebViewContextMenu(const QPoint &);
+    void copyInfoWebViewSelection();
 
 private:
     void updateTagEditsAndAttachmentEdits(bool updateUi = true, PreviousValueHandling previousValueHandling = PreviousValueHandling::Auto);
