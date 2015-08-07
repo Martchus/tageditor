@@ -67,8 +67,8 @@ QString tagValueToQString(const TagValue &value)
 QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encoding)
 {
     if(data && dataSize > 0) {
-        const char* codecName = textEncodingToCodecName(encoding);
-        QTextCodec* codec = QTextCodec::codecForName(codecName);
+        const char *codecName = textEncodingToCodecName(encoding);
+        auto *codec = QTextCodec::codecForName(codecName);
         if(!codec) {
             codec = QTextCodec::codecForLocale();
         }
@@ -80,8 +80,8 @@ QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encodin
 QString stringToQString(const string &value, TagTextEncoding textEncoding)
 {
     if(!value.empty()) {
-        const char* codecName = textEncodingToCodecName(textEncoding);
-        QTextCodec* codec = QTextCodec::codecForName(codecName);
+        const char *codecName = textEncodingToCodecName(textEncoding);
+        auto *codec = QTextCodec::codecForName(codecName);
         if(!codec) {
             codec = QTextCodec::codecForLocale();
         }
@@ -94,11 +94,11 @@ string qstringToString(const QString &value, TagTextEncoding textEncoding)
 {
     if(!value.isEmpty()) {
         const char *codecName = textEncodingToCodecName(textEncoding);
-        QTextCodec *codec = QTextCodec::codecForName(codecName);
+        auto *codec = QTextCodec::codecForName(codecName);
         if(!codec) {
             codec = QTextCodec::codecForLocale();
         }
-        QByteArray encodedString = codec->fromUnicode(value);
+        const auto encodedString = codec->fromUnicode(value);
         return string(encodedString.data(), encodedString.size());
     }
     return string();
@@ -106,11 +106,7 @@ string qstringToString(const QString &value, TagTextEncoding textEncoding)
 
 TagValue qstringToTagValue(const QString &value, TagTextEncoding textEncoding)
 {
-    TagValue res;
-    if(!value.isEmpty()) {
-        res = TagValue(qstringToString(value, textEncoding), textEncoding);
-    }
-    return res;
+    return value.isEmpty() ? TagValue() : TagValue(qstringToString(value, textEncoding), textEncoding);
 }
 
 int removeBackupFiles(const QDir &directory, QStringList &affectedFiles, ostream *log, bool recursive)
@@ -120,7 +116,7 @@ int removeBackupFiles(const QDir &directory, QStringList &affectedFiles, ostream
     int filesFound = 0;
     while(iterator.hasNext()) {
         path = iterator.next();
-        QFileInfo fileInfo = iterator.fileInfo();
+        const auto fileInfo = iterator.fileInfo();
         if(fileInfo.isFile()) {
             if(fileInfo.suffix() == QLatin1String("bak")) {
                 ++filesFound;
@@ -129,10 +125,8 @@ int removeBackupFiles(const QDir &directory, QStringList &affectedFiles, ostream
                     if(log) {
                         *log << "\"" << path.toStdString() << "\" has been removed." << endl;
                     }
-                } else {
-                    if(log) {
-                        *log << "Unable to remove \"" << path.toStdString() << "\"." << endl;
-                    }
+                } else if(log) {
+                    *log << "Unable to remove \"" << path.toStdString() << "\"." << endl;
                 }
             }
         }
@@ -155,7 +149,7 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
             res += ' ';
         } else if(whitespace) {
             if(i > 0) {
-                QStringRef rest = str.midRef(i);
+                auto rest = str.midRef(i);
                 static const char *const connectingWords[] = {"the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on "};
                 for(const char *word : connectingWords) {
                     if(rest.startsWith(QLatin1String(word), Qt::CaseInsensitive)) {
@@ -178,23 +172,28 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
 
 QString fixUmlauts(const QString &str)
 {
+    auto words = str.split(QChar(' '));
     static const QLatin1String exceptions[] = {
-        QLatin1String("reggae"), QLatin1String("blues"), QLatin1String("auer"), QLatin1String("manuel"), QLatin1String("duet")
+        QLatin1String("reggae"), QLatin1String("blues"), QLatin1String("auer"), QLatin1String("aues"), QLatin1String("manuel"), QLatin1String("duet")
     };
-    for(const QLatin1String &exception : exceptions) {
-        if(str.endsWith(exception, Qt::CaseInsensitive)) {
-            return str;
-        }
-    }
     static const QLatin1String pairs[6][2] = {
         {QLatin1String("ae"), QLatin1String("\xe4")}, {QLatin1String("ue"), QLatin1String("\xfc")}, {QLatin1String("oe"), QLatin1String("\xf6")},
         {QLatin1String("Ae"), QLatin1String("\xc4")}, {QLatin1String("Ue"), QLatin1String("\xdc")}, {QLatin1String("Oe"), QLatin1String("\xd6")}
     };
-    QString res = str;
-    for(const QLatin1String *pair : pairs) {
-        res = res.replace(pair[0], pair[1], Qt::CaseSensitive);
+    for(auto &word : words) {
+        // preserve words containing any of the exceptions
+        for(const auto &exception : exceptions) {
+            if(word.contains(exception, Qt::CaseInsensitive)) {
+                goto continueOuterLoop;
+            }
+        }
+        // fix all umlauts
+        for(const auto *pair : pairs) {
+            word = word.replace(pair[0], pair[1], Qt::CaseSensitive);
+        }
+        continueOuterLoop:;
     }
-    return res;
+    return words.join(' ');
 }
 
 void parseFileName(const QString &fileName, QString &title, int &trackNumber)
@@ -210,7 +209,7 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
     static const QLatin1String delims[] = {
         QLatin1String(" - "), QLatin1String(", "), QLatin1String("-"), QLatin1String(" ")
     };
-    for(const QLatin1String &delim : delims) {
+    for(const auto &delim : delims) {
         int lastDelimIndex = 0;
         int delimIndex = title.indexOf(delim);
         while(delimIndex > lastDelimIndex) {
@@ -218,7 +217,7 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
             trackNumber = title.midRef(lastDelimIndex, delimIndex - lastDelimIndex).toInt(&ok);
             if(ok) {
                 int titleStart = delimIndex + delim.size();
-                for(const QLatin1String &delim : delims) {
+                for(const auto &delim : delims) {
                     if(title.midRef(titleStart).startsWith(delim)) {
                         titleStart += delim.size();
                         break;
@@ -234,7 +233,7 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
 
 QString printModel(QAbstractItemModel *model)
 {
-    QModelIndex index = model->index(0, 0);
+    const auto index = model->index(0, 0);
     QString res;
     printModelIndex(index, res, 0);
     return res;
@@ -243,7 +242,7 @@ QString printModel(QAbstractItemModel *model)
 void printModelIndex(const QModelIndex &index, QString &res, int level)
 {
     if(index.isValid()) {
-        QString data = index.data().toString();
+        const auto data = index.data().toString();
         if(!data.isEmpty()) {
             switch(index.column()) {
             case 0:
@@ -257,9 +256,9 @@ void printModelIndex(const QModelIndex &index, QString &res, int level)
             }
             res += data;
         }
-        QModelIndex nextInCol = index.sibling(index.row(), index.column() + 1);
-        QModelIndex child = index.child(0, 0);
-        QModelIndex next = index.sibling(index.row() + 1, 0);
+        const auto nextInCol = index.sibling(index.row(), index.column() + 1);
+        const auto child = index.child(0, 0);
+        const auto next = index.sibling(index.row() + 1, 0);
         if(nextInCol.isValid()) {
             printModelIndex(nextInCol, res, level);
         } else {
