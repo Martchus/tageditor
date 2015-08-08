@@ -17,167 +17,161 @@
 <context>
     <name>HtmlInfo</name>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="375"/>
+        <location filename="../misc/htmlinfo.cpp" line="377"/>
         <source>&lt;li&gt;&lt;em&gt;%1&lt;/em&gt; @%2, size: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="541"/>
+        <location filename="../misc/htmlinfo.cpp" line="543"/>
         <source>hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="566"/>
+        <location filename="../misc/htmlinfo.cpp" line="568"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="183"/>
-        <location filename="../misc/htmlinfo.cpp" line="278"/>
-        <location filename="../misc/htmlinfo.cpp" line="567"/>
-        <location filename="../misc/htmlinfo.cpp" line="630"/>
+        <location filename="../misc/htmlinfo.cpp" line="280"/>
+        <location filename="../misc/htmlinfo.cpp" line="569"/>
+        <location filename="../misc/htmlinfo.cpp" line="632"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="186"/>
-        <location filename="../misc/htmlinfo.cpp" line="570"/>
+        <location filename="../misc/htmlinfo.cpp" line="572"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="571"/>
+        <location filename="../misc/htmlinfo.cpp" line="573"/>
         <source>Overall avg. bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="281"/>
-        <location filename="../misc/htmlinfo.cpp" line="575"/>
+        <location filename="../misc/htmlinfo.cpp" line="283"/>
+        <location filename="../misc/htmlinfo.cpp" line="577"/>
         <source>Mime-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="585"/>
-        <location filename="../misc/htmlinfo.cpp" line="620"/>
-        <location filename="../misc/htmlinfo.cpp" line="641"/>
-        <location filename="../misc/htmlinfo.cpp" line="654"/>
-        <location filename="../misc/htmlinfo.cpp" line="669"/>
-        <location filename="../misc/htmlinfo.cpp" line="681"/>
+        <location filename="../misc/htmlinfo.cpp" line="587"/>
+        <location filename="../misc/htmlinfo.cpp" line="622"/>
+        <location filename="../misc/htmlinfo.cpp" line="643"/>
+        <location filename="../misc/htmlinfo.cpp" line="656"/>
+        <location filename="../misc/htmlinfo.cpp" line="671"/>
+        <location filename="../misc/htmlinfo.cpp" line="683"/>
         <source>show details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="587"/>
+        <location filename="../misc/htmlinfo.cpp" line="589"/>
         <source>Container</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="594"/>
+        <location filename="../misc/htmlinfo.cpp" line="596"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="180"/>
-        <location filename="../misc/htmlinfo.cpp" line="597"/>
-        <location filename="../misc/htmlinfo.cpp" line="625"/>
+        <location filename="../misc/htmlinfo.cpp" line="599"/>
+        <location filename="../misc/htmlinfo.cpp" line="627"/>
         <source>Version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="208"/>
-        <location filename="../misc/htmlinfo.cpp" line="210"/>
-        <source>Samplerate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../misc/htmlinfo.cpp" line="235"/>
+        <location filename="../misc/htmlinfo.cpp" line="237"/>
         <source>Channel count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="270"/>
+        <location filename="../misc/htmlinfo.cpp" line="272"/>
         <source>Attachment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="284"/>
+        <location filename="../misc/htmlinfo.cpp" line="286"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="291"/>
         <location filename="../misc/htmlinfo.cpp" line="293"/>
+        <location filename="../misc/htmlinfo.cpp" line="295"/>
         <source>Chapter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="301"/>
+        <location filename="../misc/htmlinfo.cpp" line="303"/>
         <source>Name (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="304"/>
+        <location filename="../misc/htmlinfo.cpp" line="306"/>
         <source>Start time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="307"/>
+        <location filename="../misc/htmlinfo.cpp" line="309"/>
         <source>End time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="335"/>
+        <location filename="../misc/htmlinfo.cpp" line="337"/>
         <source>Edition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="352"/>
-        <location filename="../misc/htmlinfo.cpp" line="680"/>
+        <location filename="../misc/htmlinfo.cpp" line="354"/>
+        <location filename="../misc/htmlinfo.cpp" line="682"/>
         <source>Chapters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="386"/>
+        <location filename="../misc/htmlinfo.cpp" line="388"/>
         <source>section has not been analyzed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="407"/>
+        <location filename="../misc/htmlinfo.cpp" line="409"/>
         <source>Notifications (reparsing)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="600"/>
+        <location filename="../misc/htmlinfo.cpp" line="602"/>
         <source>Read version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="603"/>
+        <location filename="../misc/htmlinfo.cpp" line="605"/>
         <source>Document type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="606"/>
+        <location filename="../misc/htmlinfo.cpp" line="608"/>
         <source>Document version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="609"/>
+        <location filename="../misc/htmlinfo.cpp" line="611"/>
         <source>Document read version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="613"/>
+        <location filename="../misc/htmlinfo.cpp" line="615"/>
         <source>Padding size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="620"/>
+        <location filename="../misc/htmlinfo.cpp" line="622"/>
         <source>Tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../misc/htmlinfo.cpp" line="620"/>
+        <location filename="../misc/htmlinfo.cpp" line="622"/>
         <source>%1 tag(s) assigned, </source>
         <translation>
             <numerusform>%1 tag assigned, </numerusform>
@@ -185,23 +179,23 @@
         </translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="628"/>
+        <location filename="../misc/htmlinfo.cpp" line="630"/>
         <source>Target level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="631"/>
+        <location filename="../misc/htmlinfo.cpp" line="633"/>
         <source>Field count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="691"/>
+        <location filename="../misc/htmlinfo.cpp" line="693"/>
         <source>&lt;a href=&quot;javascript: expandAll(&apos;structure&apos;);&quot;&gt;expand all&lt;/a&gt;, &lt;a href=&quot;javascript: collapseAll(&apos;structure&apos;);&quot;&gt;collapse all&lt;/a&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="324"/>
-        <location filename="../misc/htmlinfo.cpp" line="640"/>
+        <location filename="../misc/htmlinfo.cpp" line="326"/>
+        <location filename="../misc/htmlinfo.cpp" line="642"/>
         <source>Tracks</source>
         <translation type="unfinished"></translation>
     </message>
@@ -212,9 +206,9 @@
     </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="162"/>
-        <location filename="../misc/htmlinfo.cpp" line="272"/>
-        <location filename="../misc/htmlinfo.cpp" line="296"/>
-        <location filename="../misc/htmlinfo.cpp" line="337"/>
+        <location filename="../misc/htmlinfo.cpp" line="274"/>
+        <location filename="../misc/htmlinfo.cpp" line="298"/>
+        <location filename="../misc/htmlinfo.cpp" line="339"/>
         <source>ID</source>
         <translation type="unfinished"></translation>
     </message>
@@ -235,7 +229,7 @@
     </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="168"/>
-        <location filename="../misc/htmlinfo.cpp" line="275"/>
+        <location filename="../misc/htmlinfo.cpp" line="277"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -305,6 +299,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../misc/htmlinfo.cpp" line="208"/>
+        <location filename="../misc/htmlinfo.cpp" line="210"/>
+        <source>Sampling frequency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../misc/htmlinfo.cpp" line="214"/>
         <source>Sample count</source>
         <translation type="unfinished"></translation>
@@ -340,24 +340,34 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="238"/>
+        <location filename="../misc/htmlinfo.cpp" line="235"/>
+        <source>Channel config</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../misc/htmlinfo.cpp" line="235"/>
+        <source>Channel configuration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../misc/htmlinfo.cpp" line="240"/>
         <source>Bit depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="241"/>
+        <location filename="../misc/htmlinfo.cpp" line="243"/>
         <source>Frames per second</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="263"/>
-        <location filename="../misc/htmlinfo.cpp" line="317"/>
-        <location filename="../misc/htmlinfo.cpp" line="350"/>
+        <location filename="../misc/htmlinfo.cpp" line="265"/>
+        <location filename="../misc/htmlinfo.cpp" line="319"/>
+        <location filename="../misc/htmlinfo.cpp" line="352"/>
         <source>Labeled as</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../misc/htmlinfo.cpp" line="640"/>
+        <location filename="../misc/htmlinfo.cpp" line="642"/>
         <source>file contains %1 track(s), </source>
         <translation>
             <numerusform>file contains %1 track</numerusform>
@@ -365,12 +375,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="653"/>
+        <location filename="../misc/htmlinfo.cpp" line="655"/>
         <source>Attachments</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../misc/htmlinfo.cpp" line="653"/>
+        <location filename="../misc/htmlinfo.cpp" line="655"/>
         <source>file contains %1 attachment(s), </source>
         <translation>
             <numerusform>file contains %1 attachment</numerusform>
@@ -378,12 +388,12 @@
         </translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="668"/>
+        <location filename="../misc/htmlinfo.cpp" line="670"/>
         <source>Editions/chapters</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../misc/htmlinfo.cpp" line="668"/>
+        <location filename="../misc/htmlinfo.cpp" line="670"/>
         <source>file contains %1 edition(s), </source>
         <translation>
             <numerusform>file contains %1 edition</numerusform>
@@ -391,7 +401,7 @@
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../misc/htmlinfo.cpp" line="680"/>
+        <location filename="../misc/htmlinfo.cpp" line="682"/>
         <source>file contains %1 chapter(s), </source>
         <translation>
             <numerusform>file contains %1 chapter</numerusform>
@@ -399,17 +409,17 @@
         </translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="691"/>
+        <location filename="../misc/htmlinfo.cpp" line="693"/>
         <source>Structure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="407"/>
+        <location filename="../misc/htmlinfo.cpp" line="409"/>
         <source>Notifications</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../misc/htmlinfo.cpp" line="408"/>
+        <location filename="../misc/htmlinfo.cpp" line="410"/>
         <source>%1 notification(s) available</source>
         <translation>
             <numerusform>%1 notification available</numerusform>
@@ -417,22 +427,22 @@
         </translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="409"/>
+        <location filename="../misc/htmlinfo.cpp" line="411"/>
         <source>show notifications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="412"/>
+        <location filename="../misc/htmlinfo.cpp" line="414"/>
         <source>Context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="412"/>
+        <location filename="../misc/htmlinfo.cpp" line="414"/>
         <source>Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="412"/>
+        <location filename="../misc/htmlinfo.cpp" line="414"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
@@ -965,168 +975,168 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="142"/>
+        <location filename="../gui/mainwindow.ui" line="137"/>
         <source>Keep previous values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="173"/>
+        <location filename="../gui/mainwindow.ui" line="168"/>
         <source>Restore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="194"/>
+        <location filename="../gui/mainwindow.ui" line="189"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="242"/>
-        <location filename="../gui/mainwindow.cpp" line="1026"/>
+        <location filename="../gui/mainwindow.ui" line="237"/>
+        <location filename="../gui/mainwindow.cpp" line="1105"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="274"/>
+        <location filename="../gui/mainwindow.ui" line="269"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="284"/>
+        <location filename="../gui/mainwindow.ui" line="279"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="287"/>
+        <location filename="../gui/mainwindow.ui" line="282"/>
         <source>all tags from the file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="294"/>
+        <location filename="../gui/mainwindow.ui" line="289"/>
         <source>Open next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="297"/>
+        <location filename="../gui/mainwindow.ui" line="292"/>
         <source>and save current before</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="304"/>
+        <location filename="../gui/mainwindow.ui" line="299"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="332"/>
+        <location filename="../gui/mainwindow.ui" line="327"/>
         <source>Fi&amp;le</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="344"/>
+        <location filename="../gui/mainwindow.ui" line="339"/>
         <source>Di&amp;rectory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="358"/>
+        <location filename="../gui/mainwindow.ui" line="353"/>
         <source>A&amp;pplication</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="380"/>
+        <location filename="../gui/mainwindow.ui" line="375"/>
         <source>Save &amp;entered tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="396"/>
+        <location filename="../gui/mainwindow.ui" line="391"/>
         <source>&amp;Delete all tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="409"/>
+        <location filename="../gui/mainwindow.ui" line="404"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="422"/>
+        <location filename="../gui/mainwindow.ui" line="417"/>
         <source>&amp;Select next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="430"/>
+        <location filename="../gui/mainwindow.ui" line="425"/>
         <source>&amp;Rename files using tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="443"/>
+        <location filename="../gui/mainwindow.ui" line="438"/>
         <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="459"/>
+        <location filename="../gui/mainwindow.ui" line="454"/>
         <source>&amp;Save file information as HTML document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="469"/>
+        <location filename="../gui/mainwindow.ui" line="464"/>
         <source>Select &amp;next file and save current</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="482"/>
+        <location filename="../gui/mainwindow.ui" line="477"/>
         <source>&amp;About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="492"/>
+        <location filename="../gui/mainwindow.ui" line="487"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="502"/>
+        <location filename="../gui/mainwindow.ui" line="497"/>
         <source>&amp;Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="352"/>
+        <location filename="../gui/mainwindow.ui" line="347"/>
         <source>?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="383"/>
+        <location filename="../gui/mainwindow.ui" line="378"/>
         <source>Ctrl+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="446"/>
+        <location filename="../gui/mainwindow.ui" line="441"/>
         <source>Ctrl+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="505"/>
+        <location filename="../gui/mainwindow.ui" line="500"/>
         <source>F8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="513"/>
+        <location filename="../gui/mainwindow.ui" line="508"/>
         <source>No, disable this feature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="521"/>
+        <location filename="../gui/mainwindow.ui" line="516"/>
         <source>Yes, but only if both files are in the same directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="529"/>
+        <location filename="../gui/mainwindow.ui" line="524"/>
         <source>Yes, regardless where the files are stored</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="412"/>
+        <location filename="../gui/mainwindow.ui" line="407"/>
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="135"/>
+        <location filename="../gui/mainwindow.ui" line="130"/>
         <source>Let you choose whether the values of the
 previously opened file should be cleared when
 opening the next file.
@@ -1135,7 +1145,7 @@ tagging multiple files of the same album.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="155"/>
+        <location filename="../gui/mainwindow.ui" line="150"/>
         <source>Let you enable or disable the automatic
 creation or removal of tags (according to
 the settings) when loading a file.
@@ -1144,53 +1154,53 @@ You can also create or remove tags manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="162"/>
+        <location filename="../gui/mainwindow.ui" line="157"/>
         <source>Tag management</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="169"/>
+        <location filename="../gui/mainwindow.ui" line="164"/>
         <source>Restores the original values read from
 the file reverting all unsaved changings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="191"/>
+        <location filename="../gui/mainwindow.ui" line="186"/>
         <source>Clears all values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="239"/>
+        <location filename="../gui/mainwindow.ui" line="234"/>
         <source>Aborts the saving process. The tageditor will try to restore the original file from the backup.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="277"/>
+        <location filename="../gui/mainwindow.ui" line="272"/>
         <source>all entered values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="307"/>
+        <location filename="../gui/mainwindow.ui" line="302"/>
         <source>the file and discard changings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="425"/>
+        <location filename="../gui/mainwindow.ui" line="420"/>
         <source>F6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="433"/>
+        <location filename="../gui/mainwindow.ui" line="428"/>
         <source>F2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="472"/>
+        <location filename="../gui/mainwindow.ui" line="467"/>
         <source>F5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="537"/>
+        <location filename="../gui/mainwindow.ui" line="532"/>
         <source>Manage tags automatically when loading file</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1201,167 +1211,177 @@ the file reverting all unsaved changings.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="281"/>
+        <location filename="../gui/mainwindow.cpp" line="304"/>
         <source>Unable to save the selected file and load the next file after saving because the current process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="302"/>
+        <location filename="../gui/mainwindow.cpp" line="325"/>
         <source>Unable to find the next file. The chanings of the currently opened file will be saved regardless.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="628"/>
+        <location filename="../gui/mainwindow.cpp" line="672"/>
         <source>Unable to load the selected file &quot;%1&quot; because the current process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="668"/>
+        <location filename="../gui/mainwindow.cpp" line="746"/>
         <source>The file could not be opened because an IO error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="682"/>
+        <location filename="../gui/mainwindow.cpp" line="762"/>
         <source>File could be parsed correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="685"/>
+        <location filename="../gui/mainwindow.cpp" line="766"/>
         <source>File couldn&apos;t be parsed correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="690"/>
+        <location filename="../gui/mainwindow.cpp" line="771"/>
         <source>There are critical parsing notifications.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="694"/>
+        <location filename="../gui/mainwindow.cpp" line="775"/>
         <source>There are warnings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="704"/>
+        <location filename="../gui/mainwindow.cpp" line="785"/>
         <source>There is no (supported) tag assigned.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="707"/>
+        <location filename="../gui/mainwindow.cpp" line="788"/>
         <source>File format is not supported (an ID3 tag can be added anyways).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="728"/>
+        <location filename="../gui/mainwindow.cpp" line="809"/>
         <source>The file %1 has been opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="740"/>
+        <location filename="../gui/mainwindow.cpp" line="822"/>
         <source>Unable to apply the entered tags to the file because the current process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="753"/>
+        <location filename="../gui/mainwindow.cpp" line="835"/>
         <source>Saving tags ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="759"/>
+        <location filename="../gui/mainwindow.cpp" line="841"/>
         <source>No file has been opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="784"/>
+        <location filename="../gui/mainwindow.cpp" line="866"/>
         <source>Do you really want to delete all tags from the file?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="790"/>
+        <location filename="../gui/mainwindow.cpp" line="872"/>
         <source>don&apos;t show this message again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="776"/>
+        <location filename="../gui/mainwindow.cpp" line="858"/>
         <source>Unable to delete all tags from the file because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="122"/>
+        <location filename="../gui/mainwindow.cpp" line="145"/>
         <source>Add tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="125"/>
+        <location filename="../gui/mainwindow.cpp" line="148"/>
         <source>Remove tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="128"/>
+        <location filename="../gui/mainwindow.cpp" line="151"/>
         <source>Change target</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="441"/>
+        <location filename="../gui/mainwindow.cpp" line="464"/>
         <source>Attachments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="516"/>
+        <location filename="../gui/mainwindow.cpp" line="539"/>
         <source>Matroska tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="532"/>
+        <location filename="../gui/mainwindow.cpp" line="555"/>
         <source>MP4/iTunes tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="535"/>
+        <location filename="../gui/mainwindow.cpp" line="558"/>
         <source>Vorbis comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="538"/>
+        <location filename="../gui/mainwindow.cpp" line="561"/>
         <source>Tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="548"/>
+        <location filename="../gui/mainwindow.cpp" line="571"/>
         <source>ID3v1 tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="553"/>
+        <location filename="../gui/mainwindow.cpp" line="576"/>
         <source>ID3v2 tag</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="813"/>
+        <location filename="../gui/mainwindow.cpp" line="630"/>
+        <source>Copy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="726"/>
+        <source>The file is beeing parsed ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="895"/>
         <source>Deleting all tags ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="817"/>
+        <location filename="../gui/mainwindow.cpp" line="899"/>
         <source>The selected file stores no tag (at least no supported), so there is nothing to delete.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="821"/>
+        <location filename="../gui/mainwindow.cpp" line="903"/>
         <source>No file has been opened, so no tags can be deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="840"/>
+        <location filename="../gui/mainwindow.cpp" line="922"/>
         <source>Unable to start saving process because there an other process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="856"/>
+        <location filename="../gui/mainwindow.cpp" line="938"/>
         <source>Cancelling ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/mainwindow.cpp" line="923"/>
+        <location filename="../gui/mainwindow.cpp" line="1002"/>
         <source>The tags have been saved, but there is/are %1 warning(s) </source>
         <translation>
             <numerusform>The tags have been saved, but there is %1 warning</numerusform>
@@ -1369,7 +1389,7 @@ the file reverting all unsaved changings.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/mainwindow.cpp" line="924"/>
+        <location filename="../gui/mainwindow.cpp" line="1003"/>
         <source>and %1 error(s).</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1377,52 +1397,52 @@ the file reverting all unsaved changings.</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="977"/>
+        <location filename="../gui/mainwindow.cpp" line="1056"/>
         <source>A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1022"/>
+        <location filename="../gui/mainwindow.cpp" line="1101"/>
         <source>Automatic tag management</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1211"/>
+        <location filename="../gui/mainwindow.cpp" line="1290"/>
         <source>A tag (with the selected target) already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1215"/>
+        <location filename="../gui/mainwindow.cpp" line="1294"/>
         <source>The tag can not be created.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1228"/>
+        <location filename="../gui/mainwindow.cpp" line="1307"/>
         <source>Unable to remove the tag because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1233"/>
+        <location filename="../gui/mainwindow.cpp" line="1312"/>
         <source>Unable to remove the tag because no file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1286"/>
+        <location filename="../gui/mainwindow.cpp" line="1365"/>
         <source>Unable to change the target because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1291"/>
+        <location filename="../gui/mainwindow.cpp" line="1370"/>
         <source>Unable to change the target because no file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1304"/>
+        <location filename="../gui/mainwindow.cpp" line="1383"/>
         <source>Can not change the target of the selected tag because the tag does not support targets.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/mainwindow.cpp" line="926"/>
+        <location filename="../gui/mainwindow.cpp" line="1005"/>
         <source>The tags have been saved, but there is/are %1 warning(s).</source>
         <translation>
             <numerusform>The tags have been saved, but there is %1 warning.</numerusform>
@@ -1430,43 +1450,43 @@ the file reverting all unsaved changings.</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="931"/>
+        <location filename="../gui/mainwindow.cpp" line="1010"/>
         <source>The tags have been saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="952"/>
+        <location filename="../gui/mainwindow.cpp" line="1031"/>
         <source>Unable to show the next file because it can&apos;t be found anymore.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="961"/>
+        <location filename="../gui/mainwindow.cpp" line="1040"/>
         <source>The tags couldn&apos;t be saved. See the file info box for detail.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1023"/>
+        <location filename="../gui/mainwindow.cpp" line="1102"/>
         <source>The container format of the selected file is not supported. The file can be treated as MP3 file (an ID3 tag according to the settings will be created). This might break the file. Do you want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1025"/>
+        <location filename="../gui/mainwindow.cpp" line="1104"/>
         <source>Treat file as MP3 file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1121"/>
+        <location filename="../gui/mainwindow.cpp" line="1200"/>
         <source>Unable to write to file.
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1124"/>
+        <location filename="../gui/mainwindow.cpp" line="1203"/>
         <source>Unable to open file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="1128"/>
+        <location filename="../gui/mainwindow.cpp" line="1207"/>
         <source>No file information available.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3279,7 +3299,7 @@ Error in line %1 and column %2:
         <translation></translation>
     </message>
     <message>
-        <location filename="../application/knownfieldmodel.cpp" line="107"/>
+        <location filename="../application/knownfieldmodel.cpp" line="108"/>
         <source>Field</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3416,6 +3436,11 @@ Error in line %1 and column %2:
     <message>
         <location filename="../application/knownfieldmodel.cpp" line="44"/>
         <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="45"/>
+        <source>Vendor</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
