@@ -155,6 +155,11 @@ QString mkSection()
     return QStringLiteral("</tbody><tbody>");
 }
 
+QString mkSection(const QString &id)
+{
+    return QStringLiteral("</tbody><tbody id=\"%1\">").arg(id);
+}
+
 void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumber)
 {
     res.append(QStringLiteral("<tr><th>%1 #%2</th><td><table class=\"headervertical\"><tbody>").arg(QCoreApplication::translate("HtmlInfo", "Track"), QString::number(trackNumber)));
@@ -372,13 +377,13 @@ template<class ElementType> void mkElementNode(QByteArray &res, const ElementTyp
         if(element->isParsed()) {
             res.append(QStringLiteral("<li>"));
             if(element->firstChild()) {
-                res.append(QStringLiteral("<a href=\"javascript: void(0)\" onclick=\"expandCollapse(this.parentElement);\">"));
+                res.append(QStringLiteral("<span class=\"parent-node\" onclick=\"expandCollapse(this.parentElement);\">"));
             }
-            res.append(QCoreApplication::translate("HtmlInfo", "<li><em>%1</em> @%2, size: %3").arg(
-                           QString::fromLatin1(element->idToString().c_str()), QString::number(element->startOffset()),
-                           QString::number(element->totalSize())));
+            res.append(QCoreApplication::translate("HtmlInfo", "<em>%1</em> @<span data-role=\"offset\" data-dec=\"%2\" data-hex=\"0x%3\">%2</span>, size: <span data-role=\"offset\" data-dec=\"%4\" data-hex=\"0x%5\">%4</span>").arg(
+                           QString::fromLatin1(element->idToString().c_str()), QString::number(element->startOffset()), QString::number(element->startOffset(), 16),
+                           QString::number(element->totalSize()), QString::number(element->totalSize(), 16)));
             if(element->firstChild()) {
-                res.append(QStringLiteral("</a>"));
+                res.append(QStringLiteral("</span>"));
                 mkElementNode(res, element->firstChild());
             }
             res.append(QStringLiteral("</li>"));
@@ -512,6 +517,12 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "}"
                               ".has-helptext {"
                               "cursor: help;"
+                              "}"
+                              "#structure_links a {"
+                              "margin-right: 5px;"
+                              "}"
+                              "#structure .parent-node {"
+                              "color: #337AB7;"
                               "}"));
 #ifdef GUI_QTWIDGETS
     if(ApplicationInstances::hasWidgetsApp()) {
@@ -532,8 +543,8 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "<script type=\"text/javascript\">"
                               "function toggleVisibility(link, objid) {"
                               "var obj = document.getElementById(objid);"
-                              "if(obj.style.display == \"none\" || (obj.style.display == \"\" && obj.className == \"more\")) {"
-                              "if(obj.nodeName == \"TBODY\") {"
+                              "if(obj.style.display === \"none\" || (obj.style.display === \"\" && obj.className === \"more\")) {"
+                              "if(obj.nodeName === \"TBODY\") {"
                               "obj.style.display = \"table-row-group\";"
                               "} else {"
                               "obj.style.display = \"block\";"
@@ -548,8 +559,8 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "}}"
                               "function expandCollapse(parent) {"
                               "for(var children = parent.children, i = 0, c = children.length; i < c; ++i) {"
-                              "if(children[i].tagName == 'UL') {"
-                              "children[i].className = children[i].className == 'nodeexpanded' ? 'nodecollapsed' : 'nodeexpanded';"
+                              "if(children[i].tagName === 'UL') {"
+                              "children[i].className = children[i].className === 'nodeexpanded' ? 'nodecollapsed' : 'nodeexpanded';"
                               "}}}"
                               "function expandAll(objid) {"
                               "var children = document.getElementById(objid).getElementsByTagName('ul');"
@@ -559,8 +570,18 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "function collapseAll(objid) {"
                               "var children = document.getElementById(objid).getElementsByTagName('ul');"
                               "for(var i = 0; i < children.length; ++i) {"
-                              "if(children[i].parentNode.tagName == 'LI') {"
+                              "if(children[i].parentNode.tagName === 'LI') {"
                               "children[i].className = 'nodecollapsed';"
+                              "}}}"
+                              "var baseHex = false;"
+                              "function switchBase(objid) {"
+                              "baseHex = !baseHex;"
+                              "document.getElementById('toggle_hex_link').firstChild.data = baseHex ? 'decimal' : 'hex';"
+                              "var elements = document.getElementById(objid).getElementsByTagName('span');"
+                              "for(var i = 0; i < elements.length; ++i) {"
+                              "var element = elements[i];"
+                              "if(element.getAttribute('data-role') === 'offset') {"
+                              "element.firstChild.data = element.getAttribute(baseHex ? 'data-hex' : 'data-dec');"
                               "}}}"
                               "</script></head>"
                               "<body><table class=\"headervertical\"><tbody id=\"general\">"));
@@ -690,7 +711,9 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
     // structure
     if(file.containerFormat() == ContainerFormat::Mp4 || file.containerFormat() == ContainerFormat::Matroska) {
         res.append(mkSection());
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Structure"), QCoreApplication::translate("HtmlInfo", "<a href=\"javascript: expandAll('structure');\">expand all</a>, <a href=\"javascript: collapseAll('structure');\">collapse all</a>")));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Structure"),
+                         QCoreApplication::translate("HtmlInfo", "<span id=\"structure_links\"><a href=\"javascript: expandAll('structure');\">expand all</a> <a href=\"javascript: collapseAll('structure');\">collapse all</a> "
+                                                                 "<a id=\"toggle_hex_link\" href=\"javascript: switchBase('structure');\">hex</a></span>")));
         res.append(QStringLiteral("</tbody><tbody id=\"structure\"><tr><th></th><td>"));
         switch(file.containerFormat()) {
         case ContainerFormat::Mp4:
