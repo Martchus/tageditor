@@ -5,6 +5,9 @@
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
+#include <tagparser/abstracttrack.h>
+#include <tagparser/abstractattachment.h>
+#include <tagparser/abstractchapter.h>
 
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/argumentparser.h>
@@ -386,6 +389,131 @@ void generateFileInfo(const StringVector &parameterValues, const Argument &input
     }
 }
 
+void printProperty(const char *propName, const char *value, const char *suffix = nullptr, size_t intention = 4)
+{
+    if(*value) {
+        for(; intention; --intention) {
+            cout << ' ';
+        }
+        cout << propName;
+        for(intention = strlen(propName); intention < 20; ++intention) {
+            cout << ' ';
+        }
+        cout << value;
+        if(suffix) {
+            cout << ' ' << suffix;
+        }
+        cout << endl;
+    }
+}
+
+void printProperty(const char *propName, const string &value, const char *suffix = nullptr, size_t intention = 4)
+{
+    printProperty(propName, value.data(), suffix, intention);
+}
+
+template<typename intType>
+void printProperty(const char *propName, const intType value, const char *suffix = nullptr, bool force = false, size_t intention = 4)
+{
+    if(value != 0 || force) {
+        printProperty(propName, numberToString<intType>(value), suffix, intention);
+    }
+}
+
+void displayFileInfo(const StringVector &, const Argument &filesArg)
+{
+    if(!filesArg.valueCount()) {
+        cout << "Error: No files have been specified." << endl;
+        return;
+    }
+    MediaFileInfo fileInfo;
+    for(const auto &file : filesArg.values()) {
+        try {
+            // parse tags
+            fileInfo.setPath(file);
+            fileInfo.open(true);
+            fileInfo.parseTracks();
+            fileInfo.parseAttachments();
+            fileInfo.parseChapters();
+            cout << "Technical information for \"" << file << "\":" << endl;
+            cout << "  Container format: " << fileInfo.containerFormatName() << endl;
+            { // tracks
+                const auto tracks = fileInfo.tracks();
+                if(!tracks.empty()) {
+                    cout << "  Tracks:" << endl;
+                    for(const auto *track : tracks) {
+                        printProperty("ID", track->id(), nullptr, true);
+                        printProperty("Name", track->name());
+                        printProperty("Type", track->mediaTypeName());
+                        printProperty("Format", track->formatName());
+                        printProperty("Raw format ID", track->formatId());
+                        if(track->size()) {
+                            printProperty("Size", dataSizeToString(track->size(), true));
+                        }
+                        if(!track->duration().isNull()) {
+                            printProperty("Duration", track->duration().toString(TimeSpanOutputFormat::WithMeasures));
+                        }
+                        printProperty("FPS", track->fps());
+                        if(track->channelConfigString()) {
+                            printProperty("Channel config", track->channelConfigString());
+                        } else {
+                            printProperty("Channel count", track->channelCount());
+                        }
+                        printProperty("Bitrate", track->bitrate(), "kbit/s");
+                        printProperty("Bits per sample", track->bitsPerSample());
+                        printProperty("Sampling frequency", track->samplingFrequency());
+                        printProperty("Extension sampling frequency", track->extensionSamplingFrequency(), "Hz");
+                        printProperty("Sample count", track->sampleCount());
+                        cout << endl;
+                    }
+                } else {
+                    cout << " File has no (supported) tracks." << endl;
+                }
+            }
+            { // attachments
+                const auto attachments = fileInfo.attachments();
+                if(!attachments.empty()) {
+                    for(const auto *attachment : attachments) {
+                        printProperty("ID", attachment->id());
+                        printProperty("Name", attachment->name());
+                        printProperty("MIME-type", attachment->mimeType());
+                        printProperty("Label", attachment->label());
+                        printProperty("Description", attachment->description());
+                        if(attachment->data()) {
+                            printProperty("Size", dataSizeToString(attachment->data()->size(), true));
+                        }
+                        cout << endl;
+                    }
+                }
+            }
+            { // chapters
+                const auto chapters = fileInfo.chapters();
+                if(!chapters.empty()) {
+                    for(const AbstractChapter *chapter : chapters) {
+                        printProperty("ID", chapter->id());
+                        if(!chapter->names().empty()) {
+                            printProperty("Name", static_cast<string>(chapter->names().front()));
+                        }
+                        if(!chapter->startTime().isNull()) {
+                            printProperty("Start time", chapter->startTime().toString());
+                        }
+                        if(!chapter->endTime().isNull()) {
+                            printProperty("End time", chapter->endTime().toString());
+                        }
+                        cout << endl;
+                    }
+                }
+            }
+        } catch(ios_base::failure &) {
+            cout << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
+        } catch(ApplicationUtilities::Failure &) {
+            cout << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+        }
+        printNotifications(fileInfo, "Parsing notifications:");
+        cout << endl;
+    }
+}
+
 void displayTagInfo(const StringVector &parameterValues, const Argument &filesArg)
 {
     if(!filesArg.valueCount()) {
@@ -402,7 +530,7 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
             fileInfo.open(true);
             fileInfo.parseTags();
             cout << "Tag information for \"" << file << "\":" << endl;
-            auto tags = fileInfo.tags();
+            const auto tags = fileInfo.tags();
             if(tags.size()) {
                 // iterate through all tags
                 for(const auto *tag : tags) {
@@ -458,6 +586,7 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
             cout << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
         }
         printNotifications(fileInfo, "Parsing notifications:");
+        cout << endl;
     }
 }
 

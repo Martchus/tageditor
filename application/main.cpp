@@ -50,6 +50,11 @@ int main(int argc, char *argv[])
     // print field names
     Argument printFieldNamesArg("print-field-names", string(), "prints available fields names");
     printFieldNamesArg.setCallback(Cli::printFieldNames);
+    // display general file info
+    Argument displayFileInfoArg("display-file-info", "file-info", "displays general file information");
+    displayFileInfoArg.setDenotesOperation(true);
+    displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg)));
+    displayFileInfoArg.setSecondaryArguments({&filesArg});
     // display tag info
     Argument displayTagInfoArg("display-tag-info", "get", "displays the values of all specified tag fields (displays all fields if none specified)");
     displayTagInfoArg.setDenotesOperation(true);
@@ -108,7 +113,7 @@ int main(int argc, char *argv[])
     remBackupFilesArg.setValueNames({"directory"});
     remBackupFilesArg.setRequiredValueCount(1);
     remBackupFilesArg.setSecondaryArguments({&recursiveArg});
-    parser.setMainArguments({&printFieldNamesArg, &displayTagInfoArg, &setTagInfoArg, &extractFieldArg, &genInfoArg, &remBackupFilesArg, &qtConfigArgs.qtWidgetsGuiArg(), &helpArg});
+    parser.setMainArguments({&printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArg, &extractFieldArg, &genInfoArg, &remBackupFilesArg, &qtConfigArgs.qtWidgetsGuiArg(), &helpArg});
     // parse given arguments
     try {
         parser.parseArgs(argc, argv);
