@@ -33,6 +33,7 @@ you can checkout a preview with the generated file names.
 Usage:
 ```
 tageditor <operation> [options]
+```
 
 Checkout the available operations and options with --help.
 Here are Bash examples which illustrate getting and setting tag information:
