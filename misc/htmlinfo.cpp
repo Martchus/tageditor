@@ -185,7 +185,7 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QString::number(track->version())));
     }
     if(track->size()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(track->size()))));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(track->size(), true))));
     }
     if(!track->duration().isNull()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(track->duration().toString(TimeSpanOutputFormat::WithMeasures))));
@@ -282,7 +282,7 @@ void mkAttachment(QByteArray &res, const AbstractAttachment *attachment, unsigne
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(attachment->name())));
     }
     if(attachment->data()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(attachment->data()->size()))));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(attachment->data()->size(), true))));
     }
     if(!attachment->mimeType().empty()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Mime-type"), qstr(attachment->mimeType())));
@@ -587,7 +587,7 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "<body><table class=\"headervertical\"><tbody id=\"general\">"));
     // general information
     res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Path"), qstr(file.path())));
-    res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(file.size()))));
+    res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(file.size(), true))));
     TimeSpan duration = file.duration();
     if(!duration.isNull()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(duration.toString(TimeSpanOutputFormat::WithMeasures))));
@@ -633,7 +633,7 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
         }
     }
     if(file.paddingSize()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"), QStringLiteral("%1 (%2 %)").arg(qstr(dataSizeToString(file.paddingSize()))).arg(static_cast<double>(file.paddingSize()) / file.size() * 100.0, 0, 'g', 2)));
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"), QStringLiteral("%1 (%2 %)").arg(qstr(dataSizeToString(file.paddingSize(), true))).arg(static_cast<double>(file.paddingSize()) / file.size() * 100.0, 0, 'g', 2)));
     }
     // tags
     vector<Tag *> tags = file.tags();
@@ -650,7 +650,7 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
             if(tag->supportsTarget() && !tag->target().isEmpty()) {
                 res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Target level"), qstr(tag->target().toString())));
             }
-            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(tag->size()))));
+            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(tag->size(), true))));
             res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Field count"), QString::number(tag->fieldCount())));
             res.append(QStringLiteral("</tbody></table></td></tr>"));
         }
