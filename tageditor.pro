@@ -13,8 +13,16 @@ VERSION = 1.1.5
 
 TEMPLATE = app
 
-QT += core gui script webkitwidgets
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui script
+greaterThan(QT_MAJOR_VERSION, 4) {
+    QT += widgets
+}
+!forcewebkit:qtHaveModule(webenginewidgets) {
+    QT += webenginewidgets
+    DEFINES += TAGEDITOR_USE_WEBENGINE
+} else {
+    QT += webkitwidgets
+}
 
 SOURCES += application/main.cpp \
     application/knownfieldmodel.cpp \
