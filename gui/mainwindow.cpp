@@ -726,6 +726,7 @@ bool MainWindow::startParsing(const QString &path, bool forceRefresh)
     static const QString statusMsg(tr("The file is beeing parsed ..."));
     m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Progress);
     m_ui->parsingNotificationWidget->setText(statusMsg);
+    m_ui->parsingNotificationWidget->setVisible(true); // ensure widget is visible!
     m_ui->statusBar->showMessage(statusMsg);
     return true;
 }
