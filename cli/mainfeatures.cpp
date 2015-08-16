@@ -661,7 +661,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                                             MediaFileInfo fileInfo(selectedDenotatedValue->second.toLocal8Bit().constData());
                                             fileInfo.open(true);
                                             fileInfo.parseContainerFormat();
-                                            unique_ptr<char[]> buff = make_unique<char []>(fileInfo.size());
+                                            auto buff = make_unique<char []>(fileInfo.size());
                                             fileInfo.stream().seekg(0);
                                             fileInfo.stream().read(buff.get(), fileInfo.size());
                                             TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);

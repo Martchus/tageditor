@@ -687,8 +687,6 @@ bool MainWindow::startParsing(const QString &path, bool forceRefresh)
         // update directory
         m_lastDir = m_currentDir;
         m_currentDir = QString::fromLocal8Bit(m_fileInfo.containingDirectory().c_str());
-    } else {
-        m_fileInfo.reopen();
     }
     // update availability of making results
     m_makingResultsAvailable &= sameFile;
@@ -698,10 +696,13 @@ bool MainWindow::startParsing(const QString &path, bool forceRefresh)
     // show filename
     m_ui->fileNameLabel->setText(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()));
     // define function to parse the file
-    auto startThread = [this] {
+    auto startThread = [this, sameFile] {
         m_fileOperationMutex.lock();
         char result;
         try {
+            if(sameFile) {
+                m_fileInfo.reopen();
+            }
             m_fileInfo.setForceFullParse(Settings::forceFullParse());
             m_fileInfo.parseEverything();
             result = ParsingSuccessful;
