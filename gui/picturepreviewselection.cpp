@@ -69,9 +69,9 @@ PicturePreviewSelection::~PicturePreviewSelection()
  * \brief Defines the predicate to get relevant fields.
  */
 template<class TagType>
-bool fieldPredicate(int i, const std::pair<typename TagType::fieldType::identifierType, typename TagType::fieldType> &pair)
+bool fieldPredicate(unsigned int i, const std::pair<typename TagType::fieldType::identifierType, typename TagType::fieldType> &pair)
 {
-    return pair.second.isTypeInfoAssigned() ? pair.second.typeInfo() == i : i == 0;
+    return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == i) : (i == 0);
 }
 
 /*!
@@ -210,20 +210,24 @@ void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<Media::Tag
     auto id = tag->fieldId(field);
     auto range = fields.equal_range(id);
     auto first = range.first;
-    int index = 0, valueCount = values.size();
-    while(index < valueCount) {
+    // iterate through all tag values
+    for(unsigned int index = 0, valueCount = values.size(); index < valueCount; ++index) {
+        // check whether there is already a tag value with the current index/type
         auto pair = find_if(first, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1));
         if(pair != range.second) {
+            // there is already a tag value with the current index/type
+            // -> update this value
             pair->second.setValue(values[index]);
-            ++first;
-        } else {
-            if(!values[index].isEmpty()) {
-                typename TagType::fieldType field(id, values[index]);
-                field.setTypeInfo(index);
-                fields.insert(std::make_pair(id, field));
+            // check whether there are more values with the current index/type assigned
+            while((pair = find_if(++first, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1))) != range.second) {
+                // -> remove these values as we only support one value of a type in the same tag
+                pair->second.setValue(TagValue());
             }
-            first = range.first;
-            ++index;
+            first = range.first; // reset the first value
+        } else if(!values[index].isEmpty()) {
+            typename TagType::fieldType field(id, values[index]);
+            field.setTypeInfo(index);
+            fields.insert(std::make_pair(id, field));
         }
     }
 }
@@ -280,13 +284,13 @@ void PicturePreviewSelection::addOfSelectedType()
                 MediaFileInfo fileInfo(path.toLocal8Bit().constData());
                 fileInfo.open(true);
                 fileInfo.parseContainerFormat();
-                QString mimeType = QString::fromLocal8Bit(fileInfo.mimeType());
+                auto mimeType = QString::fromLocal8Bit(fileInfo.mimeType());
                 bool ok;
                 mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
                 if(ok) {
                     if((fileInfo.size() < 10485760)
                             || (QMessageBox::warning(this, QApplication::applicationName(), tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)) {
-                        unique_ptr<char[]> buff = make_unique<char []>(fileInfo.size());
+                        auto buff = make_unique<char []>(fileInfo.size());
                         fileInfo.stream().seekg(0);
                         fileInfo.stream().read(buff.get(), fileInfo.size());
                         selectedCover.assignData(std::move(buff), fileInfo.size(), TagDataType::Picture);
@@ -334,7 +338,7 @@ void PicturePreviewSelection::extractSelected()
         if(value.isEmpty()) {
             QMessageBox::information(this, QApplication::applicationName(), tr("There is no image attached to be extracted."));
         } else {
-            QString path = QFileDialog::getSaveFileName(this, tr("Where do you want to save the cover?"));
+            const auto path = QFileDialog::getSaveFileName(this, tr("Where do you want to save the cover?"));
             if(!path.isEmpty()) {
                 QFile file(path);
                 if(file.open(QIODevice::WriteOnly)) {
