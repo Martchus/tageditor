@@ -230,23 +230,15 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
         case QEvent::DragEnter:
         case QEvent::Drop:
             if(QDropEvent *dropEvent = static_cast<QDropEvent *>(event)) {
-                QString data;
-                const QMimeData *mimeData = dropEvent->mimeData();
-                if(mimeData->hasUrls()) {
-                    const QUrl url = mimeData->urls().front();
+                for(const auto &url : dropEvent->mimeData()->urls()) {
                     if(url.scheme() == QLatin1String("file")) {
-                        data = url.path();
-                    }
-                } else if(mimeData->hasText()) {
-                    data = mimeData->text();
-                }
-                if(!data.isEmpty()) {
-                    event->accept();
-                    if(event->type() == QEvent::Drop) {
-                        startParsing(data, true);
+                        event->accept();
+                        if(event->type() == QEvent::Drop) {
+                            startParsing(url.path(), true);
+                        }
+                        return true;
                     }
                 }
-                return true;
             }
         default:
             ;

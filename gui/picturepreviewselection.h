@@ -9,13 +9,11 @@
 
 #include <memory>
 
-QT_BEGIN_NAMESPACE
-class QEvent;
-class QGraphicsScene;
-class QGraphicsTextItem;
-class QGraphicsPixmapItem;
-class QGraphicsRectItem;
-QT_END_NAMESPACE
+QT_FORWARD_DECLARE_CLASS(QEvent)
+QT_FORWARD_DECLARE_CLASS(QGraphicsScene)
+QT_FORWARD_DECLARE_CLASS(QGraphicsTextItem)
+QT_FORWARD_DECLARE_CLASS(QGraphicsPixmapItem)
+QT_FORWARD_DECLARE_CLASS(QGraphicsRectItem)
 
 namespace Media {
 class Tag;
@@ -48,6 +46,7 @@ public slots:
     void apply();
     void clear();
     void addOfSelectedType();
+    void addOfSelectedType(const QString &path);
     void removeSelected();
     void extractSelected();
     void displaySelected();
@@ -58,6 +57,8 @@ signals:
 protected:
     void changeEvent(QEvent *event);
     void resizeEvent(QResizeEvent *event);
+    void dragEnterEvent(QDragEnterEvent *event);
+    void dropEvent(QDropEvent *event);
 
 private slots:
     void typeSwitched(int index);

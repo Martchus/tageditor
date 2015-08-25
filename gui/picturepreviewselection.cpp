@@ -22,6 +22,9 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
+#include <QDragEnterEvent>
+#include <QDropEvent>
+#include <QMimeData>
 
 #include <stdexcept>
 #include <functional>
@@ -51,12 +54,13 @@ PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWi
     m_currentTypeIndex(0)
 {
     m_ui->setupUi(this);
-    connect(m_ui->addButton, &QPushButton::clicked, this, &PicturePreviewSelection::addOfSelectedType);
+    connect(m_ui->addButton, &QPushButton::clicked, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
     connect(m_ui->removeButton, &QPushButton::clicked, this, &PicturePreviewSelection::removeSelected);
     connect(m_ui->extractButton, &QPushButton::clicked, this, &PicturePreviewSelection::extractSelected);
     connect(m_ui->displayButton, &QPushButton::clicked, this, &PicturePreviewSelection::displaySelected);
     connect(m_ui->restoreButton, &QPushButton::clicked, std::bind(&PicturePreviewSelection::setup, this, PreviousValueHandling::Clear));
     setup();
+    setAcceptDrops(true);
 }
 
 /*!
@@ -279,35 +283,43 @@ void PicturePreviewSelection::addOfSelectedType()
     if(m_currentTypeIndex < static_cast<unsigned int>(m_values.count())) {
         QString path = QFileDialog::getOpenFileName(this, tr("Select a picture to add as cover"));
         if(!path.isEmpty()) {
-            TagValue &selectedCover = m_values[m_currentTypeIndex];
-            try {
-                MediaFileInfo fileInfo(path.toLocal8Bit().constData());
-                fileInfo.open(true);
-                fileInfo.parseContainerFormat();
-                auto mimeType = QString::fromLocal8Bit(fileInfo.mimeType());
-                bool ok;
-                mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
-                if(ok) {
-                    if((fileInfo.size() < 10485760)
-                            || (QMessageBox::warning(this, QApplication::applicationName(), tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)) {
-                        auto buff = make_unique<char []>(fileInfo.size());
-                        fileInfo.stream().seekg(0);
-                        fileInfo.stream().read(buff.get(), fileInfo.size());
-                        selectedCover.assignData(std::move(buff), fileInfo.size(), TagDataType::Picture);
-                        selectedCover.setMimeType(mimeType.toLocal8Bit().constData());
-                        emit pictureChanged();
-                    }
-                }
-            } catch (ios_base::failure &) {
-                QMessageBox::critical(this, QApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
-            } catch (Media::Failure &) {
-                QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to parse specified cover file."));
-            }
-            updatePreview(m_currentTypeIndex);
+            addOfSelectedType(path);
         }
     } else {
         throw logic_error("Invalid type selected (no corresponding value assigned).");
     }
+}
+
+/*!
+ * \brief Adds the picture from the specified \a path of the selected type.
+ */
+void PicturePreviewSelection::addOfSelectedType(const QString &path)
+{
+    TagValue &selectedCover = m_values[m_currentTypeIndex];
+    try {
+        MediaFileInfo fileInfo(path.toLocal8Bit().constData());
+        fileInfo.open(true);
+        fileInfo.parseContainerFormat();
+        auto mimeType = QString::fromLocal8Bit(fileInfo.mimeType());
+        bool ok;
+        mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
+        if(ok) {
+            if((fileInfo.size() < 10485760)
+                    || (QMessageBox::warning(this, QApplication::applicationName(), tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)) {
+                auto buff = make_unique<char []>(fileInfo.size());
+                fileInfo.stream().seekg(0);
+                fileInfo.stream().read(buff.get(), fileInfo.size());
+                selectedCover.assignData(std::move(buff), fileInfo.size(), TagDataType::Picture);
+                selectedCover.setMimeType(mimeType.toLocal8Bit().constData());
+                emit pictureChanged();
+            }
+        }
+    } catch (ios_base::failure &) {
+        QMessageBox::critical(this, QApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
+    } catch (Media::Failure &) {
+        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to parse specified cover file."));
+    }
+    updatePreview(m_currentTypeIndex);
 }
 
 /*!
@@ -421,6 +433,35 @@ void PicturePreviewSelection::resizeEvent(QResizeEvent *)
     if(m_pixmapItem && !m_pixmap.isNull()) {
         m_pixmapItem->setPixmap(m_pixmap.scaled(m_ui->previewGraphicsView->size(), Qt::KeepAspectRatio));
     }
+}
+
+void PicturePreviewSelection::dragEnterEvent(QDragEnterEvent *event)
+{
+    const auto *mimeData = event->mimeData();
+    if(mimeData->hasUrls()) {
+        for(const auto &url : mimeData->urls()) {
+            if(url.scheme() == QLatin1String("file")) {
+                event->accept();
+                return;
+            }
+        }
+    }
+    event->ignore();
+}
+
+void PicturePreviewSelection::dropEvent(QDropEvent *event)
+{
+    const auto *mimeData = event->mimeData();
+    if(mimeData->hasUrls()) {
+        for(const auto &url : mimeData->urls()) {
+            if(url.scheme() == QLatin1String("file")) {
+                addOfSelectedType(url.path());
+                event->accept();
+                return;
+            }
+        }
+    }
+    event->ignore();
 }
 
 /*!
