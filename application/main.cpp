@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
 {
     // setup argument parser
     ArgumentParser parser;
+    SET_APPLICATION_INFO;
     QT_CONFIG_ARGUMENTS qtConfigArgs;
     HelpArgument helpArg(parser);
     // recursive option

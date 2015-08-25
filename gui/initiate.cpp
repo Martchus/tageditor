@@ -10,9 +10,9 @@ namespace QtGui {
 
 int runWidgetsGui(int argc, char *argv[], const QString &path)
 {
-    SET_APPLICATION_INFO;
+    SET_QT_APPLICATION_INFO;
     QApplication a(argc, argv);
-    LOAD_TRANSLATIONS;
+    LOAD_QT_TRANSLATIONS;
     // load resources needed by classes of qtutilities
     QtUtilitiesResources::init();
     Theme::setup();
