@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     outputFileArg.setRequired(true);
     outputFileArg.setCombinable(true);
     // print field names
-    Argument printFieldNamesArg("print-field-names", string(), "prints available fields names");
+    Argument printFieldNamesArg("print-field-names", string(), "prints available field names");
     printFieldNamesArg.setCallback(Cli::printFieldNames);
     // display general file info
     Argument displayFileInfoArg("display-file-info", "file-info", "displays general file information");
