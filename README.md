@@ -1,11 +1,11 @@
-# tageditor
-A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska.
+# Tag Editor
+A tage ditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska.
 
 ## Supported formats
 The tag editor can read and write the following tag formats:
 - iTunes-style MP4 tags (MP4-DASH is supported)
 - ID3v1 and ID3v2 tags
-- Vorbis comments
+- Vorbis comments (cover art via "METADATA_BLOCK_PICTURE" is supported)
 - Matroska/WebM tags and attachments
 
 The tag editor can also display technical information such as the ID, format, language, bitrate,
@@ -23,7 +23,8 @@ You can set the behaviour of the editor to keep previous values, so you don't ha
 information like album name or artist for all files in an album again and again.
 
 Checkout the settings dialog. You can customize which fields the editor shows,
-change some settings regarding the tag processing (ID3 version, preferred character set, ...) and more.
+change some settings regarding the tag processing (ID3 version, preferred character set, ...)
+and more. It also possible to set a directory for temporary files.
 
 There is also a tool to rename files using the tag information stored in the files. The new name is generated
 by a small JavaScript which can be customized. An example script is provided. Before any changes are made,
@@ -54,6 +55,13 @@ The 16th and following files will all get the name "Title of the 16th file". The
 All files will get the album name "The Album", the artist "The Artist" and the cover image from the file "/path/to/image".
 
 ## Build instructions
-The tageditor depends on c++utilities, qtutilities and tagparser. Is built in the same way as these libaries.
+The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries.
 
-The following Qt 5 modules are requried: core gui script widgets webenginewidgets/webkitwidgets
+The following Qt 5 modules are requried: core gui script widgets webenginewidgets/webkitwidgets*
+
+* If webenginewidgets is installed on the system, the editor will link against this module. To force usage of webkitwidgets
+add "CONFIG+=forcewebkit" to the qmake arguments.
+
+## TODO
+- Use padding to prevent rewriting the entire file to save tags.
+- Support more tag formats (EXIF, PDF metadata, ...).
