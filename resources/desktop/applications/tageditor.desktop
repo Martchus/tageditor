@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Tageditor
+Name=Tag Editor
 GenericName=Tag Editor
 Comment=A tag editing utility supporting ID3 and iTunes tags.
 Exec=tageditor
