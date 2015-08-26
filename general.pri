@@ -8,9 +8,6 @@ RCC_DIR = ./res
 # compiler flags
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_LFLAGS += -std=c++11
-unix {
-    QMAKE_LFLAGS += "-Wl,--rpath=./"
-}
 # prefix
 targetprefix = $$(TARGET_PREFIX)
 message("Using target prefix \"$${targetprefix}\".")
