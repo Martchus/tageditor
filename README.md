@@ -1,5 +1,5 @@
 # Tag Editor
-A tage ditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska.
+A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska.
 
 ## Supported formats
 The tag editor can read and write the following tag formats:
