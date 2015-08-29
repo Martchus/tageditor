@@ -161,8 +161,7 @@
          <string>Abort</string>
         </property>
         <property name="icon">
-         <iconset theme="window-close">
-          <normaloff>../../martchusqtutilities/enterpassworddialog</normaloff>../../martchusqtutilities/enterpassworddialog</iconset>
+         <iconset theme="window-close"/>
         </property>
        </widget>
       </item>
@@ -175,8 +174,7 @@
          <string>Confirm</string>
         </property>
         <property name="icon">
-         <iconset theme="go-next">
-          <normaloff>../../martchusqtutilities/enterpassworddialog</normaloff>../../martchusqtutilities/enterpassworddialog</iconset>
+         <iconset theme="go-next"/>
         </property>
        </widget>
       </item>
@@ -191,7 +189,7 @@
    <extends>QLineEdit</extends>
    <header location="global">qtutilities/widgets/clearlineedit.h</header>
   </customwidget>
- </customwidgets>
+  </customwidgets>
  <resources/>
  <connections/>
 </ui>
