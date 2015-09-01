@@ -11,6 +11,7 @@
 
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/argumentparser.h>
+#include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/io/ansiescapecodes.h>
@@ -122,6 +123,7 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullpt
 
 void printFieldNames(const StringVector &parameterValues)
 {
+    CMD_UTILS_START_CONSOLE;
     VAR_UNUSED(parameterValues)
     cout << "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n"
             "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"
@@ -130,6 +132,7 @@ void printFieldNames(const StringVector &parameterValues)
 
 void removeBackupFiles(const StringVector &parameterValues, const Argument &recursiveArg)
 {
+    CMD_UTILS_START_CONSOLE;
     QDir dir(QString::fromStdString(parameterValues.at(0)));
     QStringList affectedFiles;
     int filesFound = Utility::removeBackupFiles(dir, affectedFiles, &cout, recursiveArg.isPresent());
@@ -367,7 +370,8 @@ unsigned int parseFieldDenotations(const StringVector &fieldDenotations, bool re
 
 void generateFileInfo(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
-    Q_UNUSED(parameterValues)
+    CMD_UTILS_START_CONSOLE;
+    VAR_UNUSED(parameterValues)
     try {
         // parse tags
         MediaFileInfo inputFileInfo(inputFileArg.values().front());
@@ -422,6 +426,7 @@ void printProperty(const char *propName, const intType value, const char *suffix
 
 void displayFileInfo(const StringVector &, const Argument &filesArg)
 {
+    CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
         cout << "Error: No files have been specified." << endl;
         return;
@@ -516,6 +521,7 @@ void displayFileInfo(const StringVector &, const Argument &filesArg)
 
 void displayTagInfo(const StringVector &parameterValues, const Argument &filesArg)
 {
+    CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
         cout << "Error: No files have been specified." << endl;
         return;
@@ -594,6 +600,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                 const Argument &treatUnknownFilesAsMp3FilesArg, const Argument &id3v1UsageArg, const Argument &id3v2UsageArg,
                 const Argument &mergeMultipleSuccessiveTagsArg, const Argument &id3v2VersionArg, const Argument &encodingArg)
 {
+    CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
         cout << "Error: No files have been specified." << endl;
         return;
@@ -709,6 +716,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
 
 void extractField(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg)
 {
+    CMD_UTILS_START_CONSOLE;
     FieldDenotation fields[knownFieldArraySize];
     unsigned int validDenotations = parseFieldDenotations(parameterValues, true, fields);
     if(validDenotations != 1) {

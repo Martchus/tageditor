@@ -1,21 +1,26 @@
 #include "initiate.h"
 #include "mainwindow.h"
+
 #include "application/settings.h"
 
+#include <qtutilities/resources/qtconfigarguments.h>
 #include <qtutilities/resources/resources.h>
 
 #include <QApplication>
 
+using namespace ApplicationUtilities;
+
 namespace QtGui {
 
-int runWidgetsGui(int argc, char *argv[], const QString &path)
+int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs, const QString &path)
 {
     SET_QT_APPLICATION_INFO;
     QApplication a(argc, argv);
-    LOAD_QT_TRANSLATIONS;
     // load resources needed by classes of qtutilities
     QtUtilitiesResources::init();
-    Theme::setup();
+    // apply settings specified via command line args
+    qtConfigArgs.applySettings();
+    LOAD_QT_TRANSLATIONS;
     Settings::restore();
     MainWindow w;
     w.show();

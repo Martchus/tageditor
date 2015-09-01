@@ -13,6 +13,7 @@
 # include <c++utilities/application/fakeqtconfigarguments.h>
 #endif
 #include <c++utilities/application/argumentparser.h>
+#include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/application/failure.h>
 
 #include <iostream>
@@ -120,12 +121,14 @@ int main(int argc, char *argv[])
         parser.parseArgs(argc, argv);
         if(qtConfigArgs.areQtGuiArgsPresent()) {
 #ifdef GUI_QTWIDGETS
-            return QtGui::runWidgetsGui(argc, argv, fileArg.values().empty() ? QString() : QString::fromLocal8Bit(fileArg.values().front().data()));
+            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, fileArg.values().empty() ? QString() : QString::fromLocal8Bit(fileArg.values().front().data()));
 #else
+            CMD_UTILS_START_CONSOLE;
             cout << "Application has not been build with Qt widgets GUI support." << endl;
 #endif
         }
     } catch(Failure &ex) {
+        CMD_UTILS_START_CONSOLE;
         cout << "Unable to parse arguments. " << ex.what() << "\nSee --help for available commands." << endl;
     }    
     return 0;
