@@ -234,7 +234,24 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
                     if(url.scheme() == QLatin1String("file")) {
                         event->accept();
                         if(event->type() == QEvent::Drop) {
+#ifdef Q_OS_WIN32
+                            // remove leading slash
+                            QString path = url.path();
+                            int index = 0;
+                            for(const auto &c : path) {
+                               if(c == QChar('/')) {
+                                   ++index;
+                               } else {
+                                   break;
+                               }
+                            }
+                            if(index) {
+                                path = path.mid(index);
+                            }
+                            startParsing(path, true);
+#else
                             startParsing(url.path(), true);
+#endif
                         }
                         return true;
                     }

@@ -455,7 +455,24 @@ void PicturePreviewSelection::dropEvent(QDropEvent *event)
     if(mimeData->hasUrls()) {
         for(const auto &url : mimeData->urls()) {
             if(url.scheme() == QLatin1String("file")) {
+#ifdef Q_OS_WIN32
+                // remove leading slash
+                QString path = url.path();
+                int index = 0;
+                for(const auto &c : path) {
+                    if(c == QChar('/')) {
+                        ++index;
+                    } else {
+                        break;
+                    }
+                }
+                if(index) {
+                    path = path.mid(index);
+                }
+                addOfSelectedType(path);
+#else
                 addOfSelectedType(url.path());
+#endif
                 event->accept();
                 return;
             }
