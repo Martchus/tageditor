@@ -1,4 +1,4 @@
-#include "notificationmodel.h"
+#include "./notificationmodel.h"
 
 #include <c++utilities/chrono/datetime.h>
 

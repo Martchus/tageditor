@@ -1,16 +1,16 @@
-#include "mainwindow.h"
-#include "settingsdialog.h"
-#include "notificationlabel.h"
-#include "renamefilesdialog.h"
-#include "tagedit.h"
-#include "attachmentsedit.h"
-#include "entertargetdialog.h"
+#include "./mainwindow.h"
+#include "./settingsdialog.h"
+#include "./notificationlabel.h"
+#include "./renamefilesdialog.h"
+#include "./tagedit.h"
+#include "./attachmentsedit.h"
+#include "./entertargetdialog.h"
+
+#include "../application/settings.h"
+#include "../misc/htmlinfo.h"
+#include "../misc/utility.h"
 
 #include "gui/ui_mainwindow.h"
-
-#include "tageditor/application/settings.h"
-#include "tageditor/misc/htmlinfo.h"
-#include "tageditor/misc/utility.h"
 
 #include <tagparser/exceptions.h>
 #include <tagparser/signature.h>

@@ -1,8 +1,8 @@
-#include "tagedit.h"
-#include "tagfieldedit.h"
+#include "./tagedit.h"
+#include "./tagfieldedit.h"
 
-#include "tageditor/application/settings.h"
-#include "tageditor/application/knownfieldmodel.h"
+#include "../application/settings.h"
+#include "../application/knownfieldmodel.h"
 
 #include <tagparser/tag.h>
 

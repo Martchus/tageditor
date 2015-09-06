@@ -1,4 +1,4 @@
-#include "previousvaluehandling.h"
+#include "./previousvaluehandling.h"
 
 namespace QtGui {
 

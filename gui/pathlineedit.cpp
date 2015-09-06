@@ -1,4 +1,4 @@
-#include "pathlineedit.h"
+#include "./pathlineedit.h"
 
 #include <memory>
 

@@ -1,4 +1,4 @@
-#include "filefilterproxymodel.h"
+#include "./filefilterproxymodel.h"
 
 #include <QFileSystemModel>
 

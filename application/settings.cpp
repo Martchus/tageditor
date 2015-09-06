@@ -1,5 +1,5 @@
-#include "settings.h"
-#include "knownfieldmodel.h"
+#include "./settings.h"
+#include "./knownfieldmodel.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/backuphelper.h>

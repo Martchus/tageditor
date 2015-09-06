@@ -1,9 +1,9 @@
-#include "main.h"
-#include "knownfieldmodel.h"
+#include "./main.h"
+#include "./knownfieldmodel.h"
 
-#include "tageditor/cli/mainfeatures.h"
+#include "../cli/mainfeatures.h"
 #if defined(GUI_QTWIDGETS)
-# include "tageditor/gui/initiate.h"
+# include "../gui/initiate.h"
 #elif defined(GUI_QTQUICK)
 #endif
 

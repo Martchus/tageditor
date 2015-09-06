@@ -1,7 +1,7 @@
 #ifndef COVEREDIT_H
 #define COVEREDIT_H
 
-#include "previousvaluehandling.h"
+#include "./previousvaluehandling.h"
 
 #include <tagparser/tag.h>
 

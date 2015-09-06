@@ -1,4 +1,4 @@
-#include "entertargetdialog.h"
+#include "./entertargetdialog.h"
 
 #include "gui/ui_entertargetdialog.h"
 

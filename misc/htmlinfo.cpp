@@ -1,4 +1,4 @@
-#include "htmlinfo.h"
+#include "./htmlinfo.h"
 
 #include <tagparser/signature.h>
 #include <tagparser/mediafileinfo.h>

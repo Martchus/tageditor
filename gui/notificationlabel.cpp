@@ -1,4 +1,4 @@
-#include "notificationlabel.h"
+#include "./notificationlabel.h"
 
 #include <QPainter>
 #include <QPaintEvent>

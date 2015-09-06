@@ -1,4 +1,4 @@
-#include "filesystemitem.h"
+#include "./filesystemitem.h"
 
 #include <QDir>
 #include <QDebug>

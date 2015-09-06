@@ -1,4 +1,4 @@
-#include "knownfieldmodel.h"
+#include "./knownfieldmodel.h"
 
 #include <tagparser/tag.h>
 

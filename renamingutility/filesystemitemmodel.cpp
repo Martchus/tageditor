@@ -1,5 +1,5 @@
-#include "filesystemitemmodel.h"
-#include "filesystemitem.h"
+#include "./filesystemitemmodel.h"
+#include "./filesystemitem.h"
 
 #include <QApplication>
 #include <QStyle>

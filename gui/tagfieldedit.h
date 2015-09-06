@@ -1,7 +1,7 @@
 #ifndef QTGUI_TAGFIELDLINEEDIT_H
 #define QTGUI_TAGFIELDLINEEDIT_H
 
-#include "previousvaluehandling.h"
+#include "./previousvaluehandling.h"
 
 #include <c++utilities/application/global.h>
 

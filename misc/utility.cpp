@@ -1,6 +1,6 @@
-#include "utility.h"
+#include "./utility.h"
 
-#include "tageditor/application/settings.h"
+#include "../application/settings.h"
 
 #include <tagparser/exceptions.h>
 #include <tagparser/signature.h>

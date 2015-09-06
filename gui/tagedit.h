@@ -1,7 +1,7 @@
 #ifndef QTGUI_TAGEDIT_H
 #define QTGUI_TAGEDIT_H
 
-#include "previousvaluehandling.h"
+#include "./previousvaluehandling.h"
 
 #include <QList>
 #include <QMap>

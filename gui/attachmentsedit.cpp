@@ -1,6 +1,6 @@
-#include "attachmentsedit.h"
+#include "./attachmentsedit.h"
 
-#include "attachmentsmodel.h"
+#include "./attachmentsmodel.h"
 
 #include "gui/ui_attachmentsedit.h"
 

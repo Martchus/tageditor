@@ -1,5 +1,5 @@
-#include "infowidgetbase.h"
-#include "notificationmodel.h"
+#include "./infowidgetbase.h"
+#include "./notificationmodel.h"
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/chrono/timespan.h>

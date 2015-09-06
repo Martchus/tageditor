@@ -1,4 +1,4 @@
-#include "javascripthighlighter.h"
+#include "./javascripthighlighter.h"
 
 namespace QtGui {
 

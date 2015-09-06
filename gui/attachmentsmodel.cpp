@@ -1,4 +1,4 @@
-#include "attachmentsmodel.h"
+#include "./attachmentsmodel.h"
 
 #include <tagparser/abstractattachment.h>
 

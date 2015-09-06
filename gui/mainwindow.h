@@ -1,8 +1,8 @@
 #ifndef TAGEDITORDIALOG_H
 #define TAGEDITORDIALOG_H
 
-#include "filefilterproxymodel.h"
-#include "previousvaluehandling.h"
+#include "./filefilterproxymodel.h"
+#include "./previousvaluehandling.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tagvalue.h>

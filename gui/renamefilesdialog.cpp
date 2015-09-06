@@ -1,12 +1,12 @@
-#include "renamefilesdialog.h"
-#include "javascripthighlighter.h"
+#include "./renamefilesdialog.h"
+#include "./javascripthighlighter.h"
+
+#include "../renamingutility/renamingengine.h"
+#include "../renamingutility/filesystemitem.h"
+#include "../renamingutility/filesystemitemmodel.h"
+#include "../renamingutility/filteredfilesystemitemmodel.h"
 
 #include "gui/ui_renamefilesdialog.h"
-
-#include "tageditor/renamingutility/renamingengine.h"
-#include "tageditor/renamingutility/filesystemitem.h"
-#include "tageditor/renamingutility/filesystemitemmodel.h"
-#include "tageditor/renamingutility/filteredfilesystemitemmodel.h"
 
 #include <QMessageBox>
 #include <QFileDialog>

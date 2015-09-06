@@ -1,7 +1,7 @@
-#include "initiate.h"
-#include "mainwindow.h"
+#include "./initiate.h"
+#include "./mainwindow.h"
 
-#include "application/settings.h"
+#include "../application/settings.h"
 
 #include <qtutilities/resources/qtconfigarguments.h>
 #include <qtutilities/resources/resources.h>

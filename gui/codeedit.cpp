@@ -1,4 +1,4 @@
-#include "codeedit.h"
+#include "./codeedit.h"
 
 #include <QTextBlock>
 #include <QTextDocumentFragment>

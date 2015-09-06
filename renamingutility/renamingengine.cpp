@@ -1,8 +1,8 @@
-#include "renamingengine.h"
-#include "filesystemitem.h"
-#include "filesystemitemmodel.h"
-#include "filteredfilesystemitemmodel.h"
-#include "scriptfunctions.h"
+#include "./renamingengine.h"
+#include "./filesystemitem.h"
+#include "./filesystemitemmodel.h"
+#include "./filteredfilesystemitemmodel.h"
+#include "./scriptfunctions.h"
 
 #include <QDir>
 #include <QScriptEngine>
