@@ -249,22 +249,22 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
     }
     list<string> labels;
     if(track->isInterlaced()) {
-       labels.push_back("interlaced");
+        labels.push_back("interlaced");
     }
     if(!track->isEnabled()) {
-       labels.push_back("disabled");
+        labels.push_back("disabled");
     }
     if(track->isDefault()) {
-       labels.push_back("default");
+        labels.push_back("default");
     }
     if(track->isForced()) {
-       labels.push_back("forced");
+        labels.push_back("forced");
     }
     if(track->hasLacing()) {
-       labels.push_back("has lacing");
+        labels.push_back("has lacing");
     }
     if(track->isEncrypted()) {
-       labels.push_back("encrypted");
+        labels.push_back("encrypted");
     }
     if(labels.size()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), qstr(joinStrings(labels, ", "))));
@@ -315,10 +315,10 @@ void mkChapter(QByteArray &res, const AbstractChapter &chapter, unsigned int cha
     }
     list<string> labels;
     if(chapter.isHidden()) {
-       labels.push_back("hidden");
+        labels.push_back("hidden");
     }
     if(!chapter.isEnabled()) {
-       labels.push_back("disabled");
+        labels.push_back("disabled");
     }
     if(labels.size()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), qstr(joinStrings(labels, ", "))));
@@ -345,13 +345,13 @@ void mkEdition(QByteArray &res, const MatroskaEditionEntry &edition, unsigned in
     }
     list<string> labels;
     if(edition.isHidden()) {
-       labels.push_back("hidden");
+        labels.push_back("hidden");
     }
     if(edition.isDefault()) {
-       labels.push_back("default");
+        labels.push_back("default");
     }
     if(edition.isOrdered()) {
-       labels.push_back("ordered");
+        labels.push_back("ordered");
     }
     if(labels.size()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), qstr(joinStrings(labels, ", "))));
@@ -416,13 +416,13 @@ void mkNotifications(QByteArray &res, NotificationList &notifications, bool repa
                          + mkMoreLink(moreId, QCoreApplication::translate("HtmlInfo", "show notifications"))));
         res.append(mkExtendedSection(moreId));
         res.append(QStringLiteral("<tr><th></th><td><table class=\"headerhorizontal\"><thead><tr><th></th><th>%1</th><th>%2</th><th>%3</th></tr></thead><tbody>").arg(
-                    QCoreApplication::translate("HtmlInfo", "Context"), QCoreApplication::translate("HtmlInfo", "Message"), QCoreApplication::translate("HtmlInfo", "Time")));
+                       QCoreApplication::translate("HtmlInfo", "Context"), QCoreApplication::translate("HtmlInfo", "Message"), QCoreApplication::translate("HtmlInfo", "Time")));
         Notification::sortByTime(notifications);
         for(const Notification &notification : notifications) {
             res.append(QStringLiteral("<tr><td class=\"%4\"></td><td>%1</td><td>%2</td><td>%3</td></tr>").arg(
-                                  qstr(notification.context()), qstr(notification.message()),
-                                  qstr(notification.creationTime().toString(DateTimeOutputFormat::DateAndTime, false)),
-                                  qstr(notification.typeName())));
+                           qstr(notification.context()), qstr(notification.message()),
+                           qstr(notification.creationTime().toString(DateTimeOutputFormat::DateAndTime, false)),
+                           qstr(notification.typeName())));
         }
         res.append(QStringLiteral("</tbody></table></td></tr>"));
     }
@@ -448,29 +448,46 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "<style type=\"text/css\">"
                               "html, body {"
                               "padding: 1px;"
-                              "margin: 0px;"
-                              "background-color: transparent;"));
+                              "margin: 0px;"));
 #ifndef GUI_NONE
     if(ApplicationInstances::hasGuiApp()) {
         res.append(mkFontStyle(QGuiApplication::font()));
     }
+    const QPalette palette = QGuiApplication::palette();
+    res.append(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::Base).name()));
+    res.append(QStringLiteral("color: %1;").arg(palette.color(QPalette::Text).name()));
+#else
+    res.append(QStringLiteral("background-color: #fff;"
+                              "color: #000;"));
 #endif
     res.append(QStringLiteral("}"
-                              "a:link {"
-                              "color: #337AB7;"
-                              "text-decoration: none;"
+                              "a:link, #structure .parent-node {"));
+#ifndef GUI_NONE
+    res.append(QStringLiteral("color: %1;").arg(palette.color(QPalette::Link).name()));
+#else
+    res.append(QStringLiteral("color: #337AB7;"));
+#endif
+    res.append(QStringLiteral("text-decoration: none;"
                               "}"
-                              "a:focus, a:hover {"
-                              "color: #23527c;"
-                              "text-decoration: underline;"
+                              "a:focus, a:hover {"));
+#ifndef GUI_NONE
+    res.append(QStringLiteral("color: %1;").arg(palette.link().color().darker(palette.color(QPalette::Background).lightness() > palette.color(QPalette::Link).lightness() ? 150 : 50).name()));
+#else
+    res.append(QStringLiteral("color: #23527c;"));
+#endif
+    res.append(QStringLiteral("text-decoration: underline;"
                               "}"
                               "table {"
                               "border-collapse: collapse;"
                               "width: 100%;"
                               "}"
-                              "tr:nth-child(2n+2) {"
-                              "background-color:#fafafa;"
-                              "}"
+                              "tr:nth-child(2n+2) {"));
+#ifndef GUI_NONE
+    res.append(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::AlternateBase).name()));
+#else
+    res.append(QStringLiteral("background-color: #fafafa;"));
+#endif
+    res.append(QStringLiteral("}"
                               "table.headervertical th, table.headervertical td {"
                               "padding: 2px 5px;"
                               "text-align: left;"
@@ -478,14 +495,12 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "}"
                               "table.headervertical > tbody > tr > th {"
                               "text-align: right;"
-                              "border-right: 1px solid #eee;"
-                              "border-bottom: none;"
+                              "border: none;"
                               "width: 25%;"
                               "}"
                               "table.headerhorizontal > thead > tr > th {"
                               "text-align: center;"
-                              "border-right: none;"
-                              "border-bottom: 1px solid #eee;"
+                              "border: none;"
                               "}"
                               ".more {"
                               "display: none;"
@@ -520,9 +535,6 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "}"
                               "#structure_links a {"
                               "margin-right: 5px;"
-                              "}"
-                              "#structure .parent-node {"
-                              "color: #337AB7;"
                               "}"));
 #ifdef GUI_QTWIDGETS
     if(ApplicationInstances::hasWidgetsApp()) {
