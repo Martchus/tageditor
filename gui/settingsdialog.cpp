@@ -1,8 +1,8 @@
 #include "settingsdialog.h"
 #include "notificationlabel.h"
 
-#include "application/settings.h"
-#include "application/knownfieldmodel.h"
+#include "tageditor/application/settings.h"
+#include "tageditor/application/knownfieldmodel.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/backuphelper.h>

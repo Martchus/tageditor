@@ -1,7 +1,8 @@
 #include "mainfeatures.h"
-#include "application/knownfieldmodel.h"
-#include "misc/utility.h"
-#include "misc/htmlinfo.h"
+
+#include "tageditor/application/knownfieldmodel.h"
+#include "tageditor/misc/utility.h"
+#include "tageditor/misc/htmlinfo.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>

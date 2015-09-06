@@ -1,15 +1,15 @@
 #ifndef ID3V2OPTIONPAGE_H
 #define ID3V2OPTIONPAGE_H
 
-#include "ui_filebrowsergeneraloptionpage.h"
-#include "ui_editorgeneraloptionpage.h"
-#include "ui_editortempoptionpage.h"
-#include "ui_editorfieldsoptionpage.h"
-#include "ui_editorautocorrectionoptionpage.h"
-#include "ui_infooptionpage.h"
-#include "ui_tagprocessinggeneraloptionpage.h"
-#include "ui_id3v1optionpage.h"
-#include "ui_id3v2optionpage.h"
+#include "gui/ui_filebrowsergeneraloptionpage.h"
+#include "gui/ui_editorgeneraloptionpage.h"
+#include "gui/ui_editortempoptionpage.h"
+#include "gui/ui_editorfieldsoptionpage.h"
+#include "gui/ui_editorautocorrectionoptionpage.h"
+#include "gui/ui_infooptionpage.h"
+#include "gui/ui_tagprocessinggeneraloptionpage.h"
+#include "gui/ui_id3v1optionpage.h"
+#include "gui/ui_id3v2optionpage.h"
 
 #include <qtutilities/settingsdialog/settingsdialog.h>
 #include <qtutilities/settingsdialog/optionpage.h>

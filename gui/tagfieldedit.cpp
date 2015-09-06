@@ -1,10 +1,10 @@
 #include "tagfieldedit.h"
 #include "picturepreviewselection.h"
 
-#include "application/settings.h"
-#include "application/knownfieldmodel.h"
+#include "tageditor/application/settings.h"
+#include "tageditor/application/knownfieldmodel.h"
 
-#include "misc/utility.h"
+#include "tageditor/misc/utility.h"
 
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>

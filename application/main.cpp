@@ -1,10 +1,10 @@
 #include "main.h"
 #include "knownfieldmodel.h"
-#include "../cli/mainfeatures.h"
-#if defined(GUI_QTWIDGETS)
-# include "../gui/initiate.h"
-#elif defined(GUI_QTQUICK)
 
+#include "tageditor/cli/mainfeatures.h"
+#if defined(GUI_QTWIDGETS)
+# include "tageditor/gui/initiate.h"
+#elif defined(GUI_QTQUICK)
 #endif
 
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)

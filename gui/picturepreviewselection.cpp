@@ -1,8 +1,9 @@
-#include "ui_picturepreviewselection.h"
 #include "picturepreviewselection.h"
 
-#include "application/settings.h"
-#include "misc/utility.h"
+#include "gui/ui_picturepreviewselection.h"
+
+#include "tageditor/application/settings.h"
+#include "tageditor/misc/utility.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>

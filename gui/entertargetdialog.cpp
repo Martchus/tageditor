@@ -1,5 +1,6 @@
 #include "entertargetdialog.h"
-#include "ui_entertargetdialog.h"
+
+#include "gui/ui_entertargetdialog.h"
 
 #include <tagparser/signature.h>
 #include <tagparser/mediafileinfo.h>

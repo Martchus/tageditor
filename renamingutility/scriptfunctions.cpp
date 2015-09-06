@@ -1,5 +1,6 @@
 #include "scriptfunctions.h"
-#include "misc/utility.h"
+
+#include "tageditor/misc/utility.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
