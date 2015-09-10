@@ -56,7 +56,6 @@ inline QString qstr(const string &stdstr)
 
 inline QString mkRow(const QString &label, const QString &text, bool head = true)
 {
-
     return head
             ? QStringLiteral("<tr><th>%1</th><td>%2</td></tr>").arg(label, text)
             : QStringLiteral("<tr><td>%1</td><td>%2</td></tr>").arg(label, text);
@@ -450,12 +449,13 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "padding: 1px;"
                               "margin: 0px;"));
 #ifndef GUI_NONE
+    QPalette palette;
     if(ApplicationInstances::hasGuiApp()) {
+        palette = QGuiApplication::palette();
         res.append(mkFontStyle(QGuiApplication::font()));
+        res.append(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::Base).name()));
+        res.append(QStringLiteral("color: %1;").arg(palette.color(QPalette::Text).name()));
     }
-    const QPalette palette = QGuiApplication::palette();
-    res.append(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::Base).name()));
-    res.append(QStringLiteral("color: %1;").arg(palette.color(QPalette::Text).name()));
 #else
     res.append(QStringLiteral("background-color: #fff;"
                               "color: #000;"));
@@ -463,7 +463,9 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
     res.append(QStringLiteral("}"
                               "a:link, #structure .parent-node {"));
 #ifndef GUI_NONE
-    res.append(QStringLiteral("color: %1;").arg(palette.color(QPalette::Link).name()));
+    if(ApplicationInstances::hasGuiApp()) {
+        res.append(QStringLiteral("color: %1;").arg(palette.color(QPalette::Link).name()));
+    }
 #else
     res.append(QStringLiteral("color: #337AB7;"));
 #endif
@@ -471,7 +473,9 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "}"
                               "a:focus, a:hover {"));
 #ifndef GUI_NONE
-    res.append(QStringLiteral("color: %1;").arg(palette.link().color().darker(palette.color(QPalette::Background).lightness() > palette.color(QPalette::Link).lightness() ? 150 : 50).name()));
+    if(ApplicationInstances::hasGuiApp()) {
+        res.append(QStringLiteral("color: %1;").arg(palette.link().color().darker(palette.color(QPalette::Background).lightness() > palette.color(QPalette::Link).lightness() ? 150 : 50).name()));
+    }
 #else
     res.append(QStringLiteral("color: #23527c;"));
 #endif
@@ -483,7 +487,9 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
                               "}"
                               "tr:nth-child(2n+2) {"));
 #ifndef GUI_NONE
-    res.append(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::AlternateBase).name()));
+    if(ApplicationInstances::hasGuiApp()) {
+        res.append(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::AlternateBase).name()));
+    }
 #else
     res.append(QStringLiteral("background-color: #fafafa;"));
 #endif
