@@ -99,7 +99,7 @@ QString mkFontStyle(const QFont &font)
     } else {
         size = QStringLiteral("%1pt").arg(font.pointSize());
     }
-    return QStringLiteral("font-family: \"%1\";"
+    return QStringLiteral("font-family: \"%1\" sans-serif;"
                           "font-style: %2;"
                           "font-weight: %3;"
                           "font-size: %4;").arg(
