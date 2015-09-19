@@ -115,13 +115,14 @@ int main(int argc, char *argv[])
     remBackupFilesArg.setValueNames({"directory"});
     remBackupFilesArg.setRequiredValueCount(1);
     remBackupFilesArg.setSecondaryArguments({&recursiveArg});
+    qtConfigArgs.qtWidgetsGuiArg().addSecondaryArgument(&filesArg);
     parser.setMainArguments({&printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArg, &extractFieldArg, &genInfoArg, &remBackupFilesArg, &qtConfigArgs.qtWidgetsGuiArg(), &helpArg});
     // parse given arguments
     try {
         parser.parseArgs(argc, argv);
         if(qtConfigArgs.areQtGuiArgsPresent()) {
 #ifdef GUI_QTWIDGETS
-            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, fileArg.values().empty() ? QString() : QString::fromLocal8Bit(fileArg.values().front().data()));
+            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, filesArg.values().empty() ? QString() : QString::fromLocal8Bit(filesArg.values().front().data()));
 #else
             CMD_UTILS_START_CONSOLE;
             cout << "Application has not been build with Qt widgets GUI support." << endl;
