@@ -54,6 +54,24 @@ The first file will get the name "Title of 1st file", the second file will get t
 The 16th and following files will all get the name "Title of the 16th file". The same scheme is used for the track numbers.
 All files will get the album name "The Album", the artist "The Artist" and the cover image from the file "/path/to/image".
 
+Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
+```
+cd some/dir
+# create an empty array
+titles=()
+# iterate through all music files in the directory
+for file in *.m4a; do \
+    # truncate the first 10 characters
+    title="${file:10}"; \
+    # append the title truncating the extension
+    titles+=("title=${title%.*}"); \
+done
+# now set the titles and other tag information
+tageditor set "${titles[@]}" "album=Some Album" track+=1/25 disk=1/1 -f *.m4a
+```
+Note the "+" sign after the field name "track" indicates which indicates that the field value should be increased after
+a file has been processed.
+
 ## Build instructions
 The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries.
 
@@ -65,3 +83,5 @@ add "CONFIG+=forcewebkit" to the qmake arguments.
 ## TODO
 - Use padding to prevent rewriting the entire file to save tags.
 - Support more tag formats (EXIF, PDF metadata, ...).
+- Set tag information concurrently if multiple files have been specified.
+- Extracting/adding/removing attachments via CLI.
