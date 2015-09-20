@@ -105,7 +105,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &MainWindow::showInfoWebViewContextMenu);
     m_ui->tagSplitter->addWidget(m_infoWebView);
 #ifdef Q_OS_WIN32
-    setStyleSheet(QStringLiteral("* { font: 9pt \"Segoe UI\"; } #fileNameLabel, #optionsLabel { font-size: 12pt; color: #003399; } #rightWidget, #rightWidget QSplitter::handle { background-color: white; }"));
+    setStyleSheet(QStringLiteral("#fileNameLabel, #optionsLabel { font-size: 12pt; color: #003399; } #rightWidget, #rightWidget QSplitter::handle { background-color: white; }"));
 #else
     setStyleSheet(QStringLiteral("#fileNameLabel, #optionsLabel { font-weight: bold; } "));
 #endif
