@@ -69,7 +69,7 @@ done
 # now set the titles and other tag information
 tageditor set "${titles[@]}" "album=Some Album" track+=1/25 disk=1/1 -f *.m4a
 ```
-Note the "+" sign after the field name "track" indicates which indicates that the field value should be increased after
+Note the "+" sign after the field name "track" which indicates that the field value should be increased after
 a file has been processed.
 
 ## Build instructions
