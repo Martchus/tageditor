@@ -1,5 +1,3 @@
-# template
-TEMPLATE = lib
 #dirs
 UI_DIR = ./gui
 MOC_DIR = ./moc
@@ -75,7 +73,11 @@ guiqtwidgets {
     DEFINES += GUI_QTWIDGETS
     DEFINES += MODEL_UNDO_SUPPORT
 }
-# configuration for cross compliation with mingw-w64
+# Windows stuff: configuration for cross compliation with mingw-w64
+win32 {
+    QMAKE_TARGET_PRODUCT = "$${appname}"
+    QMAKE_TARGET_COPYRIGHT = "by $${appauthor}"
+}
 mingw-w64-manualstrip-dll {
     QMAKE_POST_LINK=$${CROSS_COMPILE}strip --strip-unneeded ./release/$(TARGET); \
         $${CROSS_COMPILE}strip --strip-unneeded ./release/lib$(TARGET).a
@@ -84,5 +86,7 @@ mingw-w64-manualstrip-exe {
     QMAKE_POST_LINK=$${CROSS_COMPILE}strip --strip-unneeded ./release/$(TARGET)
 }
 mingw-w64-noversion {
-    VERSION = ""
+    TARGET_EXT = ".dll"
+    TARGET_VERSION_EXT = ""
+    CONFIG += skip_target_version_ext
 }
