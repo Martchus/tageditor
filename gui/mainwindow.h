@@ -21,6 +21,7 @@ class QSpinBox;
 class QPlainTextEdit;
 class QGraphicsScene;
 class QFileSystemModel;
+class QFileSystemWatcher;
 #ifdef TAGEDITOR_USE_WEBENGINE
 class QWebEngineView;
 #else
@@ -58,8 +59,10 @@ public:
     QString currentDirectory();
     void setCurrentDirectory(const QString &path);
 
+public slots:
     // opened file: load, save, delete, close
     bool startParsing(const QString &path, bool forceRefresh = false);
+    bool reparseFile();
     bool applyEntriesAndSaveChangings();
     bool deleteAllTagsAndSave();
     void closeFile();
@@ -77,6 +80,7 @@ private slots:
     void showOpenFileDlg();
 
     // editor
+    void fileChangedOnDisk(const QString &path);
     void showFile(char result);
     void saveFileInformation();
     void handleReturnPressed();
@@ -126,6 +130,8 @@ private:
     QString m_currentPath;
     QString m_currentDir; // this is the actual direcotry of the opened file and may differ from the directory selected in the tree view
     QString m_lastDir;
+    QFileSystemWatcher *m_fileWatcher;
+    bool m_fileChangedOnDisk;
     Media::MediaFileInfo m_fileInfo;
     QString m_nextFilePath;
     std::vector<Media::Tag *> m_tags;

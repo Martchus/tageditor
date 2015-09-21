@@ -40,6 +40,7 @@
 #include <QPlainTextEdit>
 #include <QMimeData>
 #include <QTextStream>
+#include <QFileSystemWatcher>
 #ifdef TAGEDITOR_USE_WEBENGINE
 #include <QWebEngineView>
 #else
@@ -124,6 +125,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui->filesTreeView->setColumnWidth(0, 300);
     // setup path line edit
     m_ui->pathLineEdit->setCompletionModel(m_fileModel);
+    // setup file watcher
+    m_fileWatcher = new QFileSystemWatcher(this);
+    m_fileChangedOnDisk = false;
     // setup command link button icons
     m_ui->saveButton->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton, nullptr, m_ui->saveButton));
     m_ui->deleteTagsButton->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton, nullptr, m_ui->deleteTagsButton));
@@ -165,6 +169,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->actionDelete_all_tags, &QAction::triggered, this, &MainWindow::deleteAllTagsAndSave);
     connect(m_ui->actionSave_file_information, &QAction::triggered, this, &MainWindow::saveFileInformation);
     connect(m_ui->actionClose, &QAction::triggered, this, &MainWindow::closeFile);
+    connect(m_ui->actionReload, &QAction::triggered, this, &MainWindow::reparseFile);
     //  menu: directory
     connect(m_ui->actionSelect_next_file, &QAction::triggered, this, &MainWindow::selectNextFile);
     connect(m_ui->actionSelect_next_file_and_save_current, &QAction::triggered, this, &MainWindow::saveAndShowNextFile);
@@ -182,6 +187,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->selectNextCommandLinkButton, &QCommandLinkButton::clicked, this, &MainWindow::selectNextFile);
     connect(m_ui->abortButton, &QPushButton::clicked, [this] {m_abortClicked = true; m_ui->abortButton->setEnabled(false); });
     connect(m_ui->tagSelectionComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), m_ui->stackedWidget, &QStackedWidget::setCurrentIndex);
+    connect(m_fileWatcher, &QFileSystemWatcher::fileChanged, this, &MainWindow::fileChangedOnDisk);
     //  event filter
     m_ui->rightWidget->installEventFilter(this);
     // apply settings
@@ -502,6 +508,7 @@ void MainWindow::updateUiStatus()
     m_ui->actionDelete_all_tags->setEnabled(hasTag);
     m_ui->actionSave_file_information->setEnabled(opened);
     m_ui->actionClose->setEnabled(opened);
+    m_ui->actionReload->setEnabled(opened);
     m_ui->buttonsWidget->setEnabled(opened);
     // clear and restore buttons
     m_ui->clearEntriesPushButton->setEnabled(hasTag);
@@ -666,7 +673,9 @@ void MainWindow::foreachTagEdit(const std::function<void (TagEdit *)> &function)
 
 /*!
  * \brief Opens and parses a file using another thread.
+ *
  * Shows its tags and general information using the showFile() method.
+ *
  * \param path Specifies the \a path of the file.
  * \param forceRefresh Specifies whether the file should be reparsed if it is already opened.
  */
@@ -742,6 +751,19 @@ bool MainWindow::startParsing(const QString &path, bool forceRefresh)
 }
 
 /*!
+ * \brief Reparses the current file.
+ */
+bool MainWindow::reparseFile()
+{
+    if(m_fileInfo.isOpen() && !m_currentPath.isEmpty()) {
+        return startParsing(m_currentPath, true);
+    } else {
+        QMessageBox::warning(this, windowTitle(), tr("Currently is not file opened."));
+        return false;
+    }
+}
+
+/*!
  * \brief Shows the current file info (technical info, tags, ...).
  * This private slot is invoked from the thread which performed the
  * parsing operation using Qt::QueuedConnection.
@@ -809,8 +831,12 @@ void MainWindow::showFile(char result)
                 }
             }
         }
+        // reload tags
         m_tags.clear();
-        m_fileInfo.tags(m_tags); // reload tags
+        m_fileInfo.tags(m_tags);
+        // update file watcher
+        m_fileWatcher->addPath(m_currentPath);
+        m_fileChangedOnDisk = false;
         // update related widgets
         updateTagEditsAndAttachmentEdits();
         updateTagSelectionComboBox();
@@ -942,6 +968,8 @@ bool MainWindow::startSaving()
     m_ui->abortButton->setHidden(false);
     m_ui->abortButton->setEnabled(true);
     m_abortClicked = false;
+    // remove current path from file watcher
+    m_fileWatcher->removePath(m_currentPath);
     // define functions to show the saving progress and to actually applying the changes
     auto showProgress = [this] (StatusProvider &sender) -> void {
         QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, static_cast<int>(sender.currentPercentage() * 100.0)));
@@ -1175,6 +1203,19 @@ void MainWindow::showOpenFileDlg()
 }
 
 /*!
+ * \brief This slot is connected to the fileChanged() signal of the file info watcher.
+ */
+void MainWindow::fileChangedOnDisk(const QString &path)
+{
+    if(!m_fileChangedOnDisk && m_fileInfo.isOpen() && path == m_currentPath) {
+        auto &notifyWidget = *m_ui->parsingNotificationWidget;
+        notifyWidget.appendLine(tr("The currently opened file changed on the disk."));
+        notifyWidget.setNotificationType(notifyWidget.notificationType() == NotificationType::Critical ? NotificationType::Critical : NotificationType::Warning);
+        m_fileChangedOnDisk = true;
+    }
+}
+
+/*!
  * \brief Closes the currently opened file and disables all related widgets.
  */
 void MainWindow::closeFile()
@@ -1184,7 +1225,11 @@ void MainWindow::closeFile()
         return;
     }
     lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
+    // close file
     m_fileInfo.close();
+    // remove current path from file watcher
+    m_fileWatcher->removePath(m_currentPath);
+    // update ui
     m_ui->statusBar->showMessage("The file has been closed.");
     updateUiStatus();
 }

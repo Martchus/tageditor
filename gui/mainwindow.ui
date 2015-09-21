@@ -319,7 +319,7 @@ the file reverting all unsaved changings.</string>
      <x>0</x>
      <y>0</y>
      <width>1225</width>
-     <height>29</height>
+     <height>27</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -329,6 +329,7 @@ the file reverting all unsaved changings.</string>
     <addaction name="actionOpen"/>
     <addaction name="actionSave_file_information"/>
     <addaction name="separator"/>
+    <addaction name="actionReload"/>
     <addaction name="actionSave"/>
     <addaction name="actionDelete_all_tags"/>
     <addaction name="separator"/>
@@ -530,6 +531,17 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="text">
     <string>Manage tags automatically when loading file</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="document-revert"/>
+   </property>
+   <property name="text">
+    <string>Reload (reverts all changes!)</string>
    </property>
   </action>
  </widget>
