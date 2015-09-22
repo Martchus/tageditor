@@ -651,7 +651,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                         if(fieldDenotation.present
                                 && (fieldDenotation.tagType == TagType::Unspecified
                                     || (fieldDenotation.tagType | tagType) != TagType::Unspecified)
-                                && (!targetSupported || fieldDenotation.tagTarget == tagTarget)) {
+                                && (!targetSupported || fieldDenotation.tagTarget.isEmpty() || fieldDenotation.tagTarget == tagTarget)) {
                             pair<unsigned int, QString> *selectedDenotatedValue = nullptr;
                             for(auto &someDenotatedValue : fieldDenotation.values) {
                                 if(someDenotatedValue.first <= fileIndex) {
