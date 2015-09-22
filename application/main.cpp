@@ -31,6 +31,9 @@ int main(int argc, char *argv[])
     SET_APPLICATION_INFO;
     QT_CONFIG_ARGUMENTS qtConfigArgs;
     HelpArgument helpArg(parser);
+    // verbose option
+    Argument verboseArg("verbose", "v", "be verbose");
+    verboseArg.setCombinable(true);
     // recursive option
     Argument recursiveArg("recursive", "r", "includes subdirectories");
     // input/output file/files
@@ -55,15 +58,15 @@ int main(int argc, char *argv[])
     // display general file info
     Argument displayFileInfoArg("display-file-info", "file-info", "displays general file information");
     displayFileInfoArg.setDenotesOperation(true);
-    displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg)));
-    displayFileInfoArg.setSecondaryArguments({&filesArg});
+    displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg)));
+    displayFileInfoArg.setSecondaryArguments({&filesArg, &verboseArg});
     // display tag info
     Argument displayTagInfoArg("display-tag-info", "get", "displays the values of all specified tag fields (displays all fields if none specified)");
     displayTagInfoArg.setDenotesOperation(true);
-    displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, _1, std::cref(filesArg)));
+    displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, _1, std::cref(filesArg), std::cref(verboseArg)));
     displayTagInfoArg.setRequiredValueCount(-1);
     displayTagInfoArg.setValueNames({"title", "album", "artist", "trackpos"});
-    displayTagInfoArg.setSecondaryArguments({&filesArg});
+    displayTagInfoArg.setSecondaryArguments({&filesArg, &verboseArg});
     // set tag info
     Argument removeOtherFieldsArg("remove-other-fields", string(), "if present ALL unspecified tag fields will be removed; otherwise use eg. \"album=\" to remove a specific field");
     removeOtherFieldsArg.setCombinable(true);
@@ -89,19 +92,19 @@ int main(int argc, char *argv[])
     encodingArg.setCombinable(true);
     Argument setTagInfoArg("set-tag-info", "set", "sets the values of all specified tag fields");
     setTagInfoArg.setDenotesOperation(true);
-    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg)));
+    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg), std::cref(verboseArg)));
     setTagInfoArg.setRequiredValueCount(-1);
     setTagInfoArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
-    setTagInfoArg.setSecondaryArguments({&filesArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg});
+    setTagInfoArg.setSecondaryArguments({&filesArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &verboseArg});
     // extract cover
     Argument extractFieldArg("extract", "ext", "extracts the specified field from the specified file");
     extractFieldArg.setRequiredValueCount(1);
     extractFieldArg.setValueNames({"field"});
-    extractFieldArg.setSecondaryArguments({&fileArg, &outputFileArg});
+    extractFieldArg.setSecondaryArguments({&fileArg, &outputFileArg, &verboseArg});
     extractFieldArg.setDenotesOperation(true);
-    extractFieldArg.setCallback(std::bind(Cli::extractField, _1, std::cref(fileArg), std::cref(outputFileArg)));
+    extractFieldArg.setCallback(std::bind(Cli::extractField, _1, std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
     // file info
-    Argument validateArg("validate", "v", "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
+    Argument validateArg("validate", "c", "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     validateArg.setDenotesOperation(true);
     validateArg.setCombinable(true);
     Argument genInfoArg("gen-info", "info", "generates technical information about the specified file as HTML document");

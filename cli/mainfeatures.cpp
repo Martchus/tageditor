@@ -93,27 +93,47 @@ QString incremented(const QString &str, unsigned int toIncrement = 1)
     return res;
 }
 
-void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullptr)
+void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullptr, bool beVerbose = false)
 {
     auto notifications = fileInfo.gatherRelatedNotifications();
+    if(!beVerbose) {
+        for(const auto &notification : notifications) {
+            switch(notification.type()) {
+            case NotificationType::Debug:
+            case NotificationType::Information:
+                break;
+            default:
+                goto printNotifications;
+            }
+        }
+        return;
+    }
     if(!notifications.empty()) {
+        printNotifications:
         if(head) {
             cout << head << endl;
         }
         Notification::sortByTime(notifications);
-        for(const Notification &notification : notifications) {
+        for(const auto &notification : notifications) {
             switch(notification.type()) {
-            case NotificationType::Critical:
-                cout << "Error        ";
-                break;
             case NotificationType::Debug:
-                cout << "Debug        ";
+                if(beVerbose) {
+                    cout << "Debug        ";
+                }
+                break;
+            case NotificationType::Information:
+                if(beVerbose) {
+                    cout << "Information  ";
+                }
                 break;
             case NotificationType::Warning:
                 cout << "Warning      ";
                 break;
+            case NotificationType::Critical:
+                cout << "Error        ";
+                break;
             default:
-                cout << "Information  ";
+                ;
             }
             cout << notification.creationTime().toString(DateTimeOutputFormat::TimeOnly) << "   ";
             cout << notification.context() << ": ";
@@ -425,7 +445,7 @@ void printProperty(const char *propName, const intType value, const char *suffix
     }
 }
 
-void displayFileInfo(const StringVector &, const Argument &filesArg)
+void displayFileInfo(const StringVector &, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
@@ -515,12 +535,12 @@ void displayFileInfo(const StringVector &, const Argument &filesArg)
         } catch(ApplicationUtilities::Failure &) {
             cout << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
         }
-        printNotifications(fileInfo, "Parsing notifications:");
+        printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
         cout << endl;
     }
 }
 
-void displayTagInfo(const StringVector &parameterValues, const Argument &filesArg)
+void displayTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
@@ -592,14 +612,15 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
         } catch(ApplicationUtilities::Failure &) {
             cout << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
         }
-        printNotifications(fileInfo, "Parsing notifications:");
+        printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
         cout << endl;
     }
 }
 
 void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &removeOtherFieldsArg,
                 const Argument &treatUnknownFilesAsMp3FilesArg, const Argument &id3v1UsageArg, const Argument &id3v2UsageArg,
-                const Argument &mergeMultipleSuccessiveTagsArg, const Argument &id3v2VersionArg, const Argument &encodingArg)
+                const Argument &mergeMultipleSuccessiveTagsArg, const Argument &id3v2VersionArg, const Argument &encodingArg,
+                const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
@@ -710,12 +731,12 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
         } catch(ApplicationUtilities::Failure &) {
             cout << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
         }
-        printNotifications(fileInfo, "Notifications:");
+        printNotifications(fileInfo, "Notifications:", verboseArg.isPresent());
         ++fileIndex;
     }
 }
 
-void extractField(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg)
+void extractField(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     FieldDenotation fields[knownFieldArraySize];
@@ -773,7 +794,7 @@ void extractField(const StringVector &parameterValues, const Argument &inputFile
     } catch(ApplicationUtilities::Failure &) {
         cout << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
     }
-    printNotifications(inputFileInfo, "Parsing notifications:");
+    printNotifications(inputFileInfo, "Parsing notifications:", verboseArg.isPresent());
 }
 
 }
