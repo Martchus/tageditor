@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     Argument printFieldNamesArg("print-field-names", string(), "prints available field names");
     printFieldNamesArg.setCallback(Cli::printFieldNames);
     // display general file info
-    Argument displayFileInfoArg("display-file-info", "file-info", "displays general file information");
+    Argument displayFileInfoArg("display-file-info", "info", "displays general file information");
     displayFileInfoArg.setDenotesOperation(true);
     displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg)));
     displayFileInfoArg.setSecondaryArguments({&filesArg, &verboseArg});
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     Argument validateArg("validate", "c", "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     validateArg.setDenotesOperation(true);
     validateArg.setCombinable(true);
-    Argument genInfoArg("gen-info", "info", "generates technical information about the specified file as HTML document");
+    Argument genInfoArg("html-info", string(), "generates technical information about the specified file as HTML document");
     genInfoArg.setDenotesOperation(true);
     genInfoArg.setSecondaryArguments({&fileArg, &validateArg, &outputFileArg});
     genInfoArg.setCallback(std::bind(Cli::generateFileInfo, _1, std::cref(fileArg), std::cref(outputFileArg), std::cref(validateArg)));
