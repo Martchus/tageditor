@@ -472,6 +472,7 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
                         printProperty("Name", track->name());
                         printProperty("Type", track->mediaTypeName());
                         printProperty("Format", track->formatName());
+                        printProperty("Extensions", track->format().extensionName());
                         printProperty("Raw format ID", track->formatId());
                         if(track->size()) {
                             printProperty("Size", dataSizeToString(track->size(), true));

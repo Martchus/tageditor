@@ -175,7 +175,12 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
     const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
     res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format"), QCoreApplication::translate("HtmlInfo", "The unabbreviated name of the track's format."), qstr(fmtName)));
     if(strcmp(fmtName, fmtAbbr)) {
+        // format name and abbreviation differ
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr)));
+    }
+    fmtName = track->format().extensionName();
+    if(*fmtName) {
+        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Extension"), QCoreApplication::translate("HtmlInfo", "Used format extensions."), qstr(fmtName)));
     }
     if(!track->formatId().empty()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Format/codec ID"), QCoreApplication::translate("HtmlInfo", "The raw format/codec identifier extracted from the container."), qstr(track->formatId())));
