@@ -14,7 +14,7 @@ duration, size, timestamps, sampling frequency, FPS and other information of the
 It also allows to inspect and validate the element structure of MP4 and Matroska files.
 
 ## Usage
-The Tageditor has a GUI (Qt 5) and a command line interface.
+The Tag Editor has a GUI (Qt 5) and a command line interface.
 
 ### GUI
 The GUI should be self-explaining. Just open a file, edit the tags and save the changings.
@@ -37,52 +37,58 @@ tageditor <operation> [options]
 ```
 
 Checkout the available operations and options with --help.
-Here are Bash examples which illustrate getting and setting tag information:
+Here are some Bash examples which illustrate getting and setting tag information:
 
-```
-tageditor get title album artist --files /some/dir/*.m4a
-```
-Displays title, album and artist of all *.m4a files in the specified directory.
+* Displays title, album and artist of all *.m4a files in the specified directory:
 
-```
-tageditor info --files /some/dir/*.m4a
-```
-Displays technical information about all *.m4a files in the specified directory.
+  ```
+  tageditor get title album artist --files /some/dir/*.m4a
+  ```
+  
+* Displays technical information about all *.m4a files in the specified directory:
 
-```
-tageditor set "title=Title of "{1st,2nd,3rd}" file" "title=Title of "{4..16}"th file" \
+  ```
+  tageditor info --files /some/dir/*.m4a
+  ```
+
+* Sets title, album, artist, cover and track number of all *.m4a files in the specified directory:
+
+  ```
+  tageditor set "title=Title of "{1st,2nd,3rd}" file" "title=Title of "{4..16}"th file" \
     "album=The Album" "artist=The Artist" \
     cover=/path/to/image track={1..16}/16 --files /some/dir/*.m4a
-```
-Sets title, album, artist, cover and track number of all *.m4a files in the specified directory.
-The first file will get the name "Title of 1st file", the second file will get the name "Title of 2nd file" and so on.
-The 16th and following files will all get the name "Title of the 16th file". The same scheme is used for the track numbers.
-All files will get the album name "The Album", the artist "The Artist" and the cover image from the file "/path/to/image".
+  ```
+  
+  The first file will get the name *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
+  The 16th and following files will all get the name *Title of the 16th file*. The same scheme is used for the track numbers.
+  All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
 
-Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
-```
-cd some/dir
-# create an empty array
-titles=()
-# iterate through all music files in the directory
-for file in *.m4a; do \
-    # truncate the first 10 characters
-    title="${file:10}"; \
-    # append the title truncating the extension
-    titles+=("title=${title%.*}"); \
-done
-# now set the titles and other tag information
-tageditor set "${titles[@]}" "album=Some Album" track+=1/25 disk=1/1 -f *.m4a
-```
-Note the "+" sign after the field name "track" which indicates that the field value should be increased after
-a file has been processed.
+* Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
+
+  ```
+  cd some/dir
+  # create an empty array
+  titles=()
+  # iterate through all music files in the directory
+  for file in *.m4a; do \
+      # truncate the first 10 characters
+      title="${file:10}"; \
+      # append the title truncating the extension
+      titles+=("title=${title%.*}"); \
+  done
+  # now set the titles and other tag information
+  tageditor set "${titles[@]}" "album=Some Album" track+=1/25 disk=1/1 -f *.m4a
+  ```
+  
+  Note the *+* sign after the field name *track* which indicates that the field value should be increased after
+  a file has been processed.
 
 ## Build instructions
 The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries.
 
-The following Qt 5 modules are requried: core gui script widgets webenginewidgets/webkitwidgets*
+The following Qt 5 modules are requried: core gui script widgets webenginewidgets/webkitwidgets
 
-* If webenginewidgets is installed on the system, the editor will link against it. To force usage of webkitwidgets
+If webenginewidgets is installed on the system, the editor will link against it. To force usage of webkitwidgets
 add "CONFIG+=forcewebkit" to the qmake arguments.
 
 ## TODO
