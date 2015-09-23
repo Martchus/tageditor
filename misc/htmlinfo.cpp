@@ -241,7 +241,11 @@ void mkTrack(QByteArray &res, const AbstractTrack *track, unsigned int trackNumb
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Resolution"), qstr(track->resolution().toString())));
     }
     if(track->channelConfigString()) {
-        res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromLocal8Bit(track->channelConfigString())));
+        if(track->extensionChannelConfigString()) {
+            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QStringLiteral("%1 / %2").arg(QString::fromLocal8Bit(track->extensionChannelConfigString()), QString::fromLocal8Bit(track->channelConfigString()))));
+        } else {
+            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromLocal8Bit(track->channelConfigString())));
+        }
     } else if(track->channelCount()) {
         res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Channel count"), QString::number(track->channelCount())));
     }

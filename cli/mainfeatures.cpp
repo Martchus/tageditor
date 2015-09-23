@@ -421,7 +421,7 @@ void printProperty(const char *propName, const char *value, const char *suffix =
             cout << ' ';
         }
         cout << propName;
-        for(intention = strlen(propName); intention < 20; ++intention) {
+        for(intention = strlen(propName); intention < 30; ++intention) {
             cout << ' ';
         }
         cout << value;
@@ -471,7 +471,11 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
                         printProperty("ID", track->id(), nullptr, true);
                         printProperty("Name", track->name());
                         printProperty("Type", track->mediaTypeName());
-                        printProperty("Format", track->formatName());
+                        const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
+                        printProperty("Format", fmtName);
+                        if(strcmp(fmtName, fmtAbbr)) {
+                            printProperty("Abbreviation", fmtAbbr);
+                        }
                         printProperty("Extensions", track->format().extensionName());
                         printProperty("Raw format ID", track->formatId());
                         if(track->size()) {
@@ -486,9 +490,12 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
                         } else {
                             printProperty("Channel count", track->channelCount());
                         }
+                        if(track->extensionChannelConfigString()) {
+                            printProperty("Extension channel config", track->extensionChannelConfigString());
+                        }
                         printProperty("Bitrate", track->bitrate(), "kbit/s");
                         printProperty("Bits per sample", track->bitsPerSample());
-                        printProperty("Sampling frequency", track->samplingFrequency());
+                        printProperty("Sampling frequency", track->samplingFrequency(), "Hz");
                         printProperty("Extension sampling frequency", track->extensionSamplingFrequency(), "Hz");
                         printProperty("Sample count", track->sampleCount());
                         cout << endl;
