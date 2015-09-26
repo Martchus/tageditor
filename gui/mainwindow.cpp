@@ -95,6 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     // setup UI
     m_ui->setupUi(this);
+    makeHeading(m_ui->fileNameLabel);
 #ifdef TAGEDITOR_USE_WEBENGINE
     m_infoWebView = new QWebEngineView(m_ui->tagSplitter);
 #else
@@ -106,9 +107,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &MainWindow::showInfoWebViewContextMenu);
     m_ui->tagSplitter->addWidget(m_infoWebView);
 #ifdef Q_OS_WIN32
-    setStyleSheet(QStringLiteral("#fileNameLabel, #optionsLabel { font-size: 12pt; color: #003399; } #rightWidget, #rightWidget QSplitter::handle { background-color: white; }"));
+    setStyleSheet(dialogStyle() + QStringLiteral("#rightWidget, #rightWidget QSplitter::handle { color: palette(text); background-color: palette(base); }"));
 #else
-    setStyleSheet(QStringLiteral("#fileNameLabel, #optionsLabel { font-weight: bold; } "));
+    setStyleSheet(dialogStyle());
 #endif
     // restore geometry and state
     restoreGeometry(Settings::mainWindowGeometry());

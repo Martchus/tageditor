@@ -8,6 +8,8 @@
 
 #include "gui/ui_renamefilesdialog.h"
 
+#include <qtutilities/misc/dialogutils.h>
+
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QDir>
@@ -19,6 +21,7 @@
 
 #include <thread>
 
+using namespace Dialogs;
 using namespace RenamingUtility;
 
 namespace QtGui {
@@ -37,11 +40,9 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
 {
     setAttribute(Qt::WA_QuitOnClose, false);
     m_ui->setupUi(this);
-
 #ifdef Q_OS_WIN32
-    setStyleSheet(QStringLiteral("#mainWidget { color: black; background-color: white; border: none; } #bottomWidget { background-color: #F0F0F0; border-top: 1px solid #DFDFDF; } QSplitter:handle { background-color: white; }"));
+    setStyleSheet(dialogStyle() + QStringLiteral("QSplitter:handle { background-color: palette(base); }"));
 #endif
-
     // setup javascript editor and script file selection
     QFont font("Courier", 10);
     font.setFixedPitch(true);

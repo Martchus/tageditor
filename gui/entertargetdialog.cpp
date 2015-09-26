@@ -10,11 +10,13 @@
 #include <tagparser/matroska/matroskaeditionentry.h>
 
 #include <qtutilities/models/checklistmodel.h>
+#include <qtutilities/misc/dialogutils.h>
 
 #include <QMessageBox>
 
 using namespace std;
 using namespace Models;
+using namespace Dialogs;
 using namespace Media;
 
 namespace QtGui {
@@ -68,9 +70,7 @@ EnterTargetDialog::EnterTargetDialog(QWidget *parent) :
     m_ui->setupUi(this);
     // apply style sheets
 #ifdef Q_OS_WIN32
-    setStyleSheet(QStringLiteral("#mainWidget { color: black; background-color: white; border: none; } #bottomWidget { background-color: #F0F0F0; border-top: 1px solid #DFDFDF; } QMessageBox QLabel, QInputDialog QLabel, #instructionLabel {font-size: 12pt; color: #003399; }"));
-#else
-    setStyleSheet(QStringLiteral("#instructionLabel { font-weight: bold; }"));
+    setStyleSheet(dialogStyle());
 #endif
     // setup views
     m_ui->tracksListView->setModel(m_tracksModel);
