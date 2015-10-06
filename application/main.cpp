@@ -90,12 +90,16 @@ int main(int argc, char *argv[])
     encodingArg.setRequiredValueCount(1);
     encodingArg.setValueNames({"latin1/utf8/utf16le/utf16be"});
     encodingArg.setCombinable(true);
+    Argument attachmentsArg("attachments", string(), "specifies attachments to be added/updated/removed");
+    attachmentsArg.setRequiredValueCount(-1);
+    attachmentsArg.setValueNames({"path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type", ",", "path=another/file"});
+    attachmentsArg.setCombinable(true);
     Argument setTagInfoArg("set-tag-info", "set", "sets the values of all specified tag fields");
     setTagInfoArg.setDenotesOperation(true);
-    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg), std::cref(verboseArg)));
+    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg), std::cref(attachmentsArg), std::cref(verboseArg)));
     setTagInfoArg.setRequiredValueCount(-1);
     setTagInfoArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
-    setTagInfoArg.setSecondaryArguments({&filesArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &verboseArg});
+    setTagInfoArg.setSecondaryArguments({&filesArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &attachmentsArg, &verboseArg});
     // extract cover
     Argument extractFieldArg("extract", "ext", "extracts the specified field from the specified file");
     extractFieldArg.setRequiredValueCount(1);

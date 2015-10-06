@@ -36,7 +36,7 @@ public slots:
     void restore();
     void apply();
     void invalidate();
-    bool addFile(const QString &path);
+    void addFile(const QString &path);
 
     void showFileSelection();
     void extractSelected();

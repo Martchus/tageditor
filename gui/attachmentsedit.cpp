@@ -84,18 +84,17 @@ void AttachmentsEdit::invalidate()
     setupUi();
 }
 
-bool AttachmentsEdit::addFile(const QString &path)
+void AttachmentsEdit::addFile(const QString &path)
 {
-    if(fileInfo() && fileInfo()->areAttachmentsSupported() && fileInfo()->container()) {
+    if(fileInfo() && fileInfo()->attachmentsParsingStatus() == ParsingStatus::Ok && fileInfo()->container()) {
         // create and add attachment
         auto *attachment = fileInfo()->container()->createAttachment();
-        attachment->setFile(path.toLocal8Bit().data());
         attachment->setIgnored(true);
+        attachment->setFile(path.toLocal8Bit().data());
         m_addedAttachments << attachment;
         m_model->addAttachment(-1, attachment, true, path);
-        return true;
     } else {
-        return false;
+        throw Failure();
     }
 }
 
@@ -103,8 +102,12 @@ void AttachmentsEdit::showFileSelection()
 {
     auto path = QFileDialog::getOpenFileName(this, tr("Select a file to attach"));
     if(!path.isEmpty()) {
-        if(!addFile(path)) {
-            QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added."));
+        try {
+            addFile(path);
+        } catch(const Failure &) {
+            QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added because the attachments of the file could not be parsed successfully."));
+        } catch(const ios_base::failure &) {
+            QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added because an IO error occured."));
         }
     }
 }

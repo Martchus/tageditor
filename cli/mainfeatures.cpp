@@ -93,9 +93,8 @@ QString incremented(const QString &str, unsigned int toIncrement = 1)
     return res;
 }
 
-void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullptr, bool beVerbose = false)
+void printNotifications(NotificationList &notifications, const char *head = nullptr, bool beVerbose = false)
 {
-    auto notifications = fileInfo.gatherRelatedNotifications();
     if(!beVerbose) {
         for(const auto &notification : notifications) {
             switch(notification.type()) {
@@ -119,13 +118,17 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullpt
             case NotificationType::Debug:
                 if(beVerbose) {
                     cout << "Debug        ";
+                    break;
+                } else {
+                    continue;
                 }
-                break;
             case NotificationType::Information:
                 if(beVerbose) {
                     cout << "Information  ";
+                    break;
+                } else {
+                    continue;
                 }
-                break;
             case NotificationType::Warning:
                 cout << "Warning      ";
                 break;
@@ -140,6 +143,13 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullpt
             cout << notification.message() << endl;
         }
     }
+}
+
+void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullptr, bool beVerbose = false)
+{
+    NotificationList notifications;
+    fileInfo.gatherRelatedNotifications(notifications);
+    printNotifications(notifications, head, beVerbose);
 }
 
 void printFieldNames(const StringVector &parameterValues)
@@ -389,6 +399,140 @@ unsigned int parseFieldDenotations(const StringVector &fieldDenotations, bool re
     return validDenotations;
 }
 
+enum class AttachmentAction {
+    Add,
+    UpdateById,
+    UpdateByName,
+    RemoveById,
+    RemoveByName
+};
+
+class AttachmentInfo
+{
+public:
+    AttachmentInfo();
+    void apply(AbstractContainer *container);
+    void apply(AbstractAttachment *attachment);
+    void reset();
+    bool next(AbstractContainer *container);
+
+    AttachmentAction action;
+    uint64 id;
+    string path;
+    string name;
+    string mime;
+    string desc;
+};
+
+AttachmentInfo::AttachmentInfo() :
+    action(AttachmentAction::Add),
+    id(0)
+{}
+
+void AttachmentInfo::apply(AbstractContainer *container)
+{
+    static const string context("applying specified attachments");
+    AbstractAttachment *attachment = nullptr;
+    bool attachmentFound = false;
+    switch(action) {
+    case AttachmentAction::Add:
+        if(path.empty() || name.empty()) {
+            container->addNotification(NotificationType::Critical, "No name or path specified for new attachment to be added.", context);
+            return;
+        }
+        apply(container->createAttachment());
+        break;
+    case AttachmentAction::UpdateById:
+        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+            attachment = container->attachment(i);
+            if(attachment->id() == id) {
+                apply(attachment);
+                attachmentFound = true;
+            }
+        }
+        if(!attachmentFound == true) {
+            container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be updated.", context);
+        }
+        break;
+    case AttachmentAction::UpdateByName:
+        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+            attachment = container->attachment(i);
+            if(attachment->name() == name) {
+                apply(attachment);
+                attachmentFound = true;
+            }
+        }
+        if(!attachmentFound == true) {
+            container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + name + "\" does not exist and hence can't be updated.", context);
+        }
+        break;
+    case AttachmentAction::RemoveById:
+        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+            attachment = container->attachment(i);
+            if(attachment->id() == id) {
+                attachment->setIgnored(true);
+                attachmentFound = true;
+            }
+        }
+        if(!attachmentFound == true) {
+            container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be removed.", context);
+        }
+        break;
+    case AttachmentAction::RemoveByName:
+        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+            attachment = container->attachment(i);
+            if(attachment->name() == name) {
+                attachment->setIgnored(true);
+                attachmentFound = true;
+            }
+        }
+        if(!attachmentFound == true) {
+            container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + name + "\" does not exist and hence can't be removed.", context);
+        }
+        break;
+    }
+}
+
+void AttachmentInfo::apply(AbstractAttachment *attachment)
+{
+    if(id) {
+        attachment->setId(id);
+    }
+    if(!path.empty()) {
+        attachment->setFile(path);
+    }
+    if(!name.empty()) {
+        attachment->setName(name);
+    }
+    if(!mime.empty()) {
+        attachment->setMimeType(mime);
+    }
+    if(!desc.empty()) {
+        attachment->setDescription(desc);
+    }
+}
+
+void AttachmentInfo::reset()
+{
+    action = AttachmentAction::Add;
+    id = 0;
+    path.clear();
+    name.clear();
+    mime.clear();
+    desc.clear();
+}
+
+bool AttachmentInfo::next(AbstractContainer *container)
+{
+    if(!id && path.empty() && name.empty() && mime.empty() && desc.empty()) {
+        // skip empty attachment infos
+        return false;
+    }
+    apply(container);
+    reset();
+    return true;
+}
+
 void generateFileInfo(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
@@ -523,7 +667,7 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
             { // chapters
                 const auto chapters = fileInfo.chapters();
                 if(!chapters.empty()) {
-                    for(const AbstractChapter *chapter : chapters) {
+                    for(const auto *chapter : chapters) {
                         printProperty("ID", chapter->id());
                         if(!chapter->names().empty()) {
                             printProperty("Name", static_cast<string>(chapter->names().front()));
@@ -597,7 +741,7 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
                                 cout << "none";
                             } else {
                                 try {
-                                    QString textValue = tagValueToQString(value);
+                                    const auto textValue = tagValueToQString(value);
                                     if(textValue.isEmpty()) {
                                         cout << "can't display here (see --extract)";
                                     } else {
@@ -628,7 +772,7 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
 void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &removeOtherFieldsArg,
                 const Argument &treatUnknownFilesAsMp3FilesArg, const Argument &id3v1UsageArg, const Argument &id3v2UsageArg,
                 const Argument &mergeMultipleSuccessiveTagsArg, const Argument &id3v2VersionArg, const Argument &encodingArg,
-                const Argument &verboseArg)
+                const Argument &attachmentsArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
@@ -637,8 +781,8 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
     }
     FieldDenotation fields[knownFieldArraySize];
     unsigned int validDenotations = parseFieldDenotations(parameterValues, false, fields);
-    if(!validDenotations) {
-        cout << "Error: No fields have been specified." << endl;
+    if(!validDenotations && !attachmentsArg.valueCount()) {
+        cout << "Error: No fields/attachments have been specified." << endl;
         return;
     }
     uint32 id3v2Version = 3;
@@ -653,20 +797,25 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
             cout << "Warning: The specified ID3v2 version \"" << id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << endl;
         }
     }
-    TagTextEncoding encoding = parseEncodingDenotation(encodingArg, TagTextEncoding::Utf8);
+    TagTextEncoding denotedEncoding = parseEncodingDenotation(encodingArg, TagTextEncoding::Utf8);
     TagUsage id3v1Usage = parseUsageDenotation(id3v1UsageArg, TagUsage::KeepExisting);
     TagUsage id3v2Usage = parseUsageDenotation(id3v2UsageArg, TagUsage::Always);
     unsigned int fileIndex = 0;
+    static const string context("setting tags");
     MediaFileInfo fileInfo;
+    NotificationList notifications;
     for(const auto &file : filesArg.values()) {
         try {
             // parse tags
+            cout << "Setting tag information for \"" << file << "\" ..." << endl;
+            notifications.clear();
             fileInfo.setPath(file);
             fileInfo.parseTags();
-            cout << "Setting tag information for \"" << file << "\" ..." << endl;
-            auto tags = fileInfo.tags();       
+            fileInfo.parseTracks();
             fileInfo.createAppropriateTags(treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, mergeMultipleSuccessiveTagsArg.isPresent(), !id3v2VersionArg.isPresent(), id3v2Version);
-            if(tags.size()) {
+            auto container = fileInfo.container();
+            auto tags = fileInfo.tags();       
+            if(!tags.empty()) {
                 // iterate through all tags
                 for(auto *tag : tags) {
                     if(removeOtherFieldsArg.isPresent()) {
@@ -705,14 +854,14 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                                             value.setMimeType(fileInfo.mimeType());
                                             tag->setValue(field, move(value));
                                         } catch (ios_base::failure &) {
-                                            cout << "An IO error occured when parsing the specified cover file." << endl;
+                                            fileInfo.addNotification(NotificationType::Critical, "An IO error occured when parsing the specified cover file.", context);
                                         } catch (Media::Failure &) {
-                                            cout << "Unable to parse specified cover file." << endl;
+                                            fileInfo.addNotification(NotificationType::Critical, "Unable to parse specified cover file.", context);
                                         }
                                     }
                                 } else {
-                                    TagTextEncoding usedEncoding = encoding;
-                                    if(!tag->canEncodingBeUsed(encoding)) {
+                                    TagTextEncoding usedEncoding = denotedEncoding;
+                                    if(!tag->canEncodingBeUsed(denotedEncoding)) {
                                         usedEncoding = tag->proposedTextEncoding();
                                     }
                                     tag->setValue(field, qstringToTagValue(selectedDenotatedValue->second, usedEncoding));
@@ -725,21 +874,74 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                         field = nextKnownField(field);
                     }
                 }
-                try {
-                    fileInfo.applyChanges();
-                    cout << "Changes have been applied." << endl;
-                } catch(ApplicationUtilities::Failure &) {
-                    cout << "A failure occured when applying the changes." << endl;
-                }
             } else {
-                cout << " Can not create appropriate tags for file." << endl;
+                fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
             }
-        } catch(ios_base::failure &) {
+            bool attachmentsModified = false;
+            if(attachmentsArg.isPresent()) {
+                static const string context("setting attachments");
+                fileInfo.parseAttachments();
+                if(fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok) {
+                    if(container) {
+                        AttachmentInfo currentInfo;
+                        for(const auto &value : attachmentsArg.values()) {
+                            const auto *data = value.data();
+                            if(value == ",") {
+                                attachmentsModified |= currentInfo.next(container);
+                            } else if(value == "add") {
+                                currentInfo.action = AttachmentAction::Add;
+                            } else if(value == "update-by-id") {
+                                currentInfo.action = AttachmentAction::UpdateById;
+                            } else if(value == "update-by-name") {
+                                currentInfo.action = AttachmentAction::UpdateByName;
+                            } else if(value == "remove-by-id") {
+                                currentInfo.action = AttachmentAction::RemoveById;
+                            } else if(value == "remove-by-name") {
+                                currentInfo.action = AttachmentAction::RemoveByName;
+                            } else if(!strncmp(data, "id=", 3)) {
+                                try {
+                                    currentInfo.id = stringToNumber<uint64, string>(data + 3);
+                                } catch(const ConversionException &) {
+                                    container->addNotification(NotificationType::Warning, "The specified attachment ID \"" + string(data + 3) + "\" is invalid.", context);
+                                }
+                            } else if(!strncmp(data, "path=", 5)) {
+                                currentInfo.path = data + 5;
+                            } else if(!strncmp(data, "name=", 5)) {
+                                currentInfo.name = data + 5;
+                            } else if(!strncmp(data, "mime=", 5)) {
+                                currentInfo.mime = data + 5;
+                            } else if(!strncmp(data, "desc=", 5)) {
+                                currentInfo.desc = data + 5;
+                            } else {
+                                container->addNotification(NotificationType::Warning, "The attachment specification \"" + value + "\" is invalid and will be ignored.", context);
+                            }
+                        }
+                        attachmentsModified |= currentInfo.next(container);
+                    } else {
+                        fileInfo.addNotification(NotificationType::Critical, "Unable to assign attachments because the container object has not been initialized.", context);
+                    }
+                } else {
+                    // notification will be added by the file info automatically
+                }
+            }
+            if(!tags.empty() || attachmentsModified) {
+                try {
+                    // save parsing notifications because notifications of sub objects like tags, tracks, ... will be gone after applying changes
+                    fileInfo.gatherRelatedNotifications(notifications);
+                    fileInfo.invalidateNotifications();
+                    fileInfo.applyChanges();
+                    fileInfo.gatherRelatedNotifications(notifications);
+                    cout << "Changes have been applied." << endl;
+                } catch(const ApplicationUtilities::Failure &) {
+                    cout << "Error: Failed to apply changes." << endl;
+                }
+            }
+        } catch(const ios_base::failure &) {
             cout << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
-        } catch(ApplicationUtilities::Failure &) {
+        } catch(const ApplicationUtilities::Failure &) {
             cout << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
         }
-        printNotifications(fileInfo, "Notifications:", verboseArg.isPresent());
+        printNotifications(notifications, "Notifications:", verboseArg.isPresent());
         ++fileIndex;
     }
 }
