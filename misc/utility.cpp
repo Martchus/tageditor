@@ -225,9 +225,9 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
                     }
                 }
                 title.remove(0, titleStart);
-                return;
+            } else {
+                delimIndex = title.indexOf(delim, lastDelimIndex = delimIndex + delim.size());
             }
-            delimIndex = title.indexOf(delim, lastDelimIndex = delimIndex + delim.size());
         }
     }
 }
