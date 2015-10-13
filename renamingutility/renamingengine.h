@@ -5,17 +5,20 @@
 #include <QList>
 #include <QDir>
 #include <QScriptProgram>
+#include <QScriptEngine>
+#include <QScriptValue>
 
 QT_BEGIN_NAMESPACE
 class QFileInfo;
 class QScriptProgram;
-class QScriptValue;
 class QScriptContext;
-class QScriptEngine;
+//class QScriptEngine;
+//class QScriptValue;
 QT_END_NAMESPACE
 
 #include <memory>
 #include <mutex>
+#include <atomic>
 
 namespace RenamingUtility {
 
@@ -57,20 +60,22 @@ private slots:
     void processChangingsApplied();
 
 private:
-    void setRootItem(FileSystemItem *rootItem);
+    void setRootItem(std::unique_ptr<FileSystemItem> &&rootItem = std::unique_ptr<FileSystemItem>());
     void updateModel(FileSystemItem *rootItem);
-    FileSystemItem *generatePreview(const QDir &dir, FileSystemItem *parent = nullptr);
+    std::unique_ptr<FileSystemItem> generatePreview(const QDir &dir, FileSystemItem *parent = nullptr);
     void applyChangings(FileSystemItem *parentItem);
     static void setError(const QList<FileSystemItem *> items);
     void executeScriptForItem(const QFileInfo &fileInfo, FileSystemItem *item);
-    static void setupGlobalObject(QScriptEngine &engine, const QFileInfo &file, FileSystemItem *item);
+    void setupGlobalObject(const QFileInfo &file, FileSystemItem *item);
 
+    QScriptEngine m_engine;
+    QScriptValue m_go;
+    QScriptValue m_persistent;
     std::unique_ptr<FileSystemItem> m_rootItem;
     std::unique_ptr<FileSystemItem> m_newlyGeneratedRootItem;
     int m_itemsProcessed;
     int m_errorsOccured;
-    bool m_aborted;
-    std::mutex m_abortedMutex;
+    std::atomic<bool> m_aborted;
     QScriptProgram m_program;
     QDir m_dir;
     bool m_includeSubdirs;

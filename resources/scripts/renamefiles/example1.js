@@ -58,7 +58,7 @@ function appropriateDigitCount(pos, total) {
  */
 function validFileName(name) {
     if(name !== undefined) {
-        return name.replace(/[\/\\<>?!*|:\"\n\f\r]/gi, "");
+        return name.replace(/[\/\\]/gi, " - ").replace(/[<>?!*|:\"\n\f\r]/gi, "");
     } else {
         return "";
     }
@@ -70,7 +70,7 @@ function validFileName(name) {
  */
 function validDirectoryName(name) {
     if(name !== undefined) {
-        return name.replace(/[\/\\<>?!*|:\".\n\f\r]/gi, "");
+        return name.replace(/[\/\\]/gi, " - ").replace(/[<>?!*|:\".\n\f\r]/gi, "");
     } else {
         return "";
     }

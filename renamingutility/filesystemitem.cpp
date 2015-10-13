@@ -15,8 +15,8 @@ const QString &emptyStr() {
     return emptyStr;
 }
 
-FileSystemItem::FileSystemItem(ItemStatus status, ItemType type, const QString &name) :
-    m_parent(nullptr),
+FileSystemItem::FileSystemItem(ItemStatus status, ItemType type, const QString &name, FileSystemItem *parent) :
+    m_parent(parent),
     m_counterpart(nullptr),
     m_status(status),
     m_type(type),
@@ -25,7 +25,11 @@ FileSystemItem::FileSystemItem(ItemStatus status, ItemType type, const QString &
     m_name(name),
     m_checked(false),
     m_checkable(false)
-{}
+{
+    if(m_parent) {
+        m_parent->m_children << this;
+    }
+}
 
 FileSystemItem::~FileSystemItem()
 {

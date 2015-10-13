@@ -4,6 +4,8 @@
 #include "./filteredfilesystemitemmodel.h"
 #include "./scriptfunctions.h"
 
+#include <c++utilities/misc/memory.h>
+
 #include <QDir>
 #include <QScriptEngine>
 #include <QScriptProgram>
@@ -21,6 +23,7 @@ namespace RenamingUtility {
 
 RemamingEngine::RemamingEngine(QObject *parent) :
     QObject(parent),
+    m_go(m_engine.globalObject()),
     m_itemsProcessed(0),
     m_errorsOccured(0),
     m_aborted(false),
@@ -41,26 +44,24 @@ bool RemamingEngine::generatePreview(const QScriptProgram &scriptProgram, const 
     if(!m_mutex.try_lock()) {
         return false;
     }
-    setRootItem(nullptr);
+    lock_guard<mutex> guard(m_mutex, adopt_lock);
+    setRootItem();
     m_program = scriptProgram;
     m_includeSubdirs = includeSubdirs;
     m_dir = rootDirectory;
     auto startFunc = [this] () {
         {
             lock_guard<mutex> guard(m_mutex);
-            {
-                lock_guard<mutex> guard(m_abortedMutex);
-                m_aborted = false;
-            }
+            m_aborted.store(false);
             m_itemsProcessed = 0;
             m_errorsOccured = 0;
-            m_newlyGeneratedRootItem.reset(generatePreview(m_dir));
+            m_go.setProperty("persistent", m_persistent = m_engine.newObject(), QScriptValue::Undeletable);
+            m_newlyGeneratedRootItem = generatePreview(m_dir);
         }
         emit previewGenerated();
     };
     std::thread thread(startFunc);
     thread.detach();
-    m_mutex.unlock();
     return true;
 }
 
@@ -72,13 +73,11 @@ bool RemamingEngine::applyChangings()
     if(!m_mutex.try_lock()) {
         return false;
     }
+    lock_guard<mutex> guard(m_mutex, adopt_lock);
     auto startFunc = [this] () {
         {
             lock_guard<mutex> guard(m_mutex);
-            {
-                lock_guard<mutex> guard(m_abortedMutex);
-                m_aborted = false;
-            }
+            m_aborted.store(false);
             m_itemsProcessed = 0;
             m_errorsOccured = 0;
             applyChangings(m_rootItem.get());
@@ -87,7 +86,6 @@ bool RemamingEngine::applyChangings()
     };
     std::thread thread(startFunc);
     thread.detach();
-    m_mutex.unlock();
     return true;
 }
 
@@ -103,22 +101,20 @@ bool RemamingEngine::isBusy()
 
 void RemamingEngine::abort()
 {
-    lock_guard<mutex> guard(m_abortedMutex);
-    m_aborted = true;
+    m_aborted.store(true);
 }
 
 bool RemamingEngine::isAborted()
 {
-    lock_guard<mutex> guard(m_abortedMutex);
-    return m_aborted;
+    return m_aborted.load();
 }
 
 bool RemamingEngine::clearPreview()
 {
     if(m_mutex.try_lock()) {
+        lock_guard<mutex> guard(m_mutex, adopt_lock);
         updateModel(nullptr);
         m_rootItem.reset();
-        m_mutex.unlock();
         return true;
     } else {
         return false;
@@ -153,7 +149,7 @@ FilteredFileSystemItemModel *RemamingEngine::previewModel()
 
 void RemamingEngine::processPreviewGenerated()
 {
-    setRootItem(m_newlyGeneratedRootItem.release());
+    setRootItem(move(m_newlyGeneratedRootItem));
 }
 
 void RemamingEngine::processChangingsApplied()
@@ -162,10 +158,10 @@ void RemamingEngine::processChangingsApplied()
     updateModel(m_rootItem.get());
 }
 
-inline void RemamingEngine::setRootItem(FileSystemItem *rootItem)
+inline void RemamingEngine::setRootItem(unique_ptr<FileSystemItem> &&rootItem)
 {
-    updateModel(rootItem);
-    m_rootItem.reset(rootItem);
+    updateModel(rootItem.get());
+    m_rootItem = move(rootItem);
 }
 
 void RemamingEngine::updateModel(FileSystemItem *rootItem)
@@ -175,10 +171,9 @@ void RemamingEngine::updateModel(FileSystemItem *rootItem)
     }
 }
 
-FileSystemItem *RemamingEngine::generatePreview(const QDir &dir, FileSystemItem *parent)
+unique_ptr<FileSystemItem> RemamingEngine::generatePreview(const QDir &dir, FileSystemItem *parent)
 {
-    FileSystemItem *item = new FileSystemItem(ItemStatus::Current, ItemType::Dir, dir.dirName());
-    item->setParent(parent);
+    auto item = make_unique<FileSystemItem>(ItemStatus::Current, ItemType::Dir, dir.dirName(), parent);
     item->setApplied(false);
     QFileInfoList entries = dir.entryInfoList();
     foreach(const QFileInfo &entry, entries) {
@@ -186,12 +181,11 @@ FileSystemItem *RemamingEngine::generatePreview(const QDir &dir, FileSystemItem 
                 || entry.fileName() == QLatin1String(".")) {
             continue;
         }
-        FileSystemItem *subItem;
+        FileSystemItem *subItem; // will be deleted by parent
         if(entry.isDir() && m_includeSubdirs) {
-            subItem = generatePreview(QDir(entry.absoluteFilePath()), item);
+            subItem = generatePreview(QDir(entry.absoluteFilePath()), item.get()).release();
         } else if(entry.isFile()) {
-            subItem = new FileSystemItem(ItemStatus::Current, ItemType::File, entry.fileName());
-            subItem->setParent(item);
+            subItem = new FileSystemItem(ItemStatus::Current, ItemType::File, entry.fileName(), item.get());
             subItem->setApplied(false);
         } else {
             subItem = nullptr;
@@ -295,20 +289,21 @@ void RemamingEngine::setError(const QList<FileSystemItem *> items)
 
 void RemamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemItem *item)
 {
-    QScriptEngine engine;
-    setupGlobalObject(engine, fileInfo, item);
-    QScriptValue res = engine.evaluate(m_program);
-
-    if(engine.hasUncaughtException()) {
+    // execute script
+    setupGlobalObject(fileInfo, item);
+    QScriptValue res = m_engine.evaluate(m_program);
+    if(m_engine.hasUncaughtException()) {
+        // handle error
         item->setErrorOccured(true);
         item->setNote(res.toString());
+        m_engine.clearExceptions();
     } else {
-        QScriptValue go = engine.globalObject();
-        QScriptValue newName = go.property("newName");
-        QScriptValue newRelativeDirectory = go.property("newRelativeDirectory");
+        // create preview for action
+        QScriptValue newName = m_go.property("newName");
+        QScriptValue newRelativeDirectory = m_go.property("newRelativeDirectory");
         ActionType action = ActionType::Skip;
-        if(engine.globalObject().property("action").isNumber()) {
-            action = static_cast<ActionType>(engine.globalObject().property("action").toInt32());
+        if(m_go.property("action").isNumber()) {
+            action = static_cast<ActionType>(m_go.property("action").toInt32());
         }
         switch(action) {
         case ActionType::Rename:
@@ -325,8 +320,7 @@ void RemamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
                     item->setNote(tr("name is already used at new location"));
                     item->setErrorOccured(true);
                 } else {
-                    FileSystemItem *counterpart = new FileSystemItem(ItemStatus::New, item->type(), counterpartName);
-                    counterpart->setParent(counterpartParent);
+                    auto *counterpart = new FileSystemItem(ItemStatus::New, item->type(), counterpartName, counterpartParent);
                     item->setCounterpart(counterpart);
                     counterpart->setCheckable(true);
                     counterpart->setChecked(true);
@@ -359,24 +353,29 @@ void RemamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
     }
 }
 
-void RemamingEngine::setupGlobalObject(QScriptEngine &engine, const QFileInfo &file, FileSystemItem *item)
+void RemamingEngine::setupGlobalObject(const QFileInfo &file, FileSystemItem *item)
 {
-    QScriptValue go = engine.globalObject();
-    go.setProperty("currentPath", file.absoluteFilePath(), QScriptValue::ReadOnly);
-    go.setProperty("currentName", item->name(), QScriptValue::ReadOnly);
-    go.setProperty("currentRelativeDirectory", item->relativeDir(), QScriptValue::ReadOnly);
-    go.setProperty("isDir", item->type() == ItemType::Dir, QScriptValue::ReadOnly);
-    go.setProperty("isFile", item->type() == ItemType::File, QScriptValue::ReadOnly);
-    go.setProperty("action", QScriptValue(static_cast<int>(ActionType::Rename)), QScriptValue::Undeletable);
-    go.setProperty("parseFileInfo", engine.newFunction(ScriptFunctions::parseFileInfo), QScriptValue::ReadOnly);
-    go.setProperty("parseFileName", engine.newFunction(ScriptFunctions::parseFileName), QScriptValue::ReadOnly);
-    go.setProperty("allFiles", engine.newFunction(ScriptFunctions::allFiles), QScriptValue::ReadOnly);
-    go.setProperty("firstFile", engine.newFunction(ScriptFunctions::firstFile), QScriptValue::ReadOnly);
-    go.setProperty("writeLog", engine.newFunction(ScriptFunctions::writeLog), QScriptValue::ReadOnly);
-    QScriptValue actionObject = engine.newObject();
+    // create new global object to clean previous variables ...
+    m_go = m_engine.newObject();
+    // ... except the persistent object
+    m_go.setProperty("persistent", m_persistent, QScriptValue::Undeletable);
+    // provide properties/functions
+    m_go.setProperty("currentPath", file.absoluteFilePath(), QScriptValue::ReadOnly);
+    m_go.setProperty("currentName", item->name(), QScriptValue::ReadOnly);
+    m_go.setProperty("currentRelativeDirectory", item->relativeDir(), QScriptValue::ReadOnly);
+    m_go.setProperty("isDir", item->type() == ItemType::Dir, QScriptValue::ReadOnly);
+    m_go.setProperty("isFile", item->type() == ItemType::File, QScriptValue::ReadOnly);
+    m_go.setProperty("action", QScriptValue(static_cast<int>(ActionType::Rename)), QScriptValue::Undeletable);
+    m_go.setProperty("parseFileInfo", m_engine.newFunction(ScriptFunctions::parseFileInfo), QScriptValue::ReadOnly);
+    m_go.setProperty("parseFileName", m_engine.newFunction(ScriptFunctions::parseFileName), QScriptValue::ReadOnly);
+    m_go.setProperty("allFiles", m_engine.newFunction(ScriptFunctions::allFiles), QScriptValue::ReadOnly);
+    m_go.setProperty("firstFile", m_engine.newFunction(ScriptFunctions::firstFile), QScriptValue::ReadOnly);
+    m_go.setProperty("writeLog", m_engine.newFunction(ScriptFunctions::writeLog), QScriptValue::ReadOnly);
+    QScriptValue actionObject = m_engine.newObject();
     actionObject.setProperty("rename", QScriptValue(static_cast<int>(ActionType::Rename)), QScriptValue::ReadOnly);
     actionObject.setProperty("skip", QScriptValue(static_cast<int>(ActionType::Skip)), QScriptValue::ReadOnly);
-    go.setProperty("actionType", actionObject, QScriptValue::ReadOnly);
+    m_go.setProperty("actionType", actionObject, QScriptValue::ReadOnly);
+    m_engine.setGlobalObject(m_go);
 }
 
 } // namespace RenamingUtility
