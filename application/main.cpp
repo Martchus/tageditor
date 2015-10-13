@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     displayTagInfoArg.setValueNames({"title", "album", "artist", "trackpos"});
     displayTagInfoArg.setSecondaryArguments({&filesArg, &verboseArg});
     // set tag info
-    Argument removeOtherFieldsArg("remove-other-fields", string(), "if present ALL unspecified tag fields will be removed; otherwise use eg. \"album=\" to remove a specific field");
+    Argument removeOtherFieldsArg("remove-other-fields", string(), "if present ALL unspecified tag fields will be removed (to remove a specific field use eg. \"album=\")");
     removeOtherFieldsArg.setCombinable(true);
     Argument treatUnknownFilesAsMp3FilesArg("treat-unknown-as-mp3", string(), "if present unknown files will be treatet as MP3 files");
     treatUnknownFilesAsMp3FilesArg.setCombinable(true);
@@ -90,16 +90,22 @@ int main(int argc, char *argv[])
     encodingArg.setRequiredValueCount(1);
     encodingArg.setValueNames({"latin1/utf8/utf16le/utf16be"});
     encodingArg.setCombinable(true);
-    Argument attachmentsArg("attachments", string(), "specifies attachments to be added/updated/removed");
+    Argument removeTargetsArg("remove-targets", string(), "removes all tags with the specified targets (which must be separated by \",\")");
+    removeTargetsArg.setRequiredValueCount(-1);
+    removeTargetsArg.setValueNames({""});
+    removeTargetsArg.setCombinable(true);
+    Argument attachmentsArg("attachments", string(), "specifies attachments to be added/updated/removed (multiple attachments must be separated by \",\"");
     attachmentsArg.setRequiredValueCount(-1);
     attachmentsArg.setValueNames({"path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type", ",", "path=another/file"});
     attachmentsArg.setCombinable(true);
+    Argument removeExistingAttachmentsArg("remove-existing-attachments", "ra", "specifies names/IDs of existing attachments to be removed");
+    removeExistingAttachmentsArg.setCombinable(true);
     Argument setTagInfoArg("set-tag-info", "set", "sets the values of all specified tag fields");
     setTagInfoArg.setDenotesOperation(true);
-    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg), std::cref(attachmentsArg), std::cref(verboseArg)));
+    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg), std::cref(removeTargetsArg), std::cref(attachmentsArg), std::cref(removeExistingAttachmentsArg), std::cref(verboseArg)));
     setTagInfoArg.setRequiredValueCount(-1);
     setTagInfoArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
-    setTagInfoArg.setSecondaryArguments({&filesArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &attachmentsArg, &verboseArg});
+    setTagInfoArg.setSecondaryArguments({&filesArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetsArg, &attachmentsArg, &removeExistingAttachmentsArg, &verboseArg});
     // extract cover
     Argument extractFieldArg("extract", "ext", "extracts the specified field from the specified file");
     extractFieldArg.setRequiredValueCount(1);
