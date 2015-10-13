@@ -52,16 +52,16 @@ inline TagType &operator|= (TagType &lhs, TagType rhs)
 
 struct FieldDenotation
 {
-    FieldDenotation();
-    bool present;
+    FieldDenotation(KnownField field);
+    KnownField field;
     DenotationType type;
     TagType tagType;
     TagTarget tagTarget;
     std::vector<std::pair<unsigned int, QString> > values;
 };
 
-FieldDenotation::FieldDenotation() :
-    present(false),
+FieldDenotation::FieldDenotation(KnownField field) :
+    field(field),
     type(DenotationType::Normal),
     tagType(TagType::Unspecified)
 {}
@@ -224,33 +224,38 @@ TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
 
 bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
 {
-    if(strncmp(configStr.c_str(), "target-level:", 13) == 0) {
-        try {
-            target.setLevel(stringToNumber<uint64>(configStr.substr(13)));
-        } catch (ConversionException &) {
-            cout << "Warning: The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored." << endl;
+    if(!configStr.empty()) {
+        if(configStr.compare(0, 13, "target-level=") == 0) {
+            try {
+                target.setLevel(stringToNumber<uint64>(configStr.substr(13)));
+            } catch (ConversionException &) {
+                cout << "Warning: The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored." << endl;
+            }
+        } else if(configStr.compare(0, 17, "target-levelname=") == 0) {
+            target.setLevelName(configStr.substr(17));
+        } else if(configStr.compare(0, 14, "target-tracks=") == 0) {
+            target.tracks() = parseIds(configStr.substr(14));
+        } else if(configStr.compare(0, 16, "target-chapters=") == 0) {
+            target.chapters() = parseIds(configStr.substr(16));
+        } else if(configStr.compare(0, 16, "target-editions=") == 0) {
+            target.editions() = parseIds(configStr.substr(16));
+        } else if(configStr.compare(0, 17, "target-attachments=") == 0) {
+            target.attachments() = parseIds(configStr.substr(17));
+        } else if(configStr == "target-reset") {
+            target.clear();
+        } else {
+            return false;
         }
-    } else if(configStr.compare(0, 17, "target-levelname:") == 0) {
-        target.setLevelName(configStr.substr(17));
-    } else if(configStr.compare(0, 14, "target-tracks:") == 0) {
-        target.tracks() = parseIds(configStr.substr(14));
-    } else if(configStr.compare(0, 16, "target-chapters:") == 0) {
-        target.chapters() = parseIds(configStr.substr(16));
-    } else if(configStr.compare(0, 16, "target-editions:") == 0) {
-        target.editions() = parseIds(configStr.substr(16));
-    } else if(configStr.compare(0, 17, "target-attachments:") == 0) {
-        target.attachments() = parseIds(configStr.substr(17));
-    } else if(configStr == "target-reset") {
-        target.clear();
+        return true;
     } else {
         return false;
     }
-    return true;
 }
 
-unsigned int parseFieldDenotations(const StringVector &fieldDenotations, bool readOnly, FieldDenotation *fields)
+vector<FieldDenotation> parseFieldDenotations(const StringVector &fieldDenotations, bool readOnly)
 {
-    unsigned int validDenotations = 0;
+    vector<FieldDenotation> fields;
+    fields.reserve(fieldDenotations.size());
     TagType currentTagType = TagType::Unspecified;
     TagTarget currentTagTarget;
     for(const string &fieldDenotationString : fieldDenotations) {
@@ -382,8 +387,8 @@ unsigned int parseFieldDenotations(const StringVector &fieldDenotations, bool re
             continue;
         }
         // add field denotation with parsed values
-        FieldDenotation &fieldDenotation = fields[static_cast<unsigned int>(field)];
-        fieldDenotation.present = true;
+        fields.emplace_back(field);
+        FieldDenotation &fieldDenotation = fields.back();
         fieldDenotation.type = type;
         fieldDenotation.tagType = currentTagType;
         fieldDenotation.tagTarget = currentTagTarget;
@@ -391,12 +396,11 @@ unsigned int parseFieldDenotations(const StringVector &fieldDenotations, bool re
             if(readOnly) {
                 cout << "Warning: Specified value for \"" << fieldName << "\" will be ignored." << endl;
             } else {
-                fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(fieldDenotationString.c_str() + equationPos + 1)));
+                fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(fieldDenotationString.data() + equationPos + 1)));
             }
         }
-        ++validDenotations;
     }
-    return validDenotations;
+    return fields;
 }
 
 enum class AttachmentAction {
@@ -699,8 +703,7 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
         cout << "Error: No files have been specified." << endl;
         return;
     }
-    FieldDenotation fields[knownFieldArraySize];
-    unsigned int validDenotations = parseFieldDenotations(parameterValues, true, fields);
+    const auto fields = parseFieldDenotations(parameterValues, true);
     MediaFileInfo fileInfo;
     for(const auto &file : filesArg.values()) {
         try {
@@ -722,24 +725,18 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
                     }
                     cout << endl;
                     // iterate through fields specified by the user
-                    KnownField field = firstKnownField;
-                    for(const FieldDenotation &fieldDenotation : fields) {
-                        const auto &value = tag->value(field);
-                        if((!validDenotations && !value.isEmpty())
-                                || (fieldDenotation.present
-                                    && (fieldDenotation.tagType == TagType::Unspecified
-                                        || (fieldDenotation.tagType | tagType) != TagType::Unspecified))) {
-                            // write field name
-                            const char *fieldName = KnownFieldModel::fieldName(field);
-                            cout << ' ' << fieldName;
-                            // write padding
-                            for(auto i = strlen(fieldName); i < 18; ++i) {
-                                cout << ' ';
-                            }
-                            // write value
-                            if(value.isEmpty()) {
-                                cout << "none";
-                            } else {
+                    if(fields.empty()) {
+                        for(auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
+                            const auto &value = tag->value(field);
+                            if(!value.isEmpty()) {
+                                // write field name
+                                const char *fieldName = KnownFieldModel::fieldName(field);
+                                cout << ' ' << fieldName;
+                                // write padding
+                                for(auto i = strlen(fieldName); i < 18; ++i) {
+                                    cout << ' ';
+                                }
+                                // write value
                                 try {
                                     const auto textValue = tagValueToQString(value);
                                     if(textValue.isEmpty()) {
@@ -750,10 +747,38 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
                                 } catch(ConversionException &) {
                                     cout << "conversion error";
                                 }
+                                cout << endl;
                             }
-                            cout << endl;
                         }
-                        field = nextKnownField(field);
+                    } else {
+                        for(const FieldDenotation &fieldDenotation : fields) {
+                            const auto &value = tag->value(fieldDenotation.field);
+                            if(fieldDenotation.tagType == TagType::Unspecified || (fieldDenotation.tagType | tagType) != TagType::Unspecified) {
+                                // write field name
+                                const char *fieldName = KnownFieldModel::fieldName(fieldDenotation.field);
+                                cout << ' ' << fieldName;
+                                // write padding
+                                for(auto i = strlen(fieldName); i < 18; ++i) {
+                                    cout << ' ';
+                                }
+                                // write value
+                                if(value.isEmpty()) {
+                                    cout << "none";
+                                } else {
+                                    try {
+                                        const auto textValue = tagValueToQString(value);
+                                        if(textValue.isEmpty()) {
+                                            cout << "can't display here (see --extract)";
+                                        } else {
+                                            cout << textValue.toLocal8Bit().data();
+                                        }
+                                    } catch(ConversionException &) {
+                                        cout << "conversion error";
+                                    }
+                                }
+                                cout << endl;
+                            }
+                        }
                     }
                 }
             } else {
@@ -772,19 +797,42 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
 void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &removeOtherFieldsArg,
                 const Argument &treatUnknownFilesAsMp3FilesArg, const Argument &id3v1UsageArg, const Argument &id3v2UsageArg,
                 const Argument &mergeMultipleSuccessiveTagsArg, const Argument &id3v2VersionArg, const Argument &encodingArg,
-                const Argument &attachmentsArg, const Argument &verboseArg)
+                const Argument &removeTargetsArg,
+                const Argument &attachmentsArg, const Argument &removeExistingAttachmentsArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.valueCount()) {
         cout << "Error: No files have been specified." << endl;
         return;
     }
-    FieldDenotation fields[knownFieldArraySize];
-    unsigned int validDenotations = parseFieldDenotations(parameterValues, false, fields);
-    if(!validDenotations && !attachmentsArg.valueCount()) {
+    auto fields = parseFieldDenotations(parameterValues, false);
+    if(fields.empty() && !attachmentsArg.valueCount()) {
         cout << "Error: No fields/attachments have been specified." << endl;
         return;
     }
+    // determine required targets
+    vector<TagTarget> requiredTargets;
+    for(const FieldDenotation &fieldDenotation : fields) {
+        if(find(requiredTargets.cbegin(), requiredTargets.cend(), fieldDenotation.tagTarget) == requiredTargets.cend()) {
+            requiredTargets.push_back(fieldDenotation.tagTarget);
+        }
+    }
+    // determine targets to remove
+    vector<TagTarget> targetsToRemove;
+    targetsToRemove.emplace_back();
+    bool validRemoveTargetsSpecified = false;
+    for(const auto &targetDenotation : removeTargetsArg.values()) {
+        if(targetDenotation == ",") {
+            if(validRemoveTargetsSpecified) {
+                targetsToRemove.emplace_back();
+            }
+        } else if(applyTargetConfiguration(targetsToRemove.back(), targetDenotation)) {
+            validRemoveTargetsSpecified = true;
+        } else {
+            cout << "Warning: The given target specification \"" << targetDenotation << "\" is invalid and will be ignored." << endl;
+        }
+    }
+    // parse other settings
     uint32 id3v2Version = 3;
     if(id3v2VersionArg.isPresent()) {
         try {
@@ -800,6 +848,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
     TagTextEncoding denotedEncoding = parseEncodingDenotation(encodingArg, TagTextEncoding::Utf8);
     TagUsage id3v1Usage = parseUsageDenotation(id3v1UsageArg, TagUsage::KeepExisting);
     TagUsage id3v2Usage = parseUsageDenotation(id3v2UsageArg, TagUsage::Always);
+    // iterate through all specified files
     unsigned int fileIndex = 0;
     static const string context("setting tags");
     MediaFileInfo fileInfo;
@@ -812,24 +861,34 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
             fileInfo.setPath(file);
             fileInfo.parseTags();
             fileInfo.parseTracks();
-            fileInfo.createAppropriateTags(treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, mergeMultipleSuccessiveTagsArg.isPresent(), !id3v2VersionArg.isPresent(), id3v2Version);
+            vector<Tag *> tags;
+            // remove tags with the specified targets
+            if(validRemoveTargetsSpecified) {
+                fileInfo.tags(tags);
+                for(auto *tag : tags) {
+                    if(find(targetsToRemove.cbegin(), targetsToRemove.cend(), tag->target()) != targetsToRemove.cend()) {
+                        fileInfo.removeTag(tag);
+                    }
+                }
+                tags.clear();
+            }
+            // create new tags according to settings
+            fileInfo.createAppropriateTags(treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, mergeMultipleSuccessiveTagsArg.isPresent(), !id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
             auto container = fileInfo.container();
-            auto tags = fileInfo.tags();       
+            fileInfo.tags(tags);
             if(!tags.empty()) {
                 // iterate through all tags
                 for(auto *tag : tags) {
                     if(removeOtherFieldsArg.isPresent()) {
                         tag->removeAllFields();
                     }
-                    TagType tagType = tag->type();
+                    auto tagType = tag->type();
                     bool targetSupported = tag->supportsTarget();
-                    TagTarget tagTarget = tag->target();
-                    KnownField field = firstKnownField;
+                    auto tagTarget = tag->target();
                     for(FieldDenotation &fieldDenotation : fields) {
-                        if(fieldDenotation.present
-                                && (fieldDenotation.tagType == TagType::Unspecified
-                                    || (fieldDenotation.tagType | tagType) != TagType::Unspecified)
-                                && (!targetSupported || fieldDenotation.tagTarget.isEmpty() || fieldDenotation.tagTarget == tagTarget)) {
+                        if((fieldDenotation.tagType == TagType::Unspecified
+                            || (fieldDenotation.tagType | tagType) != TagType::Unspecified)
+                                && (!targetSupported || fieldDenotation.tagTarget == tagTarget)) {
                             pair<unsigned int, QString> *selectedDenotatedValue = nullptr;
                             for(auto &someDenotatedValue : fieldDenotation.values) {
                                 if(someDenotatedValue.first <= fileIndex) {
@@ -841,7 +900,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                             if(selectedDenotatedValue) {
                                 if(fieldDenotation.type == DenotationType::File) {
                                     if(selectedDenotatedValue->second.isEmpty()) {
-                                        tag->setValue(field, TagValue());
+                                        tag->setValue(fieldDenotation.field, TagValue());
                                     } else {
                                         try {
                                             MediaFileInfo fileInfo(selectedDenotatedValue->second.toLocal8Bit().constData());
@@ -852,7 +911,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                                             fileInfo.stream().read(buff.get(), fileInfo.size());
                                             TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
                                             value.setMimeType(fileInfo.mimeType());
-                                            tag->setValue(field, move(value));
+                                            tag->setValue(fieldDenotation.field, move(value));
                                         } catch (ios_base::failure &) {
                                             fileInfo.addNotification(NotificationType::Critical, "An IO error occured when parsing the specified cover file.", context);
                                         } catch (Media::Failure &) {
@@ -864,25 +923,32 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                                     if(!tag->canEncodingBeUsed(denotedEncoding)) {
                                         usedEncoding = tag->proposedTextEncoding();
                                     }
-                                    tag->setValue(field, qstringToTagValue(selectedDenotatedValue->second, usedEncoding));
+                                    tag->setValue(fieldDenotation.field, qstringToTagValue(selectedDenotatedValue->second, usedEncoding));
                                     if(fieldDenotation.type == DenotationType::Increment && tag == tags.back()) {
                                         selectedDenotatedValue->second = incremented(selectedDenotatedValue->second);
                                     }
                                 }
                             }
                         }
-                        field = nextKnownField(field);
                     }
                 }
             } else {
                 fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
             }
             bool attachmentsModified = false;
-            if(attachmentsArg.isPresent()) {
+            if(attachmentsArg.isPresent() || removeExistingAttachmentsArg.isPresent()) {
                 static const string context("setting attachments");
                 fileInfo.parseAttachments();
                 if(fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok) {
                     if(container) {
+                        // ignore all existing attachments if argument is specified
+                        if(removeExistingAttachmentsArg.isPresent()) {
+                            for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+                                container->attachment(i)->setIgnored(false);
+                            }
+                            attachmentsModified = true;
+                        }
+                        // add/update/remove attachments explicitely
                         AttachmentInfo currentInfo;
                         for(const auto &value : attachmentsArg.values()) {
                             const auto *data = value.data();
@@ -949,9 +1015,8 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
 void extractField(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
-    FieldDenotation fields[knownFieldArraySize];
-    unsigned int validDenotations = parseFieldDenotations(parameterValues, true, fields);
-    if(validDenotations != 1) {
+    const auto fields = parseFieldDenotations(parameterValues, true);
+    if(fields.size() != 1) {
         cout << "Error: Excactly one field needs to be specified." << endl;
         return;
     }
@@ -966,15 +1031,11 @@ void extractField(const StringVector &parameterValues, const Argument &inputFile
         vector<pair<const TagValue *, string> > values;
         // iterate through all tags
         for(const Tag *tag : tags) {
-            auto field = firstKnownField;
             for(const auto &fieldDenotation : fields) {
-                if(fieldDenotation.present) {
-                    const auto &value = tag->value(field);
-                    if(!value.isEmpty()) {
-                        values.emplace_back(&value, joinStrings({tag->typeName(), numberToString(values.size())}, "-"));
-                    }
+                const auto &value = tag->value(fieldDenotation.field);
+                if(!value.isEmpty()) {
+                    values.emplace_back(&value, joinStrings({tag->typeName(), numberToString(values.size())}, "-"));
                 }
-                field = nextKnownField(field);
             }
         }
         if(values.empty()) {
