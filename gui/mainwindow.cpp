@@ -41,6 +41,7 @@
 #include <QMimeData>
 #include <QTextStream>
 #include <QFileSystemWatcher>
+#include <QDesktopServices>
 #ifdef TAGEDITOR_USE_WEBENGINE
 #include <QWebEngineView>
 #else
@@ -171,6 +172,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->actionSave_file_information, &QAction::triggered, this, &MainWindow::saveFileInformation);
     connect(m_ui->actionClose, &QAction::triggered, this, &MainWindow::closeFile);
     connect(m_ui->actionReload, &QAction::triggered, this, &MainWindow::reparseFile);
+    connect(m_ui->actionExternalPlayer, &QAction::triggered, this, &MainWindow::spawnExternalPlayer);
     //  menu: directory
     connect(m_ui->actionSelect_next_file, &QAction::triggered, this, &MainWindow::selectNextFile);
     connect(m_ui->actionSelect_next_file_and_save_current, &QAction::triggered, this, &MainWindow::saveAndShowNextFile);
@@ -510,6 +512,7 @@ void MainWindow::updateUiStatus()
     m_ui->actionSave_file_information->setEnabled(opened);
     m_ui->actionClose->setEnabled(opened);
     m_ui->actionReload->setEnabled(opened);
+    m_ui->actionExternalPlayer->setEnabled(opened);
     m_ui->buttonsWidget->setEnabled(opened);
     // clear and restore buttons
     m_ui->clearEntriesPushButton->setEnabled(hasTag);
@@ -661,6 +664,18 @@ void MainWindow::copyInfoWebViewSelection()
 }
 
 /*!
+ * \brief Spawns an external player for the current file.
+ */
+void MainWindow::spawnExternalPlayer()
+{
+    if(!m_currentPath.isEmpty()) {
+        QDesktopServices::openUrl(QStringLiteral("file://") + m_currentPath);
+    } else {
+        m_ui->statusBar->showMessage(tr("No file opened."));
+    }
+}
+
+/*!
  * \brief Calls the specified \a function for each of the currently present tag edits.
  */
 void MainWindow::foreachTagEdit(const std::function<void (TagEdit *)> &function)
@@ -756,12 +771,18 @@ bool MainWindow::startParsing(const QString &path, bool forceRefresh)
  */
 bool MainWindow::reparseFile()
 {
-    if(m_fileInfo.isOpen() && !m_currentPath.isEmpty()) {
-        return startParsing(m_currentPath, true);
-    } else {
-        QMessageBox::warning(this, windowTitle(), tr("Currently is not file opened."));
+    if(!m_fileOperationMutex.try_lock()) {
+        m_ui->statusBar->showMessage(tr("Unable to reload the file because the current process hasn't finished yet."));
         return false;
     }
+    {
+        lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
+        if(!m_fileInfo.isOpen() || m_currentPath.isEmpty()) {
+            QMessageBox::warning(this, windowTitle(), tr("Currently is not file opened."));
+            return false;
+        }
+    }
+    return startParsing(m_currentPath, true);
 }
 
 /*!

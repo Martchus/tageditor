@@ -330,6 +330,7 @@ the file reverting all unsaved changings.</string>
     <addaction name="actionSave_file_information"/>
     <addaction name="separator"/>
     <addaction name="actionReload"/>
+    <addaction name="actionExternalPlayer"/>
     <addaction name="actionSave"/>
     <addaction name="actionDelete_all_tags"/>
     <addaction name="separator"/>
@@ -390,6 +391,9 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="text">
     <string>&amp;Delete all tags</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+D</string>
    </property>
   </action>
   <action name="actionClose">
@@ -454,6 +458,9 @@ the file reverting all unsaved changings.</string>
    <property name="text">
     <string>&amp;Save file information as HTML document</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+H</string>
+   </property>
   </action>
   <action name="actionSelect_next_file_and_save_current">
    <property name="icon">
@@ -465,7 +472,7 @@ the file reverting all unsaved changings.</string>
     <string>Select &amp;next file and save current</string>
    </property>
    <property name="shortcut">
-    <string>F5</string>
+    <string>F3</string>
    </property>
   </action>
   <action name="actionAbout">
@@ -538,10 +545,31 @@ the file reverting all unsaved changings.</string>
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="document-revert"/>
+    <iconset theme="document-revert">
+     <normaloff/>
+    </iconset>
    </property>
    <property name="text">
-    <string>Reload (reverts all changes!)</string>
+    <string>&amp;Reload (reverts all changes!)</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionExternalPlayer">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="media-playback-start">
+     <normaloff/>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Play (external player)</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
    </property>
   </action>
  </widget>

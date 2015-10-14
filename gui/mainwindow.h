@@ -101,6 +101,7 @@ private slots:
     void updateInfoWebView();
     void showInfoWebViewContextMenu(const QPoint &);
     void copyInfoWebViewSelection();
+    void spawnExternalPlayer();
 
 private:
     void updateTagEditsAndAttachmentEdits(bool updateUi = true, PreviousValueHandling previousValueHandling = PreviousValueHandling::Auto);
