@@ -640,8 +640,14 @@ QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNot
         res.append(mkExtendedSection(QStringLiteral("containerMore")));
     }
     if(container) {
-        if(!container->title().empty()) {
-            res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Title"), qstr(container->title())));
+        size_t segmentIndex = 0;
+        for(const auto &title : container->titles()) {
+            if(segmentIndex) {
+                res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Title (segment %1)").arg(++segmentIndex), qstr(title)));
+            } else {
+                ++segmentIndex;
+                res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Title"), qstr(title)));
+            }
         }
         if(container->version()) {
             res.append(mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QString::number(container->version())));

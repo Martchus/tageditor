@@ -68,6 +68,10 @@ int main(int argc, char *argv[])
     displayTagInfoArg.setValueNames({"title", "album", "artist", "trackpos"});
     displayTagInfoArg.setSecondaryArguments({&filesArg, &verboseArg});
     // set tag info
+    Argument docTitleArg("doc-title", "d", "specifies the document title (has no affect if not supported by the container)");
+    docTitleArg.setCombinable(true);
+    docTitleArg.setRequiredValueCount(-1);
+    docTitleArg.setValueNames({"title of first segment", "title of second segment"});
     Argument removeOtherFieldsArg("remove-other-fields", string(), "if present ALL unspecified tag fields will be removed (to remove a specific field use eg. \"album=\")");
     removeOtherFieldsArg.setCombinable(true);
     Argument treatUnknownFilesAsMp3FilesArg("treat-unknown-as-mp3", string(), "if present unknown files will be treatet as MP3 files");
@@ -102,10 +106,10 @@ int main(int argc, char *argv[])
     removeExistingAttachmentsArg.setCombinable(true);
     Argument setTagInfoArg("set-tag-info", "set", "sets the values of all specified tag fields");
     setTagInfoArg.setDenotesOperation(true);
-    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg), std::cref(removeTargetsArg), std::cref(attachmentsArg), std::cref(removeExistingAttachmentsArg), std::cref(verboseArg)));
+    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(filesArg), std::cref(docTitleArg), std::cref(removeOtherFieldsArg), std::cref(treatUnknownFilesAsMp3FilesArg), std::cref(id3v1UsageArg), std::cref(id3v2UsageArg), std::cref(mergeMultipleSuccessiveTagsArg), std::cref(id3v2VersionArg), std::cref(encodingArg), std::cref(removeTargetsArg), std::cref(attachmentsArg), std::cref(removeExistingAttachmentsArg), std::cref(verboseArg)));
     setTagInfoArg.setRequiredValueCount(-1);
     setTagInfoArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
-    setTagInfoArg.setSecondaryArguments({&filesArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetsArg, &attachmentsArg, &removeExistingAttachmentsArg, &verboseArg});
+    setTagInfoArg.setSecondaryArguments({&filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetsArg, &attachmentsArg, &removeExistingAttachmentsArg, &verboseArg});
     // extract cover
     Argument extractFieldArg("extract", "ext", "extracts the specified field from the specified file");
     extractFieldArg.setRequiredValueCount(1);

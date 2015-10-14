@@ -95,4 +95,4 @@ add "CONFIG+=forcewebkit" to the qmake arguments.
 - Use padding to prevent rewriting the entire file to save tags.
 - Support more tag formats (EXIF, PDF metadata, ...).
 - Set tag information concurrently if multiple files have been specified.
-- Extracting/adding/removing attachments via CLI.
+- Do tests with Matroska files which have multiple segments.

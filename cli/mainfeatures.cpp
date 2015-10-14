@@ -585,6 +585,20 @@ void printProperty(const char *propName, const string &value, const char *suffix
     printProperty(propName, value.data(), suffix, intention);
 }
 
+void printProperty(const char *propName, TimeSpan timeSpan, const char *suffix = nullptr, size_t intention = 4)
+{
+    if(!timeSpan.isNull()) {
+        printProperty(propName, timeSpan.toString(TimeSpanOutputFormat::WithMeasures), suffix, intention);
+    }
+}
+
+void printProperty(const char *propName, DateTime dateTime, const char *suffix = nullptr, size_t intention = 4)
+{
+    if(!dateTime.isNull()) {
+        printProperty(propName, dateTime.toString(), suffix, intention);
+    }
+}
+
 template<typename intType>
 void printProperty(const char *propName, const intType value, const char *suffix = nullptr, bool force = false, size_t intention = 4)
 {
@@ -611,6 +625,30 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
             fileInfo.parseChapters();
             cout << "Technical information for \"" << file << "\":" << endl;
             cout << "  Container format: " << fileInfo.containerFormatName() << endl;
+            {
+                if(const auto container = fileInfo.container()) {
+                    size_t segmentIndex = 0;
+                    for(const auto &title : container->titles()) {
+                        if(segmentIndex) {
+                            printProperty("Title", title + " (segment " + numberToString(++segmentIndex) + ")");
+                        } else {
+                            ++segmentIndex;
+                            printProperty("Title", title);
+                        }
+                    }
+                    printProperty("Document type", container->documentType());
+                    printProperty("Read version", container->readVersion());
+                    printProperty("Version", container->version());
+                    printProperty("Document read version", container->doctypeReadVersion());
+                    printProperty("Document version", container->doctypeVersion());
+                    printProperty("Duration", container->duration());
+                    printProperty("Creation time", container->creationTime());
+                    printProperty("Modification time", container->modificationTime());
+                }
+                if(fileInfo.paddingSize()) {
+                    printProperty("Padding", dataSizeToString(fileInfo.paddingSize()));
+                }
+            }
             { // tracks
                 const auto tracks = fileInfo.tracks();
                 if(!tracks.empty()) {
@@ -629,9 +667,7 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
                         if(track->size()) {
                             printProperty("Size", dataSizeToString(track->size(), true));
                         }
-                        if(!track->duration().isNull()) {
-                            printProperty("Duration", track->duration().toString(TimeSpanOutputFormat::WithMeasures));
-                        }
+                        printProperty("Duration", track->duration());
                         printProperty("FPS", track->fps());
                         if(track->channelConfigString()) {
                             printProperty("Channel config", track->channelConfigString());
@@ -646,6 +682,8 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
                         printProperty("Sampling frequency", track->samplingFrequency(), "Hz");
                         printProperty("Extension sampling frequency", track->extensionSamplingFrequency(), "Hz");
                         printProperty("Sample count", track->sampleCount());
+                        printProperty("Creation time", track->creationTime());
+                        printProperty("Modification time", track->modificationTime());
                         cout << endl;
                     }
                 } else {
@@ -794,10 +832,10 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
     }
 }
 
-void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &removeOtherFieldsArg,
-                const Argument &treatUnknownFilesAsMp3FilesArg, const Argument &id3v1UsageArg, const Argument &id3v2UsageArg,
-                const Argument &mergeMultipleSuccessiveTagsArg, const Argument &id3v2VersionArg, const Argument &encodingArg,
-                const Argument &removeTargetsArg,
+void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &docTitleArg,
+                const Argument &removeOtherFieldsArg, const Argument &treatUnknownFilesAsMp3FilesArg,
+                const Argument &id3v1UsageArg, const Argument &id3v2UsageArg, const Argument &mergeMultipleSuccessiveTagsArg,
+                const Argument &id3v2VersionArg, const Argument &encodingArg, const Argument &removeTargetsArg,
                 const Argument &attachmentsArg, const Argument &removeExistingAttachmentsArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
@@ -806,7 +844,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
         return;
     }
     auto fields = parseFieldDenotations(parameterValues, false);
-    if(fields.empty() && !attachmentsArg.valueCount()) {
+    if(fields.empty() && attachmentsArg.values().empty() && docTitleArg.values().empty()) {
         cout << "Error: No fields/attachments have been specified." << endl;
         return;
     }
@@ -875,6 +913,23 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
             // create new tags according to settings
             fileInfo.createAppropriateTags(treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, mergeMultipleSuccessiveTagsArg.isPresent(), !id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
             auto container = fileInfo.container();
+            bool docTitleModified = false;
+            if(!docTitleArg.values().empty()) {
+                if(container) {
+                    size_t segmentIndex = 0, segmentCount = container->titles().size();
+                    for(const auto &newTitle : docTitleArg.values()) {
+                        if(segmentIndex < segmentCount) {
+                            container->setTitle(newTitle, segmentIndex);
+                            docTitleModified = true;
+                        } else {
+                            cout << "Warning: The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments or document titles are not supported." << endl;
+                        }
+                        ++segmentIndex;
+                    }
+                } else {
+                    cout << "Warning: Setting the document title is not supported for the file." << endl;
+                }
+            }
             fileInfo.tags(tags);
             if(!tags.empty()) {
                 // iterate through all tags
@@ -990,7 +1045,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                     // notification will be added by the file info automatically
                 }
             }
-            if(!tags.empty() || attachmentsModified) {
+            if(!tags.empty() || docTitleModified || attachmentsModified) {
                 try {
                     // save parsing notifications because notifications of sub objects like tags, tracks, ... will be gone after applying changes
                     fileInfo.gatherRelatedNotifications(notifications);
@@ -1001,6 +1056,8 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                 } catch(const ApplicationUtilities::Failure &) {
                     cout << "Error: Failed to apply changes." << endl;
                 }
+            } else {
+                cout << "Warning: No changed to be applied." << endl;
             }
         } catch(const ios_base::failure &) {
             cout << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
