@@ -1,6 +1,8 @@
 #ifndef RENAMINGUTILITY_RENAMINGENGINE_H
 #define RENAMINGUTILITY_RENAMINGENGINE_H
 
+#include "./filesystemitem.h"
+
 #include <QObject>
 #include <QList>
 #include <QDir>
@@ -8,21 +10,16 @@
 #include <QScriptEngine>
 #include <QScriptValue>
 
-QT_BEGIN_NAMESPACE
-class QFileInfo;
-class QScriptProgram;
-class QScriptContext;
-//class QScriptEngine;
-//class QScriptValue;
-QT_END_NAMESPACE
-
 #include <memory>
 #include <mutex>
 #include <atomic>
 
+QT_FORWARD_DECLARE_CLASS(QFileInfo)
+QT_FORWARD_DECLARE_CLASS(QScriptProgram)
+QT_FORWARD_DECLARE_CLASS(QScriptContext)
+
 namespace RenamingUtility {
 
-class FileSystemItem;
 class FileSystemItemModel;
 class FilteredFileSystemItemModel;
 
