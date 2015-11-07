@@ -92,7 +92,7 @@ private slots:
 
     // saving
     bool startSaving();
-    void showSavingResult(bool sucess);
+    void showSavingResult(bool processingError, bool ioError);
 
     // misc
     void showAboutDlg();

@@ -1004,17 +1004,16 @@ bool MainWindow::startSaving()
     };
     auto startThread = [this] {
         m_fileOperationMutex.lock();
-        bool success;
+        bool processingError = false, ioError = false;
         try {
             m_fileInfo.applyChanges();
-            success = true;
         } catch(Failure &) {
-            success = false;
+            processingError = true;
         } catch(ios_base::failure &) {
-            success = false;
+            ioError = true;
         }
         m_fileInfo.unregisterAllCallbacks();
-        QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, success));
+        QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
         // showSavingResult() will unlock the mutex!
     };
     m_fileInfo.unregisterAllCallbacks();
@@ -1032,7 +1031,7 @@ bool MainWindow::startSaving()
  * \param sucess Specifies whether the file could be saved sucessfully.
  * \remarks Expects m_fileOperationMutex to be locked!
  */
-void MainWindow::showSavingResult(bool sucess)
+void MainWindow::showSavingResult(bool processingError, bool ioError)
 {
     m_ui->abortButton->setHidden(true);
     m_ui->makingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
@@ -1041,7 +1040,7 @@ void MainWindow::showSavingResult(bool sucess)
     m_ui->makingNotificationWidget->setHidden(false);
     m_makingResultsAvailable = true;
     m_originalNotifications = m_fileInfo.gatherRelatedNotifications();
-    if(sucess) {
+    if(!processingError && !ioError) {
         // display status messages
         QString statusMsg;
         size_t critical = 0;
@@ -1098,10 +1097,12 @@ void MainWindow::showSavingResult(bool sucess)
             startParsing(m_currentPath, true);
         }
     } else {
-        static const QString errormsg(tr("The tags couldn't be saved. See the file info box for detail."));
-        QMessageBox::warning(this, QApplication::applicationName(), errormsg);
-        m_ui->statusBar->showMessage(errormsg);
-        m_ui->makingNotificationWidget->setText(errormsg);
+        static const QString processingErrorMsg(tr("The tags couldn't be saved. See the info box for detail."));
+        static const QString ioErrorMsg(tr("The tags couldn't be saved because an IO error occured."));
+        const auto &errorMsg = ioError ? ioErrorMsg : processingErrorMsg;
+        QMessageBox::warning(this, QApplication::applicationName(), errorMsg);
+        m_ui->statusBar->showMessage(errorMsg);
+        m_ui->makingNotificationWidget->setText(errorMsg);
         m_ui->makingNotificationWidget->setNotificationType(NotificationType::Critical);
         m_fileOperationMutex.unlock();
         startParsing(m_currentPath, true);
