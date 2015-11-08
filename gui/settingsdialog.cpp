@@ -203,7 +203,7 @@ EditorAutoCorrectionOptionPage::~EditorAutoCorrectionOptionPage()
 
 QString EditorAutoCorrectionOptionPage::displayName() const
 {
-    return QApplication::translate("QtGui::EditorAutoCorrectionOptionPage", "Auto correction/completition");
+    return QApplication::translate("QtGui::EditorAutoCorrectionOptionPage", "Auto correction/completion");
 }
 
 bool EditorAutoCorrectionOptionPage::apply()
