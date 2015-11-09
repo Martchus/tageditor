@@ -64,7 +64,7 @@ private:
     QRect iconRect() const;
     QRect textRect() const;
     void setupPixmaps(const QSize &size);
-    void drawProgressIndicator(QPainter &painter, QRect rect, int angle);
+    void drawProgressIndicator(QPainter &painter, QRect rect, const QColor &color, int angle);
     static void toGrayPixmap(const QPixmap &original, QPixmap grayed);
 
     QString m_text;

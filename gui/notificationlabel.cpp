@@ -49,12 +49,12 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
         switch(m_type) {
         case NotificationType::Progress:
             if(m_subject == NotificationSubject::None) {
-                drawProgressIndicator(painter, pixmapRect, m_animationStep);
+                drawProgressIndicator(painter, pixmapRect, option.palette.color(QPalette::Foreground), m_animationStep);
             } else {
                 style->drawItemPixmap(&painter, pixmapRect, Qt::AlignTop | Qt::AlignLeft, m_mainPixmap);
                 QSize size = pixmapRect.size() * 0.3;
                 pixmapRect.adjust(size.width(), size.height(), 0, 0);
-                drawProgressIndicator(painter, pixmapRect, m_animationStep);
+                drawProgressIndicator(painter, pixmapRect, option.palette.color(QPalette::Foreground), m_animationStep);
             }
             break;
         default:
@@ -136,7 +136,7 @@ void NotificationLabel::setupPixmaps(const QSize &size)
     }
 }
 
-void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, int angle)
+void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, const QColor &color, int angle)
 {
     qreal circleWidth = 6;
     qreal halfCircleWidth = circleWidth * 0.5;
@@ -144,7 +144,7 @@ void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, int
     QPointF center = rect.center();
     painter.setRenderHint(QPainter::Antialiasing, true);
     QConicalGradient linearGrad(center, angle);
-    linearGrad.setColorAt(0, Qt::black);
+    linearGrad.setColorAt(0, color);
     linearGrad.setColorAt(1, Qt::transparent);
     painter.setPen(QPen(linearGrad, circleWidth, Qt::SolidLine, Qt::RoundCap));
     painter.drawArc(rect, angle * 16 + 25 * 16, 16 * 310);
@@ -152,7 +152,7 @@ void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, int
         QFont font = this->font();
         font.setPixelSize(rect.width() * 0.5);
         painter.setFont(font);
-        painter.setPen(Qt::black);
+        painter.setPen(color);
         painter.drawText(rect, Qt::AlignCenter, QString::number(m_percentage));
     }
 }
