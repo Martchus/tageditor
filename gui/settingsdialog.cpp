@@ -12,6 +12,10 @@
 
 #include <QFileDialog>
 
+#include <functional>
+
+using namespace std;
+using namespace std::placeholders;
 using namespace Settings;
 using namespace Media;
 
@@ -138,7 +142,7 @@ void EditorTempOptionPage::reset()
 
 QWidget *EditorTempOptionPage::setupWidget()
 {
-    QWidget *widget = UiFileBasedOptionPage<Ui::EditorTempOptionPage>::setupWidget();
+    auto *widget = UiFileBasedOptionPage<Ui::EditorTempOptionPage>::setupWidget();
     QObject::connect(ui()->selectPushButton, &QPushButton::clicked, std::bind(&EditorTempOptionPage::showDirectorySelection, this));
     return widget;
 }
@@ -185,7 +189,7 @@ void EditorFieldsOptionPage::reset()
 
 QWidget *EditorFieldsOptionPage::setupWidget()
 {
-    QWidget *w = UiFileBasedOptionPage<Ui::EditorFieldsOptionPage>::setupWidget();
+    auto *w = UiFileBasedOptionPage<Ui::EditorFieldsOptionPage>::setupWidget();
     if(!m_model) {
         m_model = new KnownFieldModel(w);
     }
@@ -203,7 +207,7 @@ EditorAutoCorrectionOptionPage::~EditorAutoCorrectionOptionPage()
 
 QString EditorAutoCorrectionOptionPage::displayName() const
 {
-    return QApplication::translate("QtGui::EditorAutoCorrectionOptionPage", "Auto correction/completition");
+    return QApplication::translate("QtGui::EditorAutoCorrectionOptionPage", "Auto correction/completion");
 }
 
 bool EditorAutoCorrectionOptionPage::apply()
@@ -235,7 +239,7 @@ void EditorAutoCorrectionOptionPage::reset()
 
 QWidget *EditorAutoCorrectionOptionPage::setupWidget()
 {
-    QWidget *w = UiFileBasedOptionPage<Ui::EditorAutoCorrectionOptionPage>::setupWidget();
+    auto *w = UiFileBasedOptionPage<Ui::EditorAutoCorrectionOptionPage>::setupWidget();
     if(!m_model) {
         m_model = new KnownFieldModel(w);
     }
@@ -451,6 +455,67 @@ void Id3v2OptionPage::reset()
     }
 }
 
+// FileLayoutPage
+FileLayoutPage::FileLayoutPage()
+{}
+
+FileLayoutPage::~FileLayoutPage()
+{}
+
+QString FileLayoutPage::displayName() const
+{
+    return QApplication::translate("QtGui::FileLayoutPage", "File layout");
+}
+
+bool FileLayoutPage::apply()
+{
+    if(hasBeenShown()) {
+        if(ui()->minPaddingSpinBox->value() > ui()->maxPaddingSpinBox->value()) {
+            return false;
+        }
+        Settings::maxPadding() = static_cast<size_t>(ui()->maxPaddingSpinBox->value());
+        Settings::minPadding() = static_cast<size_t>(ui()->minPaddingSpinBox->value());
+        Settings::preferredPadding() = static_cast<size_t>(ui()->preferredPaddingSpinBox->value());
+        if(ui()->beforeDataRadioButton->isChecked()) {
+            preferredTagPosition() = TagPosition::BeforeData;
+        } else if(ui()->afterDataRadioButton->isChecked()) {
+            preferredTagPosition() = TagPosition::AfterData;
+        }
+        forceTagPosition() = ui()->forcePositionCheckBox->isChecked();
+    }
+    return true;
+}
+
+void FileLayoutPage::reset()
+{
+    if(hasBeenShown()) {
+        ui()->maxPaddingSpinBox->setValue(static_cast<int>(Settings::maxPadding()));
+        ui()->minPaddingSpinBox->setValue(static_cast<int>(Settings::minPadding()));
+        ui()->preferredPaddingSpinBox->setValue(static_cast<int>(Settings::preferredPadding()));
+        switch(preferredTagPosition()) {
+        case TagPosition::BeforeData:
+            ui()->beforeDataRadioButton->setChecked(true);
+            break;
+        case TagPosition::AfterData:
+            ui()->afterDataRadioButton->setChecked(true);
+            break;
+        }
+        ui()->forcePositionCheckBox->setChecked(forceTagPosition());
+    }
+}
+
+QWidget *FileLayoutPage::setupWidget()
+{
+    auto *widget = Dialogs::UiFileBasedOptionPage<Ui::FileLayoutPage>::setupWidget();
+    ui()->preferredTagPosLabel->setNotificationType(NotificationType::Warning);
+    ui()->preferredTagPosLabel->setText(QApplication::translate("QtGui::FileLayoutPage", "These options might be ignored if not supported by either the format or the implementation."));
+    QObject::connect(ui()->minPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->maxPaddingSpinBox, &QSpinBox::setMinimum);
+    QObject::connect(ui()->minPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->preferredPaddingSpinBox, &QSpinBox::setMinimum);
+    QObject::connect(ui()->maxPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->minPaddingSpinBox, &QSpinBox::setMaximum);
+    QObject::connect(ui()->maxPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->preferredPaddingSpinBox, &QSpinBox::setMaximum);
+    return widget;
+}
+
 /*
     TRANSLATOR QtGui::SettingsDialog
     Necessary for lupdate.
@@ -467,7 +532,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->setDisplayName(tr("Tag processing"));
     category->assignPages(QList<Dialogs::OptionPage *>()
                           << new TagProcessingGeneralOptionPage <<
-                          new Id3v1OptionPage << new Id3v2OptionPage);
+                          new Id3v1OptionPage << new Id3v2OptionPage << new FileLayoutPage);
     category->setIcon(QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png")));
     categories << category;
 

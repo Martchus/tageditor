@@ -10,6 +10,7 @@
 #include "gui/ui_tagprocessinggeneraloptionpage.h"
 #include "gui/ui_id3v1optionpage.h"
 #include "gui/ui_id3v2optionpage.h"
+#include "gui/ui_filelayout.h"
 
 #include <qtutilities/settingsdialog/settingsdialog.h>
 #include <qtutilities/settingsdialog/optionpage.h>
@@ -177,6 +178,25 @@ public:
     QString displayName() const;
     bool apply();
     void reset();
+};
+
+// FileLayoutPage
+namespace Ui {
+class FileLayoutPage;
+}
+
+class FileLayoutPage : public Dialogs::UiFileBasedOptionPage<Ui::FileLayoutPage>
+{
+public:
+    explicit FileLayoutPage();
+    ~FileLayoutPage();
+
+    QString displayName() const;
+    bool apply();
+    void reset();
+
+private:
+    QWidget *setupWidget();
 };
 
 class SettingsDialog : public Dialogs::SettingsDialog
