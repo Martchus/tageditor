@@ -12,7 +12,7 @@ QT_FORWARD_DECLARE_CLASS(QString)
 
 namespace Media {
 enum class TagUsage;
-enum class TagPosition;
+enum class ElementPosition;
 }
 
 namespace Settings {
@@ -66,8 +66,11 @@ bool &keepVersionOfExistingId3v2Tag();
 bool &mergeMultipleSuccessiveId3v2Tags();
 
 // file layout
-Media::TagPosition &preferredTagPosition();
+bool &forceRewrite();
+Media::ElementPosition &preferredTagPosition();
 bool &forceTagPosition();
+Media::ElementPosition &preferredIndexPosition();
+bool &forceIndexPosition();
 size_t &minPadding();
 size_t &maxPadding();
 size_t &preferredPadding();

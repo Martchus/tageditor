@@ -994,8 +994,11 @@ bool MainWindow::startSaving()
     // remove current path from file watcher
     m_fileWatcher->removePath(m_currentPath);
     // use current configuration
+    m_fileInfo.setForceRewrite(Settings::forceRewrite());
     m_fileInfo.setTagPosition(Settings::preferredTagPosition());
     m_fileInfo.setForceTagPosition(Settings::forceTagPosition());
+    m_fileInfo.setIndexPosition(Settings::preferredIndexPosition());
+    m_fileInfo.setForceIndexPosition(Settings::forceIndexPosition());
     m_fileInfo.setMinPadding(Settings::minPadding());
     m_fileInfo.setMaxPadding(Settings::maxPadding());
     m_fileInfo.setPreferredPadding(Settings::preferredPadding());
