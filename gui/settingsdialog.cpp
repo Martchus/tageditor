@@ -470,18 +470,29 @@ QString FileLayoutPage::displayName() const
 bool FileLayoutPage::apply()
 {
     if(hasBeenShown()) {
+        Settings::forceRewrite() = ui()->forceRewriteCheckBox->isChecked();
         if(ui()->minPaddingSpinBox->value() > ui()->maxPaddingSpinBox->value()) {
             return false;
         }
         Settings::maxPadding() = static_cast<size_t>(ui()->maxPaddingSpinBox->value());
         Settings::minPadding() = static_cast<size_t>(ui()->minPaddingSpinBox->value());
         Settings::preferredPadding() = static_cast<size_t>(ui()->preferredPaddingSpinBox->value());
-        if(ui()->beforeDataRadioButton->isChecked()) {
-            preferredTagPosition() = TagPosition::BeforeData;
-        } else if(ui()->afterDataRadioButton->isChecked()) {
-            preferredTagPosition() = TagPosition::AfterData;
+        if(ui()->tagPosBeforeDataRadioButton->isChecked()) {
+            preferredTagPosition() = ElementPosition::BeforeData;
+        } else if(ui()->tagPosAfterDataRadioButton->isChecked()) {
+            preferredTagPosition() = ElementPosition::AfterData;
+        } else if(ui()->tagPosKeepRadioButton->isChecked()) {
+            preferredTagPosition() = ElementPosition::Keep;
         }
-        forceTagPosition() = ui()->forcePositionCheckBox->isChecked();
+        forceTagPosition() = ui()->tagPosForceCheckBox->isChecked();
+        if(ui()->indexPosBeforeDataRadioButton->isChecked()) {
+            preferredIndexPosition() = ElementPosition::BeforeData;
+        } else if(ui()->indexPosAfterDataRadioButton->isChecked()) {
+            preferredIndexPosition() = ElementPosition::AfterData;
+        } else if(ui()->indexPosKeepRadioButton->isChecked()) {
+            preferredIndexPosition() = ElementPosition::Keep;
+        }
+        forceIndexPosition() = ui()->indexPosForceCheckBox->isChecked();
     }
     return true;
 }
@@ -489,18 +500,34 @@ bool FileLayoutPage::apply()
 void FileLayoutPage::reset()
 {
     if(hasBeenShown()) {
+        ui()->forceRewriteCheckBox->setChecked(Settings::forceRewrite());
         ui()->maxPaddingSpinBox->setValue(static_cast<int>(Settings::maxPadding()));
         ui()->minPaddingSpinBox->setValue(static_cast<int>(Settings::minPadding()));
         ui()->preferredPaddingSpinBox->setValue(static_cast<int>(Settings::preferredPadding()));
         switch(preferredTagPosition()) {
-        case TagPosition::BeforeData:
-            ui()->beforeDataRadioButton->setChecked(true);
+        case ElementPosition::BeforeData:
+            ui()->tagPosBeforeDataRadioButton->setChecked(true);
             break;
-        case TagPosition::AfterData:
-            ui()->afterDataRadioButton->setChecked(true);
+        case ElementPosition::AfterData:
+            ui()->tagPosAfterDataRadioButton->setChecked(true);
+            break;
+        case ElementPosition::Keep:
+            ui()->tagPosKeepRadioButton->setChecked(true);
             break;
         }
-        ui()->forcePositionCheckBox->setChecked(forceTagPosition());
+        ui()->tagPosForceCheckBox->setChecked(forceTagPosition());
+        switch(preferredIndexPosition()) {
+        case ElementPosition::BeforeData:
+            ui()->indexPosBeforeDataRadioButton->setChecked(true);
+            break;
+        case ElementPosition::AfterData:
+            ui()->indexPosAfterDataRadioButton->setChecked(true);
+            break;
+        case ElementPosition::Keep:
+            ui()->indexPosKeepRadioButton->setChecked(true);
+            break;
+        }
+        ui()->indexPosForceCheckBox->setChecked(forceIndexPosition());
     }
 }
 
@@ -533,12 +560,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->assignPages(QList<Dialogs::OptionPage *>()
                           << new TagProcessingGeneralOptionPage <<
                           new Id3v1OptionPage << new Id3v2OptionPage << new FileLayoutPage);
-    category->setIcon(QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png")));
+    category->setIcon(QIcon::fromTheme(QStringLiteral("tag"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png"))));
     categories << category;
 
     category = new Dialogs::OptionCategory(this);
     category->setDisplayName(tr("Editor"));
-    category->setIcon(QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/key-enter.png")));
+    category->setIcon(QIcon::fromTheme(QStringLiteral("document-edit"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/key-enter.png"))));
     category->assignPages(QList<Dialogs::OptionPage *>()
                           << new EditorGeneralOptionPage << new EditorTempOptionPage(this) << new EditorFieldsOptionPage
                           << new InfoOptionPage << new EditorAutoCorrectionOptionPage);
@@ -546,7 +573,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     category = new Dialogs::OptionCategory(this);
     category->setDisplayName(tr("File browser"));
-    category->setIcon(QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/system-file-manager.png")));
+    category->setIcon(QIcon::fromTheme(QStringLiteral("view-list-tree"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/system-file-manager.png"))));
     category->assignPages(QList<Dialogs::OptionPage *>() << new FileBrowserGeneralOptionPage);
     categories << category;
     categoryModel()->setCategories(categories);

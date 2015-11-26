@@ -2,13 +2,11 @@
 <ui version="4.0">
  <class>QtGui::FileLayoutPage</class>
  <widget class="QWidget" name="QtGui::FileLayoutPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>325</width>
-    <height>311</height>
-   </rect>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -17,6 +15,13 @@
    <string notr="true">QGroupBox { font-weight: bold };</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCheckBox" name="forceRewriteCheckBox">
+     <property name="text">
+      <string>force rewrite when applying changes</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -133,28 +138,73 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QRadioButton" name="beforeDataRadioButton">
+          <widget class="QRadioButton" name="tagPosBeforeDataRadioButton">
            <property name="text">
             <string>befo&amp;re (media) data / at the beginning of the file</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QRadioButton" name="afterDataRadioButton">
+          <widget class="QRadioButton" name="tagPosAfterDataRadioButton">
            <property name="text">
             <string>after (&amp;media) data / at the end of the file</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="forcePositionCheckBox">
+          <widget class="QRadioButton" name="tagPosKeepRadioButton">
            <property name="text">
-            <string>Use preferred position event if putting the tags at
+            <string>keep &amp;previous position</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="tagPosForceCheckBox">
+           <property name="text">
+            <string>Use preferred position even if putting the tags at
 another position would prevent rewriting the entire file</string>
            </property>
           </widget>
          </item>
         </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="indexPositionGroupBox">
+     <property name="title">
+      <string>Index position</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QRadioButton" name="indexPosBeforeDataRadioButton">
+        <property name="text">
+         <string>befo&amp;re (media) data / at the beginning of the file</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="indexPosAfterDataRadioButton">
+        <property name="text">
+         <string>after (&amp;media) data / at the end of the file</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="indexPosKeepRadioButton">
+        <property name="text">
+         <string>keep &amp;previous position</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="indexPosForceCheckBox">
+        <property name="text">
+         <string>Use preferred position even if putting the tags at
+another position would prevent rewriting the entire file</string>
+        </property>
        </widget>
       </item>
      </layout>

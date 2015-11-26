@@ -99,7 +99,8 @@ FORMS += \
     gui/infooptionpage.ui \
     gui/entertargetdialog.ui \
     gui/attachmentsedit.ui \
-    gui/editortempoptionpage.ui
+    gui/editortempoptionpage.ui \
+    gui/filelayout.ui
 
 RESOURCES += resources/icons.qrc \
     resources/scripts.qrc
