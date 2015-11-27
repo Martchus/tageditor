@@ -11,7 +11,6 @@
 #include <tagparser/abstractchapter.h>
 
 #include <c++utilities/application/failure.h>
-#include <c++utilities/application/argumentparser.h>
 #include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/conversion/conversionexception.h>
@@ -207,6 +206,39 @@ TagTextEncoding parseEncodingDenotation(const Argument &encodingArg, TagTextEnco
     return defaultEncoding;
 }
 
+ElementPosition parsePositionDenotation(const Argument &posArg, ElementPosition defaultPos)
+{
+    if(posArg.isPresent()) {
+        const auto &val = posArg.values().front();
+        if(val == "front") {
+            return ElementPosition::BeforeData;
+        } else if(val == "back") {
+            return ElementPosition::AfterData;
+        } else if(val == "keep") {
+            return ElementPosition::Keep;
+        } else {
+            cout << "Warning: The specified position \"" << val << "\" is invalid and will be ignored." << endl;
+        }
+    }
+    return defaultPos;
+}
+
+uint64 parseUInt64(const Argument &arg, uint64 defaultValue)
+{
+    if(arg.isPresent()) {
+        try {
+            if(startsWith<string>(arg.values().front(), "0x")) {
+                return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front().substr(2), 16);
+            } else {
+                return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front());
+            }
+        } catch(const ConversionException &) {
+            cout << "Warning: The specified value \"" << arg.values().front() << "\" is no valid unsigned integer and will be ignored." << endl;
+        }
+    }
+    return defaultValue;
+}
+
 TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
 {
     auto splittedIds = splitString(concatenatedIds, ",", EmptyPartsTreat::Omit);
@@ -215,7 +247,7 @@ TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
     for(const auto &id : splittedIds) {
         try {
             convertedIds.push_back(stringToNumber<TagTarget::IdType>(id));
-        } catch(ConversionException &) {
+        } catch(const ConversionException &) {
             cout << "Warning: The specified ID \"" << id << "\" is invalid and will be ignored." << endl;
         }
     }
@@ -228,7 +260,7 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
         if(configStr.compare(0, 13, "target-level=") == 0) {
             try {
                 target.setLevel(stringToNumber<uint64>(configStr.substr(13)));
-            } catch (ConversionException &) {
+            } catch (const ConversionException &) {
                 cout << "Warning: The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored." << endl;
             }
         } else if(configStr.compare(0, 17, "target-levelname=") == 0) {
@@ -832,19 +864,15 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
     }
 }
 
-void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &docTitleArg,
-                const Argument &removeOtherFieldsArg, const Argument &treatUnknownFilesAsMp3FilesArg,
-                const Argument &id3v1UsageArg, const Argument &id3v2UsageArg, const Argument &mergeMultipleSuccessiveTagsArg,
-                const Argument &id3v2VersionArg, const Argument &encodingArg, const Argument &removeTargetsArg,
-                const Argument &attachmentsArg, const Argument &removeExistingAttachmentsArg, const Argument &verboseArg)
+void setTagInfo(const StringVector &parameterValues, const SetTagInfoArgs &args)
 {
     CMD_UTILS_START_CONSOLE;
-    if(!filesArg.valueCount()) {
+    if(!args.setTagInfoArg.valueCount()) {
         cout << "Error: No files have been specified." << endl;
         return;
     }
     auto fields = parseFieldDenotations(parameterValues, false);
-    if(fields.empty() && attachmentsArg.values().empty() && docTitleArg.values().empty()) {
+    if(fields.empty() && args.attachmentsArg.values().empty() && args.docTitleArg.values().empty()) {
         cout << "Error: No fields/attachments have been specified." << endl;
         return;
     }
@@ -859,7 +887,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
     vector<TagTarget> targetsToRemove;
     targetsToRemove.emplace_back();
     bool validRemoveTargetsSpecified = false;
-    for(const auto &targetDenotation : removeTargetsArg.values()) {
+    for(const auto &targetDenotation : args.removeTargetsArg.values()) {
         if(targetDenotation == ",") {
             if(validRemoveTargetsSpecified) {
                 targetsToRemove.emplace_back();
@@ -872,26 +900,34 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
     }
     // parse other settings
     uint32 id3v2Version = 3;
-    if(id3v2VersionArg.isPresent()) {
+    if(args.id3v2VersionArg.isPresent()) {
         try {
-            id3v2Version = stringToNumber<uint32>(id3v2VersionArg.values().front());
+            id3v2Version = stringToNumber<uint32>(args.id3v2VersionArg.values().front());
             if(id3v2Version < 1 || id3v2Version > 4) {
                 throw ConversionException();
             }
         } catch (ConversionException &) {
             id3v2Version = 3;
-            cout << "Warning: The specified ID3v2 version \"" << id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << endl;
+            cout << "Warning: The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << endl;
         }
     }
-    TagTextEncoding denotedEncoding = parseEncodingDenotation(encodingArg, TagTextEncoding::Utf8);
-    TagUsage id3v1Usage = parseUsageDenotation(id3v1UsageArg, TagUsage::KeepExisting);
-    TagUsage id3v2Usage = parseUsageDenotation(id3v2UsageArg, TagUsage::Always);
+    const TagTextEncoding denotedEncoding = parseEncodingDenotation(args.encodingArg, TagTextEncoding::Utf8);
+    const TagUsage id3v1Usage = parseUsageDenotation(args.id3v1UsageArg, TagUsage::KeepExisting);
+    const TagUsage id3v2Usage = parseUsageDenotation(args.id3v2UsageArg, TagUsage::Always);
+    MediaFileInfo fileInfo;
+    fileInfo.setMinPadding(parseUInt64(args.minPaddingArg, 0));
+    fileInfo.setMaxPadding(parseUInt64(args.maxPaddingArg, 0));
+    fileInfo.setPreferredPadding(parseUInt64(args.prefPaddingArg, 0));
+    fileInfo.setTagPosition(parsePositionDenotation(args.tagPosArg, ElementPosition::BeforeData));
+    fileInfo.setForceTagPosition(args.forceTagPosArg.isPresent());
+    fileInfo.setIndexPosition(parsePositionDenotation(args.indexPosArg, ElementPosition::BeforeData));
+    fileInfo.setForceIndexPosition(args.forceIndexPosArg.isPresent());
+    fileInfo.setForceRewrite(args.forceRewriteArg.isPresent());
     // iterate through all specified files
     unsigned int fileIndex = 0;
     static const string context("setting tags");
-    MediaFileInfo fileInfo;
     NotificationList notifications;
-    for(const auto &file : filesArg.values()) {
+    for(const auto &file : args.filesArg.values()) {
         try {
             // parse tags
             cout << "Setting tag information for \"" << file << "\" ..." << endl;
@@ -911,13 +947,13 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                 tags.clear();
             }
             // create new tags according to settings
-            fileInfo.createAppropriateTags(treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, mergeMultipleSuccessiveTagsArg.isPresent(), !id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
+            fileInfo.createAppropriateTags(args.treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, args.mergeMultipleSuccessiveTagsArg.isPresent(), !args.id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
             auto container = fileInfo.container();
             bool docTitleModified = false;
-            if(!docTitleArg.values().empty()) {
+            if(!args.docTitleArg.values().empty()) {
                 if(container) {
                     size_t segmentIndex = 0, segmentCount = container->titles().size();
-                    for(const auto &newTitle : docTitleArg.values()) {
+                    for(const auto &newTitle : args.docTitleArg.values()) {
                         if(segmentIndex < segmentCount) {
                             container->setTitle(newTitle, segmentIndex);
                             docTitleModified = true;
@@ -934,7 +970,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
             if(!tags.empty()) {
                 // iterate through all tags
                 for(auto *tag : tags) {
-                    if(removeOtherFieldsArg.isPresent()) {
+                    if(args.removeOtherFieldsArg.isPresent()) {
                         tag->removeAllFields();
                     }
                     auto tagType = tag->type();
@@ -991,13 +1027,13 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                 fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
             }
             bool attachmentsModified = false;
-            if(attachmentsArg.isPresent() || removeExistingAttachmentsArg.isPresent()) {
+            if(args.attachmentsArg.isPresent() || args.removeExistingAttachmentsArg.isPresent()) {
                 static const string context("setting attachments");
                 fileInfo.parseAttachments();
                 if(fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok) {
                     if(container) {
                         // ignore all existing attachments if argument is specified
-                        if(removeExistingAttachmentsArg.isPresent()) {
+                        if(args.removeExistingAttachmentsArg.isPresent()) {
                             for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
                                 container->attachment(i)->setIgnored(false);
                             }
@@ -1005,7 +1041,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
                         }
                         // add/update/remove attachments explicitely
                         AttachmentInfo currentInfo;
-                        for(const auto &value : attachmentsArg.values()) {
+                        for(const auto &value : args.attachmentsArg.values()) {
                             const auto *data = value.data();
                             if(value == ",") {
                                 attachmentsModified |= currentInfo.next(container);
@@ -1064,7 +1100,7 @@ void setTagInfo(const StringVector &parameterValues, const Argument &filesArg, c
         } catch(const ApplicationUtilities::Failure &) {
             cout << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
         }
-        printNotifications(notifications, "Notifications:", verboseArg.isPresent());
+        printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
         ++fileIndex;
     }
 }
