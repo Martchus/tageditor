@@ -3,7 +3,7 @@ appname = "Tag Editor"
 appauthor = Martchus
 appurl = "https://github.com/$${appauthor}/$${projectname}"
 QMAKE_TARGET_DESCRIPTION = "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska."
-VERSION = 1.2.0
+VERSION = 1.2.1
 
 # include ../../common.pri when building as part of a subdirs project; otherwise include general.pri
 !include(../../common.pri) {
