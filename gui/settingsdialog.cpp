@@ -468,12 +468,12 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->assignPages(QList<Dialogs::OptionPage *>()
                           << new TagProcessingGeneralOptionPage <<
                           new Id3v1OptionPage << new Id3v2OptionPage);
-    category->setIcon(QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png")));
+    category->setIcon(QIcon::fromTheme(QStringLiteral("tag"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png"))));
     categories << category;
 
     category = new Dialogs::OptionCategory(this);
     category->setDisplayName(tr("Editor"));
-    category->setIcon(QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/key-enter.png")));
+    category->setIcon(QIcon::fromTheme(QStringLiteral("document-edit"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/key-enter.png"))));
     category->assignPages(QList<Dialogs::OptionPage *>()
                           << new EditorGeneralOptionPage << new EditorTempOptionPage(this) << new EditorFieldsOptionPage
                           << new InfoOptionPage << new EditorAutoCorrectionOptionPage);
@@ -481,7 +481,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     category = new Dialogs::OptionCategory(this);
     category->setDisplayName(tr("File browser"));
-    category->setIcon(QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/system-file-manager.png")));
+    category->setIcon(QIcon::fromTheme(QStringLiteral("view-list-tree"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/system-file-manager.png"))));
     category->assignPages(QList<Dialogs::OptionPage *>() << new FileBrowserGeneralOptionPage);
     categories << category;
     categoryModel()->setCategories(categories);
