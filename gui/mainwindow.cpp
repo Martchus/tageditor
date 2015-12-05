@@ -10,7 +10,7 @@
 #include "../misc/htmlinfo.h"
 #include "../misc/utility.h"
 
-#include "gui/ui_mainwindow.h"
+#include "ui_mainwindow.h"
 
 #include <tagparser/exceptions.h>
 #include <tagparser/signature.h>

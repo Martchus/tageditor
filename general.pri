@@ -1,5 +1,4 @@
 #dirs
-UI_DIR = ./gui
 MOC_DIR = ./moc
 OBJECTS_DIR = ./obj
 RCC_DIR = ./res
@@ -18,6 +17,7 @@ CONFIG(debug, debug|release) {
     TARGET = $${targetprefix}$${projectname}
 }
 # add defines
+DEFINES += "APP_METADATA_AVAIL"
 DEFINES += "'PROJECT_NAME=\"$${projectname}\"'"
 DEFINES += "'APP_NAME=\"$${appname}\"'"
 DEFINES += "'APP_AUTHOR=\"$${appauthor}\"'"

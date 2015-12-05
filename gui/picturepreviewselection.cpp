@@ -3,7 +3,7 @@
 #include "../application/settings.h"
 #include "../misc/utility.h"
 
-#include "gui/ui_picturepreviewselection.h"
+#include "ui_picturepreviewselection.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
