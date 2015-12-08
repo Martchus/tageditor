@@ -9,7 +9,7 @@
 
 // include configuration from separate header file when building with CMake
 #ifndef APP_METADATA_AVAIL
-#include "config.h"
+#include "resources/config.h"
 #endif
 
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)

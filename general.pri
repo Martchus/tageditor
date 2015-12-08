@@ -1,28 +1,12 @@
-#dirs
+# specify build directories for moc, object and rcc files
 MOC_DIR = ./moc
 OBJECTS_DIR = ./obj
 RCC_DIR = ./res
-# compiler flags
+
+# compiler flags: enable C++11
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_LFLAGS += -std=c++11
-# prefix
-targetprefix = $$(TARGET_PREFIX)
-message("Using target prefix \"$${targetprefix}\".")
-# print install root
-message("Using install root \"$$(INSTALL_ROOT)\".")
-# target
-CONFIG(debug, debug|release) {
-    TARGET = $${targetprefix}$${projectname}d
-} else {
-    TARGET = $${targetprefix}$${projectname}
-}
-# add defines
-DEFINES += "APP_METADATA_AVAIL"
-DEFINES += "'PROJECT_NAME=\"$${projectname}\"'"
-DEFINES += "'APP_NAME=\"$${appname}\"'"
-DEFINES += "'APP_AUTHOR=\"$${appauthor}\"'"
-DEFINES += "'APP_URL=\"$${appurl}\"'"
-DEFINES += "'APP_VERSION=\"$${VERSION}\"'"
+
 # variables to check target architecture
 win32-g++:QMAKE_TARGET.arch = $$QMAKE_HOST.arch
 win32-g++-32:QMAKE_TARGET.arch = x86
@@ -30,7 +14,30 @@ win32-g++-64:QMAKE_TARGET.arch = x86_64
 linux-g++:QMAKE_TARGET.arch = $$QMAKE_HOST.arch
 linux-g++-32:QMAKE_TARGET.arch = x86
 linux-g++-64:QMAKE_TARGET.arch = x86_64
-# configuration
+
+# determine and print target prefix
+targetprefix = $$(TARGET_PREFIX)
+message("Using target prefix \"$${targetprefix}\".")
+
+# print install root
+message("Using install root \"$$(INSTALL_ROOT)\".")
+
+# set target
+CONFIG(debug, debug|release) {
+    TARGET = $${targetprefix}$${projectname}d
+} else {
+    TARGET = $${targetprefix}$${projectname}
+}
+
+# add defines for meta data
+DEFINES += "APP_METADATA_AVAIL"
+DEFINES += "'PROJECT_NAME=\"$${projectname}\"'"
+DEFINES += "'APP_NAME=\"$${appname}\"'"
+DEFINES += "'APP_AUTHOR=\"$${appauthor}\"'"
+DEFINES += "'APP_URL=\"$${appurl}\"'"
+DEFINES += "'APP_VERSION=\"$${VERSION}\"'"
+
+# configure Qt modules and defines
 mobile {
     DEFINES += CONFIG_MOBILE
 } else:desktop {
@@ -61,7 +68,7 @@ no-gui {
 }
 guiqtquick {
     message("Configured for Qt Quick GUI support.")
-    greaterThan(QT_MAJOR_VERSION, 4): QT += quick
+    QT += quick
     CONFIG(debug, debug|release) {
         CONFIG += qml_debug
     }
@@ -69,11 +76,12 @@ guiqtquick {
 }
 guiqtwidgets {
     message("Configured for Qt widgets GUI support.")
-    greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+    QT += widgets
     DEFINES += GUI_QTWIDGETS
     DEFINES += MODEL_UNDO_SUPPORT
 }
-# Windows stuff: configuration for cross compliation with mingw-w64
+
+# configuration for cross compliation with mingw-w64
 win32 {
     QMAKE_TARGET_PRODUCT = "$${appname}"
     QMAKE_TARGET_COPYRIGHT = "by $${appauthor}"

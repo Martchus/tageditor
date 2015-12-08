@@ -1,9 +1,10 @@
+# meta data
 projectname = tageditor
 appname = "Tag Editor"
 appauthor = Martchus
 appurl = "https://github.com/$${appauthor}/$${projectname}"
 QMAKE_TARGET_DESCRIPTION = "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska."
-VERSION = 1.2.0
+VERSION = 1.3.0
 
 # include ../../common.pri when building as part of a subdirs project; otherwise include general.pri
 !include(../../common.pri) {
@@ -12,18 +13,47 @@ VERSION = 1.2.0
     }
 }
 
+# basic configuration: application
 TEMPLATE = app
-
-QT += core gui script
-greaterThan(QT_MAJOR_VERSION, 4) {
-    QT += widgets
-}
+QT += core gui widgets script
+# use webenginewidgets if available; otherwise use webkitwidgets
 !forcewebkit:qtHaveModule(webenginewidgets) {
     QT += webenginewidgets
     DEFINES += TAGEDITOR_USE_WEBENGINE
 } else {
     QT += webkitwidgets
 }
+
+# add project files
+HEADERS += application/main.h \
+    application/knownfieldmodel.h \
+    application/settings.h \
+    gui/filefilterproxymodel.h \
+    gui/tagfieldedit.h \
+    gui/tagedit.h \
+    gui/mainwindow.h \
+    gui/pathlineedit.h \
+    gui/notificationlabel.h \
+    gui/renamefilesdialog.h \
+    gui/javascripthighlighter.h \
+    gui/picturepreviewselection.h \
+    gui/notificationmodel.h \
+    gui/infowidgetbase.h \
+    gui/settingsdialog.h \
+    renamingutility/filesystemitem.h \
+    renamingutility/filesystemitemmodel.h \
+    renamingutility/filteredfilesystemitemmodel.h \
+    renamingutility/renamingengine.h \
+    renamingutility/scriptfunctions.h \
+    misc/htmlinfo.h \
+    gui/previousvaluehandling.h \
+    gui/initiate.h \
+    cli/mainfeatures.h \
+    misc/utility.h \
+    gui/entertargetdialog.h \
+    gui/attachmentsmodel.h \
+    gui/attachmentsedit.h \
+    gui/codeedit.h
 
 SOURCES += application/main.cpp \
     application/knownfieldmodel.cpp \
@@ -55,36 +85,6 @@ SOURCES += application/main.cpp \
     gui/attachmentsedit.cpp \
     gui/codeedit.cpp
 
-HEADERS += application/main.h \
-    application/knownfieldmodel.h \
-    application/settings.h \
-    gui/filefilterproxymodel.h \
-    gui/tagfieldedit.h \
-    gui/tagedit.h \
-    gui/mainwindow.h \
-    gui/pathlineedit.h \
-    gui/notificationlabel.h \
-    gui/renamefilesdialog.h \
-    gui/javascripthighlighter.h \
-    gui/picturepreviewselection.h \
-    gui/notificationmodel.h \
-    gui/infowidgetbase.h \
-    gui/settingsdialog.h \
-    renamingutility/filesystemitem.h \
-    renamingutility/filesystemitemmodel.h \
-    renamingutility/filteredfilesystemitemmodel.h \
-    renamingutility/renamingengine.h \
-    renamingutility/scriptfunctions.h \
-    misc/htmlinfo.h \
-    gui/previousvaluehandling.h \
-    gui/initiate.h \
-    cli/mainfeatures.h \
-    misc/utility.h \
-    gui/entertargetdialog.h \
-    gui/attachmentsmodel.h \
-    gui/attachmentsedit.h \
-    gui/codeedit.h
-
 FORMS += \
     gui/id3v2optionpage.ui \
     gui/id3v1optionpage.ui \
@@ -102,19 +102,27 @@ FORMS += \
     gui/editortempoptionpage.ui \
     gui/filelayout.ui
 
-RESOURCES += resources/icons.qrc \
+RESOURCES += \
+    resources/icons.qrc \
     resources/scripts.qrc
 
 TRANSLATIONS = translations/tageditor_en_US.ts \
      translations/tageditor_de_DE.ts
-include(translations.pri)
-
-win32:include(windowsicon.pri)
 
 OTHER_FILES += \
     README.md \
-    LICENSE
+    LICENSE \
+    CMakeLists.txt \
+    resources/config.h.in \
+    resources/windows.rc.in
 
+# release translations
+include(translations.pri)
+
+# make windows icon
+win32:include(windowsicon.pri)
+
+# add libs
 CONFIG(debug, debug|release) {
     LIBS += -lc++utilitiesd -ltagparserd
     !no-gui {
