@@ -7,6 +7,9 @@ RCC_DIR = ./res
 QMAKE_CXXFLAGS += -std=c++11
 QMAKE_LFLAGS += -std=c++11
 
+# disable new ABI (can't catch ios_base::failure with new ABI)
+DEFINES += _GLIBCXX_USE_CXX11_ABI=0
+
 # variables to check target architecture
 win32-g++:QMAKE_TARGET.arch = $$QMAKE_HOST.arch
 win32-g++-32:QMAKE_TARGET.arch = x86

@@ -143,9 +143,11 @@ if(MINGW)
 endif(MINGW)
 
 # enable Qt Widgets GUI
+# disable new ABI (can't catch ios_base::failure with new ABI)
 add_definitions(
     -DGUI_QTWIDGETS
     -DMODEL_UNDO_SUPPORT
+    -D_GLIBCXX_USE_CXX11_ABI=0
 )
 
 # check required Qt 5 modules
