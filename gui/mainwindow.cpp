@@ -10,7 +10,7 @@
 #include "../misc/htmlinfo.h"
 #include "../misc/utility.h"
 
-#include "gui/ui_mainwindow.h"
+#include "ui_mainwindow.h"
 
 #include <tagparser/exceptions.h>
 #include <tagparser/signature.h>
@@ -636,7 +636,7 @@ void MainWindow::updateInfoWebView()
 {
     if(m_fileInfo.isOpen()) {
         m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
-        m_infoWebView->setHtml(m_fileInfoHtml);
+        m_infoWebView->setContent(m_fileInfoHtml, QStringLiteral("application/xhtml+xml"));
     } else {
         m_infoWebView->setUrl(QStringLiteral("about:blank"));
     }
@@ -987,11 +987,21 @@ bool MainWindow::startSaving()
     // tags might get invalidated
     m_tags.clear();
     foreachTagEdit([] (TagEdit *edit) { edit->setTag(nullptr, false); });
+    // show abort button
     m_ui->abortButton->setHidden(false);
     m_ui->abortButton->setEnabled(true);
     m_abortClicked = false;
     // remove current path from file watcher
     m_fileWatcher->removePath(m_currentPath);
+    // use current configuration
+    m_fileInfo.setForceRewrite(Settings::forceRewrite());
+    m_fileInfo.setTagPosition(Settings::preferredTagPosition());
+    m_fileInfo.setForceTagPosition(Settings::forceTagPosition());
+    m_fileInfo.setIndexPosition(Settings::preferredIndexPosition());
+    m_fileInfo.setForceIndexPosition(Settings::forceIndexPosition());
+    m_fileInfo.setMinPadding(Settings::minPadding());
+    m_fileInfo.setMaxPadding(Settings::maxPadding());
+    m_fileInfo.setPreferredPadding(Settings::preferredPadding());
     // define functions to show the saving progress and to actually applying the changes
     auto showProgress = [this] (StatusProvider &sender) -> void {
         QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, static_cast<int>(sender.currentPercentage() * 100.0)));

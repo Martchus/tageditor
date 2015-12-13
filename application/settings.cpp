@@ -107,6 +107,55 @@ bool &mergeMultipleSuccessiveId3v2Tags()
     return v;
 }
 
+// file layout
+bool &forceRewrite()
+{
+    static bool v = true;
+    return v;
+}
+
+ElementPosition &preferredTagPosition()
+{
+    static ElementPosition v = ElementPosition::BeforeData;
+    return v;
+}
+
+bool &forceTagPosition()
+{
+    static bool v = true;
+    return v;
+}
+
+ElementPosition &preferredIndexPosition()
+{
+    static ElementPosition v = ElementPosition::BeforeData;
+    return v;
+}
+
+bool &forceIndexPosition()
+{
+    static bool v = true;
+    return v;
+}
+
+size_t &minPadding()
+{
+    static size_t v = 0;
+    return v;
+}
+
+size_t &maxPadding()
+{
+    static size_t v = 0;
+    return v;
+}
+
+size_t &preferredPadding()
+{
+    static size_t v = 0;
+    return v;
+}
+
 // fields
 KnownFieldModel &selectedFieldsModel()
 {
@@ -263,6 +312,30 @@ void restore()
     keepVersionOfExistingId3v2Tag() = settings.value(QStringLiteral("keepversionofexistingtag"), true).toBool();
     mergeMultipleSuccessiveId3v2Tags() = settings.value(QStringLiteral("mergemultiplesuccessivetags"), true).toBool();
     settings.endGroup();
+    settings.beginGroup(QStringLiteral("filelayout"));
+    forceRewrite() = settings.value(QStringLiteral("forcerewrite"), true).toBool();
+    switch(settings.value(QStringLiteral("tagpos")).toInt()) {
+    case 0:
+        preferredTagPosition() = ElementPosition::BeforeData;
+        break;
+    case 1:
+        preferredTagPosition() = ElementPosition::AfterData;
+        break;
+    }
+    forceTagPosition() = settings.value(QStringLiteral("forcetagpos"), true).toBool();
+    switch(settings.value(QStringLiteral("indexpos")).toInt()) {
+    case 0:
+        preferredIndexPosition() = ElementPosition::BeforeData;
+        break;
+    case 1:
+        preferredIndexPosition() = ElementPosition::AfterData;
+        break;
+    }
+    forceIndexPosition() = settings.value(QStringLiteral("forceindexpos"), true).toBool();
+    minPadding() = settings.value(QStringLiteral("minpad"), 0).toInt();
+    maxPadding() = settings.value(QStringLiteral("maxpad"), 0).toInt();
+    preferredPadding() = settings.value(QStringLiteral("prefpad"), 0).toInt();
+    settings.endGroup();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("mainwindow"));
@@ -316,6 +389,16 @@ void save()
     settings.setValue(QStringLiteral("versiontobeused"), id3v2versionToBeUsed());
     settings.setValue(QStringLiteral("keepversionofexistingtag"), keepVersionOfExistingId3v2Tag());
     settings.setValue(QStringLiteral("mergemultiplesuccessivetags"), mergeMultipleSuccessiveId3v2Tags());
+    settings.endGroup();
+    settings.beginGroup(QStringLiteral("filelayout"));
+    settings.setValue(QStringLiteral("forcerewrite"), forceRewrite());
+    settings.setValue(QStringLiteral("tagpos"), static_cast<int>(preferredTagPosition()));
+    settings.setValue(QStringLiteral("forcetagpos"), forceTagPosition());
+    settings.setValue(QStringLiteral("indexpos"), static_cast<int>(preferredIndexPosition()));
+    settings.setValue(QStringLiteral("forceindexpos"), forceIndexPosition());
+    settings.setValue(QStringLiteral("minpad"), QVariant::fromValue(minPadding()));
+    settings.setValue(QStringLiteral("maxpad"), QVariant::fromValue(maxPadding()));
+    settings.setValue(QStringLiteral("prefpad"), QVariant::fromValue(preferredPadding()));
     settings.endGroup();
     settings.endGroup();
 

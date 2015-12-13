@@ -6,7 +6,7 @@
 #include "../renamingutility/filesystemitemmodel.h"
 #include "../renamingutility/filteredfilesystemitemmodel.h"
 
-#include "gui/ui_renamefilesdialog.h"
+#include "ui_renamefilesdialog.h"
 
 #include <qtutilities/misc/dialogutils.h>
 

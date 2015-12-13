@@ -12,6 +12,10 @@
 
 #include <QFileDialog>
 
+#include <functional>
+
+using namespace std;
+using namespace std::placeholders;
 using namespace Settings;
 using namespace Media;
 
@@ -138,7 +142,7 @@ void EditorTempOptionPage::reset()
 
 QWidget *EditorTempOptionPage::setupWidget()
 {
-    QWidget *widget = UiFileBasedOptionPage<Ui::EditorTempOptionPage>::setupWidget();
+    auto *widget = UiFileBasedOptionPage<Ui::EditorTempOptionPage>::setupWidget();
     QObject::connect(ui()->selectPushButton, &QPushButton::clicked, std::bind(&EditorTempOptionPage::showDirectorySelection, this));
     return widget;
 }
@@ -185,7 +189,7 @@ void EditorFieldsOptionPage::reset()
 
 QWidget *EditorFieldsOptionPage::setupWidget()
 {
-    QWidget *w = UiFileBasedOptionPage<Ui::EditorFieldsOptionPage>::setupWidget();
+    auto *w = UiFileBasedOptionPage<Ui::EditorFieldsOptionPage>::setupWidget();
     if(!m_model) {
         m_model = new KnownFieldModel(w);
     }
@@ -235,7 +239,7 @@ void EditorAutoCorrectionOptionPage::reset()
 
 QWidget *EditorAutoCorrectionOptionPage::setupWidget()
 {
-    QWidget *w = UiFileBasedOptionPage<Ui::EditorAutoCorrectionOptionPage>::setupWidget();
+    auto *w = UiFileBasedOptionPage<Ui::EditorAutoCorrectionOptionPage>::setupWidget();
     if(!m_model) {
         m_model = new KnownFieldModel(w);
     }
@@ -451,6 +455,94 @@ void Id3v2OptionPage::reset()
     }
 }
 
+// FileLayoutPage
+FileLayoutPage::FileLayoutPage()
+{}
+
+FileLayoutPage::~FileLayoutPage()
+{}
+
+QString FileLayoutPage::displayName() const
+{
+    return QApplication::translate("QtGui::FileLayoutPage", "File layout");
+}
+
+bool FileLayoutPage::apply()
+{
+    if(hasBeenShown()) {
+        Settings::forceRewrite() = ui()->forceRewriteCheckBox->isChecked();
+        if(ui()->minPaddingSpinBox->value() > ui()->maxPaddingSpinBox->value()) {
+            return false;
+        }
+        Settings::maxPadding() = static_cast<size_t>(ui()->maxPaddingSpinBox->value());
+        Settings::minPadding() = static_cast<size_t>(ui()->minPaddingSpinBox->value());
+        Settings::preferredPadding() = static_cast<size_t>(ui()->preferredPaddingSpinBox->value());
+        if(ui()->tagPosBeforeDataRadioButton->isChecked()) {
+            preferredTagPosition() = ElementPosition::BeforeData;
+        } else if(ui()->tagPosAfterDataRadioButton->isChecked()) {
+            preferredTagPosition() = ElementPosition::AfterData;
+        } else if(ui()->tagPosKeepRadioButton->isChecked()) {
+            preferredTagPosition() = ElementPosition::Keep;
+        }
+        forceTagPosition() = ui()->tagPosForceCheckBox->isChecked();
+        if(ui()->indexPosBeforeDataRadioButton->isChecked()) {
+            preferredIndexPosition() = ElementPosition::BeforeData;
+        } else if(ui()->indexPosAfterDataRadioButton->isChecked()) {
+            preferredIndexPosition() = ElementPosition::AfterData;
+        } else if(ui()->indexPosKeepRadioButton->isChecked()) {
+            preferredIndexPosition() = ElementPosition::Keep;
+        }
+        forceIndexPosition() = ui()->indexPosForceCheckBox->isChecked();
+    }
+    return true;
+}
+
+void FileLayoutPage::reset()
+{
+    if(hasBeenShown()) {
+        ui()->forceRewriteCheckBox->setChecked(Settings::forceRewrite());
+        ui()->maxPaddingSpinBox->setValue(static_cast<int>(Settings::maxPadding()));
+        ui()->minPaddingSpinBox->setValue(static_cast<int>(Settings::minPadding()));
+        ui()->preferredPaddingSpinBox->setValue(static_cast<int>(Settings::preferredPadding()));
+        switch(preferredTagPosition()) {
+        case ElementPosition::BeforeData:
+            ui()->tagPosBeforeDataRadioButton->setChecked(true);
+            break;
+        case ElementPosition::AfterData:
+            ui()->tagPosAfterDataRadioButton->setChecked(true);
+            break;
+        case ElementPosition::Keep:
+            ui()->tagPosKeepRadioButton->setChecked(true);
+            break;
+        }
+        ui()->tagPosForceCheckBox->setChecked(forceTagPosition());
+        switch(preferredIndexPosition()) {
+        case ElementPosition::BeforeData:
+            ui()->indexPosBeforeDataRadioButton->setChecked(true);
+            break;
+        case ElementPosition::AfterData:
+            ui()->indexPosAfterDataRadioButton->setChecked(true);
+            break;
+        case ElementPosition::Keep:
+            ui()->indexPosKeepRadioButton->setChecked(true);
+            break;
+        }
+        ui()->indexPosForceCheckBox->setChecked(forceIndexPosition());
+    }
+}
+
+QWidget *FileLayoutPage::setupWidget()
+{
+    auto *widget = Dialogs::UiFileBasedOptionPage<Ui::FileLayoutPage>::setupWidget();
+    ui()->preferredTagPosLabel->setNotificationType(NotificationType::Warning);
+    ui()->preferredTagPosLabel->setText(QApplication::translate("QtGui::FileLayoutPage", "These options might be ignored if not supported by either the format or the implementation."));
+    QObject::connect(ui()->minPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->maxPaddingSpinBox, &QSpinBox::setMinimum);
+    QObject::connect(ui()->minPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->preferredPaddingSpinBox, &QSpinBox::setMinimum);
+    QObject::connect(ui()->maxPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->minPaddingSpinBox, &QSpinBox::setMaximum);
+    QObject::connect(ui()->maxPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->preferredPaddingSpinBox, &QSpinBox::setMaximum);
+    return widget;
+}
+
 /*
     TRANSLATOR QtGui::SettingsDialog
     Necessary for lupdate.
@@ -466,8 +558,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category = new Dialogs::OptionCategory(this);
     category->setDisplayName(tr("Tag processing"));
     category->assignPages(QList<Dialogs::OptionPage *>()
-                          << new TagProcessingGeneralOptionPage <<
-                          new Id3v1OptionPage << new Id3v2OptionPage);
+                          << new TagProcessingGeneralOptionPage
+                          << new Id3v1OptionPage << new Id3v2OptionPage << new FileLayoutPage);
     category->setIcon(QIcon::fromTheme(QStringLiteral("tag"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png"))));
     categories << category;
 

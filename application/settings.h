@@ -7,13 +7,12 @@
 
 #include <QtGlobal>
 
-QT_BEGIN_NAMESPACE
-class QByteArray;
-class QString;
-QT_END_NAMESPACE
+QT_FORWARD_DECLARE_CLASS(QByteArray)
+QT_FORWARD_DECLARE_CLASS(QString)
 
 namespace Media {
 enum class TagUsage;
+enum class ElementPosition;
 }
 
 namespace Settings {
@@ -65,6 +64,16 @@ Media::TagUsage &id3v2usage();
 uint32 &id3v2versionToBeUsed();
 bool &keepVersionOfExistingId3v2Tag();
 bool &mergeMultipleSuccessiveId3v2Tags();
+
+// file layout
+bool &forceRewrite();
+Media::ElementPosition &preferredTagPosition();
+bool &forceTagPosition();
+Media::ElementPosition &preferredIndexPosition();
+bool &forceIndexPosition();
+size_t &minPadding();
+size_t &maxPadding();
+size_t &preferredPadding();
 
 // fields
 class KnownFieldModel;

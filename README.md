@@ -13,6 +13,10 @@ duration, size, timestamps, sampling frequency, FPS and other information of the
 
 It also allows to inspect and validate the element structure of MP4 and Matroska files.
 
+## Download / repository
+I currently provide packages for Arch Linux and Windows. For more information checkout my
+[website](http://martchus.netai.net/page.php?name=programming).
+
 ## Usage
 The Tag Editor has a GUI (Qt 5) and a command line interface.
 
@@ -22,13 +26,16 @@ The GUI should be self-explaining. Just open a file, edit the tags and save the 
 You can set the behaviour of the editor to keep previous values, so you don't have to enter
 information like album name or artist for all files in an album again and again.
 
+#### Settings
 Checkout the settings dialog. You can customize which fields the editor shows,
 change some settings regarding the tag processing (ID3 version, preferred character set, ...)
 and more. It also possible to set a directory for temporary files.
+Settings of the GUI do not affect the CLI.
 
+#### File renaming
 There is also a tool to rename files using the tag information stored in the files. The new name is generated
-by a small JavaScript which can be customized. An example script is provided. Before any changes are made,
-you can checkout a preview with the generated file names.
+by a small JavaScript which can be customized. An example script is provided. Before any actual changes are made,
+you will see a preview with the generated file names.
 
 ### CLI
 Usage:
@@ -94,5 +101,9 @@ add "CONFIG+=forcewebkit" to the qmake arguments.
 ## TODO
 - Use padding to prevent rewriting the entire file to save tags.
 - Support more tag formats (EXIF, PDF metadata, ...).
-- Set tag information concurrently if multiple files have been specified.
+- Set tag information concurrently if multiple files have been specified (CLI).
 - Do tests with Matroska files which have multiple segments.
+
+## Bugs
+- Large file information is not shown when using Qt WebEngine.
+- Matroska files composed of more than one segment aren't tested yet and might not work.

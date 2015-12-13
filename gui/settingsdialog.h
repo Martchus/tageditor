@@ -1,15 +1,16 @@
 #ifndef ID3V2OPTIONPAGE_H
 #define ID3V2OPTIONPAGE_H
 
-#include "gui/ui_filebrowsergeneraloptionpage.h"
-#include "gui/ui_editorgeneraloptionpage.h"
-#include "gui/ui_editortempoptionpage.h"
-#include "gui/ui_editorfieldsoptionpage.h"
-#include "gui/ui_editorautocorrectionoptionpage.h"
-#include "gui/ui_infooptionpage.h"
-#include "gui/ui_tagprocessinggeneraloptionpage.h"
-#include "gui/ui_id3v1optionpage.h"
-#include "gui/ui_id3v2optionpage.h"
+#include "ui_filebrowsergeneraloptionpage.h"
+#include "ui_editorgeneraloptionpage.h"
+#include "ui_editortempoptionpage.h"
+#include "ui_editorfieldsoptionpage.h"
+#include "ui_editorautocorrectionoptionpage.h"
+#include "ui_infooptionpage.h"
+#include "ui_tagprocessinggeneraloptionpage.h"
+#include "ui_id3v1optionpage.h"
+#include "ui_id3v2optionpage.h"
+#include "ui_filelayout.h"
 
 #include <qtutilities/settingsdialog/settingsdialog.h>
 #include <qtutilities/settingsdialog/optionpage.h>
@@ -177,6 +178,25 @@ public:
     QString displayName() const;
     bool apply();
     void reset();
+};
+
+// FileLayoutPage
+namespace Ui {
+class FileLayoutPage;
+}
+
+class FileLayoutPage : public Dialogs::UiFileBasedOptionPage<Ui::FileLayoutPage>
+{
+public:
+    explicit FileLayoutPage();
+    ~FileLayoutPage();
+
+    QString displayName() const;
+    bool apply();
+    void reset();
+
+private:
+    QWidget *setupWidget();
 };
 
 class SettingsDialog : public Dialogs::SettingsDialog

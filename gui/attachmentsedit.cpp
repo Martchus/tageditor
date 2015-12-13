@@ -2,7 +2,7 @@
 
 #include "./attachmentsmodel.h"
 
-#include "gui/ui_attachmentsedit.h"
+#include "ui_attachmentsedit.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/abstractattachment.h>
