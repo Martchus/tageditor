@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/htmlfragments">
-        <file>htmlfragments/head</file>
-    </qresource>
-</RCC>
