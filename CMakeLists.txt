@@ -88,6 +88,7 @@ set(WIDGETS_SRC_FILES
     renamingutility/renamingengine.cpp
     renamingutility/scriptfunctions.cpp
     resources/icons.qrc
+    resources/scripts.qrc
 )
 #set(QUICK_HEADER_FILES
 #)
