@@ -8,10 +8,24 @@ The tag editor can read and write the following tag formats:
 - Vorbis comments (cover art via "METADATA_BLOCK_PICTURE" is supported)
 - Matroska/WebM tags and attachments
 
+## Additional features
 The tag editor can also display technical information such as the ID, format, language, bitrate,
 duration, size, timestamps, sampling frequency, FPS and other information of the tracks.
 
 It also allows to inspect and validate the element structure of MP4 and Matroska files.
+
+## File layout options
+### Tag position
+The editor allows you to choose whether tags should be placed at the beginning or at
+the end of an MP4/Matroska file.
+
+### Padding
+Padding allows adding additional tag information without rewriting the entire file
+or appending the tag. Usage of padding can be configured:
+- minimum/maximum padding: The file is rewritten if the padding would fall below/exceed the specifed limits.
+- preferred padding: If the file needs to be rewritten the preferred padding is used.
+
+However, it is also possible to force rewriting the entire file.
 
 ## Download / repository
 I currently provide packages for Arch Linux and Windows. For more information checkout my
@@ -27,9 +41,15 @@ You can set the behaviour of the editor to keep previous values, so you don't ha
 information like album name or artist for all files in an album again and again.
 
 #### Settings
-Checkout the settings dialog. You can customize which fields the editor shows,
-change some settings regarding the tag processing (ID3 version, preferred character set, ...)
-and more. It also possible to set a directory for temporary files.
+Checkout the settings dialog. You can:
+- customize which fields the editor shows and in which order
+- change settings regarding the tag processing (ID3 version(s) to be used, preferred character set,
+  usage of padding, ...)
+- set whether unknown/unsupported tags should be ignored/kept or removed
+- set whether ID3v1 and ID3v2 tags should be edited together or separately
+- set the directory used to store temporary files
+- and more.
+
 Settings of the GUI do not affect the CLI.
 
 #### File renaming
@@ -99,7 +119,6 @@ If webenginewidgets is installed on the system, the editor will link against it.
 add "CONFIG+=forcewebkit" to the qmake arguments.
 
 ## TODO
-- Use padding to prevent rewriting the entire file to save tags.
 - Support more tag formats (EXIF, PDF metadata, ...).
 - Set tag information concurrently if multiple files have been specified (CLI).
 - Do tests with Matroska files which have multiple segments.
