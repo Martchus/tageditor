@@ -115,7 +115,7 @@ The application depends on c++utilities, qtutilities and tagparser and is built 
 
 The following Qt 5 modules are requried: core gui script widgets webenginewidgets/webkitwidgets
 
-If webenginewidgets is installed on the system, the editor will link against it. To force usage of webkitwidgets
+If webkitwidgets is installed on the system, the editor will link against it. Otherwise it will link against webenginewidgets. To force usage of webkitwidgets
 add "CONFIG+=forcewebkit" to the qmake arguments.
 
 ## TODO

@@ -156,8 +156,14 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5LinguistTools REQUIRED)
-find_package(Qt5WebKitWidgets REQUIRED)
 find_package(Qt5Script REQUIRED)
+find_package(Qt5WebKitWidgets)
+if(Qt5WebKitWidgets_FOUND)
+    set(WEBVIEW_PROVIDER Qt5::WebKitWidgets)
+else()
+    find_package(Qt5WebEngineWidgets REQUIRED)
+    set(WEBVIEW_PROVIDER Qt5::Qt5WebEngineWidgets)
+endif()
 
 # enable moc, uic and rcc
 set(CMAKE_AUTOMOC ON)
@@ -171,7 +177,7 @@ ADD_CUSTOM_TARGET(translations ALL DEPENDS ${QM_FILES})
 
 # executable and linking
 add_executable(${META_PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SRC_FILES} ${WIDGETS_HEADER_FILES} ${WIDGETS_SRC_FILES} ${QM_FILES} ${RES_FILES} ${WINDOWS_ICON_PATH})
-target_link_libraries(${META_PROJECT_NAME} c++utilities qtutilities tagparser pthread Qt5::Core Qt5::Widgets Qt5::WebKitWidgets Qt5::Script)
+target_link_libraries(${META_PROJECT_NAME} c++utilities qtutilities tagparser pthread Qt5::Core Qt5::Widgets Qt5::Script ${WEBVIEW_PROVIDER})
 set_target_properties(${META_PROJECT_NAME} PROPERTIES
     CXX_STANDARD 11
 )

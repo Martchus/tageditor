@@ -16,12 +16,12 @@ VERSION = 1.3.0
 # basic configuration: application
 TEMPLATE = app
 QT += core gui widgets script
-# use webenginewidgets if available; otherwise use webkitwidgets
-!forcewebkit:qtHaveModule(webenginewidgets) {
+# use webkitwidgets if available; otherwise use webenginewidgets
+!forcewebengine:qtHaveModule(webkitwidgets) {
+    QT += webkitwidgets
+} else {
     QT += webenginewidgets
     DEFINES += TAGEDITOR_USE_WEBENGINE
-} else {
-    QT += webkitwidgets
 }
 
 # add project files
