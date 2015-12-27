@@ -115,8 +115,8 @@ The application depends on c++utilities, qtutilities and tagparser and is built 
 
 The following Qt 5 modules are requried: core gui script widgets webenginewidgets/webkitwidgets
 
-If webkitwidgets is installed on the system, the editor will link against it. Otherwise it will link against webenginewidgets. To force usage of webkitwidgets
-add "CONFIG+=forcewebkit" to the qmake arguments.
+If webkitwidgets is installed on the system, the editor will link against it. Otherwise it will link against webenginewidgets.
+To force usage of webenginewidgets add "CONFIG+=forcewebengine" to the qmake arguments.
 
 ## TODO
 - Support more tag formats (EXIF, PDF metadata, ...).
@@ -125,4 +125,7 @@ add "CONFIG+=forcewebkit" to the qmake arguments.
 
 ## Bugs
 - Large file information is not shown when using Qt WebEngine.
-- Matroska files composed of more than one segment aren't tested yet and might not work.
+- underlying library: Matroska files composed of more than one segment aren't tested yet and might not work.
+- underlying library: To add new features I've had to revise a lot of code since the last release. I always test the library with
+  files produced by mkvmerge and ffmpeg and several other file but can't verify that it will work with all
+  files. Hence I recommend to create backups of your files.
