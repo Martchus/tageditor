@@ -18,9 +18,9 @@
 #include <tagparser/tag.h>
 #include <tagparser/id3/id3v1tag.h>
 #include <tagparser/id3/id3v2tag.h>
+#include <tagparser/mp4/mp4container.h>
 #include <tagparser/mp4/mp4tag.h>
 #include <tagparser/matroska/matroskatag.h>
-#include <tagparser/mp4/mp4container.h>
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
@@ -60,6 +60,7 @@ using namespace std;
 using namespace Utility;
 using namespace Media;
 using namespace Dialogs;
+using namespace Widgets;
 
 namespace QtGui {
 
@@ -347,6 +348,44 @@ void MainWindow::saveAndShowNextFile()
 }
 
 /*!
+ * \brief Updates the line edits for the document title(s).
+ */
+void MainWindow::updateDocumentTitleEdits()
+{
+    // get container, segment count and present titles
+    AbstractContainer *container = m_fileInfo.container();
+    int segmentCount = container ? static_cast<int>(container->segmentCount()) : 0;
+    const vector<string> &titles = container ? container->titles() : vector<string>();
+
+    // get layout
+    QLayout *docTitleLayout = m_ui->docTitleWidget->layout();
+    int lineEditCount = docTitleLayout->count() - 1;
+
+    // update existing line edits, remove unneeded line edits
+    int i = 0;
+    for(; i < lineEditCount; ++i) {
+        if(i < segmentCount) {
+            // update existing line edit
+            static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i + 1)->widget())
+                    ->setText(static_cast<size_t>(i) < titles.size() ? QString::fromUtf8(titles[i].data()) : QString());
+        } else {
+            // remove unneeded line edit
+            docTitleLayout->removeItem(docTitleLayout->itemAt(i + 1));
+        }
+    }
+
+    // add missing line edits
+    while(i < segmentCount) {
+        auto *lineEdit = new Widgets::ClearLineEdit;
+        if(static_cast<size_t>(i) < titles.size()) {
+            lineEdit->setText(QString::fromUtf8(titles[i].data()));
+        }
+        lineEdit->setPlaceholderText(tr("Segment %1").arg(++i));
+        docTitleLayout->addWidget(lineEdit);
+    }
+}
+
+/*!
  * \brief Update the tag edits and the tag selection to show the specified \a tags.
  * \param tags Specifies the tags to be shown.
  * \param updateUi Specifies whether the UI of the tag edits should be updated.
@@ -504,6 +543,8 @@ void MainWindow::updateUiStatus()
     // notification widgets
     m_ui->parsingNotificationWidget->setVisible(opened);
     m_ui->makingNotificationWidget->setVisible(opened && (m_makingResultsAvailable));
+    // document title widget
+    m_ui->docTitleWidget->setVisible(opened && m_fileInfo.container() && m_fileInfo.container()->supportsTitle());
     // buttons and actions to save, delete, close
     m_ui->saveButton->setEnabled(opened);
     m_ui->deleteTagsButton->setEnabled(hasTag);
@@ -860,6 +901,7 @@ void MainWindow::showFile(char result)
         m_fileWatcher->addPath(m_currentPath);
         m_fileChangedOnDisk = false;
         // update related widgets
+        updateDocumentTitleEdits();
         updateTagEditsAndAttachmentEdits();
         updateTagSelectionComboBox();
         updateTagManagementMenu();
@@ -889,6 +931,15 @@ bool MainWindow::applyEntriesAndSaveChangings()
         m_ui->makingNotificationWidget->setHidden(false);
         m_makingResultsAvailable = true;
         if(m_fileInfo.isOpen()) {
+            // apply titles
+            if(AbstractContainer *container = m_fileInfo.container()) {
+                if(container->supportsTitle()) {
+                    QLayout *docTitleLayout = m_ui->docTitleWidget->layout();
+                    for(int i = 0, count = min<int>(docTitleLayout->count() - 1, container->segmentCount()); i < count; ++i) {
+                        container->setTitle(static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i + 1)->widget())->text().toUtf8().data(), i);
+                    }
+                }
+            }
             // apply all tags
             foreachTagEdit([] (TagEdit *edit) {edit->apply();});
             static const QString statusMsg(tr("Saving tags ..."));

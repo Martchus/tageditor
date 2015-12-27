@@ -104,6 +104,7 @@ private slots:
     void spawnExternalPlayer();
 
 private:
+    void updateDocumentTitleEdits();
     void updateTagEditsAndAttachmentEdits(bool updateUi = true, PreviousValueHandling previousValueHandling = PreviousValueHandling::Auto);
     void updateTagSelectionComboBox();
     void updateUiStatus();

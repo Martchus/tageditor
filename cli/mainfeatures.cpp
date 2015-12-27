@@ -951,14 +951,14 @@ void setTagInfo(const StringVector &parameterValues, const SetTagInfoArgs &args)
             auto container = fileInfo.container();
             bool docTitleModified = false;
             if(!args.docTitleArg.values().empty()) {
-                if(container) {
+                if(container && container->supportsTitle()) {
                     size_t segmentIndex = 0, segmentCount = container->titles().size();
                     for(const auto &newTitle : args.docTitleArg.values()) {
                         if(segmentIndex < segmentCount) {
                             container->setTitle(newTitle, segmentIndex);
                             docTitleModified = true;
                         } else {
-                            cout << "Warning: The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments or document titles are not supported." << endl;
+                            cout << "Warning: The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments." << endl;
                         }
                         ++segmentIndex;
                     }

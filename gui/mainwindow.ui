@@ -106,6 +106,31 @@
          <widget class="NotificationLabel" name="parsingNotificationWidget" native="true"/>
         </item>
         <item>
+         <widget class="QWidget" name="docTitleWidget" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="docTitleLabel">
+             <property name="text">
+              <string>Document title</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item>
          <widget class="QSplitter" name="tagSplitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
@@ -169,8 +194,7 @@ the file reverting all unsaved changings.</string>
                 </property>
                 <property name="icon">
                  <iconset theme="document-revert">
-                  <normaloff/>
-                 </iconset>
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -190,8 +214,7 @@ the file reverting all unsaved changings.</string>
                 </property>
                 <property name="icon">
                  <iconset theme="edit-clear">
-                  <normaloff/>
-                 </iconset>
+                  <normaloff>.</normaloff>.</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -238,8 +261,7 @@ the file reverting all unsaved changings.</string>
             </property>
             <property name="icon">
              <iconset theme="process-stop">
-              <normaloff/>
-             </iconset>
+              <normaloff>.</normaloff>.</iconset>
             </property>
            </widget>
           </item>
@@ -319,7 +341,7 @@ the file reverting all unsaved changings.</string>
      <x>0</x>
      <y>0</y>
      <width>1225</width>
-     <height>27</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -370,8 +392,7 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="icon">
     <iconset theme="document-save">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Save &amp;entered tags</string>
@@ -386,8 +407,7 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="icon">
     <iconset theme="edit-delete">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Delete all tags</string>
@@ -402,8 +422,7 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="icon">
     <iconset theme="document-revert">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Close</string>
@@ -415,8 +434,7 @@ the file reverting all unsaved changings.</string>
   <action name="actionSelect_next_file">
    <property name="icon">
     <iconset theme="go-next">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Select next file</string>
@@ -436,8 +454,7 @@ the file reverting all unsaved changings.</string>
   <action name="actionOpen">
    <property name="icon">
     <iconset theme="document-open">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -452,8 +469,7 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="icon">
     <iconset theme="edit-copy">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Save file information as HTML document</string>
@@ -465,8 +481,7 @@ the file reverting all unsaved changings.</string>
   <action name="actionSelect_next_file_and_save_current">
    <property name="icon">
     <iconset theme="go-next">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Select &amp;next file and save current</string>
@@ -478,8 +493,7 @@ the file reverting all unsaved changings.</string>
   <action name="actionAbout">
    <property name="icon">
     <iconset theme="help-about">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;About</string>
@@ -488,8 +502,7 @@ the file reverting all unsaved changings.</string>
   <action name="actionQuit">
    <property name="icon">
     <iconset theme="application-exit">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Quit</string>
@@ -498,8 +511,7 @@ the file reverting all unsaved changings.</string>
   <action name="actionSettings">
    <property name="icon">
     <iconset theme="preferences-other">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Settings</string>
@@ -546,8 +558,7 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="icon">
     <iconset theme="document-revert">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Reload (reverts all changes!)</string>
@@ -562,8 +573,7 @@ the file reverting all unsaved changings.</string>
    </property>
    <property name="icon">
     <iconset theme="media-playback-start">
-     <normaloff/>
-    </iconset>
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Play (external player)</string>
