@@ -223,14 +223,26 @@ void MainWindow::setCurrentDirectory(const QString &path)
 }
 
 /*!
- * \brief Saves the applications settings relating the state of the main window.
+ * \brief
+ *  - Saves the applications settings relating the state of the main window.
+ *  - Updates the info webview when the palette changed.
  */
-void MainWindow::closeEvent(QCloseEvent *)
+bool MainWindow::event(QEvent *event)
 {
-    // save settings
-    Settings::mainWindowGeometry() = saveGeometry();
-    Settings::mainWindowState() = saveState();
-    Settings::mainWindowCurrentFileBrowserDirectory() = currentDirectory();
+    switch(event->type()) {
+    case QEvent::PaletteChange:
+        updateInfoWebView();
+        break;
+    case QEvent::Close:
+        // save settings
+        Settings::mainWindowGeometry() = saveGeometry();
+        Settings::mainWindowState() = saveState();
+        Settings::mainWindowCurrentFileBrowserDirectory() = currentDirectory();
+        break;
+    default:
+        ;
+    }
+    return QMainWindow::event(event);
 }
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event)

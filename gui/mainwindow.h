@@ -68,7 +68,7 @@ public slots:
     void closeFile();
 
 protected:
-    virtual void closeEvent(QCloseEvent *);
+    virtual bool event(QEvent *event);
     virtual bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
