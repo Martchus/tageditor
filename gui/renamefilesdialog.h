@@ -32,6 +32,9 @@ public:
     QString directory() const;
     void setDirectory(const QString &directory);
 
+protected:
+    bool event(QEvent *event);
+
 private slots:
     void showDirectorySelectionDlg();
     void showScriptFileSelectionDlg();

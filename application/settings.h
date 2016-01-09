@@ -91,6 +91,10 @@ QByteArray &mainWindowGeometry();
 QByteArray &mainWindowState();
 QString &mainWindowCurrentFileBrowserDirectory();
 
+// rename files dialog
+int &scriptSource();
+QString &externalScript();
+
 void restore();
 void save();
 

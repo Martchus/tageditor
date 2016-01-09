@@ -51,8 +51,7 @@
           </property>
           <property name="icon">
            <iconset theme="folder-open">
-            <normaloff/>
-           </iconset>
+            <normaloff>.</normaloff>.</iconset>
           </property>
          </widget>
         </item>
@@ -110,8 +109,7 @@
               </property>
               <property name="icon">
                <iconset theme="edit-paste">
-                <normaloff/>
-               </iconset>
+                <normaloff>.</normaloff>.</iconset>
               </property>
              </widget>
             </item>
@@ -122,8 +120,7 @@
               </property>
               <property name="icon">
                <iconset theme="document-open">
-                <normaloff/>
-               </iconset>
+                <normaloff>.</normaloff>.</iconset>
               </property>
              </widget>
             </item>
@@ -133,9 +130,6 @@
            <widget class="QStackedWidget" name="sourceFileStackedWidget">
             <property name="autoFillBackground">
              <bool>true</bool>
-            </property>
-            <property name="currentIndex">
-             <number>0</number>
             </property>
             <widget class="QWidget" name="scriptEditorPage">
              <layout class="QVBoxLayout" name="verticalLayout_6">

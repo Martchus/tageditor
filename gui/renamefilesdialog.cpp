@@ -6,6 +6,8 @@
 #include "../renamingutility/filesystemitemmodel.h"
 #include "../renamingutility/filteredfilesystemitemmodel.h"
 
+#include "../application/settings.h"
+
 #include "ui_renamefilesdialog.h"
 
 #include <qtutilities/misc/dialogutils.h>
@@ -67,6 +69,12 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     m_ui->applyChangingsPushButton->setEnabled(false);
     m_ui->abortClosePushButton->setIcon(style()->standardIcon(QStyle::SP_DialogCancelButton, nullptr, m_ui->applyChangingsPushButton));
 
+    // restore settings
+    if(Settings::scriptSource() < m_ui->sourceFileStackedWidget->count()) {
+        m_ui->sourceFileStackedWidget->setCurrentIndex(Settings::scriptSource());
+    }
+    m_ui->scriptFilePathLineEdit->setText(Settings::externalScript());
+
     // connect signals and slots
     connect(m_ui->selectDirectoryPushButton, &QPushButton::clicked, this, &RenameFilesDialog::showDirectorySelectionDlg);
     connect(m_ui->generatePreviewPushButton, &QPushButton::clicked, this, &RenameFilesDialog::startGeneratingPreview);
@@ -94,6 +102,20 @@ QString RenameFilesDialog::directory() const
 void RenameFilesDialog::setDirectory(const QString &directory)
 {
     m_ui->directoryLineEdit->setText(directory);
+}
+
+bool RenameFilesDialog::event(QEvent *event)
+{
+    switch(event->type()) {
+    case QEvent::Close:
+        // save settings
+        Settings::scriptSource() = m_ui->sourceFileStackedWidget->currentIndex();
+        Settings::externalScript() = m_ui->scriptFilePathLineEdit->text();
+        break;
+    default:
+        ;
+    }
+    return QDialog::event(event);
 }
 
 void RenameFilesDialog::showDirectorySelectionDlg()

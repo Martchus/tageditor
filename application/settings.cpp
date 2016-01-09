@@ -213,6 +213,21 @@ QString &mainWindowCurrentFileBrowserDirectory()
     return v;
 }
 
+// renaming files dialog
+int &scriptSource()
+{
+    static int v = 0;
+    return v;
+}
+
+QString &externalScript()
+{
+    static QString v;
+    return v;
+}
+
+
+
 void restore()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,  QApplication::organizationName(), QApplication::applicationName());
@@ -343,6 +358,11 @@ void restore()
     Settings::mainWindowState() = settings.value(QStringLiteral("windowstate")).toByteArray();
     Settings::mainWindowCurrentFileBrowserDirectory() = settings.value(QStringLiteral("currentfilebrowserdirectory")).toString();
     settings.endGroup();
+
+    settings.beginGroup(QStringLiteral("renamedlg"));
+    Settings::scriptSource() = settings.value(QStringLiteral("src")).toInt();
+    Settings::externalScript() = settings.value(QStringLiteral("file")).toString();
+    settings.endGroup();
 }
 
 void save()
@@ -406,6 +426,11 @@ void save()
     settings.setValue(QStringLiteral("geometry"), mainWindowGeometry());
     settings.setValue(QStringLiteral("windowstate"), mainWindowState());
     settings.setValue(QStringLiteral("currentfilebrowserdirectory"), mainWindowCurrentFileBrowserDirectory());
+    settings.endGroup();
+
+    settings.beginGroup(QStringLiteral("renamedlg"));
+    settings.setValue(QStringLiteral("src"), Settings::scriptSource());
+    settings.setValue(QStringLiteral("file"), Settings::externalScript());
     settings.endGroup();
 }
 
