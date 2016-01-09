@@ -106,37 +106,40 @@
          <widget class="NotificationLabel" name="parsingNotificationWidget" native="true"/>
         </item>
         <item>
-         <widget class="QWidget" name="docTitleWidget" native="true">
-          <layout class="QHBoxLayout" name="horizontalLayout_2">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="docTitleLabel">
-             <property name="text">
-              <string>Document title</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item>
          <widget class="QSplitter" name="tagSplitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
           <widget class="QWidget" name="layoutWidget">
            <layout class="QVBoxLayout" name="tagEditVerticalLayout">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <item>
+             <widget class="QWidget" name="docTitleWidget" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="docTitleLabel">
+                 <property name="text">
+                  <string>Document title</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
             <item>
              <layout class="QHBoxLayout" name="tagSelectionHorizontalLayout">
               <item>
@@ -444,6 +447,9 @@ the file reverting all unsaved changings.</string>
    </property>
   </action>
   <action name="actionRename_files">
+   <property name="icon">
+    <iconset theme="edit-rename"/>
+   </property>
    <property name="text">
     <string>&amp;Rename files using tags</string>
    </property>
@@ -547,6 +553,9 @@ the file reverting all unsaved changings.</string>
   <action name="actionManage_tags_automatically_when_loading_file">
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="autocorrection"/>
    </property>
    <property name="text">
     <string>Manage tags automatically when loading file</string>

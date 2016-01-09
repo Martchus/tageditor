@@ -38,6 +38,7 @@ TagEdit::TagEdit(QWidget *parent) :
     QWidget *widget = new QWidget(this);
     m_layoutLeft = new QFormLayout(widget);
     m_layoutLeft->setContentsMargins(QMargins());
+    m_layoutLeft->setSpacing(2);
     widget->setLayout(m_layoutLeft);
     splitter->addWidget(widget);
     widget = new QWidget(this);

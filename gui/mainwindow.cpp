@@ -146,12 +146,15 @@ MainWindow::MainWindow(QWidget *parent) :
     m_tagOptionsMenu->addSeparator();
     m_addTagMenu = new QMenu(tr("Add tag"), m_tagOptionsMenu);
     m_addTagMenu->setEnabled(false);
+    m_addTagMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-add")));
     m_tagOptionsMenu->addMenu(m_addTagMenu);
     m_removeTagMenu = new QMenu(tr("Remove tag"), m_tagOptionsMenu);
     m_removeTagMenu->setEnabled(false);
+    m_removeTagMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-delete")));
     m_tagOptionsMenu->addMenu(m_removeTagMenu);
     m_changeTargetMenu = new QMenu(tr("Change target"), m_tagOptionsMenu);
     m_changeTargetMenu->setEnabled(false);
+    m_changeTargetMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-properties")));
     m_tagOptionsMenu->addMenu(m_changeTargetMenu);
     m_ui->tagOptionsPushButton->setMenu(m_tagOptionsMenu);
     // other widgets
