@@ -49,11 +49,6 @@ using namespace ConversionUtilities;
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::TagFieldEdit
-    Necessary for lupdate.
-*/
-
 /*!
  * \class QtGui::TagFieldEdit
  * \brief The TagFieldEdit widget allows the user to edit a specified tag field.
@@ -82,14 +77,6 @@ TagFieldEdit::TagFieldEdit(const QList<Media::Tag *> &tags, Media::KnownField fi
     setupUi();
     updateValue();
 }
-
-/*!
- * \brief Destroys the object.
- *
- * Does not destroy the assigned tags.
- */
-TagFieldEdit::~TagFieldEdit()
-{}
 
 /*!
  * \brief Assigns the specified \a tags and sets the specified \a fields using the given \a previousValueHandling.

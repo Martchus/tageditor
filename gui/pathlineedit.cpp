@@ -15,16 +15,8 @@ using namespace Widgets;
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::PathLineEdit
-    Necessary for lupdate.
-*/
-
 PathLineEdit::PathLineEdit(QWidget *parent) :
     ClearLineEdit(parent)
-{}
-
-PathLineEdit::~PathLineEdit()
 {}
 
 QAbstractItemModel *PathLineEdit::completionModel() const

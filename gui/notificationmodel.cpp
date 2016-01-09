@@ -12,11 +12,6 @@ using namespace Media;
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::NotificationModel
-    Necessary for lupdate.
-*/
-
 NotificationModel::NotificationModel(QObject *parent) :
     QAbstractListModel(parent)
 {}

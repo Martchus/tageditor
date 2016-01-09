@@ -27,9 +27,6 @@ NotificationLabel::NotificationLabel(QWidget *parent) :
     m_updateTimer.setInterval(80);
 }
 
-NotificationLabel::~NotificationLabel()
-{}
-
 void NotificationLabel::paintEvent(QPaintEvent *event)
 {
     QStyle *style = QWidget::style();

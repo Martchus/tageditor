@@ -60,7 +60,8 @@ set(WIDGETS_HEADER_FILES
     renamingutility/filesystemitemmodel.h
     renamingutility/filteredfilesystemitemmodel.h
     renamingutility/renamingengine.h
-    renamingutility/scriptfunctions.h
+    renamingutility/scriptdefs.h
+    renamingutility/tageditorobject.h
 )
 set(WIDGETS_SRC_FILES
     gui/attachmentsedit.cpp
@@ -77,7 +78,6 @@ set(WIDGETS_SRC_FILES
     gui/infowidgetbase.cpp
     gui/initiate.cpp
     gui/javascripthighlighter.cpp
-    gui/previousvaluehandling.cpp
     gui/renamefilesdialog.cpp
     gui/settingsdialog.cpp
     gui/tagedit.cpp
@@ -86,7 +86,7 @@ set(WIDGETS_SRC_FILES
     renamingutility/filesystemitemmodel.cpp
     renamingutility/filteredfilesystemitemmodel.cpp
     renamingutility/renamingengine.cpp
-    renamingutility/scriptfunctions.cpp
+    renamingutility/tageditorobject.h
     resources/icons.qrc
     resources/scripts.qrc
 )

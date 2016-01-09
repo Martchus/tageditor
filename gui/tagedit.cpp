@@ -20,11 +20,6 @@ using namespace Media;
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::TagEdit
-    Necessary for lupdate.
-*/
-
 /*!
  * \class QtGui::TagEdit
  * \brief The TagEdit widget allows the user to edit Media::Tag objects.
@@ -54,14 +49,6 @@ TagEdit::TagEdit(QWidget *parent) :
     mainLayout->addWidget(splitter);
     setLayout(mainLayout);
 }
-
-/*!
- * \brief Destroys the tag edit.
- *
- * Does not destroy assigned tags.
- */
-TagEdit::~TagEdit()
-{}
 
 /*!
  * \brief Assigns the specified \a tag to the edit.

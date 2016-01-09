@@ -7,6 +7,7 @@
 namespace RenamingUtility {
 
 enum class ActionType {
+    None,
     Rename,
     Skip
 };

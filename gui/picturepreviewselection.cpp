@@ -35,11 +35,6 @@ using namespace Media;
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::PicturePreviewSelection
-    Necessary for lupdate.
-*/
-
 /*!
  * \brief Constructs a new PicturePreviewSelection for the specified \a tag and \a field.
  */
@@ -65,7 +60,7 @@ PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWi
 }
 
 /*!
- * \brief Destroys the PicturePreviewSelection.
+ * \brief Destroys the instance.
  */
 PicturePreviewSelection::~PicturePreviewSelection()
 {}

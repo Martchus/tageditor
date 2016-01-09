@@ -15,7 +15,7 @@ VERSION = 1.3.0
 
 # basic configuration: application
 TEMPLATE = app
-QT += core gui widgets script
+QT += core gui widgets
 # use webkitwidgets if available; otherwise use webenginewidgets
 !forcewebengine:qtHaveModule(webkitwidgets) {
     QT += webkitwidgets
@@ -23,9 +23,17 @@ QT += core gui widgets script
     QT += webenginewidgets
     DEFINES += TAGEDITOR_USE_WEBENGINE
 }
+# use script if available; otherwise use qml
+!forcejsengine:qtHaveModule(script) {
+    QT += script
+} else {
+    QT += qml
+    DEFINES += TAGEDITOR_USE_JSENGINE
+}
 
 # add project files
-HEADERS += application/main.h \
+HEADERS += \
+    application/main.h \
     application/knownfieldmodel.h \
     application/settings.h \
     gui/filefilterproxymodel.h \
@@ -44,7 +52,8 @@ HEADERS += application/main.h \
     renamingutility/filesystemitemmodel.h \
     renamingutility/filteredfilesystemitemmodel.h \
     renamingutility/renamingengine.h \
-    renamingutility/scriptfunctions.h \
+    renamingutility/scriptdefs.h \
+    renamingutility/tageditorobject.h \
     misc/htmlinfo.h \
     gui/previousvaluehandling.h \
     gui/initiate.h \
@@ -55,7 +64,8 @@ HEADERS += application/main.h \
     gui/attachmentsedit.h \
     gui/codeedit.h
 
-SOURCES += application/main.cpp \
+SOURCES += \
+    application/main.cpp \
     application/knownfieldmodel.cpp \
     application/settings.cpp \
     gui/filefilterproxymodel.cpp \
@@ -74,9 +84,8 @@ SOURCES += application/main.cpp \
     renamingutility/filesystemitemmodel.cpp \
     renamingutility/filteredfilesystemitemmodel.cpp \
     renamingutility/renamingengine.cpp \
-    renamingutility/scriptfunctions.cpp \
+    renamingutility/tageditorobject.cpp \
     misc/htmlinfo.cpp \
-    gui/previousvaluehandling.cpp \
     gui/initiate.cpp \
     cli/mainfeatures.cpp \
     misc/utility.cpp \

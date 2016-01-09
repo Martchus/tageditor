@@ -33,7 +33,6 @@ class NotificationLabel : public QWidget
     Q_PROPERTY(int maxIconSize READ maxIconSize WRITE setMaxIconSize)
 public:
     explicit NotificationLabel(QWidget *parent = nullptr);
-    virtual ~NotificationLabel();
 
     const QString &text() const;
     NotificationType notificationType() const;

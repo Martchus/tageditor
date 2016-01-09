@@ -13,7 +13,6 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QDir>
-#include <QScriptEngine>
 #include <QItemSelectionModel>
 #include <QMenu>
 #include <QClipboard>
@@ -25,11 +24,6 @@ using namespace Dialogs;
 using namespace RenamingUtility;
 
 namespace QtGui {
-
-/*
-    TRANSLATOR QtGui::RenameFilesDialog
-    Necessary for lupdate.
-*/
 
 RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     QDialog(parent),
@@ -44,7 +38,7 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     setStyleSheet(dialogStyle() + QStringLiteral("QSplitter:handle { background-color: palette(base); }"));
 #endif
     // setup javascript editor and script file selection
-    QFont font("Courier", 10);
+    QFont font(QStringLiteral("Courier"), 10);
     font.setFixedPitch(true);
     m_ui->javaScriptPlainTextEdit->setFont(font);
     m_highlighter = new JavaScriptHighlighter(m_ui->javaScriptPlainTextEdit->document());
@@ -124,7 +118,6 @@ void RenameFilesDialog::startGeneratingPreview()
         QDir selectedDir(directory());
         m_ui->notificationLabel->setHidden(false);
         if(selectedDir.exists()) {
-            QScriptEngine engine;
             QString program;
             if(m_ui->sourceFileStackedWidget->currentIndex() == 0) {
                 program = m_ui->javaScriptPlainTextEdit->toPlainText();
@@ -143,18 +136,17 @@ void RenameFilesDialog::startGeneratingPreview()
                 }
             }
             if(!program.isEmpty()) {
-                QScriptSyntaxCheckResult res = engine.checkSyntax(program);
-                if(res.state() != QScriptSyntaxCheckResult::Error) {
+                if(m_engine->setProgram(program)) {
                     m_ui->notificationLabel->setText(tr("Generating preview ..."));
                     m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
                     m_ui->abortClosePushButton->setText(tr("Abort"));
                     m_ui->generatePreviewPushButton->setHidden(true);
                     m_ui->applyChangingsPushButton->setHidden(true);
-                    m_engine->generatePreview(program, directory(), m_ui->includeSubdirsCheckBox->isChecked());
+                    m_engine->generatePreview(directory(), m_ui->includeSubdirsCheckBox->isChecked());
                 } else {
                     m_engine->clearPreview();
-                    m_ui->notificationLabel->setText(tr("The script is not valid.\nError in line %1 and column %2:\n %3")
-                                                    .arg(res.errorLineNumber()).arg(res.errorColumnNumber()).arg(res.errorMessage()));
+                    m_ui->notificationLabel->setText(tr("The script is not valid.\nError in line %1: %3")
+                                                    .arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
                     m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
                 }
             } else {
@@ -191,7 +183,7 @@ void RenameFilesDialog::showPreviewProgress(int itemsProcessed, int errorsOccure
     m_errorsOccured = errorsOccured;
     QString text = tr("%1 files/directories processed", 0, itemsProcessed).arg(itemsProcessed);
     if(m_errorsOccured > 0) {
-        text.append(QStringLiteral("\n"));
+        text.append(QChar('\n'));
         text.append(tr("%1 error(s) occured", 0, errorsOccured).arg(errorsOccured));
     }
     m_ui->notificationLabel->setText(text);

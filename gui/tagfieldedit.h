@@ -39,7 +39,6 @@ class TagFieldEdit : public QWidget
 
 public:
     explicit TagFieldEdit(const QList<Media::Tag *> &tags, Media::KnownField field, QWidget *parent = nullptr);
-    virtual ~TagFieldEdit();
 
     const QList<Media::Tag *> &tags() const;
     Media::KnownField field() const;

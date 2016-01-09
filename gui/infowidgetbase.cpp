@@ -23,11 +23,6 @@ using namespace Media;
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::InfoWidgetBase
-    Necessary for lupdate.
-*/
-
 InfoWidgetBase::InfoWidgetBase(QWidget *parent) :
     QWidget(parent),
     m_notificationModel(nullptr)

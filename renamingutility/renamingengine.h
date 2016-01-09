@@ -2,26 +2,31 @@
 #define RENAMINGUTILITY_RENAMINGENGINE_H
 
 #include "./filesystemitem.h"
+#include "./scriptdefs.h"
 
 #include <QObject>
 #include <QList>
 #include <QDir>
-#include <QScriptProgram>
-#include <QScriptEngine>
-#include <QScriptValue>
+
+#if TAGEDITOR_USE_JSENGINE
+# include <QJSEngine>
+# include <QJSValue>
+#else
+# include <QScriptEngine>
+# include <QScriptValue>
+#endif
 
 #include <memory>
 #include <mutex>
 #include <atomic>
 
 QT_FORWARD_DECLARE_CLASS(QFileInfo)
-QT_FORWARD_DECLARE_CLASS(QScriptProgram)
-QT_FORWARD_DECLARE_CLASS(QScriptContext)
 
 namespace RenamingUtility {
 
 class FileSystemItemModel;
 class FilteredFileSystemItemModel;
+class TagEditorObject;
 
 class RemamingEngine : public QObject
 {
@@ -29,10 +34,11 @@ class RemamingEngine : public QObject
 
 public:
     RemamingEngine(QObject *parent = nullptr);
-    virtual ~RemamingEngine();
 
     FileSystemItem *rootItem() const;
-    const QScriptProgram &scriptProgram() const;
+    const TAGEDITOR_JS_VALUE &scriptProgram() const;
+    bool setProgram(const TAGEDITOR_JS_VALUE &program);
+    bool setProgram(const QString &program);
     const QDir &rootDirectory() const;
     bool subdirsIncluded() const;
     bool isBusy();
@@ -41,9 +47,11 @@ public:
     FileSystemItemModel *model();
     FilteredFileSystemItemModel *currentModel();
     FilteredFileSystemItemModel *previewModel();
+    const QString &errorMessage() const;
+    int errorLineNumber() const;
 
 public slots:
-    bool generatePreview(const QScriptProgram &scriptProgram, const QDir &rootDirectory, bool includeSubdirs);
+    bool generatePreview(const QDir &rootDirectory, bool includeSubdirs);
     bool applyChangings();
     void abort();
 
@@ -63,23 +71,24 @@ private:
     void applyChangings(FileSystemItem *parentItem);
     static void setError(const QList<FileSystemItem *> items);
     void executeScriptForItem(const QFileInfo &fileInfo, FileSystemItem *item);
-    void setupGlobalObject(const QFileInfo &file, FileSystemItem *item);
 
-    QScriptEngine m_engine;
-    QScriptValue m_go;
-    QScriptValue m_persistent;
+    TagEditorObject *m_tagEditorQObj;
+    TAGEDITOR_JS_ENGINE m_engine;
+    TAGEDITOR_JS_VALUE m_tagEditorJsObj;
     std::unique_ptr<FileSystemItem> m_rootItem;
     std::unique_ptr<FileSystemItem> m_newlyGeneratedRootItem;
     int m_itemsProcessed;
     int m_errorsOccured;
     std::atomic<bool> m_aborted;
-    QScriptProgram m_program;
+    TAGEDITOR_JS_VALUE m_program;
     QDir m_dir;
     bool m_includeSubdirs;
     std::mutex m_mutex;
     FileSystemItemModel *m_model;
     FilteredFileSystemItemModel *m_currentModel;
     FilteredFileSystemItemModel *m_previewModel;
+    QString m_errorMessage;
+    int m_errorLineNumber;
 };
 
 inline FileSystemItem *RemamingEngine::rootItem() const
@@ -87,7 +96,7 @@ inline FileSystemItem *RemamingEngine::rootItem() const
     return m_rootItem.get();
 }
 
-inline const QScriptProgram &RemamingEngine::scriptProgram() const
+inline const TAGEDITOR_JS_VALUE &RemamingEngine::scriptProgram() const
 {
     return m_program;
 }
@@ -100,6 +109,16 @@ inline const QDir &RemamingEngine::rootDirectory() const
 inline bool RemamingEngine::subdirsIncluded() const
 {
     return m_includeSubdirs;
+}
+
+inline const QString &RemamingEngine::errorMessage() const
+{
+    return m_errorMessage;
+}
+
+inline int RemamingEngine::errorLineNumber() const
+{
+    return m_errorLineNumber;
 }
 
 } // namespace RenamingUtility

@@ -113,7 +113,10 @@ Here are some Bash examples which illustrate getting and setting tag information
 ## Build instructions
 The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries.
 
-The following Qt 5 modules are requried: core gui script widgets webenginewidgets/webkitwidgets
+The following Qt 5 modules are requried: core gui qml/script widgets webenginewidgets/webkitwidgets
+
+If script is installed on the system, the editor will link against it. Otherwise it will link against qml.
+To force usage of qml add "CONFIG+=forcejsengine" to the qmake arguments.
 
 If webkitwidgets is installed on the system, the editor will link against it. Otherwise it will link against webenginewidgets.
 To force usage of webenginewidgets add "CONFIG+=forcewebengine" to the qmake arguments.

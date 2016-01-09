@@ -4,11 +4,6 @@
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::FileFilterProxyModel
-    Necessary for lupdate.
-*/
-
 FileFilterProxyModel::FileFilterProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_filterEnabled(true)

@@ -35,7 +35,7 @@ class PicturePreviewSelection : public QWidget
 
 public:
     explicit PicturePreviewSelection(Media::Tag *tag = nullptr, Media::KnownField field = Media::KnownField::Invalid, QWidget *parent = nullptr);
-    virtual ~PicturePreviewSelection();
+    ~PicturePreviewSelection();
     
     Media::Tag *tag() const;
     Media::KnownField field() const;

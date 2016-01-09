@@ -21,27 +21,27 @@ var distDir = false;
 // string used for "miscellaneous" category
 var misc = "misc";
 
-// define helper functions
+// define some helper functions
 
 /*!
- * \brief Returns whether the specified \a value is not undefined
-          and not an empty string.
+ * Returns whether the specified \a value is not undefined
+ * and not an empty string.
  */
 function notEmpty(value) {
     return value !== undefined && value !== "";
 }
  
 /*!
- * \brief Returns whether the specified \a value is not undefined
-          and not zero.
+ * Returns whether the specified \a value is not undefined
+ * and not zero.
  */
 function notNull(value) {
     return value !== undefined && value !== 0;
 }
 
 /*!
- * \brief Returns the string representation of \a pos using at least as
-          many digits as \a total has.
+ * Returns the string representation of \a pos using at least as
+ * many digits as \a total has.
  */
 function appropriateDigitCount(pos, total) {
     var res = pos + "";
@@ -53,8 +53,8 @@ function appropriateDigitCount(pos, total) {
 }
 
 /*!
- * \brief Returns a copy of the specified \a name with characters that might be
-          avoided in file names striped out.
+ * Returns a copy of the specified \a name with characters that might be
+ * avoided in file names striped out.
  */
 function validFileName(name) {
     if(name !== undefined) {
@@ -65,8 +65,8 @@ function validFileName(name) {
 }
 
 /*!
- * \brief Returns a copy of the specified \a name with characters that might be
-          avoided in directory names striped out.
+ * Returns a copy of the specified \a name with characters that might be
+ * avoided in directory names striped out.
  */
 function validDirectoryName(name) {
     if(name !== undefined) {
@@ -79,21 +79,21 @@ function validDirectoryName(name) {
 // the actual script
 
 // check whether we have to deal with a file or a directory
-if(isFile) {
+if(tageditor.isFile) {
     // parse file using the built-in parseFileInfo function
-    var fileInfo = parseFileInfo(currentPath);
+    var fileInfo = tageditor.parseFileInfo(tageditor.currentPath);
     var tag = fileInfo.tag; // get the tag information
     // read title and track number from the file name using the built-in parseFileName function
-    var infoFromFileName = parseFileName(fileInfo.currentBaseName);
+    var infoFromFileName = tageditor.parseFileName(fileInfo.currentBaseName);
     // read the suffix from the file info object to filter backup and temporary files
     if(fileInfo.currentName === "desktop.ini") {
-        action = actionType.skip; // skip these files
+        tageditor.skip(); // skip these files
     } else if(fileInfo.currentSuffix === "bak") {
-        // filter backup files by setting newRelativeDirectory to put them in a separate directory
-        newRelativeDirectory = "backups";
+        // filter backup by putting them in a separate directory
+        tageditor.move("backups");
     } else if(fileInfo.currentSuffix === "tmp") {
         // filter temporary files in the same way as backup files
-        newRelativeDirectory = "temp";
+        tageditor.move("temp");
     } else {
         // define an array for the fields; will be joined later
         var fields = [];
@@ -135,7 +135,7 @@ if(isFile) {
             fields.push(appropriateDigitCount(infoFromFileName.trackPos, 10));
         }
         // join the first part of the new name
-        newName = fields.join(separator);
+        var newName = fields.join(separator);
         // get the title
         var title = validFileName(tag.title);
         // append the title (if configured and present)
@@ -163,6 +163,8 @@ if(isFile) {
         if(notEmpty(suffix)) {
             newName = newName.concat(".", suffix);
         }
+        // apply new name
+        tageditor.rename(newName);
         // set the distribution directory
         if(distDir) {
             var path = [distDir];
@@ -185,13 +187,11 @@ if(isFile) {
             if(tag.diskTotal >= 2) {
                 path.push("Disk " + appropriateDigitCount(tag.diskPos, tag.diskTotal));
             }
-            newRelativeDirectory = path.join("/");
+            // apply new relative directory
+            tageditor.move(path.join("/"));
         }
     }
-    // set the action to "actionType.renaming"
-    // (this is the default action, actually there is no need to set it explicitly)
-    action = actionType.rename;
-} else if(isDir) {
-    // skip directories in this example script by setting the action to "actionType.skip"
-    action = actionType.skip;
+} else if(tageditor.isDir) {
+    // skip directories in this example script
+    tageditor.skip();
 }

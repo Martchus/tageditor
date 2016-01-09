@@ -31,7 +31,6 @@ class TagEdit : public QWidget
 
 public:
     explicit TagEdit(QWidget *parent = nullptr);
-    ~TagEdit();
     const QList<Media::Tag *> &tags() const;
     void setTag(Media::Tag *tag, bool updateUi = true);
     void setTags(const QList<Media::Tag *> &tags, bool updateUi = true);

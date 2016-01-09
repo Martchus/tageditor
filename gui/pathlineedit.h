@@ -18,7 +18,6 @@ class PathLineEdit : public Widgets::ClearLineEdit
 
 public:
     explicit PathLineEdit(QWidget *parent = nullptr);
-    virtual ~PathLineEdit();
 
     QAbstractItemModel *completionModel() const;
     void setCompletionModel(QAbstractItemModel *model);

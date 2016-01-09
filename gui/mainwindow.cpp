@@ -64,11 +64,6 @@ using namespace Widgets;
 
 namespace QtGui {
 
-/*
-    TRANSLATOR QtGui::MainWindow
-    Necessary for lupdate.
-*/
-
 /*!
  * \brief The LoadingResult enum specifies whether the file could be parsed.
  */
