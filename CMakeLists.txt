@@ -195,6 +195,10 @@ install(FILES resources/desktop/applications/${META_PROJECT_NAME}.desktop
     DESTINATION share/applications
     COMPONENT desktop
 )
+install(FILES resources/desktop/applications/${META_PROJECT_NAME}-renamingutility.desktop
+    DESTINATION share/applications
+    COMPONENT desktop
+)
 install(FILES ${QM_FILES}
     DESTINATION share/${META_PROJECT_NAME}/translations
     COMPONENT localization

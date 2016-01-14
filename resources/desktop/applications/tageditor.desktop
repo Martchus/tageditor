@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Tag Editor
 GenericName=Tag editor
-Comment=A tag editing utility supporting ID3 and iTunes tags.
+Comment=A tag editing utility supporting ID3, Vorbis, MP4 (iTunes style) and Matroska tags.
 Exec=tageditor
 Icon=tageditor
 Terminal=false

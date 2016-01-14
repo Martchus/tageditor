@@ -176,14 +176,19 @@ int main(int argc, char *argv[])
     remBackupFilesArg.setValueNames({"directory"});
     remBackupFilesArg.setRequiredValueCount(1);
     remBackupFilesArg.setSecondaryArguments({&recursiveArg});
+    // renaming utility
+    Argument renamingUtilityArg("renaming-utility", string(), "launches the renaming utility instead of the main GUI");
+    renamingUtilityArg.setCombinable(true);
+    // set arguments to parser
     qtConfigArgs.qtWidgetsGuiArg().addSecondaryArgument(&filesArg);
+    qtConfigArgs.qtWidgetsGuiArg().addSecondaryArgument(&renamingUtilityArg);
     parser.setMainArguments({&printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &remBackupFilesArg, &qtConfigArgs.qtWidgetsGuiArg(), &helpArg});
     // parse given arguments
     try {
         parser.parseArgs(argc, argv);
         if(qtConfigArgs.areQtGuiArgsPresent()) {
 #ifdef GUI_QTWIDGETS
-            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, filesArg.values().empty() ? QString() : QString::fromLocal8Bit(filesArg.values().front().data()));
+            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, filesArg.values().empty() ? QString() : QString::fromLocal8Bit(filesArg.values().front().data()), renamingUtilityArg.isPresent());
 #else
             CMD_UTILS_START_CONSOLE;
             cout << "Application has not been build with Qt widgets GUI support." << endl;

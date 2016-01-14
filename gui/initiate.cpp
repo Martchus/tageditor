@@ -1,5 +1,6 @@
 #include "./initiate.h"
 #include "./mainwindow.h"
+#include "./renamefilesdialog.h"
 
 #include "../application/settings.h"
 
@@ -17,7 +18,7 @@ using namespace ApplicationUtilities;
 
 namespace QtGui {
 
-int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs, const QString &path)
+int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs, const QString &path, bool launchRenamingUtility)
 {
     SET_QT_APPLICATION_INFO;
     QApplication a(argc, argv);
@@ -27,12 +28,19 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     qtConfigArgs.applySettings();
     LOAD_QT_TRANSLATIONS;
     Settings::restore();
-    MainWindow w;
-    w.show();
-    if(!path.isEmpty()) {
-        w.startParsing(path, true);
+    int res;
+    if(launchRenamingUtility) {
+        RenameFilesDialog w;
+        w.show();
+        res = a.exec();
+    } else {
+        MainWindow w;
+        w.show();
+        if(!path.isEmpty()) {
+            w.startParsing(path, true);
+        }
+        res = a.exec();
     }
-    int res = a.exec();
     Settings::save();
     // cleanup resources
     QtUtilitiesResources::cleanup();

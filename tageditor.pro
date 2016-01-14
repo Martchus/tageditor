@@ -115,8 +115,9 @@ RESOURCES += \
     resources/icons.qrc \
     resources/scripts.qrc
 
-TRANSLATIONS = translations/tageditor_en_US.ts \
-     translations/tageditor_de_DE.ts
+TRANSLATIONS = \
+    translations/tageditor_en_US.ts \
+    translations/tageditor_de_DE.ts
 
 OTHER_FILES += \
     README.md \
@@ -152,6 +153,8 @@ INSTALLS += target
     icon.files = $${PWD}/resources/icons/hicolor/scalable/apps/$${projectname}.svg
     INSTALLS += icon
     menu.path = $$(INSTALL_ROOT)/share/applications/
-    menu.files = $${PWD}/resources/desktop/applications/$${projectname}.desktop
+    menu.files = \
+        $${PWD}/resources/desktop/applications/$${projectname}.desktop \
+        $${PWD}/resources/desktop/applications/$${projectname}-renamingutility.desktop
     INSTALLS += menu
 }

@@ -11,7 +11,7 @@ class QtConfigArguments;
 
 namespace QtGui {
 
-int runWidgetsGui(int argc, char *argv[], const ApplicationUtilities::QtConfigArguments &qtConfigArgs, const QString &path);
+int runWidgetsGui(int argc, char *argv[], const ApplicationUtilities::QtConfigArguments &qtConfigArgs, const QString &path, bool launchRenamingUtility = false);
 
 }
 
