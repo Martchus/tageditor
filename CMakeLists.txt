@@ -5,9 +5,9 @@ set(META_PROJECT_NAME tageditor)
 set(META_APP_NAME "Tag Editor")
 set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
-set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska.")
+set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus and Matroska.")
 set(META_VERSION_MAJOR 1)
-set(META_VERSION_MINOR 3)
+set(META_VERSION_MINOR 4)
 set(META_VERSION_PATCH 0)
 
 # stringification of meta data
@@ -86,7 +86,7 @@ set(WIDGETS_SRC_FILES
     renamingutility/filesystemitemmodel.cpp
     renamingutility/filteredfilesystemitemmodel.cpp
     renamingutility/renamingengine.cpp
-    renamingutility/tageditorobject.h
+    renamingutility/tageditorobject.cpp
     resources/icons.qrc
     resources/scripts.qrc
 )
@@ -143,13 +143,9 @@ if(MINGW)
     enable_language(RC)
 endif(MINGW)
 
-# enable Qt Widgets GUI
-# disable new ABI (can't catch ios_base::failure with new ABI)
-add_definitions(
-    -DGUI_QTWIDGETS
-    -DMODEL_UNDO_SUPPORT
-    -D_GLIBCXX_USE_CXX11_ABI=0
-)
+# read cached variables
+SET(JS_PROVIDER "auto" CACHE STRING "specifies the JavaScript provider: auto, qml or script")
+SET(WEBVIEW_PROVIDER "auto" CACHE STRING "specifies the webview provider: auto, webkit or webengine")
 
 # check required Qt 5 modules
 find_package(Qt5Core REQUIRED)
@@ -157,13 +153,66 @@ find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5LinguistTools REQUIRED)
 find_package(Qt5Script REQUIRED)
-find_package(Qt5WebKitWidgets)
-if(Qt5WebKitWidgets_FOUND)
-    set(WEBVIEW_PROVIDER Qt5::WebKitWidgets)
+# select Qt module providing JavaScript (either Qt Script or Qt Qml)
+if(${JS_PROVIDER} STREQUAL "auto")
+    find_package(Qt5Script)
+    if(Qt5Script_FOUND)
+        set(JS_PROVIDER Qt5::Script)
+        message(STATUS "No JavaScript provider explicitely specified, defaulting to Qt Script.")
+    else()
+        find_package(Qt5Qml REQUIRED)
+        set(JS_PROVIDER Qt5::Qml)
+        message(STATUS "No JavaScript provider explicitely specified, defaulting to Qt Qml.")
+    endif()
 else()
-    find_package(Qt5WebEngineWidgets REQUIRED)
-    set(WEBVIEW_PROVIDER Qt5::Qt5WebEngineWidgets)
+    if(${JS_PROVIDER} STREQUAL "script")
+        find_package(Qt5Script REQUIRED)
+        set(JS_PROVIDER Qt5::Script)
+        message(STATUS "Using Qt Script as JavaScript provider.")
+    elseif(${JS_PROVIDER} STREQUAL "qml")
+        find_package(Qt5Qml REQUIRED)
+        set(JS_PROVIDER Qt5::Qml)
+        set(JS_DEFINITION -DTAGEDITOR_USE_JSENGINE)
+        message(STATUS "Using Qt Qml as JavaScript provider.")
+    else()
+        message(FATAL_ERROR "The specified JavaScript provider '${JS_PROVIDER}' is unknown.")
+    endif()
 endif()
+# select Qt module providing webview (either Qt WebKit or Qt WebEngine)
+if(${WEBVIEW_PROVIDER} STREQUAL "auto")
+    find_package(Qt5WebKitWidgets)
+    if(Qt5WebKitWidgets_FOUND)
+        set(WEBVIEW_PROVIDER Qt5::WebKitWidgets)
+        message(STATUS "No webview provider explicitely specified, defaulting to Qt WebKit.")
+    else()
+        find_package(Qt5WebEngineWidgets REQUIRED)
+        set(WEBVIEW_PROVIDER Qt5::WebEngineWidgets)
+        message(STATUS "No webview provider explicitely specified, defaulting to Qt WebEngine.")
+    endif()
+else()
+    if(${WEBVIEW_PROVIDER} STREQUAL "webkit")
+        find_package(Qt5WebKitWidgets REQUIRED)
+        set(WEBVIEW_PROVIDER Qt5::WebKitWidgets)
+        message(STATUS "Using Qt WebKit as webview provider.")
+    elseif(${WEBVIEW_PROVIDER} STREQUAL "webengine")
+        find_package(Qt5WebEngineWidgets REQUIRED)
+        set(WEBVIEW_PROVIDER Qt5::WebEngineWidgets)
+        set(WEBVIEW_DEFINITION -DTAGEDITOR_USE_WEBENGINE)
+        message(STATUS "Using Qt WebEngine as webview provider.")
+    else()
+        message(FATAL_ERROR "The specified webview provider '${WEBVIEW_PROVIDER}' is unknown.")
+    endif()
+endif()
+
+# enable Qt Widgets GUI
+# disable new ABI (can't catch ios_base::failure with new ABI)
+add_definitions(
+    -DGUI_QTWIDGETS
+    -DMODEL_UNDO_SUPPORT
+    -D_GLIBCXX_USE_CXX11_ABI=0
+    ${JS_DEFINITION}
+    ${WEBVIEW_DEFINITION}
+)
 
 # enable moc, uic and rcc
 set(CMAKE_AUTOMOC ON)
@@ -177,7 +226,7 @@ ADD_CUSTOM_TARGET(translations ALL DEPENDS ${QM_FILES})
 
 # executable and linking
 add_executable(${META_PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SRC_FILES} ${WIDGETS_HEADER_FILES} ${WIDGETS_SRC_FILES} ${QM_FILES} ${RES_FILES} ${WINDOWS_ICON_PATH})
-target_link_libraries(${META_PROJECT_NAME} c++utilities qtutilities tagparser pthread Qt5::Core Qt5::Widgets Qt5::Script ${WEBVIEW_PROVIDER})
+target_link_libraries(${META_PROJECT_NAME} c++utilities qtutilities tagparser pthread Qt5::Core Qt5::Widgets ${JS_PROVIDER} ${WEBVIEW_PROVIDER})
 set_target_properties(${META_PROJECT_NAME} PROPERTIES
     CXX_STANDARD 11
 )

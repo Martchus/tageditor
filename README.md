@@ -5,7 +5,7 @@ A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3,
 The tag editor can read and write the following tag formats:
 - iTunes-style MP4 tags (MP4-DASH is supported)
 - ID3v1 and ID3v2 tags
-- Vorbis comments (cover art via "METADATA_BLOCK_PICTURE" is supported)
+- Vorbis and Opus comments (cover art via "METADATA_BLOCK_PICTURE" is supported) in Ogg streams
 - Matroska/WebM tags and attachments
 
 ## Additional features
@@ -26,6 +26,8 @@ or appending the tag. Usage of padding can be configured:
 - preferred padding: If the file needs to be rewritten the preferred padding is used.
 
 However, it is also possible to force rewriting the entire file.
+
+Taking advantage of padding is currently not supported when dealing with Ogg stream.
 
 ## Download / repository
 I currently provide packages for Arch Linux and Windows. For more information checkout my
@@ -111,15 +113,16 @@ Here are some Bash examples which illustrate getting and setting tag information
   a file has been processed.
 
 ## Build instructions
-The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries.
+The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries
+which are also available on my GitHub profile.
 
 The following Qt 5 modules are requried: core gui qml/script widgets webenginewidgets/webkitwidgets
 
-If script is installed on the system, the editor will link against it. Otherwise it will link against qml.
-To force usage of qml add "CONFIG+=forcejsengine" to the qmake arguments.
-
-If webkitwidgets is installed on the system, the editor will link against it. Otherwise it will link against webenginewidgets.
-To force usage of webenginewidgets add "CONFIG+=forcewebengine" to the qmake arguments.
+* If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against qml.
+  To force usage of Qt Qml add "CONFIG+=forcejsengine" to the qmake arguments.
+* If Qt WebKitWidgets is installed on the system, the editor will link against it. Otherwise it will link against Qt WebEngineWidgets.
+  To force usage of Qt WebEngineWidgets add "CONFIG+=forcewebengine" to the qmake arguments.
+* When building with CMake the Qt modules can be picked explicitely by specifying -DWEBVIEW_PROVIDER=webkit/webengine and/or -DJS_PROVIDER=script/qml.
 
 ## TODO
 - Support more tag formats (EXIF, PDF metadata, ...).
