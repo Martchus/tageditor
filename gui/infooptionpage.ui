@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>QtGui::InfoOptionPage</class>
  <widget class="QWidget" name="QtGui::InfoOptionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>385</width>
+    <height>78</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Info options page</string>
   </property>
@@ -12,7 +20,9 @@
    <item>
     <widget class="QCheckBox" name="forceFullParseCheckBox">
      <property name="text">
-      <string>Force full parse of the element structure (might cause long loading times)</string>
+      <string>Force full parse of the element structure
+ • might cause long loading times
+ • use for full file inspection and validation only</string>
      </property>
     </widget>
    </item>
@@ -33,7 +43,4 @@
  </widget>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="usageButtonGroup"/>
- </buttongroups>
 </ui>

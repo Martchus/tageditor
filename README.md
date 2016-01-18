@@ -27,7 +27,7 @@ or appending the tag. Usage of padding can be configured:
 
 However, it is also possible to force rewriting the entire file.
 
-Taking advantage of padding is currently not supported when dealing with Ogg stream.
+Taking advantage of padding is currently not supported when dealing with Ogg streams.
 
 ## Download / repository
 I currently provide packages for Arch Linux and Windows. For more information checkout my
