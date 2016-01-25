@@ -90,6 +90,23 @@ set(WIDGETS_SRC_FILES
     resources/icons.qrc
     resources/scripts.qrc
 )
+set(WIDGETS_UI_FILES
+    gui/id3v2optionpage.ui
+    gui/id3v1optionpage.ui
+    gui/tagprocessinggeneraloptionpage.ui
+    gui/editorgeneraloptionpage.ui
+    gui/filebrowsergeneraloptionpage.ui
+    gui/mainwindow.ui
+    gui/renamefilesdialog.ui
+    gui/editorautocorrectionoptionpage.ui
+    gui/picturepreviewselection.ui
+    gui/editorfieldsoptionpage.ui
+    gui/infooptionpage.ui
+    gui/entertargetdialog.ui
+    gui/attachmentsedit.ui
+    gui/editortempoptionpage.ui
+    gui/filelayout.ui
+)
 #set(QUICK_HEADER_FILES
 #)
 #set(QUICK_SRC_FILES
@@ -225,7 +242,7 @@ qt5_add_translation(QM_FILES ${TS_FILES})
 ADD_CUSTOM_TARGET(translations ALL DEPENDS ${QM_FILES})
 
 # executable and linking
-add_executable(${META_PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SRC_FILES} ${WIDGETS_HEADER_FILES} ${WIDGETS_SRC_FILES} ${QM_FILES} ${RES_FILES} ${WINDOWS_ICON_PATH})
+add_executable(${META_PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SRC_FILES} ${WIDGETS_HEADER_FILES} ${WIDGETS_SRC_FILES} ${WIDGETS_UI_FILES} ${QM_FILES} ${RES_FILES} ${WINDOWS_ICON_PATH})
 target_link_libraries(${META_PROJECT_NAME} c++utilities qtutilities tagparser pthread Qt5::Core Qt5::Widgets ${JS_PROVIDER} ${WEBVIEW_PROVIDER})
 set_target_properties(${META_PROJECT_NAME} PROPERTIES
     CXX_STANDARD 11
