@@ -42,10 +42,11 @@
 #include <QTextStream>
 #include <QFileSystemWatcher>
 #include <QDesktopServices>
+#include <QFileIconProvider>
 #ifdef TAGEDITOR_USE_WEBENGINE
-#include <QWebEngineView>
+# include <QWebEngineView>
 #else
-#include <QWebView>
+# include <QWebView>
 #endif
 
 #include <list>
@@ -93,12 +94,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // setup UI
     m_ui->setupUi(this);
     makeHeading(m_ui->fileNameLabel);
-#ifdef TAGEDITOR_USE_WEBENGINE
-    m_infoWebView = new QWebEngineView(m_ui->tagSplitter);
-#else
-    m_infoWebView = new QWebView(m_ui->tagSplitter);
-#endif
-    m_infoWebView->setObjectName(QStringLiteral("infoWebView"));
+    m_infoWebView = new WEB_VIEW_PROVIDER(m_ui->tagSplitter);
     m_infoWebView->setAcceptDrops(false);
     m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &MainWindow::showInfoWebViewContextMenu);
@@ -115,7 +111,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_fileModel = new QFileSystemModel(this);
     m_fileModel->setRootPath(QString());
     m_fileFilterModel = new FileFilterProxyModel(this);
-    m_fileFilterModel->setExtensionsToBeFiltered(QStringList() << "bak" << "tmp");
+    m_fileFilterModel->setExtensionsToBeFiltered(QStringList() << QStringLiteral("bak") << QStringLiteral("tmp"));
     m_fileFilterModel->setSourceModel(m_fileModel);
     m_fileFilterModel->setFilterEnabled(Settings::hideBackupFiles());
     m_ui->filesTreeView->sortByColumn(0, Qt::AscendingOrder);
@@ -581,8 +577,8 @@ void MainWindow::updateUiStatus()
     // next button
     bool nextFileAvailable = false;
     if(opened) {
-        QModelIndexList selectedIndexes = m_ui->filesTreeView->selectionModel()->selectedRows();
-        if(selectedIndexes.count() == 1) {
+        const QModelIndexList selectedIndexes = m_ui->filesTreeView->selectionModel()->selectedRows();
+        if(selectedIndexes.size() == 1) {
             const QModelIndex &selected = selectedIndexes.at(0);
             nextFileAvailable = selected.sibling(selected.row() + 1, selected.column()).isValid();
         }
@@ -988,7 +984,7 @@ bool MainWindow::deleteAllTagsAndSave()
             msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
             msgBox.setDefaultButton(QMessageBox::No);
 #if QT_VERSION >= 0x050200
-            QCheckBox *checkBox = new QCheckBox(&msgBox);
+            auto *checkBox = new QCheckBox(&msgBox);
             checkBox->setText(tr("don't show this message again"));
             msgBox.setCheckBox(checkBox);
 #endif
@@ -1078,9 +1074,9 @@ bool MainWindow::startSaving()
         bool processingError = false, ioError = false;
         try {
             m_fileInfo.applyChanges();
-        } catch(Failure &) {
+        } catch(const Failure &) {
             processingError = true;
-        } catch(ios_base::failure &) {
+        } catch(const ios_base::failure &) {
             ioError = true;
         }
         m_fileInfo.unregisterAllCallbacks();
@@ -1144,7 +1140,7 @@ void MainWindow::showSavingResult(bool processingError, bool ioError)
         m_ui->statusBar->showMessage(statusMsg);
         m_fileOperationMutex.unlock();
         // ensure the current file is still selected
-        QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(QString::fromStdString(m_fileInfo.path())));
+        const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(QString::fromStdString(m_fileInfo.path())));
         if(index.isValid()) {
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
         }
@@ -1152,7 +1148,7 @@ void MainWindow::showSavingResult(bool processingError, bool ioError)
         // update info model/show next file
         bool showNextFile = false;
         if(critical < 1 && !m_nextFilePath.isEmpty()) { // do not show next file if there are critical notifications
-            QModelIndex next = m_fileModel->index(m_nextFilePath);
+            const QModelIndex next = m_fileModel->index(m_nextFilePath);
             m_nextFilePath.clear();
             if(next.isValid()) {
                 QItemSelectionModel *selectionModel = m_ui->filesTreeView->selectionModel();
@@ -1390,7 +1386,7 @@ void MainWindow::applySettingsFromDialog()
     if(m_fileFilterModel->isFilterEnabled() != Settings::hideBackupFiles()) {
         // check this condition to avoid unnecessary model reset
         m_fileFilterModel->setFilterEnabled(Settings::hideBackupFiles());
-        QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(m_ui->pathLineEdit->text()));
+        const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(m_ui->pathLineEdit->text()));
         if(index.isValid()) {
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
         }

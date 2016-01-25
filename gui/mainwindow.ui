@@ -58,14 +58,8 @@
           <property name="sortingEnabled">
            <bool>true</bool>
           </property>
-          <property name="animated">
-           <bool>true</bool>
-          </property>
           <attribute name="headerShowSortIndicator" stdset="0">
            <bool>true</bool>
-          </attribute>
-          <attribute name="headerStretchLastSection">
-           <bool>false</bool>
           </attribute>
          </widget>
         </item>
@@ -448,7 +442,8 @@ the file reverting all unsaved changings.</string>
   </action>
   <action name="actionRename_files">
    <property name="icon">
-    <iconset theme="edit-rename"/>
+    <iconset theme="edit-rename">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>&amp;Rename files using tags</string>
@@ -555,7 +550,8 @@ the file reverting all unsaved changings.</string>
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset theme="autocorrection"/>
+    <iconset theme="autocorrection">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
     <string>Manage tags automatically when loading file</string>

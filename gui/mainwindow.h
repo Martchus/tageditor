@@ -14,6 +14,12 @@
 #include <mutex>
 #include <functional>
 
+#ifdef TAGEDITOR_USE_WEBENGINE
+# define WEB_VIEW_PROVIDER QWebEngineView
+#else
+# define WEB_VIEW_PROVIDER QWebView
+#endif
+
 QT_BEGIN_NAMESPACE
 class QLineEdit;
 class QComboBox;
@@ -22,11 +28,7 @@ class QPlainTextEdit;
 class QGraphicsScene;
 class QFileSystemModel;
 class QFileSystemWatcher;
-#ifdef TAGEDITOR_USE_WEBENGINE
-class QWebEngineView;
-#else
-class QWebView;
-#endif
+class WEB_VIEW_PROVIDER;
 QT_END_NAMESPACE
 
 namespace Media {
@@ -120,11 +122,7 @@ private:
     QMenu *m_addTagMenu;
     QMenu *m_removeTagMenu;
     QMenu *m_changeTargetMenu;
-#ifdef TAGEDITOR_USE_WEBENGINE
-    QWebEngineView *m_infoWebView;
-#else
-    QWebView *m_infoWebView;
-#endif
+    WEB_VIEW_PROVIDER *m_infoWebView;
     // models
     QFileSystemModel *m_fileModel;
     FileFilterProxyModel *m_fileFilterModel;
