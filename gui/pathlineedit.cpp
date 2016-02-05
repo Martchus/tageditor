@@ -1,14 +1,17 @@
 #include "./pathlineedit.h"
 
-#include <memory>
+#include <qtutilities/misc/desktoputils.h>
 
 #include <QCompleter>
 #include <QAbstractItemModel>
 #include <QContextMenuEvent>
 #include <QFileDialog>
-#include <QDesktopServices>
 #include <QFileSystemModel>
+#include <QFileInfo>
 #include <QMenu>
+
+#include <memory>
+#include <functional>
 
 using namespace std;
 using namespace Widgets;
@@ -50,14 +53,19 @@ void PathLineEdit::contextMenuEvent(QContextMenuEvent *event)
     unique_ptr<QMenu> menu(createStandardContextMenu());
     menu->addSeparator();
     connect(menu->addAction(tr("Browse")), &QAction::triggered, [this] {
-        QString path = QFileDialog::getExistingDirectory(this);
+        const QString path = QFileDialog::getExistingDirectory(this);
         if(!path.isEmpty()) {
             editText(path);
         }
     });
-    connect(menu->addAction(tr("Explore")), &QAction::triggered, [this] {
-        QDesktopServices::openUrl(QUrl(QStringLiteral("file://") + text(), QUrl::TolerantMode));
-    });
+    QFileInfo fileInfo(text());
+    if(fileInfo.exists()) {
+        if(fileInfo.isFile()) {
+            connect(menu->addAction(tr("Open")), &QAction::triggered, bind(&DesktopUtils::openLocalFileOrDir, text()));
+        } else if(fileInfo.isDir()) {
+            connect(menu->addAction(tr("Explore")), &QAction::triggered, bind(&DesktopUtils::openLocalFileOrDir, text()));
+        }
+    }
     menu->exec(event->globalPos());
 }
 

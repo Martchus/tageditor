@@ -22,11 +22,12 @@
 #include <tagparser/mp4/mp4tag.h>
 #include <tagparser/matroska/matroskatag.h>
 
-#include <c++utilities/conversion/stringconversion.h>
-#include <c++utilities/io/path.h>
-
 #include <qtutilities/aboutdialog/aboutdialog.h>
 #include <qtutilities/misc/dialogutils.h>
+#include <qtutilities/misc/desktoputils.h>
+
+#include <c++utilities/conversion/stringconversion.h>
+#include <c++utilities/io/path.h>
 
 #include <QMessageBox>
 #include <QGraphicsScene>
@@ -41,7 +42,6 @@
 #include <QMimeData>
 #include <QTextStream>
 #include <QFileSystemWatcher>
-#include <QDesktopServices>
 #include <QFileIconProvider>
 #ifdef TAGEDITOR_USE_WEBENGINE
 # include <QWebEngineView>
@@ -282,6 +282,7 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event)
 
 /*!
  * \brief This private slot is called when the entered text of m_ui->pathLineEdit which represents the current directory changes.
+ *
  * If the text is a valid path the current index of the m_ui->filesTreeView is updated to show the path. This invokes the file
  * selected slot.
  */
@@ -292,10 +293,11 @@ void MainWindow::pathEntered()
         QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(path));
         if(index.isValid()) {
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
-            m_ui->pathLineEdit->setStyleSheet(QString());
+            m_ui->pathLineEdit->setProperty("classNames", QStringList());
         } else {
-            m_ui->pathLineEdit->setStyleSheet(QStringLiteral("color: red;"));
+            m_ui->pathLineEdit->setProperty("classNames", QStringList() << QStringLiteral("input-invalid"));
         }
+        updateStyle(m_ui->pathLineEdit);
     }
 }
 
@@ -316,7 +318,8 @@ void MainWindow::fileSelected()
         } else if(fileInfo.isDir()) {
             m_ui->pathLineEdit->setText(path);
         }
-        m_ui->pathLineEdit->setStyleSheet(QString());
+        m_ui->pathLineEdit->setProperty("classNames", QStringList());
+        updateStyle(m_ui->pathLineEdit);
     }
 }
 
@@ -716,7 +719,7 @@ void MainWindow::copyInfoWebViewSelection()
 void MainWindow::spawnExternalPlayer()
 {
     if(!m_currentPath.isEmpty()) {
-        QDesktopServices::openUrl(QStringLiteral("file://") + m_currentPath);
+        DesktopUtils::openLocalFileOrDir(m_currentPath);
     } else {
         m_ui->statusBar->showMessage(tr("No file opened."));
     }
@@ -1250,7 +1253,7 @@ void MainWindow::selectNextFile()
                 // fetchMore will return immediatly because QFileSystemModel seems to use an
                 // extra thread to fetch files and directories. That's why I select the next file
                 // in this case when the rowsInserted signal is emitted.
-                auto conn = std::make_shared<QMetaObject::Connection>();
+                auto conn = make_shared<QMetaObject::Connection>();
                 *conn = connect(m_fileFilterModel, &QAbstractItemModel::rowsInserted, [this, selectedIndex, conn] (const QModelIndex &parent, int, int) {
                     disconnect(*conn);
                     if(parent == selectedIndex) {
@@ -1270,7 +1273,7 @@ void MainWindow::selectNextFile()
             next = selectedIndex.sibling(selectedIndex.row() + 1, selectedIndex.column());
         }
         if(!next.isValid()) {
-            QModelIndex parent = selectedIndex.parent();
+            const QModelIndex parent = selectedIndex.parent();
             if(parent.isValid()) {
                 next = parent.sibling(parent.row() + 1, parent.column());
             }
@@ -1286,7 +1289,7 @@ void MainWindow::selectNextFile()
  */
 void MainWindow::showOpenFileDlg()
 {
-    QString path = QFileDialog::getOpenFileName(this, QApplication::applicationName());
+    const QString path = QFileDialog::getOpenFileName(this, QApplication::applicationName());
     if(!path.isEmpty()) {
         startParsing(path);
     }
@@ -1335,7 +1338,7 @@ void MainWindow::saveFileInformation()
     }
     lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
     if(m_fileInfo.isOpen() && m_fileInfoHtml.size()) {
-        QString path = QFileDialog::getSaveFileName(this, windowTitle());
+        const QString path = QFileDialog::getSaveFileName(this, windowTitle());
         if(!path.isEmpty()) {
             QFile file(path);
             if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {

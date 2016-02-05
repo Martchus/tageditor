@@ -118,11 +118,11 @@ which are also available on my GitHub profile.
 
 The following Qt 5 modules are requried: core gui qml/script widgets webenginewidgets/webkitwidgets
 
-* If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against qml.
-  To force usage of Qt Qml add "CONFIG+=forcejsengine" to the qmake arguments.
+* If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against Qt QML.
+  To force usage of Qt QML add "CONFIG+=forcejsengine" to the qmake arguments.
 * If Qt WebKitWidgets is installed on the system, the editor will link against it. Otherwise it will link against Qt WebEngineWidgets.
   To force usage of Qt WebEngineWidgets add "CONFIG+=forcewebengine" to the qmake arguments.
-* When building with CMake the Qt modules can be picked explicitely by specifying -DWEBVIEW_PROVIDER=webkit/webengine and/or -DJS_PROVIDER=script/qml.
+* When building with CMake the Qt modules can be selected explicitely by specifying -DWEBVIEW_PROVIDER=webkit/webengine and/or -DJS_PROVIDER=script/qml.
 
 ## TODO
 - Support more tag formats (EXIF, PDF metadata, ...).
