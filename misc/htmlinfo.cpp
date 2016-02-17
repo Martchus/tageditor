@@ -516,15 +516,22 @@ public:
             // format name and abbreviation differ
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr));
         }
+        if(track->version()) {
+            switch(track->format().general) {
+            case GeneralMediaFormat::Mpeg4Video:
+            case GeneralMediaFormat::Avc:
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Level"), QCoreApplication::translate("HtmlInfo", "The version/level of the track's format."), QChar('L') + QString::number(track->version()));
+                break;
+            default:
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QCoreApplication::translate("HtmlInfo", "The version/level of the track's format."), QString::number(track->version()));
+            }
+        }
         fmtName = track->format().extensionName();
         if(*fmtName) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Extension"), QCoreApplication::translate("HtmlInfo", "Used format extensions."), qstr(fmtName));
         }
         if(!track->formatId().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format/codec ID"), QCoreApplication::translate("HtmlInfo", "The raw format/codec identifier extracted from the container."), qstr(track->formatId()));
-        }
-        if(track->version()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QString::number(track->version()));
         }
         if(track->size()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(track->size(), true)));
@@ -552,9 +559,9 @@ public:
         }
         if(track->samplingFrequency()) {
             if(track->extensionSamplingFrequency()) {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QStringLiteral("%1 Hz / %2 Hz").arg(track->extensionSamplingFrequency()).arg(track->samplingFrequency()));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QString::number(track->extensionSamplingFrequency()) % QStringLiteral(" Hz / ") % QString::number(track->samplingFrequency()) % QStringLiteral(" Hz"));
             } else {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QStringLiteral("%1 Hz").arg(track->samplingFrequency()));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QString::number(track->samplingFrequency()) + QStringLiteral(" Hz"));
             }
         }
         if(track->sampleCount()) {
@@ -571,6 +578,9 @@ public:
         }
         if(!track->displaySize().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Display size"), qstr(track->displaySize().toString()));
+        }
+        if(!track->pixelAspectRatio().isValid()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Pixel Aspect Ratio"), QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ") % QString::number(track->pixelAspectRatio().denominator));
         }
         if(!track->cropping().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Cropping"), qstr(track->cropping().toString()));
@@ -592,6 +602,9 @@ public:
         }
         if(track->fps()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Frames per second"), QString::number(track->fps()));
+        }
+        if(track->chromaFormat()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chroma format"), qstr(track->chromaFormat()));
         }
         list<string> labels;
         if(track->isInterlaced()) {
