@@ -161,8 +161,8 @@ if(MINGW)
 endif(MINGW)
 
 # read cached variables
-SET(JS_PROVIDER "auto" CACHE STRING "specifies the JavaScript provider: auto, qml or script")
-SET(WEBVIEW_PROVIDER "auto" CACHE STRING "specifies the webview provider: auto, webkit or webengine")
+set(JS_PROVIDER "auto" CACHE STRING "specifies the JavaScript provider: auto, qml or script")
+set(WEBVIEW_PROVIDER "auto" CACHE STRING "specifies the webview provider: auto, webkit or webengine")
 
 # check required Qt 5 modules
 find_package(Qt5Core REQUIRED)
@@ -204,6 +204,7 @@ if(${WEBVIEW_PROVIDER} STREQUAL "auto")
     else()
         find_package(Qt5WebEngineWidgets REQUIRED)
         set(WEBVIEW_PROVIDER Qt5::WebEngineWidgets)
+        set(WEBVIEW_DEFINITION -DTAGEDITOR_USE_WEBENGINE)
         message(STATUS "No webview provider explicitely specified, defaulting to Qt WebEngine.")
     endif()
 else()
@@ -239,7 +240,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # enable lrelease
 qt5_add_translation(QM_FILES ${TS_FILES})
-ADD_CUSTOM_TARGET(translations ALL DEPENDS ${QM_FILES})
+add_custom_target(translations ALL DEPENDS ${QM_FILES})
 
 # executable and linking
 add_executable(${META_PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SRC_FILES} ${WIDGETS_HEADER_FILES} ${WIDGETS_SRC_FILES} ${WIDGETS_UI_FILES} ${QM_FILES} ${RES_FILES} ${WINDOWS_ICON_PATH})
