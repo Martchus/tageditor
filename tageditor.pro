@@ -62,7 +62,8 @@ HEADERS += \
     gui/entertargetdialog.h \
     gui/attachmentsmodel.h \
     gui/attachmentsedit.h \
-    gui/codeedit.h
+    gui/codeedit.h \
+    gui/tageditorwidget.h
 
 SOURCES += \
     application/main.cpp \
@@ -92,7 +93,8 @@ SOURCES += \
     gui/entertargetdialog.cpp \
     gui/attachmentsmodel.cpp \
     gui/attachmentsedit.cpp \
-    gui/codeedit.cpp
+    gui/codeedit.cpp \
+    gui/tageditorwidget.cpp
 
 FORMS += \
     gui/id3v2optionpage.ui \
@@ -109,7 +111,8 @@ FORMS += \
     gui/entertargetdialog.ui \
     gui/attachmentsedit.ui \
     gui/editortempoptionpage.ui \
-    gui/filelayout.ui
+    gui/filelayout.ui \
+    gui/tageditorwidget.ui
 
 RESOURCES += \
     resources/icons.qrc \

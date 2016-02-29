@@ -37,7 +37,7 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
         MainWindow w;
         w.show();
         if(!path.isEmpty()) {
-            w.startParsing(path, true);
+            w.startParsing(path);
         }
         res = a.exec();
     }

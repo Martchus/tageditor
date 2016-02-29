@@ -5,11 +5,9 @@
 
 #include <QString>
 
-QT_BEGIN_NAMESPACE
-class QDir;
-class QAbstractItemModel;
-class QModelIndex;
-QT_END_NAMESPACE
+QT_FORWARD_DECLARE_CLASS(QDir)
+QT_FORWARD_DECLARE_CLASS(QAbstractItemModel)
+QT_FORWARD_DECLARE_CLASS(QModelIndex)
 
 namespace Media {
 class MediaFileInfo;

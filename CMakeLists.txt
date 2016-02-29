@@ -56,6 +56,7 @@ set(WIDGETS_HEADER_FILES
     gui/settingsdialog.h
     gui/tagedit.h
     gui/tagfieldedit.h
+    gui/tageditorwidget.h
     renamingutility/filesystemitem.h
     renamingutility/filesystemitemmodel.h
     renamingutility/filteredfilesystemitemmodel.h
@@ -82,6 +83,7 @@ set(WIDGETS_SRC_FILES
     gui/settingsdialog.cpp
     gui/tagedit.cpp
     gui/tagfieldedit.cpp
+    gui/tageditorwidget.cpp
     renamingutility/filesystemitem.cpp
     renamingutility/filesystemitemmodel.cpp
     renamingutility/filteredfilesystemitemmodel.cpp
@@ -106,6 +108,7 @@ set(WIDGETS_UI_FILES
     gui/attachmentsedit.ui
     gui/editortempoptionpage.ui
     gui/filelayout.ui
+    gui/tageditorwidget.ui
 )
 #set(QUICK_HEADER_FILES
 #)

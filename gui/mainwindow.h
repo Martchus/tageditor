@@ -1,5 +1,5 @@
-#ifndef TAGEDITORDIALOG_H
-#define TAGEDITORDIALOG_H
+#ifndef TAGEDITORMAINWINDOW_H
+#define TAGEDITORMAINWINDOW_H
 
 #include "./filefilterproxymodel.h"
 #include "./previousvaluehandling.h"
@@ -10,26 +10,10 @@
 #include <QMainWindow>
 #include <QByteArray>
 
-#include <string>
 #include <mutex>
-#include <functional>
 
-#ifdef TAGEDITOR_USE_WEBENGINE
-# define WEB_VIEW_PROVIDER QWebEngineView
-#else
-# define WEB_VIEW_PROVIDER QWebView
-#endif
-
-QT_BEGIN_NAMESPACE
-class QLineEdit;
-class QComboBox;
-class QSpinBox;
-class QPlainTextEdit;
-class QGraphicsScene;
-class QFileSystemModel;
-class QFileSystemWatcher;
-class WEB_VIEW_PROVIDER;
-QT_END_NAMESPACE
+QT_FORWARD_DECLARE_CLASS(QFileSystemModel)
+QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
 
 namespace Media {
 DECLARE_ENUM(TagType, unsigned int)
@@ -46,7 +30,7 @@ namespace Ui {
 class MainWindow;
 }
 
-class TagEdit;
+class TagEditorWidget;
 class RenameFilesDialog;
 
 class MainWindow : public QMainWindow
@@ -60,93 +44,47 @@ public:
     // file browser
     QString currentDirectory();
     void setCurrentDirectory(const QString &path);
-
-public slots:
-    // opened file: load, save, delete, close
-    bool startParsing(const QString &path, bool forceRefresh = false);
-    bool reparseFile();
-    bool applyEntriesAndSaveChangings();
-    bool deleteAllTagsAndSave();
-    void closeFile();
+    void startParsing(const QString &path);
 
 protected:
     bool event(QEvent *event);
-    bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
     // file selection
     void pathEntered();
     void fileSelected();
-    void saveAndShowNextFile();
     void selectNextFile();
+    void selectNextFile(QItemSelectionModel *selectionModel, const QModelIndex &currentIndex, bool notDeeper);
+    void showNextFileNotFound();
     void showOpenFileDlg();
-
-    // editor
-    void fileChangedOnDisk(const QString &path);
-    void showFile(char result);
     void saveFileInformation();
-    void handleReturnPressed();
-    void handleKeepPreviousValuesActionTriggered(QAction *action);
-    void applySettingsFromDialog();
-    void addTag(const std::function<Media::Tag *(Media::MediaFileInfo &)> &createTag);
-    void removeTag(Media::Tag *tag);
-    void changeTarget(Media::Tag *tag);
+    void handleFileStatusChange(bool opened, bool hasTag);
+    void handleFileSaved(const QString &currentPath);
 
-    // saving
-    bool startSaving();
-    void showSavingResult(bool processingError, bool ioError);
+    // settings
+    void showSettingsDlg();
+    void applySettingsFromDialog();
 
     // misc
     void showAboutDlg();
-    void showSettingsDlg();
     void showRenameFilesDlg();
-    void updateInfoWebView();
-    void showInfoWebViewContextMenu(const QPoint &);
-    void copyInfoWebViewSelection();
     void spawnExternalPlayer();
 
 private:
-    void updateDocumentTitleEdits();
-    void updateTagEditsAndAttachmentEdits(bool updateUi = true, PreviousValueHandling previousValueHandling = PreviousValueHandling::Auto);
-    void updateTagSelectionComboBox();
-    void updateUiStatus();
-    void updateTagManagementMenu();
-    void insertTitleFromFilename();
-    void foreachTagEdit(const std::function<void (TagEdit *)> &function);
-    bool confirmCreationOfId3TagForUnsupportedFile();
+    std::mutex &fileOperationMutex();
+    Media::MediaFileInfo &fileInfo();
 
     // UI
     std::unique_ptr<Ui::MainWindow> m_ui;
-    QMenu *m_keepPreviousValuesMenu;
-    QMenu *m_tagOptionsMenu;
-    QMenu *m_addTagMenu;
-    QMenu *m_removeTagMenu;
-    QMenu *m_changeTargetMenu;
-    WEB_VIEW_PROVIDER *m_infoWebView;
     // models
     QFileSystemModel *m_fileModel;
     FileFilterProxyModel *m_fileFilterModel;
-    // tag, file, directory management
-    QString m_currentPath;
-    QString m_currentDir; // this is the actual direcotry of the opened file and may differ from the directory selected in the tree view
-    QString m_lastDir;
-    QFileSystemWatcher *m_fileWatcher;
-    bool m_fileChangedOnDisk;
-    Media::MediaFileInfo m_fileInfo;
-    QString m_nextFilePath;
-    std::vector<Media::Tag *> m_tags;
-    QByteArray m_fileInfoHtml;
     // dialogs
     Dialogs::AboutDialog *m_aboutDlg;
     Dialogs::SettingsDialog *m_settingsDlg;
     std::unique_ptr<RenameFilesDialog> m_renameFilesDlg;
-    // status
-    bool m_makingResultsAvailable;
-    Media::NotificationList m_originalNotifications;
-    bool m_abortClicked;
-    std::mutex m_fileOperationMutex;
 };
 
 }
 
-#endif // TAGEDITORDIALOG_H
+#endif // TAGEDITORMAINWINDOW_H
