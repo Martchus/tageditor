@@ -24,9 +24,10 @@ public:
 
     static const char *fieldName(Media::KnownField field);
     static QString translatedFieldName(Media::KnownField field);
-    static Models::ChecklistItem mkItem(Media::KnownField field, Qt::CheckState checkState);
+    static Models::ChecklistItem mkItem(Media::KnownField field, Qt::CheckState checkState = Qt::Checked);
 
     explicit KnownFieldModel(QObject *parent = nullptr, DefaultSelection defaultSelection = DefaultSelection::None);
+    explicit KnownFieldModel(const QList<Models::ChecklistItem> &items, QObject *parent = nullptr);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     virtual QString labelForId(const QVariant &id) const;

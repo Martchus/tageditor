@@ -97,6 +97,12 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
     setItems(items);
 }
 
+KnownFieldModel::KnownFieldModel(const QList<Models::ChecklistItem> &items, QObject *parent) :
+    ChecklistModel(parent)
+{
+    setItems(items);
+}
+
 QVariant KnownFieldModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch(orientation) {

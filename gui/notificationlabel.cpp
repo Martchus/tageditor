@@ -39,7 +39,7 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     if(event->rect().contains(textRect)) {
-        style->drawItemText(&painter, textRect, QStyle::visualAlignment(layoutDirection(), Qt::AlignVCenter | Qt::AlignLeft), option.palette, isEnabled(), m_text, foregroundRole());
+        style->drawItemText(&painter, textRect, QStyle::visualAlignment(layoutDirection(), Qt::AlignVCenter | Qt::AlignLeft | Qt::AlignJustify), option.palette, isEnabled(), m_text, foregroundRole());
     }
     if(event->rect().contains(pixmapRect)) {
         setupPixmaps(pixmapRect.size());
@@ -174,6 +174,13 @@ QSize NotificationLabel::minimumSizeHint() const
 void NotificationLabel::setText(const QString &text)
 {
     m_text = text;
+    updateGeometry();
+    update(textRect());
+}
+
+void NotificationLabel::clearText()
+{
+    m_text.clear();
     updateGeometry();
     update(textRect());
 }

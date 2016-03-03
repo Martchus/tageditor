@@ -91,6 +91,11 @@ QByteArray &mainWindowGeometry();
 QByteArray &mainWindowState();
 QString &mainWindowCurrentFileBrowserDirectory();
 
+// db query
+bool &dbQueryWidgetShown();
+bool &dbQueryOverride();
+KnownFieldModel &dbQueryFields();
+
 // rename files dialog
 int &scriptSource();
 QString &externalScript();

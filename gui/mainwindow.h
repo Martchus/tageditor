@@ -32,6 +32,7 @@ class MainWindow;
 
 class TagEditorWidget;
 class RenameFilesDialog;
+class DbQueryWidget;
 
 class MainWindow : public QMainWindow
 {
@@ -69,6 +70,7 @@ private slots:
     void showAboutDlg();
     void showRenameFilesDlg();
     void spawnExternalPlayer();
+    void showDbQueryWidget();
 
 private:
     std::mutex &fileOperationMutex();
@@ -83,6 +85,7 @@ private:
     Dialogs::AboutDialog *m_aboutDlg;
     Dialogs::SettingsDialog *m_settingsDlg;
     std::unique_ptr<RenameFilesDialog> m_renameFilesDlg;
+    DbQueryWidget *m_dbQueryWidget;
 };
 
 }

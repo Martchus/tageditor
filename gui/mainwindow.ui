@@ -18,7 +18,7 @@
     <normaloff>:/tageditor/icons/hicolor/16x16/apps/tageditor.png</normaloff>:/tageditor/icons/hicolor/16x16/apps/tageditor.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
      <number>0</number>
     </property>
@@ -35,45 +35,7 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QSplitter" name="splitter">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QWidget" name="leftWidget" native="true">
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <property name="spacing">
-         <number>2</number>
-        </property>
-        <property name="topMargin">
-         <number>4</number>
-        </property>
-        <property name="bottomMargin">
-         <number>4</number>
-        </property>
-        <item>
-         <widget class="PathLineEdit" name="pathLineEdit"/>
-        </item>
-        <item>
-         <widget class="QTreeView" name="filesTreeView">
-          <property name="sortingEnabled">
-           <bool>true</bool>
-          </property>
-          <attribute name="headerShowSortIndicator" stdset="0">
-           <bool>true</bool>
-          </attribute>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCommandLinkButton" name="selectNextCommandLinkButton">
-          <property name="text">
-           <string>Select next file/directory</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="TagEditorWidget" name="tagEditorWidget"/>
-     </widget>
+     <widget class="TagEditorWidget" name="tagEditorWidget" native="true"/>
     </item>
    </layout>
   </widget>
@@ -120,6 +82,7 @@
      <string>A&amp;pplication</string>
     </property>
     <addaction name="actionSettings"/>
+    <addaction name="actionOpen_MusicBrainz_search"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
     <addaction name="separator"/>
@@ -128,6 +91,71 @@
    <addaction name="menuFile"/>
    <addaction name="menuDirectory"/>
    <addaction name="menu"/>
+  </widget>
+  <widget class="QDockWidget" name="fileSelectionDockWidget">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="features">
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="windowTitle">
+    <string>File sele&amp;ction</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+     <property name="leftMargin">
+      <number>1</number>
+     </property>
+     <property name="topMargin">
+      <number>1</number>
+     </property>
+     <property name="rightMargin">
+      <number>1</number>
+     </property>
+     <property name="bottomMargin">
+      <number>1</number>
+     </property>
+     <item>
+      <widget class="PathLineEdit" name="pathLineEdit"/>
+     </item>
+     <item>
+      <widget class="QTreeView" name="filesTreeView">
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <attribute name="headerShowSortIndicator" stdset="0">
+        <bool>true</bool>
+       </attribute>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCommandLinkButton" name="selectNextCommandLinkButton">
+       <property name="text">
+        <string>Select next file</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dbQueryDockWidget">
+   <property name="floating">
+    <bool>false</bool>
+   </property>
+   <property name="windowTitle">
+    <string>&amp;MusicBrains search (beta)</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2"/>
   </widget>
   <action name="actionSave">
    <property name="enabled">
@@ -297,6 +325,18 @@
     <string>Ctrl+E</string>
    </property>
   </action>
+  <action name="actionOpen_MusicBrainz_search">
+   <property name="icon">
+    <iconset theme="edit-find">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Open MusicBrainz search</string>
+   </property>
+   <property name="shortcut">
+    <string>F10</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -308,12 +348,8 @@
    <class>TagEditorWidget</class>
    <extends>QWidget</extends>
    <header>gui/tageditorwidget.h</header>
-   <container>0</container>
   </customwidget>
  </customwidgets>
- <tabstops>
-  <tabstop>filesTreeView</tabstop>
- </tabstops>
  <resources>
   <include location="../resources/icons.qrc"/>
  </resources>

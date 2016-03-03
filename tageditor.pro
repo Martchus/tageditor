@@ -46,7 +46,6 @@ HEADERS += \
     gui/javascripthighlighter.h \
     gui/picturepreviewselection.h \
     gui/notificationmodel.h \
-    gui/infowidgetbase.h \
     gui/settingsdialog.h \
     renamingutility/filesystemitem.h \
     renamingutility/filesystemitemmodel.h \
@@ -63,7 +62,9 @@ HEADERS += \
     gui/attachmentsmodel.h \
     gui/attachmentsedit.h \
     gui/codeedit.h \
-    gui/tageditorwidget.h
+    gui/tageditorwidget.h \
+    dbquery/dbquery.h \
+    gui/dbquerywidget.h
 
 SOURCES += \
     application/main.cpp \
@@ -80,7 +81,6 @@ SOURCES += \
     gui/tagedit.cpp \
     gui/picturepreviewselection.cpp \
     gui/notificationmodel.cpp \
-    gui/infowidgetbase.cpp \
     renamingutility/filesystemitem.cpp \
     renamingutility/filesystemitemmodel.cpp \
     renamingutility/filteredfilesystemitemmodel.cpp \
@@ -94,7 +94,9 @@ SOURCES += \
     gui/attachmentsmodel.cpp \
     gui/attachmentsedit.cpp \
     gui/codeedit.cpp \
-    gui/tageditorwidget.cpp
+    gui/tageditorwidget.cpp \
+    dbquery/dbquery.cpp \
+    gui/dbquerywidget.cpp
 
 FORMS += \
     gui/id3v2optionpage.ui \
@@ -112,7 +114,8 @@ FORMS += \
     gui/attachmentsedit.ui \
     gui/editortempoptionpage.ui \
     gui/filelayout.ui \
-    gui/tageditorwidget.ui
+    gui/tageditorwidget.ui \
+    gui/dbquerywidget.ui
 
 RESOURCES += \
     resources/icons.qrc \

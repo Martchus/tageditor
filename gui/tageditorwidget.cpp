@@ -580,6 +580,14 @@ void TagEditorWidget::foreachTagEdit(const std::function<void (TagEdit *)> &func
 }
 
 /*!
+ * \brief Returns the active tag edit or nullptr if there is currently no acitve tag edit.
+ */
+TagEdit *TagEditorWidget::activeTagEdit()
+{
+    return m_fileInfo.isOpen() ? qobject_cast<TagEdit *>(m_ui->stackedWidget->currentWidget()) : nullptr;
+}
+
+/*!
  * \brief Opens and parses a file using another thread.
  *
  * Shows its tags and general information using the showFile() method.
@@ -769,7 +777,7 @@ void TagEditorWidget::showFile(char result)
 void TagEditorWidget::saveAndShowNextFile()
 {
     m_nextFileAfterSaving = true;
-    startSaving();
+    applyEntriesAndSaveChangings();
 }
 
 /*!
@@ -996,12 +1004,12 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         // -> the main window will ensure the current file is still selected
         emit fileSaved(m_currentPath);
         // show next file (only if there are critical notifications)
-        m_nextFileAfterSaving = false;
         if(critical < 1 && m_nextFileAfterSaving) {
             emit nextFileSelected();
         } else {
             startParsing(m_currentPath, true);
         }
+        m_nextFileAfterSaving = false;
     } else {
         static const QString processingErrorMsg(tr("The tags couldn't be saved. See the info box for detail."));
         static const QString ioErrorMsg(tr("The tags couldn't be saved because an IO error occured."));

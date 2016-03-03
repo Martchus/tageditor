@@ -49,7 +49,6 @@ set(WIDGETS_HEADER_FILES
     gui/pathlineedit.h
     gui/picturepreviewselection.h
     gui/filefilterproxymodel.h
-    gui/infowidgetbase.h
     gui/initiate.h
     gui/previousvaluehandling.h
     gui/renamefilesdialog.h
@@ -57,6 +56,9 @@ set(WIDGETS_HEADER_FILES
     gui/tagedit.h
     gui/tagfieldedit.h
     gui/tageditorwidget.h
+    dbquery/dbquery.h
+    gui/dbquerywidget.h
+    misc/networkaccessmanager.h
     renamingutility/filesystemitem.h
     renamingutility/filesystemitemmodel.h
     renamingutility/filteredfilesystemitemmodel.h
@@ -76,7 +78,6 @@ set(WIDGETS_SRC_FILES
     gui/pathlineedit.cpp
     gui/picturepreviewselection.cpp
     gui/filefilterproxymodel.cpp
-    gui/infowidgetbase.cpp
     gui/initiate.cpp
     gui/javascripthighlighter.cpp
     gui/renamefilesdialog.cpp
@@ -84,6 +85,9 @@ set(WIDGETS_SRC_FILES
     gui/tagedit.cpp
     gui/tagfieldedit.cpp
     gui/tageditorwidget.cpp
+    dbquery/dbquery.cpp
+    gui/dbquerywidget.cpp
+    misc/networkaccessmanager.cpp
     renamingutility/filesystemitem.cpp
     renamingutility/filesystemitemmodel.cpp
     renamingutility/filteredfilesystemitemmodel.cpp
@@ -109,6 +113,7 @@ set(WIDGETS_UI_FILES
     gui/editortempoptionpage.ui
     gui/filelayout.ui
     gui/tageditorwidget.ui
+    gui/dbquerywidget.ui
 )
 #set(QUICK_HEADER_FILES
 #)

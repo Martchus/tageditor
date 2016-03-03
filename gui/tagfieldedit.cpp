@@ -107,6 +107,60 @@ void TagFieldEdit::setTagField(const QList<Tag *> &tags, Media::KnownField field
 }
 
 /*!
+ * \brief Returns the currently shown value.
+ * \remarks
+ * - The specified \a encoding is used to encode text values.
+ * - Does not work for values of the type picture.
+ */
+TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) const
+{
+    TagValue value;
+    switch(m_dataType) {
+    case TagDataType::Text:
+    case TagDataType::TimeSpan:
+    case TagDataType::DateTime:
+        switch(m_field) {
+        case KnownField::Genre:
+            if(m_comboBox) {
+                value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
+            }
+            break;
+        case KnownField::Lyrics:
+            if(m_plainTextEdit) {
+                value.assignText(Utility::qstringToString(m_plainTextEdit->toPlainText(), encoding), encoding);
+            }
+            break;
+        default:
+            if(m_lineEdit) {
+                value.assignText(Utility::qstringToString(m_lineEdit->text(), encoding), encoding);
+            }
+        }
+        break;
+    case TagDataType::Integer:
+        if(m_spinBoxes.first && m_spinBoxes.first->value()) {
+            value.assignInteger(m_spinBoxes.first->value());
+        }
+        break;
+    case TagDataType::PositionInSet:
+        if(m_spinBoxes.first && m_spinBoxes.second) {
+            value.assignPosition(PositionInSet(m_spinBoxes.first->value(), m_spinBoxes.second->value()));
+        }
+        break;
+    case TagDataType::StandardGenreIndex:
+        if(m_comboBox) {
+            value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
+        }
+        break;
+    default:
+        ;
+    }
+    if(m_descriptionLineEdit && includeDescription) { // setup description line edit
+        value.setDescription(Utility::qstringToString(m_descriptionLineEdit->text(), encoding), encoding);
+    }
+    return value;
+}
+
+/*!
  * \brief Sets the \a value of the current tag field manually using the given \a previousValueHandling.
  */
 bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
@@ -584,7 +638,7 @@ QLabel *TagFieldEdit::setupTypeNotSupportedLabel()
 }
 
 /*!
- * \brief Updates the current value manually.
+ * \brief Updates the currently shown value manually.
  * \param previousValueHandling Specifies how to deal with the previous value.
  *
  * The new value is read from the assigned tag(s).
@@ -617,7 +671,7 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
 }
 
 /*!
- * \brief Updates the current value manually.
+ * \brief Updates the currently shown value manually.
  * \param tag Specifies the tag to read the new value from.
  * \param previousValueHandling Specifies how to deal with the previous value.
  * \remarks If \a tag is nullptr, the new value is empty.
@@ -635,7 +689,7 @@ void TagFieldEdit::updateValue(Tag *tag, PreviousValueHandling previousValueHand
 }
 
 /*!
- * \brief Updates the current value manually.
+ * \brief Updates the currently shown value manually.
  * \param value Specifies the new value.
  * \param previousValueHandling Specifies how to deal with the previous value.
  * \param updateRestoreButton Specifies whether the "restore button" should be updated.
@@ -673,7 +727,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             PositionInSet pos;
             try {
                 pos = value.toPositionIntSet();
-            } catch(ConversionException &) {
+            } catch(const ConversionException &) {
                 conversionError = true;
             }
             if(previousValueHandling == PreviousValueHandling::Clear || pos.position()) {
@@ -695,7 +749,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             int num;
             try {
                 num = value.toInteger();
-            } catch(ConversionException &) {
+            } catch(const ConversionException &) {
                 conversionError = true;
                 num = 0;
             }
@@ -872,54 +926,11 @@ void TagFieldEdit::apply()
                 m_pictureSelection->apply();
             }
         } else {
-            TagValue value;
             TagTextEncoding encoding = Settings::preferredEncoding();
             if(!tag->canEncodingBeUsed(encoding)) {
                 encoding = tag->proposedTextEncoding();
             }
-            switch(m_dataType) {
-            case TagDataType::Text:
-            case TagDataType::TimeSpan:
-            case TagDataType::DateTime:
-                switch(m_field) {
-                case KnownField::Genre:
-                    if(m_comboBox) {
-                        value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
-                    }
-                    break;
-                case KnownField::Lyrics:
-                    if(m_plainTextEdit) {
-                        value.assignText(Utility::qstringToString(m_plainTextEdit->toPlainText(), encoding), encoding);
-                    }
-                    break;
-                default:
-                    if(m_lineEdit) {
-                        value.assignText(Utility::qstringToString(m_lineEdit->text(), encoding), encoding);
-                    }
-                }
-                break;
-            case TagDataType::Integer:
-                if(m_spinBoxes.first && m_spinBoxes.first->value()) {
-                    value.assignInteger(m_spinBoxes.first->value());
-                }
-                break;
-            case TagDataType::PositionInSet:
-                if(m_spinBoxes.first && m_spinBoxes.second) {
-                    value.assignPosition(PositionInSet(m_spinBoxes.first->value(), m_spinBoxes.second->value()));
-                }
-                break;
-            case TagDataType::StandardGenreIndex:
-                if(m_comboBox) {
-                    value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
-                }
-                break;
-            default:
-                ;
-            }
-            if(m_descriptionLineEdit && tag->supportsDescription(m_field)) { // setup description line edit
-                value.setDescription(Utility::qstringToString(m_descriptionLineEdit->text(), encoding), encoding);
-            }
-            tag->setValue(m_field, value);
+            tag->setValue(m_field, value(encoding, tag->supportsDescription(m_field)));
         }
     }
 }
@@ -931,7 +942,7 @@ bool TagFieldEdit::eventFilter(QObject *obj, QEvent *event)
 {
     switch(event->type()) {
     case QEvent::KeyRelease: {
-        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        auto *keyEvent = static_cast<QKeyEvent *>(event);
         int key = keyEvent->key();
         switch(key) {
         case Qt::Key_Return:

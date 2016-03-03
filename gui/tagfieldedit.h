@@ -17,6 +17,7 @@ namespace Media {
 class Tag;
 DECLARE_ENUM(KnownField, unsigned int)
 DECLARE_ENUM(TagDataType, unsigned int)
+DECLARE_ENUM(TagTextEncoding, unsigned int)
 class TagValue;
 }
 
@@ -43,6 +44,7 @@ public:
     const QList<Media::Tag *> &tags() const;
     Media::KnownField field() const;
     void setTagField(const QList<Media::Tag *> &tags, Media::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool preventUiUpdate = false);
+    Media::TagValue value(Media::TagTextEncoding encoding, bool includeDescription) const;
     bool setValue(const Media::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool hasDescription() const;
     bool canApply(Media::KnownField field) const;

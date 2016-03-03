@@ -53,11 +53,14 @@ public:
     std::mutex &fileOperationMutex();
     const QString &currentPath() const;
     Media::MediaFileInfo &fileInfo();
+    bool isTagEditShown() const;
     const QByteArray &fileInfoHtml() const;
     bool isFileNameVisible() const;
     void setFileNameVisible(bool visible);
     bool areButtonsVisible() const;
     void setButtonVisible(bool visible);
+    void foreachTagEdit(const std::function<void (TagEdit *)> &function);
+    TagEdit *activeTagEdit();
 
 public slots:
     // operations with the currently opened file: load, save, delete, close
@@ -119,7 +122,6 @@ private:
     void updateFileStatusStatus();
     void updateTagManagementMenu();
     void insertTitleFromFilename();
-    void foreachTagEdit(const std::function<void (TagEdit *)> &function);
     bool confirmCreationOfId3TagForUnsupportedFile();
 
     // UI
@@ -180,6 +182,14 @@ inline Media::MediaFileInfo &TagEditorWidget::fileInfo()
 inline const QByteArray &TagEditorWidget::fileInfoHtml() const
 {
     return m_fileInfoHtml;
+}
+
+/*!
+ * \brief Returns whether currently a tag edit is shown.
+ */
+inline bool TagEditorWidget::isTagEditShown() const
+{
+    return !m_tags.empty();
 }
 
 }

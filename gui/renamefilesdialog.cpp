@@ -67,7 +67,7 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     m_ui->generatePreviewPushButton->setIcon(style()->standardIcon(QStyle::SP_BrowserReload, nullptr, m_ui->generatePreviewPushButton));
     m_ui->applyChangingsPushButton->setIcon(style()->standardIcon(QStyle::SP_DialogApplyButton, nullptr, m_ui->applyChangingsPushButton));
     m_ui->applyChangingsPushButton->setEnabled(false);
-    m_ui->abortClosePushButton->setIcon(style()->standardIcon(QStyle::SP_DialogCancelButton, nullptr, m_ui->applyChangingsPushButton));
+    m_ui->abortClosePushButton->setIcon(style()->standardIcon(QStyle::SP_DialogCancelButton, nullptr, m_ui->abortClosePushButton));
 
     // restore settings
     if(Settings::scriptSource() < m_ui->sourceFileStackedWidget->count()) {

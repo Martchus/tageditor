@@ -1,6 +1,7 @@
 #include "./mainwindow.h"
 #include "./settingsdialog.h"
 #include "./renamefilesdialog.h"
+#include "./dbquerywidget.h"
 #include "./tageditorwidget.h"
 
 #include "../application/settings.h"
@@ -70,18 +71,21 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent, Qt::Window),
     m_ui(new Ui::MainWindow()),
     m_aboutDlg(nullptr),
-    m_settingsDlg(nullptr)
+    m_settingsDlg(nullptr),
+    m_dbQueryWidget(nullptr)
 {
     // setup UI
     m_ui->setupUi(this);
 #ifdef Q_OS_WIN32
-    setStyleSheet(dialogStyle() + QStringLiteral("#rightWidget, #rightWidget QSplitter::handle { color: palette(text); background-color: palette(base); }"));
+    setStyleSheet(dialogStyle() + QStringLiteral("#tagEditorWidget { color: palette(text); background-color: palette(base); }"));
 #else
     setStyleSheet(dialogStyle());
 #endif
+
     // restore geometry and state
     restoreGeometry(Settings::mainWindowGeometry());
     restoreState(Settings::mainWindowState());
+
     // setup file model and file tree view
     m_fileModel = new QFileSystemModel(this);
     m_fileModel->setRootPath(QString());
@@ -92,13 +96,25 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui->filesTreeView->sortByColumn(0, Qt::AscendingOrder);
     m_ui->filesTreeView->setModel(m_fileFilterModel);
     m_ui->filesTreeView->setColumnWidth(0, 300);
+
     // setup path line edit
     m_ui->pathLineEdit->setCompletionModel(m_fileModel);
+
     // apply initial file status
     handleFileStatusChange(false, false);
+
+    // dbquery dock widget
+    if(Settings::dbQueryWidgetShown()) {
+        showDbQueryWidget();
+    } else {
+        // ensure the dock widget is invisible
+        m_ui->dbQueryDockWidget->setVisible(false);
+    }
+
     // connect signals and slots, install event filter
     //  menu: application
     connect(m_ui->actionSettings, &QAction::triggered, this, &MainWindow::showSettingsDlg);
+    connect(m_ui->actionOpen_MusicBrainz_search, &QAction::triggered, this, &MainWindow::showDbQueryWidget);
     connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     //  menu: file
     connect(m_ui->actionOpen, &QAction::triggered, this, &MainWindow::showOpenFileDlg);
@@ -172,6 +188,7 @@ bool MainWindow::event(QEvent *event)
         Settings::mainWindowGeometry() = saveGeometry();
         Settings::mainWindowState() = saveState();
         Settings::mainWindowCurrentFileBrowserDirectory() = currentDirectory();
+        Settings::dbQueryWidgetShown() = m_ui->dbQueryDockWidget->isVisible();
         break;
     default:
         ;
@@ -264,6 +281,17 @@ void MainWindow::spawnExternalPlayer()
 }
 
 /*!
+ * \brief Shows the database query widget.
+ */
+void MainWindow::showDbQueryWidget()
+{
+    if(!m_dbQueryWidget) {
+        m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
+    }
+    m_ui->dbQueryDockWidget->setVisible(true);
+}
+
+/*!
  * \brief Shows the about dialog.
  */
 void MainWindow::showAboutDlg()
@@ -343,7 +371,12 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
                 if(parent == currentIndex) {
                     QModelIndex next = m_fileFilterModel->index(0, 0, parent);
                     if(next.isValid()) {
-                        m_ui->filesTreeView->selectionModel()->setCurrentIndex(next, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+                        if(m_ui->filesTreeView->model()->hasChildren(next)) {
+                            // next item is a directory -> keep on searching
+                            selectNextFile(selectionModel, next, false);
+                        } else {
+                            m_ui->filesTreeView->selectionModel()->setCurrentIndex(next, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+                        }
                     } else {
                         selectNextFile(selectionModel, currentIndex, true);
                     }
@@ -369,7 +402,12 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
         }
     }
     if(next.isValid()) {
-        selectionModel->setCurrentIndex(next, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        if(selectionModel->model()->hasChildren(next)) {
+            // next item is a directory -> keep on searching
+            selectNextFile(selectionModel, next, false);
+        } else {
+            selectionModel->setCurrentIndex(next, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        }
     } else {
         showNextFileNotFound();
     }

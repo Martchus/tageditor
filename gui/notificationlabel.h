@@ -46,6 +46,7 @@ public:
 
 public slots:
     void setText(const QString &text);
+    void clearText();
     void appendLine(const QString &line);
     void setNotificationType(NotificationType value);
     void setNotificationSubject(NotificationSubject value);

@@ -2,6 +2,7 @@
 #include "./knownfieldmodel.h"
 
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/tag.h>
 #include <tagparser/backuphelper.h>
 
 #include <QString>
@@ -213,6 +214,32 @@ QString &mainWindowCurrentFileBrowserDirectory()
     return v;
 }
 
+// db query
+bool &dbQueryWidgetShown()
+{
+    static bool v;
+    return v;
+}
+
+bool &dbQueryOverride()
+{
+    static bool v;
+    return v;
+}
+
+KnownFieldModel &dbQueryFields()
+{
+    static KnownFieldModel v(QList<Models::ChecklistItem>()
+                             << KnownFieldModel::mkItem(KnownField::Title)
+                             << KnownFieldModel::mkItem(KnownField::TrackPosition)
+                             << KnownFieldModel::mkItem(KnownField::DiskPosition)
+                             << KnownFieldModel::mkItem(KnownField::Album)
+                             << KnownFieldModel::mkItem(KnownField::Album)
+                             << KnownFieldModel::mkItem(KnownField::Year)
+                             << KnownFieldModel::mkItem(KnownField::Genre));
+    return v;
+}
+
 // renaming files dialog
 int &scriptSource()
 {
@@ -225,8 +252,6 @@ QString &externalScript()
     static QString v;
     return v;
 }
-
-
 
 void restore()
 {
@@ -256,10 +281,10 @@ void restore()
     }
     hideTagSelectionComboBox() = settings.value(QStringLiteral("hidetagselectioncombobox"), true).toBool();
     settings.beginGroup(QStringLiteral("autocorrection"));
-    Settings::insertTitleFromFilename() = settings.value(QStringLiteral("inserttitlefromfilename"), false).toBool();
-    Settings::trimWhitespaces() = settings.value(QStringLiteral("trimwhitespaces"), true).toBool();
-    Settings::formatNames() = settings.value(QStringLiteral("formatnames"), false).toBool();
-    Settings::fixUmlauts() = settings.value(QStringLiteral("fixumlauts"), false).toBool();
+    insertTitleFromFilename() = settings.value(QStringLiteral("inserttitlefromfilename"), false).toBool();
+    trimWhitespaces() = settings.value(QStringLiteral("trimwhitespaces"), true).toBool();
+    formatNames() = settings.value(QStringLiteral("formatnames"), false).toBool();
+    fixUmlauts() = settings.value(QStringLiteral("fixumlauts"), false).toBool();
     settings.endGroup();
     BackupHelper::backupDirectory() = settings.value(QStringLiteral("tempdir")).toString().toStdString();
     settings.endGroup();
@@ -354,14 +379,20 @@ void restore()
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("mainwindow"));
-    Settings::mainWindowGeometry() = settings.value(QStringLiteral("geometry")).toByteArray();
-    Settings::mainWindowState() = settings.value(QStringLiteral("windowstate")).toByteArray();
-    Settings::mainWindowCurrentFileBrowserDirectory() = settings.value(QStringLiteral("currentfilebrowserdirectory")).toString();
+    mainWindowGeometry() = settings.value(QStringLiteral("geometry")).toByteArray();
+    mainWindowState() = settings.value(QStringLiteral("windowstate")).toByteArray();
+    mainWindowCurrentFileBrowserDirectory() = settings.value(QStringLiteral("currentfilebrowserdirectory")).toString();
+    settings.endGroup();
+
+    settings.beginGroup(QStringLiteral("dbquery"));
+    dbQueryWidgetShown() = settings.value(QStringLiteral("visible"), false).toBool();
+    dbQueryOverride() = settings.value(QStringLiteral("override"), true).toBool();
+    dbQueryFields().restore(settings, QStringLiteral("fields"));
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));
-    Settings::scriptSource() = settings.value(QStringLiteral("src")).toInt();
-    Settings::externalScript() = settings.value(QStringLiteral("file")).toString();
+    scriptSource() = settings.value(QStringLiteral("src")).toInt();
+    externalScript() = settings.value(QStringLiteral("file")).toString();
     settings.endGroup();
 }
 
@@ -426,6 +457,12 @@ void save()
     settings.setValue(QStringLiteral("geometry"), mainWindowGeometry());
     settings.setValue(QStringLiteral("windowstate"), mainWindowState());
     settings.setValue(QStringLiteral("currentfilebrowserdirectory"), mainWindowCurrentFileBrowserDirectory());
+    settings.endGroup();
+
+    settings.beginGroup(QStringLiteral("dbquery"));
+    settings.setValue(QStringLiteral("visible"), dbQueryWidgetShown());
+    settings.setValue(QStringLiteral("override"), dbQueryOverride());
+    dbQueryFields().save(settings, QStringLiteral("fields"));
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));

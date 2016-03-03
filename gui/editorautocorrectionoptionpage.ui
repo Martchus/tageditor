@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>QtGui::EditorAutoCorrectionOptionPage</class>
  <widget class="QWidget" name="QtGui::EditorAutoCorrectionOptionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>346</width>
+    <height>446</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>General options page</string>
   </property>
@@ -68,15 +76,6 @@
    </item>
    <item>
     <widget class="QListView" name="fieldsListView">
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Sunken</enum>
-     </property>
-     <property name="lineWidth">
-      <number>1</number>
-     </property>
      <property name="showDropIndicator" stdset="0">
       <bool>true</bool>
      </property>

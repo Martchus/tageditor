@@ -52,6 +52,19 @@ TagEdit::TagEdit(QWidget *parent) :
 }
 
 /*!
+ * \brief Returns the current value for the specified \a field.
+ * \remarks Doesn't work for fields of the type picture.
+ */
+TagValue TagEdit::value(KnownField field) const
+{
+    if(const TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
+        return edit->value(TagTextEncoding::Utf16LittleEndian, false);
+    } else {
+        return TagValue();
+    }
+}
+
+/*!
  * \brief Assigns the specified \a tag to the edit.
  * \param updateUi Specifies whether the UI of should be updated.
  * \remarks The TagEdit object does not take ownership.
@@ -89,8 +102,7 @@ void TagEdit::setTags(const QList<Tag *> &tags, bool updateUi)
  */
 bool TagEdit::setValue(KnownField field, const Media::TagValue &value, PreviousValueHandling previousValueHandling)
 {
-    TagFieldEdit *edit = m_widgets.value(field, nullptr);
-    if(edit) {
+    if(TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
         return edit->setValue(value, previousValueHandling);
     } else {
         return false;
@@ -214,24 +226,6 @@ void TagEdit::setupUi()
         m_widgets.clear();
     } else {
         // there are tags assigned
-//        if(m_tags.size() > 1) {
-//            // display targets
-//            list<string> targets;
-//            for(const Tag *tag : m_tags) {
-//                if(tag->supportsTarget()) {
-//                    const TagTarget &target = tag->target();
-//                    if(!target.levelName().empty()) {
-//                        targets.push_back(target.levelName());
-//                    } else {
-//                        targets.push_back(numberToString(target.level()));
-//                    }
-//                }
-//            }
-//            if(targets.size()) {
-//                QString res = QString::fromStdString(joinStrings(targets, ", ", true));
-
-//            }
-//        }
         // setup editing controls
         TagFieldEdit *edit = nullptr;
         int rowOverall = 0, rowLeft = 0, rowRight = 0;

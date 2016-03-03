@@ -32,6 +32,7 @@ class TagEdit : public QWidget
 public:
     explicit TagEdit(QWidget *parent = nullptr);
     const QList<Media::Tag *> &tags() const;
+    Media::TagValue value(Media::KnownField field) const;
     void setTag(Media::Tag *tag, bool updateUi = true);
     void setTags(const QList<Media::Tag *> &tags, bool updateUi = true);
     bool setValue(Media::KnownField field, const Media::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
