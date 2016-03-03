@@ -20,6 +20,8 @@ var includeTitle = true;
 var distDir = false;
 // string used for "miscellaneous" category
 var misc = "misc";
+// directory used to store collections
+var collectionsDir = "collections";
 
 // define some helper functions
 
@@ -99,8 +101,9 @@ if(tageditor.isFile) {
         var fields = [];
         // get the artist and remove invalid characters
         var artist = validFileName(tag.artist);
-        // add artist to the fields array (if configured and present)
-        if(includeArtist) {
+        // add artist to the fields array
+        // (if configured and present and if it is no collection)
+        if(includeArtist && tag.comment !== "collection") {
             if(notEmpty(artist)) {
                 fields.push(artist);
             } 
@@ -169,10 +172,14 @@ if(tageditor.isFile) {
         if(distDir) {
             var path = [distDir];
             var artist = validDirectoryName(tag.artist);
-            if(notEmpty(artist)) {
-                path.push(artist);
+            if(tag.comment === "collection") {
+                path.push(collectionsDir);
             } else {
-                path.push(misc);
+                if(notEmpty(artist)) {
+                    path.push(artist);
+                } else {
+                    path.push(misc);
+                }
             }
             var album = validDirectoryName(tag.album);
             if(notEmpty(album)) {
