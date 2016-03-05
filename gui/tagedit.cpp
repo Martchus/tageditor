@@ -114,7 +114,7 @@ bool TagEdit::setValue(KnownField field, const Media::TagValue &value, PreviousV
  */
 bool TagEdit::hasField(KnownField field) const
 {
-    foreach(Tag *tag, m_tags) {
+    for(Tag *tag : m_tags) {
         if(tag->supportsField(field)) {
             return true;
         }
@@ -133,7 +133,7 @@ QString TagEdit::generateLabel() const
         TagTarget target = m_tags.at(0)->target();
         bool differentTargets = false;
         QStringList tagNames;
-        foreach(Tag *tag, m_tags) {
+        for(Tag *tag : m_tags) {
             tagNames << QString::fromLocal8Bit(tag->typeName());
             if(!differentTargets && !(target == tag->target())) {
                 differentTargets = true;
@@ -157,7 +157,7 @@ QString TagEdit::generateLabel() const
  */
 void TagEdit::clear()
 {
-    foreach(TagFieldEdit *edit, m_widgets) {
+    for(TagFieldEdit *edit : m_widgets) {
         edit->clear();
     }
 }
@@ -167,7 +167,7 @@ void TagEdit::clear()
  */
 void TagEdit::restore()
 {
-    foreach(TagFieldEdit *edit, m_widgets) {
+    for(TagFieldEdit *edit : m_widgets) {
         edit->restore();
     }
 }
@@ -181,14 +181,14 @@ void TagEdit::apply()
     case Settings::UnsupportedFieldHandling::Discard:
         // remove all old fields of all tags to discard
         // all unsupported values
-        foreach(Tag *tag, m_tags) {
+        for(Tag *tag : m_tags) {
             tag->removeAllFields();
         }
         break;
     default:
         ;
     }
-    foreach(TagFieldEdit *edit, m_widgets) {
+    for(TagFieldEdit *edit : m_widgets) {
         edit->apply();
     }
 }
@@ -202,7 +202,7 @@ void TagEdit::apply()
 void TagEdit::invalidate()
 {
     // remove current widgets
-    foreach(QWidget *edit, m_widgets) {
+    for(QWidget *edit : m_widgets) {
         removeEdit(edit);
         edit->deleteLater();
     }
@@ -219,7 +219,7 @@ void TagEdit::setupUi()
     setUpdatesEnabled(false);
     if(!m_tags.size()) {
         // there are no tags assigned -> remove all editing controls
-        foreach(QWidget *edit, m_widgets) {
+        for(QWidget *edit : m_widgets) {
             removeEdit(edit);
             edit->deleteLater();
         }
@@ -335,7 +335,7 @@ void TagEdit::removeEdit(QWidget *edit)
  */
 void TagEdit::assignTags()
 {
-    foreach(TagFieldEdit *edit, m_widgets) {
+    for(TagFieldEdit *edit : m_widgets) {
         edit->setTagField(m_tags, edit->field(), m_previousValueHandling, true);
     }
 }

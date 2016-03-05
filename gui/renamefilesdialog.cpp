@@ -259,7 +259,7 @@ void RenameFilesDialog::currentItemSelected(const QItemSelection &, const QItemS
     if(!m_changingSelection) {
         m_changingSelection = true;
         m_ui->previewTreeView->selectionModel()->clear();
-        foreach(const QModelIndex &row, m_ui->currentTreeView->selectionModel()->selectedRows()) {
+        for(const QModelIndex &row : m_ui->currentTreeView->selectionModel()->selectedRows()) {
             QModelIndex currentIndex = m_engine->currentModel()->mapToSource(row);
             QModelIndex counterpartIndex = m_engine->model()->counterpart(
                         currentIndex, 1);
@@ -285,7 +285,7 @@ void RenameFilesDialog::previewItemSelected(const QItemSelection &, const QItemS
     if(!m_changingSelection) {
         m_changingSelection = true;
         m_ui->currentTreeView->selectionModel()->clear();
-        foreach(const QModelIndex &row, m_ui->previewTreeView->selectionModel()->selectedRows()) {
+        for(const QModelIndex &row : m_ui->previewTreeView->selectionModel()->selectedRows()) {
             QModelIndex previewIndex = m_engine->previewModel()->mapToSource(row);
             QModelIndex counterpartIndex = m_engine->model()->counterpart(
                         previewIndex, 0);

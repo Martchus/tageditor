@@ -203,7 +203,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::allFiles(const QString &dirName)
         QStringList files = dir.entryList(QDir::Files);
         auto entriesObj = m_engine->newArray(files.length());
         quint32 counter = 0;
-        foreach(const QString &file, files) {
+        for(const QString &file : files) {
             entriesObj.setProperty(counter, file TAGEDITOR_JS_READONLY);
             ++counter;
         }

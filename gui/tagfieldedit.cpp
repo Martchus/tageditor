@@ -174,7 +174,7 @@ bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previou
  */
 bool TagFieldEdit::hasDescription() const
 {
-    foreach(Tag *tag, tags()) {
+    for(Tag *tag : tags()) {
         if(tag->supportsDescription(m_field)) {
             return true;
         }
@@ -187,7 +187,7 @@ bool TagFieldEdit::hasDescription() const
  */
 bool TagFieldEdit::canApply(KnownField field) const
 {
-    foreach(Tag *tag, tags()) {
+    for(Tag *tag : tags()) {
         switch(tag->type()) {
         case TagType::Id3v1Tag:
             if(Settings::id3v1usage() == TagUsage::Never) {
@@ -215,7 +215,7 @@ bool TagFieldEdit::canApply(KnownField field) const
 TagDataType TagFieldEdit::determineDataType()
 {
     TagDataType proposedDataType = TagDataType::Undefined;
-    foreach(Tag *tag, tags()) {
+    for(Tag *tag : tags()) {
         TagDataType type = tag->proposedDataType(m_field);
         if(proposedDataType == TagDataType::Undefined) {
             proposedDataType = type;
@@ -923,7 +923,7 @@ void TagFieldEdit::clear()
  */
 void TagFieldEdit::apply()
 {
-    foreach(Tag *tag, *m_tags) {
+    for(Tag *tag : *m_tags) {
         if(m_dataType == TagDataType::Picture) {
             if(m_pictureSelection) {
                 m_pictureSelection->apply();
@@ -977,7 +977,7 @@ void TagFieldEdit::handleRestoreButtonClicked()
     if(tags().size()) {
         QMenu menu;
         int i = 0;
-        foreach(Tag *tag, tags()) {
+        for(Tag *tag : tags()) {
             ++i;
             QAction *action = menu.addAction(tr("restore to value from %1 (%2)").arg(tag->typeName()).arg(i));
             connect(action, &QAction::triggered, std::bind(static_cast<void (TagFieldEdit::*) (Tag *, PreviousValueHandling)>(&TagFieldEdit::updateValue), this, tag, PreviousValueHandling::Clear));

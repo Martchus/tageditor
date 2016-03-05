@@ -218,7 +218,7 @@ unique_ptr<FileSystemItem> RemamingEngine::generatePreview(const QDir &dir, File
 
 void RemamingEngine::applyChangings(FileSystemItem *parentItem)
 {
-    foreach(FileSystemItem *item, parentItem->children()) {
+    for(FileSystemItem *item : parentItem->children()) {
         if(!item->applied() && !item->errorOccured()) {
             switch(item->status()) {
             case ItemStatus::New: {

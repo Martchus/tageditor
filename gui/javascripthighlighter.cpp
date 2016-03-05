@@ -15,7 +15,7 @@ JavaScriptHighlighter::JavaScriptHighlighter(QTextDocument *parent)
                     << "\\belse\\b" << "\\bfor\\b" << "\\bswitch\\b"
                     << "\\bcase\\b" << "\\bbreak\\b" << "\\bwhile\\b"
                     << "\\bundefined\\b" << "\\continue\\b";
-    foreach (const QString &pattern, keywordPatterns) {
+    for(const QString &pattern : keywordPatterns) {
         rule.pattern = QRegExp(pattern);
         rule.format = m_keywordFormat;
         m_highlightingRules.append(rule);
@@ -45,7 +45,7 @@ JavaScriptHighlighter::JavaScriptHighlighter(QTextDocument *parent)
 
 void JavaScriptHighlighter::highlightBlock(const QString &text)
 {
-    foreach (const HighlightingRule &rule, m_highlightingRules) {
+    for(const HighlightingRule &rule : m_highlightingRules) {
         QRegExp expression(rule.pattern);
         int index = expression.indexIn(text);
         while (index >= 0) {

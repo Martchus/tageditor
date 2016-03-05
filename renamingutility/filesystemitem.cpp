@@ -33,7 +33,7 @@ FileSystemItem::FileSystemItem(ItemStatus status, ItemType type, const QString &
 
 FileSystemItem::~FileSystemItem()
 {
-    foreach(FileSystemItem *child, m_children) {
+    for(FileSystemItem *child : m_children) {
         child->m_parent = nullptr;
         delete child;
     }
@@ -128,7 +128,7 @@ bool FileSystemItem::setNewName(const QString &newName)
 
 FileSystemItem *FileSystemItem::findChild(const QString &name) const
 {
-    foreach(FileSystemItem *child, m_children) {
+    for(FileSystemItem *child : m_children) {
         if(child->name() == name) {
             return child;
         }
@@ -138,7 +138,7 @@ FileSystemItem *FileSystemItem::findChild(const QString &name) const
 
 FileSystemItem *FileSystemItem::findChild(const QString &name, const FileSystemItem *exclude) const
 {
-    foreach(FileSystemItem *child, m_children) {
+    for(FileSystemItem *child : m_children) {
         if(child != exclude && child->name() == name) {
             return child;
         }
@@ -150,7 +150,7 @@ FileSystemItem *FileSystemItem::makeChildAvailable(const QString &relativePath)
 {
     QStringList dirs = relativePath.split(QDir::separator(), QString::SkipEmptyParts);
     FileSystemItem *parent = this;
-    foreach(const QString &dir, dirs) {
+    for(const QString &dir : dirs) {
         FileSystemItem *child = parent->findChild(dir);
         if(!child) {
             child = new FileSystemItem(ItemStatus::New, ItemType::Dir, dir);
@@ -197,7 +197,7 @@ bool FileSystemItem::hasSibling(const QString &name) const
 {
     if(m_parent) {
         const QList<FileSystemItem *> &siblings = m_parent->children();
-        foreach(FileSystemItem *siblingItem, siblings) {
+        for(FileSystemItem *siblingItem : siblings) {
             if(siblingItem == this) {
                 continue;
             }
