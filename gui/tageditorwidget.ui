@@ -76,7 +76,7 @@
          <item>
           <widget class="QComboBox" name="tagSelectionComboBox">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -85,6 +85,12 @@
          </item>
          <item>
           <widget class="QPushButton" name="keepPreviousValuesPushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string>Let you choose whether the values of the
 previously opened file should be cleared when
@@ -100,7 +106,7 @@ tagging multiple files of the same album.</string>
          <item>
           <widget class="QPushButton" name="tagOptionsPushButton">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -119,6 +125,12 @@ You can also create or remove tags manually.</string>
          </item>
          <item>
           <widget class="QPushButton" name="restoreEntriesPushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string>Restores the original values read from
 the file reverting all unsaved changings.</string>
@@ -140,6 +152,12 @@ the file reverting all unsaved changings.</string>
          </item>
          <item>
           <widget class="QPushButton" name="clearEntriesPushButton">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="toolTip">
             <string>Clears all values.</string>
            </property>

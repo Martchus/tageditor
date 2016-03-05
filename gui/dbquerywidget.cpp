@@ -35,6 +35,8 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     m_ui->setupUi(this);
 #ifdef Q_OS_WIN32
     setStyleSheet(dialogStyle());
+#else
+    setStyleSheet(QStringLiteral("QGroupBox { color: palette(text); background-color: palette(base); }"));
 #endif
 
     m_ui->notificationLabel->setText(tr("Search hasn't been started."));
@@ -100,7 +102,8 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
 void DbQueryWidget::startSearch()
 {
     // check whether enought search terms are supplied
-    if(m_ui->titleLineEdit->text().isEmpty() && (!m_ui->trackSpinBox->value() || m_ui->albumLineEdit->text().isEmpty() || m_ui->artistLineEdit->text().isEmpty())) {
+    if((m_ui->titleLineEdit->text().isEmpty() && !m_ui->trackSpinBox->value() && (m_ui->albumLineEdit->text().isEmpty() || m_ui->artistLineEdit->text().isEmpty()))
+            || (m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty() && m_ui->titleLineEdit->text().isEmpty())) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
         m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied"));
         return;
@@ -162,7 +165,7 @@ void DbQueryWidget::showResults()
         if(m_model->results().isEmpty()) {
             m_ui->applyPushButton->setEnabled(false);
         } else {
-            m_ui->resultsTreeView->selectionModel()->setCurrentIndex(m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Columns);
+            m_ui->resultsTreeView->selectionModel()->setCurrentIndex(m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
             m_ui->applyPushButton->setEnabled(m_tagEditorWidget->activeTagEdit());
         }
         setStatus(true);

@@ -2,6 +2,7 @@
 
 #include "../misc/utility.h"
 #include "../misc/networkaccessmanager.h"
+#include "../application/settings.h"
 
 #include <tagparser/tagvalue.h>
 #include <tagparser/tag.h>
@@ -309,7 +310,7 @@ void MusicBrainzResultsModel::parseResults()
 
 QueryResultsModel *queryMusicBrainz(const SongDescription &songDescription)
 {
-    static QString musicBrainzUrl(QStringLiteral("https://musicbrainz.org/ws/2/recording"));
+    static QString defaultMusicBrainzUrl(QStringLiteral("https://musicbrainz.org/ws/2/recording"));
     // TODO: make this configurable
 
     // compose parts
@@ -324,9 +325,12 @@ QueryResultsModel *queryMusicBrainz(const SongDescription &songDescription)
     if(!songDescription.album.isEmpty()) {
         parts << QStringLiteral("release:\"") % songDescription.album % QChar('\"');
     }
+    if(songDescription.track) {
+        parts << QStringLiteral("number:") + QString::number(songDescription.track);
+    }
 
     // compose URL
-    QUrl url(musicBrainzUrl);
+    QUrl url(Settings::musicBrainzUrl().isEmpty() ? defaultMusicBrainzUrl : (Settings::musicBrainzUrl() + QStringLiteral("/recording")));
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("query"), parts.join(QStringLiteral(" AND ")));
     url.setQuery(query);

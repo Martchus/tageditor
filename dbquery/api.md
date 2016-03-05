@@ -18,6 +18,13 @@ Available at ```http://musicbrainz.org/ws/2```
   ```
    /recording?query="$song_name" AND artist:"$artist_name" AND release:"$release_name"
   ```
+* album by name
+  ```
+  /release?query="$album_name"
+  ```
+* cover art: TODO
+* lyrics: TODO
+
 
 ## Misc
 * enable JSON response: ```&fmt=json```

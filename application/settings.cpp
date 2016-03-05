@@ -240,6 +240,12 @@ KnownFieldModel &dbQueryFields()
     return v;
 }
 
+QString &musicBrainzUrl()
+{
+    static QString v;
+    return v;
+}
+
 // renaming files dialog
 int &scriptSource()
 {
@@ -388,6 +394,7 @@ void restore()
     dbQueryWidgetShown() = settings.value(QStringLiteral("visible"), false).toBool();
     dbQueryOverride() = settings.value(QStringLiteral("override"), true).toBool();
     dbQueryFields().restore(settings, QStringLiteral("fields"));
+    musicBrainzUrl() = settings.value(QStringLiteral("musicbrainzurl")).toString();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));
@@ -463,6 +470,7 @@ void save()
     settings.setValue(QStringLiteral("visible"), dbQueryWidgetShown());
     settings.setValue(QStringLiteral("override"), dbQueryOverride());
     dbQueryFields().save(settings, QStringLiteral("fields"));
+    settings.setValue(QStringLiteral("musicbrainzurl"), musicBrainzUrl());
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));

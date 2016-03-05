@@ -109,6 +109,7 @@ FORMS += \
     gui/editorautocorrectionoptionpage.ui \
     gui/picturepreviewselection.ui \
     gui/editorfieldsoptionpage.ui \
+    gui/editordbqueryoptionpage.ui \
     gui/infooptionpage.ui \
     gui/entertargetdialog.ui \
     gui/attachmentsedit.ui \

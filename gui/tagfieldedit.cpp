@@ -522,6 +522,7 @@ ClearComboBox *TagFieldEdit::setupGenreComboBox()
     m_comboBox->setClearButtonEnabled(true);
     m_comboBox->insertCustomButton(0, setupRestoreButton());
     m_comboBox->installEventFilter(this);
+    m_comboBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     connect(m_comboBox, &ClearComboBox::currentTextChanged, this, &TagFieldEdit::showRestoreButton);
 
     m_layout->addWidget(m_comboBox);

@@ -247,6 +247,33 @@ QWidget *EditorAutoCorrectionOptionPage::setupWidget()
     return w;
 }
 
+// EditorDbQueryOptionsPage
+EditorDbQueryOptionsPage::EditorDbQueryOptionsPage()
+{}
+
+EditorDbQueryOptionsPage::~EditorDbQueryOptionsPage()
+{}
+
+QString EditorDbQueryOptionsPage::displayName() const
+{
+    return QApplication::translate("QtGui::EditorDbQueryOptionsPage", "Database queries");
+}
+
+bool EditorDbQueryOptionsPage::apply()
+{
+    if(hasBeenShown()) {
+        Settings::musicBrainzUrl() = ui()->musicBrainzUrlLineEdit->text();
+    }
+    return true;
+}
+
+void EditorDbQueryOptionsPage::reset()
+{
+    if(hasBeenShown()) {
+        ui()->musicBrainzUrlLineEdit->setText(Settings::musicBrainzUrl());
+    }
+}
+
 // InfoOptionPage
 InfoOptionPage::InfoOptionPage()
 {}
@@ -568,7 +595,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->setIcon(QIcon::fromTheme(QStringLiteral("document-edit"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/key-enter.png"))));
     category->assignPages(QList<Dialogs::OptionPage *>()
                           << new EditorGeneralOptionPage << new EditorTempOptionPage(this) << new EditorFieldsOptionPage
-                          << new InfoOptionPage << new EditorAutoCorrectionOptionPage);
+                          << new InfoOptionPage << new EditorAutoCorrectionOptionPage << new EditorDbQueryOptionsPage);
     categories << category;
 
     category = new Dialogs::OptionCategory(this);

@@ -95,6 +95,7 @@ QString &mainWindowCurrentFileBrowserDirectory();
 bool &dbQueryWidgetShown();
 bool &dbQueryOverride();
 KnownFieldModel &dbQueryFields();
+QString &musicBrainzUrl();
 
 // rename files dialog
 int &scriptSource();

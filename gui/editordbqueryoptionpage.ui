@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>QtGui::EditorDbQueryOptionsPage</class>
+ <widget class="QWidget" name="QtGui::EditorDbQueryOptionsPage">
+  <property name="windowTitle">
+   <string>General options page</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QGroupBox { font-weight: bold };</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="musicBrainzUrlLabel">
+     <property name="text">
+      <string>MusicBrainz URL</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="Widgets::ClearLineEdit" name="musicBrainzUrlLineEdit">
+     <property name="placeholderText">
+      <string>https://musicbrainz.org/ws/2</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Widgets::ClearLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header location="global">qtutilities/widgets/clearlineedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="usageButtonGroup"/>
+ </buttongroups>
+</ui>

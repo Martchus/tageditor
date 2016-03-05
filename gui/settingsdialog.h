@@ -6,6 +6,7 @@
 #include "ui_editortempoptionpage.h"
 #include "ui_editorfieldsoptionpage.h"
 #include "ui_editorautocorrectionoptionpage.h"
+#include "ui_editordbqueryoptionpage.h"
 #include "ui_infooptionpage.h"
 #include "ui_tagprocessinggeneraloptionpage.h"
 #include "ui_id3v1optionpage.h"
@@ -113,6 +114,22 @@ public:
 private:
     QWidget *setupWidget();
     Settings::KnownFieldModel *m_model;
+};
+
+// EditorDbQueryOptionPage
+namespace Ui {
+class EditorDbQueryOptionsPage;
+}
+
+class EditorDbQueryOptionsPage : public Dialogs::UiFileBasedOptionPage<Ui::EditorDbQueryOptionsPage>
+{
+public:
+    explicit EditorDbQueryOptionsPage();
+    ~EditorDbQueryOptionsPage();
+
+    QString displayName() const;
+    bool apply();
+    void reset();
 };
 
 // EditorInfoOptionPage
