@@ -704,7 +704,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         QString text;
         try {
             text = Utility::tagValueToQString(value);
-        } catch (ConversionException &) {
+        } catch (const ConversionException &) {
             conversionError = true;
         }
         applyAutoCorrection(text);
@@ -770,7 +770,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             QString desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
             applyAutoCorrection(desc);
             m_descriptionLineEdit->setText(desc);
-        } catch(ConversionException &) {
+        } catch(const ConversionException &) {
             conversionError = true;
             m_descriptionLineEdit->clear();
         }
@@ -864,7 +864,9 @@ void TagFieldEdit::concretizePreviousValueHandling(PreviousValueHandling &previo
     switch(previousValueHandling) {
     case PreviousValueHandling::Auto:
         switch(m_field) {
+        // these differ for each song -> always clear previous value
         case KnownField::Title:
+        case KnownField::Lyrics:
             previousValueHandling = PreviousValueHandling::Clear;
             break;
         // these will be incremented

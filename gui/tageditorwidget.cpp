@@ -735,7 +735,7 @@ void TagEditorWidget::showFile(char result)
         // load existing tags
         m_tags.clear();
         m_fileInfo.tags(m_tags);
-        // show notification if there is currently no existing tag(s) could be found
+        // show notification if no existing tag(s) could be found
         if(!m_tags.size()) {
             m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
             if(!m_fileInfo.areTagsSupported()) {
@@ -752,10 +752,10 @@ void TagEditorWidget::showFile(char result)
                                                      Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed());
                 }
             }
+            // tags might have been adjusted -> reload tags
+            m_tags.clear();
+            m_fileInfo.tags(m_tags);
         }
-        // reload tags
-        m_tags.clear();
-        m_fileInfo.tags(m_tags);
         // update file watcher
         m_fileWatcher->addPath(m_currentPath);
         m_fileChangedOnDisk = false;
