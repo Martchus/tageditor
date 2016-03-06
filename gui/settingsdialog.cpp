@@ -263,6 +263,7 @@ bool EditorDbQueryOptionsPage::apply()
 {
     if(hasBeenShown()) {
         Settings::musicBrainzUrl() = ui()->musicBrainzUrlLineEdit->text();
+        Settings::coverArtArchiveUrl() = ui()->coverArtArchiveUrlLineEdit->text();
     }
     return true;
 }
@@ -271,6 +272,7 @@ void EditorDbQueryOptionsPage::reset()
 {
     if(hasBeenShown()) {
         ui()->musicBrainzUrlLineEdit->setText(Settings::musicBrainzUrl());
+        ui()->coverArtArchiveUrlLineEdit->setText(Settings::coverArtArchiveUrl());
     }
 }
 

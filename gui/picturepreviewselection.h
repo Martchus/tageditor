@@ -42,6 +42,7 @@ public:
 
 public slots:
     void setTagField(Media::Tag *tag, Media::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    void setValue(const Media::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
 
     void apply();
     void clear();

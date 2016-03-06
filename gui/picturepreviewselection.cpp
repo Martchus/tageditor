@@ -66,6 +66,23 @@ PicturePreviewSelection::~PicturePreviewSelection()
 {}
 
 /*!
+ * \brief Sets the \a value of the current tag field manually using the given \a previousValueHandling.
+ */
+void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
+{
+    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.count())) {
+        TagValue &currentValue = m_values[m_currentTypeIndex];
+        if(previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
+            if(previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty()) {
+                currentValue = value; // TODO: move(value);
+                emit pictureChanged();
+            }
+        }
+        updatePreview(m_currentTypeIndex);
+    }
+}
+
+/*!
  * \brief Defines the predicate to get relevant fields.
  */
 template<class TagType>

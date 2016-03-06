@@ -236,11 +236,18 @@ KnownFieldModel &dbQueryFields()
                              << KnownFieldModel::mkItem(KnownField::Album)
                              << KnownFieldModel::mkItem(KnownField::Album)
                              << KnownFieldModel::mkItem(KnownField::Year)
-                             << KnownFieldModel::mkItem(KnownField::Genre));
+                             << KnownFieldModel::mkItem(KnownField::Genre)
+                             << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked));
     return v;
 }
 
 QString &musicBrainzUrl()
+{
+    static QString v;
+    return v;
+}
+
+QString &coverArtArchiveUrl()
 {
     static QString v;
     return v;
@@ -395,6 +402,7 @@ void restore()
     dbQueryOverride() = settings.value(QStringLiteral("override"), true).toBool();
     dbQueryFields().restore(settings, QStringLiteral("fields"));
     musicBrainzUrl() = settings.value(QStringLiteral("musicbrainzurl")).toString();
+    coverArtArchiveUrl() = settings.value(QStringLiteral("coverartarchiveurl")).toString();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));
@@ -471,6 +479,7 @@ void save()
     settings.setValue(QStringLiteral("override"), dbQueryOverride());
     dbQueryFields().save(settings, QStringLiteral("fields"));
     settings.setValue(QStringLiteral("musicbrainzurl"), musicBrainzUrl());
+    settings.setValue(QStringLiteral("coverartarchiveurl"), coverArtArchiveUrl());
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));

@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>QtGui::DbQueryWidget</class>
  <widget class="QWidget" name="QtGui::DbQueryWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>731</width>
+    <height>603</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>MusicBrainz search</string>
   </property>
@@ -139,6 +147,9 @@
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+         <property name="contextMenuPolicy">
+          <enum>Qt::CustomContextMenu</enum>
          </property>
         </widget>
         <widget class="QGroupBox" name="fieldsGroupBox">

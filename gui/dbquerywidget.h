@@ -40,6 +40,10 @@ private slots:
     void setStatus(bool aborted);
     void fileStatusChanged(bool opened, bool hasTags);
     void applyResults();
+    void showResultsContextMenu();
+    void fetchAndShowCoverForSelection();
+    void showCover(const QByteArray &data);
+    void showCoverFromIndex(const QModelIndex &index);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -48,6 +52,7 @@ private:
     std::unique_ptr<Ui::DbQueryWidget> m_ui;
     TagEditorWidget *m_tagEditorWidget;
     QueryResultsModel *m_model;
+    int m_coverIndex;
 };
 
 }

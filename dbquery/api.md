@@ -1,5 +1,6 @@
  # MusicBrainz API
-Available at ```http://musicbrainz.org/ws/2```
+* Regular meta data is available at ```http://musicbrainz.org/ws/2``` and ```http://mb.videolan.org/ws/2```.
+* Cover art is available at ```http://coverartarchive.org```.
 
 ## Most useful queries
 * artist by name
@@ -22,7 +23,10 @@ Available at ```http://musicbrainz.org/ws/2```
   ```
   /release?query="$album_name"
   ```
-* cover art: TODO
+* cover art by album ID
+   ```
+   /release/$album_id/front-500
+   ```
 * lyrics: TODO
 
 
@@ -32,3 +36,6 @@ Available at ```http://musicbrainz.org/ws/2```
 ## See also
 * [Web Service](https://wiki.musicbrainz.org/Development/JSON_Web_Service)
 * [Web Service/Search](https://wiki.musicbrainz.org/Development/XML_Web_Service/Version_2/Search)
+
+# Other sources for meta data
+TODO

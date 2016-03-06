@@ -166,7 +166,10 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
 bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
     updateValue(value, previousValueHandling, false);
-    return m_pictureSelection == nullptr;
+    if(m_pictureSelection) {
+        m_pictureSelection->setValue(value, previousValueHandling);
+    }
+    return true;
 }
 
 /*!
@@ -694,6 +697,7 @@ void TagFieldEdit::updateValue(Tag *tag, PreviousValueHandling previousValueHand
  * \param value Specifies the new value.
  * \param previousValueHandling Specifies how to deal with the previous value.
  * \param updateRestoreButton Specifies whether the "restore button" should be updated.
+ * \remarks Does not update the picture preview selection.
  */
 void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling previousValueHandling, bool updateRestoreButton)
 {

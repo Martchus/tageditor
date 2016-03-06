@@ -16,6 +16,10 @@
 #include <c++utilities/conversion/conversionexception.h>
 
 #include <QKeyEvent>
+#include <QMenu>
+#include <QDialog>
+#include <QGraphicsView>
+#include <QGraphicsItem>
 
 using namespace ConversionUtilities;
 using namespace Dialogs;
@@ -30,7 +34,8 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     QWidget(parent),
     m_ui(new Ui::DbQueryWidget),
     m_tagEditorWidget(tagEditorWidget),
-    m_model(nullptr)
+    m_model(nullptr),
+    m_coverIndex(-1)
 {
     m_ui->setupUi(this);
 #ifdef Q_OS_WIN32
@@ -61,6 +66,7 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     connect(m_ui->startPushButton, &QPushButton::clicked, this, &DbQueryWidget::startSearch);
     connect(m_ui->applyPushButton, &QPushButton::clicked, this, &DbQueryWidget::applyResults);
     connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChange, this, &DbQueryWidget::fileStatusChanged);
+    connect(m_ui->resultsTreeView, &QTreeView::customContextMenuRequested, this, &DbQueryWidget::showResultsContextMenu);
 }
 
 DbQueryWidget::~DbQueryWidget()
@@ -115,7 +121,7 @@ void DbQueryWidget::startSearch()
 
     // show status
     m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-    m_ui->notificationLabel->setText(tr("Retrieving ..."));
+    m_ui->notificationLabel->setText(tr("Retrieving meta data ..."));
     setStatus(false);
 
     // get song description
@@ -128,20 +134,26 @@ void DbQueryWidget::startSearch()
     // do actual query
     m_ui->resultsTreeView->setModel(m_model = queryMusicBrainz(desc));
     connect(m_model, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
+    connect(m_model, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
 }
 
 void DbQueryWidget::abortSearch()
 {
-    if(m_model && !m_model->areResultsAvailable()) {
-        // delete model to abort search
-        m_ui->resultsTreeView->setModel(nullptr);
-        delete m_model;
-        m_model = nullptr;
+    if(m_model) {
+        if(m_model->isFetchingCover()) {
+            // call abort to abort fetching cover
+            m_model->abort();
+        } else if(!m_model->areResultsAvailable()) {
+            // delete model to abort search
+            m_ui->resultsTreeView->setModel(nullptr);
+            delete m_model;
+            m_model = nullptr;
 
-        // update status
-        m_ui->notificationLabel->setNotificationType(NotificationType::Information);
-        m_ui->notificationLabel->setText(tr("Aborted"));
-        setStatus(true);
+            // update status
+            m_ui->notificationLabel->setNotificationType(NotificationType::Information);
+            m_ui->notificationLabel->setText(tr("Aborted"));
+            setStatus(true);
+        }
     }
 }
 
@@ -179,7 +191,7 @@ void DbQueryWidget::setStatus(bool aborted)
     m_ui->applyPushButton->setVisible(aborted);
 }
 
-void DbQueryWidget::fileStatusChanged(bool , bool hasTags)
+void DbQueryWidget::fileStatusChanged(bool, bool hasTags)
 {
     m_ui->applyPushButton->setEnabled(hasTags && m_ui->resultsTreeView->selectionModel() && m_ui->resultsTreeView->selectionModel()->hasSelection());
     insertSearchTermsFromTagEdit(m_tagEditorWidget->activeTagEdit());
@@ -187,22 +199,126 @@ void DbQueryWidget::fileStatusChanged(bool , bool hasTags)
 
 void DbQueryWidget::applyResults()
 {
+    // check whether model, tag edit and current selection exist
     if(m_model) {
         if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
             if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
                 const QModelIndexList selection = selectionModel->selection().indexes();
                 if(!selection.isEmpty()) {
+                    // determine previous value handling
                     PreviousValueHandling previousValueHandling = m_ui->overrideCheckBox->isChecked()
                             ? PreviousValueHandling::Update : PreviousValueHandling::Keep;
+
+                    // loop through all fields
                     for(const ChecklistItem &item : Settings::dbQueryFields().items()) {
                         if(item.isChecked()) {
+                            // field should be used
                             const auto field = static_cast<KnownField>(item.id().toInt());
-                            tagEdit->setValue(field, m_model->fieldValue(selection.front().row(), field), previousValueHandling);
+                            int row = selection.front().row();
+                            TagValue value = m_model->fieldValue(row, field);
+
+                            if(value.isEmpty() && field == KnownField::Cover) {
+                                // cover value is empty -> cover still needs to be fetched
+                                if(m_model->fetchCover(selection.front())) {
+                                    // cover is available now
+                                    tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                                } else {
+                                    // cover is fetched asynchronously
+                                    // -> show status
+                                    m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                                    m_ui->notificationLabel->setText(tr("Retrieving cover art to be applied ..."));
+                                    setStatus(false);
+                                    // -> apply cover when available
+                                    connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
+                                        if(row == index.row()) {
+                                            if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                                                tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                                            }
+                                        }
+                                    });
+                                }
+                            } else {
+                                tagEdit->setValue(field, value, previousValueHandling);
+                            }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+void DbQueryWidget::showResultsContextMenu()
+{
+    if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
+        const QModelIndexList selection = selectionModel->selection().indexes();
+        if(!selection.isEmpty()) {
+            QMenu contextMenu;
+            if(m_ui->applyPushButton->isEnabled()) {
+                contextMenu.addAction(m_ui->applyPushButton->icon(), m_ui->applyPushButton->text(), this, SLOT(applyResults()));
+            }
+            if(m_model && m_model->areResultsAvailable()) {
+                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, SLOT(fetchAndShowCoverForSelection()));
+            }
+            contextMenu.exec(QCursor::pos());
+        }
+    }
+}
+
+void DbQueryWidget::fetchAndShowCoverForSelection()
+{
+    if(m_model) {
+        if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
+            const QModelIndexList selection = selectionModel->selection().indexes();
+            if(!selection.isEmpty()) {
+                const QModelIndex &selectedIndex = selection.at(0);
+                if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+                    showCover(*cover);
+                } else {
+                    if(m_model->fetchCover(selectedIndex)) {
+                        if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+                            showCover(*cover);
+                        } else {
+                            // cover couldn't be fetched
+                        }
+                    } else {
+                        // cover is fetched asynchronously
+                        // -> memorize index to be shown
+                        m_coverIndex = selectedIndex.row();
+                        // -> show status
+                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                        m_ui->notificationLabel->setText(tr("Retrieving cover art ..."));
+                        setStatus(false);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void DbQueryWidget::showCover(const QByteArray &data)
+{
+    // show cover
+    QDialog dlg;
+    dlg.setWindowFlags(Qt::Tool);
+    dlg.setWindowTitle(tr("Cover - %1").arg(QApplication::applicationName()));
+    QBoxLayout layout(QBoxLayout::Up);
+    layout.setMargin(0);
+    QGraphicsView view(&dlg);
+    QGraphicsScene scene;
+    layout.addWidget(&view);
+    scene.addItem(new QGraphicsPixmapItem(QPixmap::fromImage(QImage::fromData(data))));
+    view.setScene(&scene);
+    view.show();
+    dlg.setLayout(&layout);
+    dlg.exec();
+}
+
+void DbQueryWidget::showCoverFromIndex(const QModelIndex &index)
+{
+    if(m_coverIndex == index.row()) {
+        m_coverIndex = -1;
+        showCover(*m_model->cover(index));
     }
 }
 

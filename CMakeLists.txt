@@ -233,6 +233,7 @@ endif()
 
 # enable Qt Widgets GUI
 # disable new ABI (can't catch ios_base::failure with new ABI)
+# enable code for debugging
 add_definitions(
     -DGUI_QTWIDGETS
     -DMODEL_UNDO_SUPPORT
@@ -240,6 +241,10 @@ add_definitions(
     ${JS_DEFINITION}
     ${WEBVIEW_DEFINITION}
 )
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_definitions(-DDEBUG_BUILD)
+    message(STATUS "Debug build enabled.")
+endif()
 
 # enable moc, uic and rcc
 set(CMAKE_AUTOMOC ON)

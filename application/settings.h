@@ -96,6 +96,7 @@ bool &dbQueryWidgetShown();
 bool &dbQueryOverride();
 KnownFieldModel &dbQueryFields();
 QString &musicBrainzUrl();
+QString &coverArtArchiveUrl();
 
 // rename files dialog
 int &scriptSource();
