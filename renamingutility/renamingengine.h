@@ -7,7 +7,8 @@
 #include <QObject>
 #include <QList>
 #include <QDir>
-
+#include <QMutex>
+#include <QAtomicInteger>
 #if TAGEDITOR_USE_JSENGINE
 # include <QJSEngine>
 # include <QJSValue>
@@ -17,8 +18,6 @@
 #endif
 
 #include <memory>
-#include <mutex>
-#include <atomic>
 
 QT_FORWARD_DECLARE_CLASS(QFileInfo)
 
@@ -79,11 +78,11 @@ private:
     std::unique_ptr<FileSystemItem> m_newlyGeneratedRootItem;
     int m_itemsProcessed;
     int m_errorsOccured;
-    std::atomic<bool> m_aborted;
+    QAtomicInteger<unsigned char> m_aborted;
     TAGEDITOR_JS_VALUE m_program;
     QDir m_dir;
     bool m_includeSubdirs;
-    std::mutex m_mutex;
+    QMutex m_mutex;
     FileSystemItemModel *m_model;
     FilteredFileSystemItemModel *m_currentModel;
     FilteredFileSystemItemModel *m_previewModel;

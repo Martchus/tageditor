@@ -20,8 +20,6 @@
 #include <QClipboard>
 #include <QTextStream>
 
-#include <thread>
-
 using namespace Dialogs;
 using namespace RenamingUtility;
 

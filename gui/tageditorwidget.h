@@ -7,8 +7,8 @@
 
 #include <QWidget>
 #include <QByteArray>
+#include <QMutex>
 
-#include <mutex>
 #include <functional>
 
 #if defined(TAGEDITOR_NO_WEBVIEW)
@@ -50,7 +50,7 @@ public:
     virtual ~TagEditorWidget();
 
 public:
-    std::mutex &fileOperationMutex();
+    QMutex &fileOperationMutex();
     const QString &currentPath() const;
     Media::MediaFileInfo &fileInfo();
     bool isTagEditShown() const;
@@ -149,13 +149,13 @@ private:
     bool m_makingResultsAvailable;
     Media::NotificationList m_originalNotifications;
     bool m_abortClicked;
-    std::mutex m_fileOperationMutex;
+    QMutex m_fileOperationMutex;
 };
 
 /*!
  * \brief Returns the mutex which is internally used for thread-synchronization.
  */
-inline std::mutex &TagEditorWidget::fileOperationMutex()
+inline QMutex &TagEditorWidget::fileOperationMutex()
 {
     return m_fileOperationMutex;
 }

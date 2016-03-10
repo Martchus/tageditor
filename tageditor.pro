@@ -15,7 +15,7 @@ VERSION = 1.4.0
 
 # basic configuration: application
 TEMPLATE = app
-QT += core gui widgets
+QT += core gui widgets concurrent network
 # use webkitwidgets if available; otherwise use webenginewidgets
 !forcewebengine:qtHaveModule(webkitwidgets) {
     QT += webkitwidgets

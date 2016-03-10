@@ -14,6 +14,7 @@
 #include <qtutilities/aboutdialog/aboutdialog.h>
 #include <qtutilities/misc/dialogutils.h>
 #include <qtutilities/misc/desktoputils.h>
+#include <qtutilities/misc/trylocker.h>
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
@@ -30,6 +31,7 @@ using namespace Utility;
 using namespace Media;
 using namespace Dialogs;
 using namespace Widgets;
+using namespace ThreadingUtils;
 
 namespace QtGui {
 
@@ -51,7 +53,7 @@ enum LoadingResult : char
 /*!
  * \brief Shortcut to access file operation mutex of TagEditorWidget.
  */
-std::mutex &MainWindow::fileOperationMutex()
+QMutex &MainWindow::fileOperationMutex()
 {
     return m_ui->tagEditorWidget->fileOperationMutex();
 }
@@ -436,28 +438,28 @@ void MainWindow::showOpenFileDlg()
  */
 void MainWindow::saveFileInformation()
 {
-    if(!fileOperationMutex().try_lock()) {
-        m_ui->statusBar->showMessage(tr("Unable to save file information because the current process hasn't been finished yet."));
-        return;
-    }
-    lock_guard<mutex> guard(fileOperationMutex(), adopt_lock);
-    if(fileInfo().isOpen() && m_ui->tagEditorWidget->fileInfoHtml().size()) {
-        const QString path = QFileDialog::getSaveFileName(this, windowTitle());
-        if(!path.isEmpty()) {
-            QFile file(path);
-            if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-                QTextStream stream(&file);
-                stream << m_ui->tagEditorWidget->fileInfoHtml();
-                file.close();
-                if(file.error() != QFileDevice::NoError) {
-                    QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file.\n%1").arg(file.errorString()));
+    TryLocker<> locker(fileOperationMutex());
+    if(locker) {
+        if(fileInfo().isOpen() && m_ui->tagEditorWidget->fileInfoHtml().size()) {
+            const QString path = QFileDialog::getSaveFileName(this, windowTitle());
+            if(!path.isEmpty()) {
+                QFile file(path);
+                if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                    QTextStream stream(&file);
+                    stream << m_ui->tagEditorWidget->fileInfoHtml();
+                    file.close();
+                    if(file.error() != QFileDevice::NoError) {
+                        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file.\n%1").arg(file.errorString()));
+                    }
+                } else {
+                    QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
                 }
-            } else {
-                QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
             }
+        } else {
+            QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
         }
     } else {
-        QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
+        m_ui->statusBar->showMessage(tr("Unable to save file information because the current process hasn't been finished yet."));
     }
 }
 

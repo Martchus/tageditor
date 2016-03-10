@@ -10,10 +10,9 @@
 #include <QMainWindow>
 #include <QByteArray>
 
-#include <mutex>
-
 QT_FORWARD_DECLARE_CLASS(QFileSystemModel)
 QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
+QT_FORWARD_DECLARE_CLASS(QMutex)
 
 namespace Media {
 DECLARE_ENUM(TagType, unsigned int)
@@ -73,7 +72,7 @@ private slots:
     void showDbQueryWidget();
 
 private:
-    std::mutex &fileOperationMutex();
+    QMutex &fileOperationMutex();
     Media::MediaFileInfo &fileInfo();
 
     // UI

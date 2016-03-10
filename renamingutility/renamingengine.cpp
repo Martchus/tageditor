@@ -5,12 +5,14 @@
 
 #include <c++utilities/misc/memory.h>
 
+#include <qtutilities/misc/trylocker.h>
+
 #include <QDir>
 #include <QStringBuilder>
-
-#include <thread>
+#include <QtConcurrent>
 
 using namespace std;
+using namespace ThreadingUtils;
 
 namespace RenamingUtility {
 
@@ -55,26 +57,25 @@ bool RemamingEngine::setProgram(const QString &program)
 
 bool RemamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubdirs)
 {
-    if(!m_mutex.try_lock()) {
+    TryLocker<> locker(m_mutex);
+    if(locker) {
+        setRootItem();
+        m_includeSubdirs = includeSubdirs;
+        m_dir = rootDirectory;
+        QtConcurrent::run([this] () {
+            {
+                QMutexLocker locker(&m_mutex);
+                m_aborted.store(false);
+                m_itemsProcessed = 0;
+                m_errorsOccured = 0;
+                m_newlyGeneratedRootItem = generatePreview(m_dir);
+            }
+            emit previewGenerated();
+        });
+        return true;
+    } else {
         return false;
     }
-    lock_guard<mutex> guard(m_mutex, adopt_lock);
-    setRootItem();
-    m_includeSubdirs = includeSubdirs;
-    m_dir = rootDirectory;
-    auto startFunc = [this] () {
-        {
-            lock_guard<mutex> guard(m_mutex);
-            m_aborted.store(false);
-            m_itemsProcessed = 0;
-            m_errorsOccured = 0;
-            m_newlyGeneratedRootItem = generatePreview(m_dir);
-        }
-        emit previewGenerated();
-    };
-    std::thread thread(startFunc);
-    thread.detach();
-    return true;
 }
 
 bool RemamingEngine::applyChangings()
@@ -82,28 +83,27 @@ bool RemamingEngine::applyChangings()
     if(!m_rootItem) {
         return false;
     }
-    if(!m_mutex.try_lock()) {
+    TryLocker<> locker(m_mutex);
+    if(locker) {
+        QtConcurrent::run([this] () {
+            {
+                QMutexLocker locker(&m_mutex);
+                m_aborted.store(false);
+                m_itemsProcessed = 0;
+                m_errorsOccured = 0;
+                applyChangings(m_rootItem.get());
+            }
+            emit changingsApplied();
+        });
+        return true;
+    } else {
         return false;
     }
-    lock_guard<mutex> guard(m_mutex, adopt_lock);
-    auto startFunc = [this] () {
-        {
-            lock_guard<mutex> guard(m_mutex);
-            m_aborted.store(false);
-            m_itemsProcessed = 0;
-            m_errorsOccured = 0;
-            applyChangings(m_rootItem.get());
-        }
-        emit changingsApplied();
-    };
-    std::thread thread(startFunc);
-    thread.detach();
-    return true;
 }
 
 bool RemamingEngine::isBusy()
 {
-    if(m_mutex.try_lock()) {
+    if(m_mutex.tryLock()) {
         m_mutex.unlock();
         return false;
     } else {
@@ -113,7 +113,7 @@ bool RemamingEngine::isBusy()
 
 void RemamingEngine::abort()
 {
-    m_aborted.store(true);
+    m_aborted.store(1);
 }
 
 bool RemamingEngine::isAborted()
@@ -123,8 +123,8 @@ bool RemamingEngine::isAborted()
 
 bool RemamingEngine::clearPreview()
 {
-    if(m_mutex.try_lock()) {
-        lock_guard<mutex> guard(m_mutex, adopt_lock);
+    TryLocker<> locker(m_mutex);
+    if(locker) {
         updateModel(nullptr);
         m_rootItem.reset();
         return true;

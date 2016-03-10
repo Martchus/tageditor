@@ -178,7 +178,8 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 find_package(Qt5LinguistTools REQUIRED)
-find_package(Qt5Script REQUIRED)
+find_package(Qt5Concurrent REQUIRED)
+find_package(Qt5Network REQUIRED)
 # select Qt module providing JavaScript (either Qt Script or Qt Qml)
 if(${JS_PROVIDER} STREQUAL "auto")
     find_package(Qt5Script)
@@ -258,7 +259,7 @@ add_custom_target(translations ALL DEPENDS ${QM_FILES})
 
 # executable and linking
 add_executable(${META_PROJECT_NAME} ${GUI_TYPE} ${HEADER_FILES} ${SRC_FILES} ${WIDGETS_HEADER_FILES} ${WIDGETS_SRC_FILES} ${WIDGETS_UI_FILES} ${QM_FILES} ${RES_FILES} ${WINDOWS_ICON_PATH})
-target_link_libraries(${META_PROJECT_NAME} c++utilities qtutilities tagparser pthread Qt5::Core Qt5::Widgets ${JS_PROVIDER} ${WEBVIEW_PROVIDER})
+target_link_libraries(${META_PROJECT_NAME} c++utilities qtutilities tagparser Qt5::Core Qt5::Widgets Qt5::Concurrent Qt5::Network ${JS_PROVIDER} ${WEBVIEW_PROVIDER})
 set_target_properties(${META_PROJECT_NAME} PROPERTIES
     CXX_STANDARD 11
 )

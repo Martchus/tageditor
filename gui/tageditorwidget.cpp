@@ -21,6 +21,8 @@
 #include <tagparser/matroska/matroskatag.h>
 
 #include <qtutilities/misc/dialogutils.h>
+#include <qtutilities/misc/trylocker.h>
+#include <qtutilities/misc/adoptlocker.h>
 #include <qtutilities/widgets/clearlineedit.h>
 
 #include <c++utilities/conversion/stringconversion.h>
@@ -35,6 +37,8 @@
 #include <QFileSystemWatcher>
 #include <QMenu>
 #include <QCheckBox>
+#include <QtConcurrent>
+#include <QFutureWatcher>
 #if defined(TAGEDITOR_NO_WEBVIEW)
 # error "not supported (yet)."
 #elif defined(TAGEDITOR_USE_WEBENGINE)
@@ -43,7 +47,6 @@
 # include <QWebView>
 #endif
 
-#include <thread>
 #include <functional>
 #include <algorithm>
 
@@ -51,6 +54,7 @@ using namespace std;
 using namespace Utility;
 using namespace Dialogs;
 using namespace Widgets;
+using namespace ThreadingUtils;
 using namespace Media;
 
 namespace QtGui {
@@ -602,68 +606,67 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     if(!forceRefresh && sameFile) {
         return true;
     }
-    if(!m_fileOperationMutex.try_lock()) {
-        emit statusMessage(tr("Unable to load the selected file \"%1\" because the current process hasn't finished yet.").arg(path));
-        return false;
-    }
-    lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-    // clear previous results and status
-    m_tags.clear();
-    m_fileInfo.clearParsingResults();
-    m_fileInfo.invalidateStatus();
-    m_fileInfo.invalidateNotifications();
-    if(!sameFile) {
-        // close last file if possibly open
-        m_fileInfo.close();
-        // set path of file info
-        m_currentPath = path;
-        m_fileInfo.setPath(path.toLocal8Bit().data());
-        // update directory
-        m_lastDir = m_currentDir;
-        m_currentDir = QString::fromLocal8Bit(m_fileInfo.containingDirectory().c_str());
-    }
-    // update availability of making results
-    m_makingResultsAvailable &= sameFile;
-    if(!m_makingResultsAvailable) {
-        m_originalNotifications.clear();
-    }
-    // show filename
-    m_ui->fileNameLabel->setText(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()));
-    // define function to parse the file
-    auto startThread = [this, sameFile] {
-        m_fileOperationMutex.lock();
-        char result;
-        try {
-            if(sameFile) {
-                m_fileInfo.reopen();
-            }
-            m_fileInfo.setForceFullParse(Settings::forceFullParse());
-            m_fileInfo.parseEverything();
-            result = ParsingSuccessful;
-        } catch(Failure &) {
-            // the file has been opened; parsing notifications will be shown in the info box
-            result = FatalParsingError;
-        } catch(ios_base::failure &) {
-            // the file could not be opened because an IO error occured
-            m_fileInfo.close(); // ensure file is closed
-            result = IoError;
+    TryLocker<> locker(fileOperationMutex());
+    if(locker) {
+        // clear previous results and status
+        m_tags.clear();
+        m_fileInfo.clearParsingResults();
+        m_fileInfo.invalidateStatus();
+        m_fileInfo.invalidateNotifications();
+        if(!sameFile) {
+            // close last file if possibly open
+            m_fileInfo.close();
+            // set path of file info
+            m_currentPath = path;
+            m_fileInfo.setPath(path.toLocal8Bit().data());
+            // update directory
+            m_lastDir = m_currentDir;
+            m_currentDir = QString::fromLocal8Bit(m_fileInfo.containingDirectory().c_str());
         }
+        // update availability of making results
+        m_makingResultsAvailable &= sameFile;
+        if(!m_makingResultsAvailable) {
+            m_originalNotifications.clear();
+        }
+        // show filename
+        m_ui->fileNameLabel->setText(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()));
+        // define function to parse the file
+        auto startThread = [this, sameFile] {
+            m_fileOperationMutex.lock();
+            char result;
+            try {
+                if(sameFile) {
+                    m_fileInfo.reopen();
+                }
+                m_fileInfo.setForceFullParse(Settings::forceFullParse());
+                m_fileInfo.parseEverything();
+                result = ParsingSuccessful;
+            } catch(const Failure &) {
+                // the file has been opened; parsing notifications will be shown in the info box
+                result = FatalParsingError;
+            } catch(const ios_base::failure &) {
+                // the file could not be opened because an IO error occured
+                m_fileInfo.close(); // ensure file is closed
+                result = IoError;
+            }
+            m_fileInfo.unregisterAllCallbacks();
+            QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
+            // showFile() will unlock the mutex!
+        };
         m_fileInfo.unregisterAllCallbacks();
-        QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
-        // showFile() will unlock the mutex!
-    };
-    m_fileInfo.unregisterAllCallbacks();
-    //m_fileInfo.registerCallback(showProgress); can't show progress yet
-    // use another thread to perform the operation
-    std::thread thr(startThread);
-    thr.detach();
-    // inform user
-    static const QString statusMsg(tr("The file is beeing parsed ..."));
-    m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Progress);
-    m_ui->parsingNotificationWidget->setText(statusMsg);
-    m_ui->parsingNotificationWidget->setVisible(true); // ensure widget is visible!
-    emit statusMessage(statusMsg);
-    return true;
+        // perform the operation concurrently
+        QtConcurrent::run(startThread);
+        // inform user
+        static const QString statusMsg(tr("The file is beeing parsed ..."));
+        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Progress);
+        m_ui->parsingNotificationWidget->setText(statusMsg);
+        m_ui->parsingNotificationWidget->setVisible(true); // ensure widget is visible!
+        emit statusMessage(statusMsg);
+        return true;
+    } else {
+        emit statusMessage(tr("Unable to load the selected file \"%1\" because the current process hasn't finished yet.").arg(path));
+    }
+    return false;
 }
 
 /*!
@@ -671,14 +674,15 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
  */
 bool TagEditorWidget::reparseFile()
 {
-    if(!m_fileOperationMutex.try_lock()) {
-        emit statusMessage(tr("Unable to reload the file because the current process hasn't finished yet."));
-        return false;
-    }
     {
-        lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-        if(!m_fileInfo.isOpen() || m_currentPath.isEmpty()) {
-            QMessageBox::warning(this, windowTitle(), tr("Currently is not file opened."));
+        TryLocker<> locker(m_fileOperationMutex);
+        if(locker) {
+            if(!m_fileInfo.isOpen() || m_currentPath.isEmpty()) {
+                QMessageBox::warning(this, windowTitle(), tr("Currently is not file opened."));
+                return false;
+            }
+        } else {
+            emit statusMessage(tr("Unable to reload the file because the current process hasn't finished yet."));
             return false;
         }
     }
@@ -694,7 +698,7 @@ bool TagEditorWidget::reparseFile()
  */
 void TagEditorWidget::showFile(char result)
 {    
-    lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
+    AdoptLocker<> locker(m_fileOperationMutex);
     if(result == IoError) {
         // update status
         updateFileStatusStatus();
@@ -787,38 +791,39 @@ void TagEditorWidget::saveAndShowNextFile()
 bool TagEditorWidget::applyEntriesAndSaveChangings()
 {
     {
-        if(!m_fileOperationMutex.try_lock()) {
+        TryLocker<> locker(m_fileOperationMutex);
+        if(locker) {
+            m_ui->makingNotificationWidget->setNotificationType(NotificationType::Information);
+            m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::Saving);
+            m_ui->makingNotificationWidget->setHidden(false);
+            m_makingResultsAvailable = true;
+            if(m_fileInfo.isOpen()) {
+                // apply titles
+                if(AbstractContainer *container = m_fileInfo.container()) {
+                    if(container->supportsTitle()) {
+                        QLayout *docTitleLayout = m_ui->docTitleWidget->layout();
+                        for(int i = 0, count = min<int>(docTitleLayout->count() - 1, container->segmentCount()); i < count; ++i) {
+                            container->setTitle(static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i + 1)->widget())->text().toUtf8().data(), i);
+                        }
+                    }
+                }
+                // apply all tags
+                foreachTagEdit([] (TagEdit *edit) {edit->apply();});
+                static const QString statusMsg(tr("Saving tags ..."));
+                m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::None);
+                m_ui->makingNotificationWidget->setNotificationType(NotificationType::Progress);
+                m_ui->makingNotificationWidget->setText(statusMsg);
+                emit statusMessage(statusMsg);
+            } else {
+                QString statusMsg(tr("No file has been opened."));
+                m_ui->makingNotificationWidget->setText(statusMsg);
+                QMessageBox::warning(this, QApplication::applicationName(), statusMsg);
+                return false;
+            }
+        } else {
             static const QString statusMsg(tr("Unable to apply the entered tags to the file because the current process hasn't finished yet."));
             m_ui->makingNotificationWidget->setText(statusMsg);
             emit statusMessage(statusMsg);
-            return false;
-        }
-        lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-        m_ui->makingNotificationWidget->setNotificationType(NotificationType::Information);
-        m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::Saving);
-        m_ui->makingNotificationWidget->setHidden(false);
-        m_makingResultsAvailable = true;
-        if(m_fileInfo.isOpen()) {
-            // apply titles
-            if(AbstractContainer *container = m_fileInfo.container()) {
-                if(container->supportsTitle()) {
-                    QLayout *docTitleLayout = m_ui->docTitleWidget->layout();
-                    for(int i = 0, count = min<int>(docTitleLayout->count() - 1, container->segmentCount()); i < count; ++i) {
-                        container->setTitle(static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i + 1)->widget())->text().toUtf8().data(), i);
-                    }
-                }
-            }
-            // apply all tags
-            foreachTagEdit([] (TagEdit *edit) {edit->apply();});
-            static const QString statusMsg(tr("Saving tags ..."));
-            m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::None);
-            m_ui->makingNotificationWidget->setNotificationType(NotificationType::Progress);
-            m_ui->makingNotificationWidget->setText(statusMsg);
-            emit statusMessage(statusMsg);
-        } else {
-            QString statusMsg = tr("No file has been opened.");
-            m_ui->makingNotificationWidget->setText(statusMsg);
-            QMessageBox::warning(this, QApplication::applicationName(), statusMsg);
             return false;
         }
     }
@@ -832,53 +837,54 @@ bool TagEditorWidget::applyEntriesAndSaveChangings()
 bool TagEditorWidget::deleteAllTagsAndSave()
 {
     {
-        if(!m_fileOperationMutex.try_lock()) {
-            static const QString statusMsg(tr("Unable to delete all tags from the file because the current process hasn't been finished yet."));
-            m_ui->makingNotificationWidget->setText(statusMsg);
-            emit statusMessage(statusMsg);
-            return false;
-        }
-        lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-        if(Settings::askBeforeDeleting()) {
-            QMessageBox msgBox(this);
-            msgBox.setText(tr("Do you really want to delete all tags from the file?"));
-            msgBox.setIcon(QMessageBox::Warning);
-            msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
-            msgBox.setDefaultButton(QMessageBox::No);
+        TryLocker<> locker(m_fileOperationMutex);
+        if(locker) {
+            if(Settings::askBeforeDeleting()) {
+                QMessageBox msgBox(this);
+                msgBox.setText(tr("Do you really want to delete all tags from the file?"));
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                msgBox.setDefaultButton(QMessageBox::No);
 #if QT_VERSION >= 0x050200
-            auto *checkBox = new QCheckBox(&msgBox);
-            checkBox->setText(tr("don't show this message again"));
-            msgBox.setCheckBox(checkBox);
+                auto *checkBox = new QCheckBox(&msgBox);
+                checkBox->setText(tr("don't show this message again"));
+                msgBox.setCheckBox(checkBox);
 #endif
-            int res = msgBox.exec();
+                int res = msgBox.exec();
 #if QT_VERSION >= 0x050200
-            if(checkBox->isChecked()) {
-                Settings::askBeforeDeleting() = false;
-            }
+                if(checkBox->isChecked()) {
+                    Settings::askBeforeDeleting() = false;
+                }
 #endif
-            if(res != QMessageBox::Yes) {
-                return false;
+                if(res != QMessageBox::Yes) {
+                    return false;
+                }
             }
-        }
-        m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::Saving);
-        m_ui->makingNotificationWidget->setNotificationType(NotificationType::Information);
-        m_ui->makingNotificationWidget->setHidden(false);
-        m_makingResultsAvailable = true;
-        if(m_fileInfo.isOpen()) {
-            if(m_fileInfo.hasAnyTag()) {
-                foreachTagEdit([] (TagEdit *edit) {edit->clear();});
-                m_fileInfo.removeAllTags();
-                m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::None);
-                m_ui->makingNotificationWidget->setNotificationType(NotificationType::Progress);
-                static const QString statusMsg(tr("Deleting all tags ..."));
-                m_ui->makingNotificationWidget->setText(statusMsg);
-                emit statusMessage(statusMsg);
+            m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::Saving);
+            m_ui->makingNotificationWidget->setNotificationType(NotificationType::Information);
+            m_ui->makingNotificationWidget->setHidden(false);
+            m_makingResultsAvailable = true;
+            if(m_fileInfo.isOpen()) {
+                if(m_fileInfo.hasAnyTag()) {
+                    foreachTagEdit([] (TagEdit *edit) {edit->clear();});
+                    m_fileInfo.removeAllTags();
+                    m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::None);
+                    m_ui->makingNotificationWidget->setNotificationType(NotificationType::Progress);
+                    static const QString statusMsg(tr("Deleting all tags ..."));
+                    m_ui->makingNotificationWidget->setText(statusMsg);
+                    emit statusMessage(statusMsg);
+                } else {
+                    m_ui->makingNotificationWidget->setText(tr("The selected file stores no tag (at least no supported), so there is nothing to delete."));
+                    return false;
+                }
             } else {
-                m_ui->makingNotificationWidget->setText(tr("The selected file stores no tag (at least no supported), so there is nothing to delete."));
+                m_ui->makingNotificationWidget->setText(tr("No file has been opened, so no tags can be deleted."));
                 return false;
             }
         } else {
-            m_ui->makingNotificationWidget->setText(tr("No file has been opened, so no tags can be deleted."));
+            static const QString statusMsg(tr("Unable to delete all tags from the file because the current process hasn't been finished yet."));
+            m_ui->makingNotificationWidget->setText(statusMsg);
+            emit statusMessage(statusMsg);
             return false;
         }
     }
@@ -896,61 +902,61 @@ bool TagEditorWidget::deleteAllTagsAndSave()
  */
 bool TagEditorWidget::startSaving()
 {
-    if(!m_fileOperationMutex.try_lock()) {
+    TryLocker<> locker(m_fileOperationMutex);
+    if(locker) {
+        // tags might get invalidated
+        m_tags.clear();
+        foreachTagEdit([] (TagEdit *edit) { edit->setTag(nullptr, false); });
+        // show abort button
+        m_ui->abortButton->setHidden(false);
+        m_ui->abortButton->setEnabled(true);
+        m_abortClicked = false;
+        // remove current path from file watcher
+        m_fileWatcher->removePath(m_currentPath);
+        // use current configuration
+        m_fileInfo.setForceRewrite(Settings::forceRewrite());
+        m_fileInfo.setTagPosition(Settings::preferredTagPosition());
+        m_fileInfo.setForceTagPosition(Settings::forceTagPosition());
+        m_fileInfo.setIndexPosition(Settings::preferredIndexPosition());
+        m_fileInfo.setForceIndexPosition(Settings::forceIndexPosition());
+        m_fileInfo.setMinPadding(Settings::minPadding());
+        m_fileInfo.setMaxPadding(Settings::maxPadding());
+        m_fileInfo.setPreferredPadding(Settings::preferredPadding());
+        // define functions to show the saving progress and to actually applying the changes
+        auto showProgress = [this] (StatusProvider &sender) -> void {
+            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, static_cast<int>(sender.currentPercentage() * 100.0)));
+            if(m_abortClicked) {
+                QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, tr("Cancelling ...")));
+                m_fileInfo.tryToAbort();
+            } else {
+                QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(sender.currentStatus())));
+            }
+        };
+        auto startThread = [this] {
+            m_fileOperationMutex.lock();
+            bool processingError = false, ioError = false;
+            try {
+                m_fileInfo.applyChanges();
+            } catch(const Failure &) {
+                processingError = true;
+            } catch(const ios_base::failure &) {
+                ioError = true;
+            }
+            m_fileInfo.unregisterAllCallbacks();
+            QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
+            // showSavingResult() will unlock the mutex!
+        };
+        m_fileInfo.unregisterAllCallbacks();
+        m_fileInfo.registerCallback(showProgress);
+        // use another thread to perform the operation
+        QtConcurrent::run(startThread);
+        return true;
+    } else {
         static const QString errorMsg(tr("Unable to start saving process because there an other process hasn't finished yet."));
         emit statusMessage(errorMsg);
         QMessageBox::warning(this, QApplication::applicationName(), errorMsg);
         return false;
     }
-    lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-    // tags might get invalidated
-    m_tags.clear();
-    foreachTagEdit([] (TagEdit *edit) { edit->setTag(nullptr, false); });
-    // show abort button
-    m_ui->abortButton->setHidden(false);
-    m_ui->abortButton->setEnabled(true);
-    m_abortClicked = false;
-    // remove current path from file watcher
-    m_fileWatcher->removePath(m_currentPath);
-    // use current configuration
-    m_fileInfo.setForceRewrite(Settings::forceRewrite());
-    m_fileInfo.setTagPosition(Settings::preferredTagPosition());
-    m_fileInfo.setForceTagPosition(Settings::forceTagPosition());
-    m_fileInfo.setIndexPosition(Settings::preferredIndexPosition());
-    m_fileInfo.setForceIndexPosition(Settings::forceIndexPosition());
-    m_fileInfo.setMinPadding(Settings::minPadding());
-    m_fileInfo.setMaxPadding(Settings::maxPadding());
-    m_fileInfo.setPreferredPadding(Settings::preferredPadding());
-    // define functions to show the saving progress and to actually applying the changes
-    auto showProgress = [this] (StatusProvider &sender) -> void {
-        QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, static_cast<int>(sender.currentPercentage() * 100.0)));
-        if(m_abortClicked) {
-            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, tr("Cancelling ...")));
-            m_fileInfo.tryToAbort();
-        } else {
-            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(sender.currentStatus())));
-        }
-    };
-    auto startThread = [this] {
-        m_fileOperationMutex.lock();
-        bool processingError = false, ioError = false;
-        try {
-            m_fileInfo.applyChanges();
-        } catch(const Failure &) {
-            processingError = true;
-        } catch(const ios_base::failure &) {
-            ioError = true;
-        }
-        m_fileInfo.unregisterAllCallbacks();
-        QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
-        // showSavingResult() will unlock the mutex!
-    };
-    m_fileInfo.unregisterAllCallbacks();
-    m_fileInfo.registerCallback(showProgress);
-    // use another thread to perform the operation
-    std::thread thr(startThread);
-    thr.detach();
-    return true;
 }
 
 /*!
@@ -1055,18 +1061,18 @@ void TagEditorWidget::fileChangedOnDisk(const QString &path)
  */
 void TagEditorWidget::closeFile()
 {
-    if(!m_fileOperationMutex.try_lock()) {
+    TryLocker<> locker(m_fileOperationMutex);
+    if(locker) {
+        // close file
+        m_fileInfo.close();
+        // remove current path from file watcher
+        m_fileWatcher->removePath(m_currentPath);
+        // update ui
+        emit statusMessage("The file has been closed.");
+        updateFileStatusStatus();
+    } else {
         emit statusMessage("Unable to close the file because the current process hasn't been finished yet.");
-        return;
     }
-    lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-    // close file
-    m_fileInfo.close();
-    // remove current path from file watcher
-    m_fileWatcher->removePath(m_currentPath);
-    // update ui
-    emit statusMessage("The file has been closed.");
-    updateFileStatusStatus();
 }
 
 /*!
@@ -1119,29 +1125,28 @@ void TagEditorWidget::applySettingsFromDialog()
  */
 void TagEditorWidget::addTag(const function<Media::Tag *(Media::MediaFileInfo &)> &createTag)
 {
-    if(!m_fileOperationMutex.try_lock()) {
-        emit statusMessage("Unable to add a tag because the current process hasn't been finished yet.");
-        return;
-    }
-    lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-    if(!m_fileInfo.isOpen()) {
-        emit statusMessage("Unable to add a tag because no file is opened.");
-        return;
-    }
-    if(Tag *tag = createTag(m_fileInfo)) {
-        if(std::find(m_tags.cbegin(), m_tags.cend(), tag) == m_tags.cend()) {
-            m_tags.push_back(tag);
-            updateTagEditsAndAttachmentEdits(true, m_tags.size() > 1 ? PreviousValueHandling::Keep : PreviousValueHandling::Auto);
-            updateTagSelectionComboBox();
-            updateTagManagementMenu();
-            updateFileStatusStatus();
-            insertTitleFromFilename();
-        } else {
-            QMessageBox::warning(this, windowTitle(), tr("A tag (with the selected target) already exists."));
+    TryLocker<> locker(m_fileOperationMutex);
+    if(locker) {
+        if(!m_fileInfo.isOpen()) {
+            emit statusMessage("Unable to add a tag because no file is opened.");
+            return;
         }
-
+        if(Tag *tag = createTag(m_fileInfo)) {
+            if(std::find(m_tags.cbegin(), m_tags.cend(), tag) == m_tags.cend()) {
+                m_tags.push_back(tag);
+                updateTagEditsAndAttachmentEdits(true, m_tags.size() > 1 ? PreviousValueHandling::Keep : PreviousValueHandling::Auto);
+                updateTagSelectionComboBox();
+                updateTagManagementMenu();
+                updateFileStatusStatus();
+                insertTitleFromFilename();
+            } else {
+                QMessageBox::warning(this, windowTitle(), tr("A tag (with the selected target) already exists."));
+            }
+        } else {
+            QMessageBox::warning(this, windowTitle(), tr("The tag can not be created."));
+        }
     } else {
-        QMessageBox::warning(this, windowTitle(), tr("The tag can not be created."));
+        emit statusMessage("Unable to add a tag because the current process hasn't been finished yet.");
     }
 }
 
@@ -1153,52 +1158,52 @@ void TagEditorWidget::addTag(const function<Media::Tag *(Media::MediaFileInfo &)
 void TagEditorWidget::removeTag(Tag *tag)
 {
     if(tag) {
-        if(!m_fileOperationMutex.try_lock()) {
-            emit statusMessage(tr("Unable to remove the tag because the current process hasn't been finished yet."));
-            return;
-        }
-        lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-        if(!m_fileInfo.isOpen()) {
-            emit statusMessage(tr("Unable to remove the tag because no file is opened."));
-            return;
-        }
-        if(m_fileInfo.isOpen()) {
-            m_fileInfo.removeTag(tag);
-            // remove tag from m_tags
-            m_tags.erase(remove(m_tags.begin(), m_tags.end(), tag), m_tags.end());
-            // remove tag from all TagEdit widgets
-            vector<TagEdit *> toRemove;
-            for(int index = 0, count = m_ui->stackedWidget->count(); index < count; ++index) {
-                TagEdit *edit = qobject_cast<TagEdit *>(m_ui->stackedWidget->widget(index));
-                if(edit && edit->tags().contains(tag)) {
-                    QList<Tag *> tagsOfEdit = edit->tags();
-                    tagsOfEdit.removeAll(tag);
-                    if(tagsOfEdit.empty()) {
-                        // no tags left in the edit
-                        if(m_tags.empty()) {
-                            // there are no other tag edits -> just disable the edit
-                            edit->setTag(nullptr, false);
+        TryLocker<> locker(m_fileOperationMutex);
+        if(locker) {
+            if(!m_fileInfo.isOpen()) {
+                emit statusMessage(tr("Unable to remove the tag because no file is opened."));
+                return;
+            }
+            if(m_fileInfo.isOpen()) {
+                m_fileInfo.removeTag(tag);
+                // remove tag from m_tags
+                m_tags.erase(remove(m_tags.begin(), m_tags.end(), tag), m_tags.end());
+                // remove tag from all TagEdit widgets
+                vector<TagEdit *> toRemove;
+                for(int index = 0, count = m_ui->stackedWidget->count(); index < count; ++index) {
+                    TagEdit *edit = qobject_cast<TagEdit *>(m_ui->stackedWidget->widget(index));
+                    if(edit && edit->tags().contains(tag)) {
+                        QList<Tag *> tagsOfEdit = edit->tags();
+                        tagsOfEdit.removeAll(tag);
+                        if(tagsOfEdit.empty()) {
+                            // no tags left in the edit
+                            if(m_tags.empty()) {
+                                // there are no other tag edits -> just disable the edit
+                                edit->setTag(nullptr, false);
+                            } else {
+                                // there are still other tag edits -> remove the edit
+                                toRemove.push_back(edit);
+                            }
                         } else {
-                            // there are still other tag edits -> remove the edit
-                            toRemove.push_back(edit);
+                            // there are still tags left, reassign remaining tags (keeping the previous values)
+                            edit->setPreviousValueHandling(PreviousValueHandling::Keep);
+                            edit->setTags(tagsOfEdit, true);
                         }
-                    } else {
-                        // there are still tags left, reassign remaining tags (keeping the previous values)
-                        edit->setPreviousValueHandling(PreviousValueHandling::Keep);
-                        edit->setTags(tagsOfEdit, true);
                     }
                 }
+                // remove TagEdit widgets
+                for(TagEdit *edit : toRemove) {
+                    m_ui->tagSelectionComboBox->removeItem(m_ui->stackedWidget->indexOf(edit));
+                    m_ui->stackedWidget->removeWidget(edit);
+                    delete edit;
+                }
+                // update affected widgets
+                updateTagSelectionComboBox();
+                updateTagManagementMenu();
+                updateFileStatusStatus();
             }
-            // remove TagEdit widgets
-            for(TagEdit *edit : toRemove) {
-                m_ui->tagSelectionComboBox->removeItem(m_ui->stackedWidget->indexOf(edit));
-                m_ui->stackedWidget->removeWidget(edit);
-                delete edit;
-            }
-            // update affected widgets
-            updateTagSelectionComboBox();
-            updateTagManagementMenu();
-            updateFileStatusStatus();
+        } else {
+            emit statusMessage(tr("Unable to remove the tag because the current process hasn't been finished yet."));
         }
     }
 }
@@ -1211,27 +1216,27 @@ void TagEditorWidget::removeTag(Tag *tag)
 void TagEditorWidget::changeTarget(Tag *tag)
 {
     if(tag) {
-        if(!m_fileOperationMutex.try_lock()) {
-            emit statusMessage(tr("Unable to change the target because the current process hasn't been finished yet."));
-            return;
-        }
-        lock_guard<mutex> guard(m_fileOperationMutex, adopt_lock);
-        if(!m_fileInfo.isOpen()) {
-            emit statusMessage(tr("Unable to change the target because no file is opened."));
-            return;
-        }
-        if(m_fileInfo.isOpen()) {
-            if(tag->supportsTarget()) {
-                EnterTargetDialog targetDlg(this);
-                targetDlg.setTarget(tag->target(), &m_fileInfo);
-                if(targetDlg.exec() == QDialog::Accepted) {
-                    tag->setTarget(targetDlg.target());
-                    updateTagSelectionComboBox();
-                    updateTagManagementMenu();
-                }
-            } else {
-                QMessageBox::warning(this, windowTitle(), tr("Can not change the target of the selected tag because the tag does not support targets."));
+        TryLocker<> locker(m_fileOperationMutex);
+        if(locker) {
+            if(!m_fileInfo.isOpen()) {
+                emit statusMessage(tr("Unable to change the target because no file is opened."));
+                return;
             }
+            if(m_fileInfo.isOpen()) {
+                if(tag->supportsTarget()) {
+                    EnterTargetDialog targetDlg(this);
+                    targetDlg.setTarget(tag->target(), &m_fileInfo);
+                    if(targetDlg.exec() == QDialog::Accepted) {
+                        tag->setTarget(targetDlg.target());
+                        updateTagSelectionComboBox();
+                        updateTagManagementMenu();
+                    }
+                } else {
+                    QMessageBox::warning(this, windowTitle(), tr("Can not change the target of the selected tag because the tag does not support targets."));
+                }
+            }
+        } else {
+            emit statusMessage(tr("Unable to change the target because the current process hasn't been finished yet."));
         }
     }
 }
