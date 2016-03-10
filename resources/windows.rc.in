@@ -24,7 +24,7 @@ VS_VERSION_INFO VERSIONINFO
             BLOCK "040904b0"
             BEGIN
                 VALUE "CompanyName", "@META_APP_AUTHOR@\0"
-                VALUE "FileDescription", "@META_APP_DESCRIPTION@.\0"
+                VALUE "FileDescription", "@META_APP_DESCRIPTION@\0"
                 VALUE "FileVersion", "@META_APP_VERSION@\0"
                 VALUE "LegalCopyright", "by @META_APP_AUTHOR@\0"
                 VALUE "OriginalFilename", "@META_PROJECT_NAME@.@WINDOWS_EXT@\0"
