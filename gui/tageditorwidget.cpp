@@ -38,7 +38,6 @@
 #include <QMenu>
 #include <QCheckBox>
 #include <QtConcurrent>
-#include <QFutureWatcher>
 #if defined(TAGEDITOR_NO_WEBVIEW)
 # error "not supported (yet)."
 #elif defined(TAGEDITOR_USE_WEBENGINE)
@@ -631,12 +630,16 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         // show filename
         m_ui->fileNameLabel->setText(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()));
         // define function to parse the file
-        auto startThread = [this, sameFile] {
+        auto startThread = [this] {
             m_fileOperationMutex.lock();
             char result;
             try {
-                if(sameFile) {
-                    m_fileInfo.reopen();
+                try {
+                    // try to open with write access
+                    m_fileInfo.reopen(false);
+                } catch(const ios_base::failure &) {
+                    // try to open read-only if opening with write access failed
+                    m_fileInfo.reopen(true);
                 }
                 m_fileInfo.setForceFullParse(Settings::forceFullParse());
                 m_fileInfo.parseEverything();
@@ -724,17 +727,17 @@ void TagEditorWidget::showFile(char result)
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
         }
-        switch(worstNotificationType) {
-        case Media::NotificationType::Critical:
+        if(worstNotificationType == Media::NotificationType::Critical) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->appendLine(tr("There are critical parsing notifications."));
-            break;
-        case Media::NotificationType::Warning:
+        } else if(worstNotificationType == Media::NotificationType::Warning || m_fileInfo.isReadOnly()) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
-            m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
-            break;
-        default:
-            ;
+            if(worstNotificationType == Media::NotificationType::Warning) {
+                m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
+            }
+            if(m_fileInfo.isReadOnly()) {
+                m_ui->parsingNotificationWidget->appendLine(tr("No write access; the file has been opened in read-only mode."));
+            }
         }
         // load existing tags
         m_tags.clear();
