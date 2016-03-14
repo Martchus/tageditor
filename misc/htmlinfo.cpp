@@ -1029,6 +1029,7 @@ public:
         // structure
         switch(m_file.containerFormat()) {
         case ContainerFormat::Mp4:
+        case ContainerFormat::QuickTime:
         case ContainerFormat::Matroska:
         case ContainerFormat::Webm:
         case ContainerFormat::Ebml:
@@ -1061,6 +1062,7 @@ public:
             m_rowMaker.startRow(QString());
             switch(m_file.containerFormat()) {
             case ContainerFormat::Mp4:
+            case ContainerFormat::QuickTime:
                 mkElementTree(static_cast<Mp4Container *>(m_file.container()));
                 break;
             case ContainerFormat::Matroska:
