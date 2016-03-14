@@ -458,8 +458,8 @@ void TagEditorWidget::updateTagManagementMenu()
     m_changeTargetMenu->clear();
     if(m_fileInfo.isOpen()) {
         // add "Add tag" actions
-        if(m_fileInfo.container()) {
-            // there is a container object which might be able to create tags
+        if(m_fileInfo.areTagsSupported() && m_fileInfo.container()) {
+            // there is a container object which is able to create tags
             QString label;
             if(m_fileInfo.containerFormat() == ContainerFormat::Matroska) {
                 // tag format supports targets (Matroska tags are currently the only tag format supporting targets.)
@@ -493,7 +493,7 @@ void TagEditorWidget::updateTagManagementMenu()
                 }
             }
         } else {
-            // there is no container object; creation of ID3 tags is possible
+            // there is no container object which is able to create tags; creation of ID3 tags is always possible
             if(!m_fileInfo.hasId3v1Tag()) {
                 connect(m_addTagMenu->addAction(tr("ID3v1 tag")), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [] (MediaFileInfo &file) {
                             return file.createId3v1Tag();
@@ -727,17 +727,20 @@ void TagEditorWidget::showFile(char result)
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
         }
-        if(worstNotificationType == Media::NotificationType::Critical) {
+        if(worstNotificationType >= Media::NotificationType::Critical) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->appendLine(tr("There are critical parsing notifications."));
-        } else if(worstNotificationType == Media::NotificationType::Warning || m_fileInfo.isReadOnly()) {
+        } else if(worstNotificationType == Media::NotificationType::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported()) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
             if(worstNotificationType == Media::NotificationType::Warning) {
                 m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
             }
-            if(m_fileInfo.isReadOnly()) {
-                m_ui->parsingNotificationWidget->appendLine(tr("No write access; the file has been opened in read-only mode."));
-            }
+        }
+        if(m_fileInfo.isReadOnly()) {
+            m_ui->parsingNotificationWidget->appendLine(tr("No write access; the file has been opened in read-only mode."));
+        }
+        if(!m_fileInfo.areTagsSupported()) {
+            m_ui->parsingNotificationWidget->appendLine(tr("File format is not supported (an ID3 tag can be added anyways)."));
         }
         // load existing tags
         m_tags.clear();
@@ -745,10 +748,6 @@ void TagEditorWidget::showFile(char result)
         // show notification if no existing tag(s) could be found
         if(!m_tags.size()) {
             m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
-            if(!m_fileInfo.areTagsSupported()) {
-                m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
-                m_ui->parsingNotificationWidget->appendLine(tr("File format is not supported (an ID3 tag can be added anyways)."));
-            }
         }
         // create appropriate tags according to file type and user preferences when automatic tag management is enabled
         if(Settings::autoTagManagement()) {
