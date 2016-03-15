@@ -727,10 +727,11 @@ void TagEditorWidget::showFile(char result)
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
         }
+        bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount();
         if(worstNotificationType >= Media::NotificationType::Critical) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->appendLine(tr("There are critical parsing notifications."));
-        } else if(worstNotificationType == Media::NotificationType::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported()) {
+        } else if(worstNotificationType == Media::NotificationType::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported() || multipleSegmentsNotTested) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
             if(worstNotificationType == Media::NotificationType::Warning) {
                 m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
@@ -741,6 +742,9 @@ void TagEditorWidget::showFile(char result)
         }
         if(!m_fileInfo.areTagsSupported()) {
             m_ui->parsingNotificationWidget->appendLine(tr("File format is not supported (an ID3 tag can be added anyways)."));
+        }
+        if(multipleSegmentsNotTested) {
+            m_ui->parsingNotificationWidget->appendLine(tr("The file is composed of multiple segments. Dealing with such files has not been tested yet and might be broken."));
         }
         // load existing tags
         m_tags.clear();
