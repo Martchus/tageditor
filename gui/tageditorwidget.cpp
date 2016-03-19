@@ -727,7 +727,7 @@ void TagEditorWidget::showFile(char result)
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
         }
-        bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount();
+        bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount() > 1;
         if(worstNotificationType >= Media::NotificationType::Critical) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->appendLine(tr("There are critical parsing notifications."));

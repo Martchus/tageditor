@@ -63,13 +63,13 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
     } catch(ConversionException &) {}
     PositionInSet pos;
     try {
-        pos = tag.value(KnownField::TrackPosition).toPositionIntSet();
+        pos = tag.value(KnownField::TrackPosition).toPositionInSet();
     } catch(ConversionException &) {}
     tagObject.setProperty("trackPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("trackTotal", pos.total() TAGEDITOR_JS_READONLY);
     pos = PositionInSet();
     try {
-        pos = tag.value(KnownField::DiskPosition).toPositionIntSet();
+        pos = tag.value(KnownField::DiskPosition).toPositionInSet();
     } catch(ConversionException &) {}
     tagObject.setProperty("diskPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("diskTotal", pos.total() TAGEDITOR_JS_READONLY);

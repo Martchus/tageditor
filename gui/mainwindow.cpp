@@ -371,7 +371,7 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
             *conn = connect(m_fileFilterModel, &QAbstractItemModel::rowsInserted, [this, selectionModel, currentIndex, conn] (const QModelIndex &parent, int, int) {
                 disconnect(*conn);
                 if(parent == currentIndex) {
-                    QModelIndex next = m_fileFilterModel->index(0, 0, parent);
+                    const QModelIndex next = m_fileFilterModel->index(0, 0, parent);
                     if(next.isValid()) {
                         if(m_ui->filesTreeView->model()->hasChildren(next)) {
                             // next item is a directory -> keep on searching

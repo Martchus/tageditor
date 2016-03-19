@@ -87,7 +87,7 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
         try {
             TagValue trackValue = tagEdit->value(KnownField::TrackPosition);
             if(!trackValue.isEmpty()) {
-                m_ui->trackSpinBox->setValue(trackValue.toPositionIntSet().position());
+                m_ui->trackSpinBox->setValue(trackValue.toPositionInSet().position());
                 trackValueOk = true;
             }
         } catch(const ConversionException &) {

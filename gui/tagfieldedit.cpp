@@ -731,7 +731,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         if(m_spinBoxes.second) {
             PositionInSet pos;
             try {
-                pos = value.toPositionIntSet();
+                pos = value.toPositionInSet();
             } catch(const ConversionException &) {
                 conversionError = true;
             }
