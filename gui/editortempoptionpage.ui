@@ -2,12 +2,20 @@
 <ui version="4.0">
  <class>QtGui::EditorTempOptionPage</class>
  <widget class="QWidget" name="QtGui::EditorTempOptionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>206</width>
+    <height>110</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="instructionLabel">
      <property name="text">
       <string>Directory to store temporary/backup files</string>
      </property>
@@ -32,6 +40,9 @@
     </layout>
    </item>
    <item>
+    <widget class="NotificationLabel" name="notificationLabel" native="true"/>
+   </item>
+   <item>
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -51,6 +62,12 @@
    <class>PathLineEdit</class>
    <extends>QLineEdit</extends>
    <header>gui/pathlineedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>NotificationLabel</class>
+   <extends>QWidget</extends>
+   <header>gui/notificationlabel.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

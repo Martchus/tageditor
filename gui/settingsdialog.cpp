@@ -144,6 +144,8 @@ QWidget *EditorTempOptionPage::setupWidget()
 {
     auto *widget = UiFileBasedOptionPage<Ui::EditorTempOptionPage>::setupWidget();
     QObject::connect(ui()->selectPushButton, &QPushButton::clicked, std::bind(&EditorTempOptionPage::showDirectorySelection, this));
+    ui()->notificationLabel->setText(QApplication::tr("Currently this directory must be on the same partition as the files you want to edit."));
+    ui()->notificationLabel->setNotificationType(NotificationType::Information);
     return widget;
 }
 

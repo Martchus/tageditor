@@ -19,6 +19,7 @@
 #include <tagparser/mp4/mp4container.h>
 #include <tagparser/mp4/mp4tag.h>
 #include <tagparser/matroska/matroskatag.h>
+#include <tagparser/vorbis/vorbiscomment.h>
 
 #include <qtutilities/misc/dialogutils.h>
 #include <qtutilities/misc/trylocker.h>
@@ -482,7 +483,7 @@ void TagEditorWidget::updateTagManagementMenu()
                         label = tr("MP4/iTunes tag");
                         break;
                     case ContainerFormat::Ogg:
-                        label = tr("Vorbis comment");
+                        label = tr("Vorbis/Opus comment");
                         break;
                     default:
                         label = tr("Tag");
@@ -507,9 +508,12 @@ void TagEditorWidget::updateTagManagementMenu()
         }
         // add "Remove tag" and "Change target" actions
         for(Tag *tag : m_tags) {
-            connect(m_removeTagMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::removeTag, this, tag));
-            if(tag->supportsTarget()) {
-                connect(m_changeTargetMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::changeTarget, this, tag));
+            // check whether the tag is not from a Vorbis stream because in this case removing the tag seems to cause problems and hence shouldn't be proposed
+            if(tag->type() != TagType::VorbisComment || static_cast<VorbisComment *>(tag)->oggParams().streamFormat != GeneralMediaFormat::Vorbis) {
+                connect(m_removeTagMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::removeTag, this, tag));
+                if(tag->supportsTarget()) {
+                    connect(m_changeTargetMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::changeTarget, this, tag));
+                }
             }
         }
     }

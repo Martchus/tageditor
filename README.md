@@ -73,7 +73,7 @@ Here are some Bash examples which illustrate getting and setting tag information
   ```
   tageditor get title album artist --files /some/dir/*.m4a
   ```
-  
+
 * Displays technical information about all *.m4a files in the specified directory:
 
   ```
@@ -87,7 +87,7 @@ Here are some Bash examples which illustrate getting and setting tag information
     "album=The Album" "artist=The Artist" \
     cover=/path/to/image track={1..16}/16 --files /some/dir/*.m4a
   ```
-  
+
   The first file will get the name *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
   The 16th and following files will all get the name *Title of the 16th file*. The same scheme is used for the track numbers.
   All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
@@ -108,7 +108,7 @@ Here are some Bash examples which illustrate getting and setting tag information
   # now set the titles and other tag information
   tageditor set "${titles[@]}" "album=Some Album" track+=1/25 disk=1/1 -f *.m4a
   ```
-  
+
   Note the *+* sign after the field name *track* which indicates that the field value should be increased after
   a file has been processed.
 
@@ -125,9 +125,10 @@ The following Qt 5 modules are requried: core gui qml/script widgets webenginewi
 * When building with CMake the Qt modules can be selected explicitely by specifying -DWEBVIEW_PROVIDER=webkit/webengine and/or -DJS_PROVIDER=script/qml.
 
 ## TODO
-- Support more tag formats (EXIF, PDF metadata, ...).
-- Set tag information concurrently if multiple files have been specified (CLI).
+- Support more formats (EXIF, PDF metadata, Theora, ...).
+- Allow adding tags to specific streams when dealing with OGG.
 - Do tests with Matroska files which have multiple segments.
+- Set tag information concurrently if multiple files have been specified (CLI).
 
 ## Bugs
 - Large file information is not shown when using Qt WebEngine.
