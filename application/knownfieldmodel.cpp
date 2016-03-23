@@ -57,11 +57,6 @@ QString KnownFieldModel::labelForId(const QVariant &id) const
     return translatedFieldName(static_cast<KnownField>(id.toInt()));
 }
 
-inline ChecklistItem KnownFieldModel::mkItem(KnownField field, Qt::CheckState checkState)
-{
-    return ChecklistItem(static_cast<int>(field), translatedFieldName(field), checkState);
-}
-
 KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelection) :
     ChecklistModel(parent)
 {

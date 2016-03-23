@@ -33,6 +33,11 @@ public:
     virtual QString labelForId(const QVariant &id) const;
 };
 
+inline Models::ChecklistItem KnownFieldModel::mkItem(Media::KnownField field, Qt::CheckState checkState)
+{
+    return Models::ChecklistItem(static_cast<int>(field), translatedFieldName(field), checkState);
+}
+
 }
 
 #endif // KNOWNFIELDSELECTION_H
