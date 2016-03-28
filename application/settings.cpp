@@ -217,13 +217,13 @@ QString &mainWindowCurrentFileBrowserDirectory()
 // db query
 bool &dbQueryWidgetShown()
 {
-    static bool v;
+    static bool v = false;
     return v;
 }
 
 bool &dbQueryOverride()
 {
-    static bool v;
+    static bool v = false;
     return v;
 }
 

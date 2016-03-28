@@ -100,7 +100,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>File sele&amp;ction</string>
+    <string>File selection</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -150,7 +150,7 @@
     <bool>false</bool>
    </property>
    <property name="windowTitle">
-    <string>&amp;MusicBrains search (beta)</string>
+    <string>MusicBrains search (beta)</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>

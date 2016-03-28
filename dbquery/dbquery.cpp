@@ -40,7 +40,7 @@ QueryResultsModel::QueryResultsModel(QObject *parent) :
 
 void QueryResultsModel::setResultsAvailable(bool resultsAvailable)
 {
-    if(m_resultsAvailable = resultsAvailable) {
+    if((m_resultsAvailable = resultsAvailable)) {
         emit this->resultsAvailable();
     }
 }

@@ -40,7 +40,6 @@
 #include <QCheckBox>
 #include <QtConcurrent>
 #if defined(TAGEDITOR_NO_WEBVIEW)
-# error "not supported (yet)."
 #elif defined(TAGEDITOR_USE_WEBENGINE)
 # include <QWebEngineView>
 #else
@@ -88,11 +87,13 @@ TagEditorWidget::TagEditorWidget(QWidget *parent) :
     m_ui->setupUi(this);
     makeHeading(m_ui->fileNameLabel);
     // setup web view
+#ifndef TAGEDITOR_NO_WEBVIEW
     m_infoWebView = new WEB_VIEW_PROVIDER(m_ui->tagSplitter);
     m_infoWebView->setAcceptDrops(false);
     m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &TagEditorWidget::showInfoWebViewContextMenu);
     m_ui->tagSplitter->addWidget(m_infoWebView);
+#endif
     // setup file watcher
     m_fileWatcher = new QFileSystemWatcher(this);
     m_fileChangedOnDisk = false;
@@ -444,7 +445,9 @@ void TagEditorWidget::updateFileStatusStatus()
     // visibility of m_ui->tagSelectionComboBox is set within updateTagEdits
     m_ui->stackedWidget->setEnabled(hasTag);
     // webview
+#ifndef TAGEDITOR_NO_WEBVIEW
     m_infoWebView->setEnabled(opened);
+#endif
     // inform the main window about the file status change as well
     emit fileStatusChange(opened, hasTag);
 }
@@ -545,12 +548,14 @@ void TagEditorWidget::insertTitleFromFilename()
  */
 void TagEditorWidget::updateInfoWebView()
 {
+#ifndef TAGEDITOR_NO_WEBVIEW
     if(m_fileInfo.isOpen()) {
         m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
         m_infoWebView->setContent(m_fileInfoHtml, QStringLiteral("application/xhtml+xml"));
     } else {
         m_infoWebView->setUrl(QStringLiteral("about:blank"));
     }
+#endif
 }
 
 /*!

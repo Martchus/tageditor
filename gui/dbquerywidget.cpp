@@ -324,12 +324,10 @@ void DbQueryWidget::showCoverFromIndex(const QModelIndex &index)
 
 bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)
 {
-    if(obj = m_ui->searchGroupBox) {
+    if(obj == m_ui->searchGroupBox) {
         switch(event->type()) {
-        case QEvent::KeyRelease: {
-            auto *keyEvent = static_cast<QKeyEvent *>(event);
-            int key = keyEvent->key();
-            switch(key) {
+        case QEvent::KeyRelease:
+            switch(static_cast<QKeyEvent *>(event)->key()) {
             case Qt::Key_Return:
                 startSearch();
                 break;
@@ -337,11 +335,11 @@ bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)
                 ;
             }
             break;
-        } default:
+        default:
             ;
         }
-        return QWidget::eventFilter(obj, event);
     }
+    return QWidget::eventFilter(obj, event);
 }
 
 }

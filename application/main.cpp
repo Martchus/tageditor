@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
             cout << "Application has not been build with Qt widgets GUI support." << endl;
 #endif
         }
-    } catch(Failure &ex) {
+    } catch(const Failure &ex) {
         CMD_UTILS_START_CONSOLE;
         cout << "Unable to parse arguments. " << ex.what() << "\nSee --help for available commands." << endl;
     }    
