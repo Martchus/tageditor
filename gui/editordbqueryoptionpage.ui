@@ -2,8 +2,16 @@
 <ui version="4.0">
  <class>QtGui::EditorDbQueryOptionsPage</class>
  <widget class="QWidget" name="QtGui::EditorDbQueryOptionsPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>222</width>
+    <height>74</height>
+   </rect>
+  </property>
   <property name="windowTitle">
-   <string>General options page</string>
+   <string>MusicBrainz</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>
@@ -48,7 +56,4 @@
  </customwidgets>
  <resources/>
  <connections/>
- <buttongroups>
-  <buttongroup name="usageButtonGroup"/>
- </buttongroups>
 </ui>

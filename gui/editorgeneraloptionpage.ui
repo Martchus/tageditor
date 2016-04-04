@@ -2,8 +2,16 @@
 <ui version="4.0">
  <class>QtGui::EditorGeneralOptionPage</class>
  <widget class="QWidget" name="QtGui::EditorGeneralOptionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>468</width>
+    <height>374</height>
+   </rect>
+  </property>
   <property name="windowTitle">
-   <string>General options page</string>
+   <string>General</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>
@@ -28,7 +36,7 @@
       <item>
        <widget class="QRadioButton" name="enableWithinDirRadioButton">
         <property name="text">
-         <string>Yes, but only if both files are in the same directory</string>
+         <string>Yes, but only if both files are in the sa&amp;me directory</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">usageButtonGroup</string>
@@ -38,7 +46,7 @@
       <item>
        <widget class="QRadioButton" name="enableForAllRadioButton">
         <property name="text">
-         <string>Yes, regardless where the files are stored</string>
+         <string>Yes, &amp;regardless where the files are stored</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">usageButtonGroup</string>
@@ -57,14 +65,14 @@
       <item>
        <widget class="QRadioButton" name="multipleTagsOneEditorRadioButton">
         <property name="text">
-         <string>Use one editor for tags with the same target</string>
+         <string>Use one editor for ta&amp;gs with the same target</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="multipleTagsSeparateEditorsRadioButton">
         <property name="text">
-         <string>Use always separate editors</string>
+         <string>Use always se&amp;parate editors</string>
         </property>
        </widget>
       </item>

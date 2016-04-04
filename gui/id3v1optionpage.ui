@@ -2,8 +2,16 @@
 <ui version="4.0">
  <class>QtGui::Id3v1OptionPage</class>
  <widget class="QWidget" name="QtGui::Id3v1OptionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>357</width>
+    <height>168</height>
+   </rect>
+  </property>
   <property name="windowTitle">
-   <string>ID3v1 options page</string>
+   <string>ID3v1</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>
@@ -18,7 +26,7 @@
       <item>
        <widget class="QRadioButton" name="alwaysCreateRadioButton">
         <property name="text">
-         <string>Always create an ID3v1 tag</string>
+         <string>Always &amp;create an ID3v1 tag</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">usageButtonGroup</string>
@@ -28,7 +36,7 @@
       <item>
        <widget class="QRadioButton" name="keepExistingRadioButton">
         <property name="text">
-         <string>Keep and update existing ID3v1 tag (but don't create a new one)</string>
+         <string>Kee&amp;p and update existing ID3v1 tag (but don't create a new one)</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">usageButtonGroup</string>
@@ -38,7 +46,7 @@
       <item>
        <widget class="QRadioButton" name="removeExistingRadioButton">
         <property name="text">
-         <string>Remove existing ID3v1 tag</string>
+         <string>&amp;Remove existing ID3v1 tag</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">usageButtonGroup</string>

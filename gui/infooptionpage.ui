@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Info options page</string>
+   <string>File info</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>

@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>QtGui::FileLayoutPage</class>
  <widget class="QWidget" name="QtGui::FileLayoutPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>315</width>
+    <height>544</height>
+   </rect>
+  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
     <horstretch>0</horstretch>
@@ -9,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>File layout</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>
@@ -181,7 +189,7 @@ another position would prevent rewriting the entire file</string>
       <item>
        <widget class="QRadioButton" name="indexPosBeforeDataRadioButton">
         <property name="text">
-         <string>befo&amp;re (media) data / at the beginning of the file</string>
+         <string>before (media) data / at the be&amp;ginning of the file</string>
         </property>
        </widget>
       </item>

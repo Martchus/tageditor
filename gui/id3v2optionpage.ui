@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>ID3v2 options page</string>
+   <string>ID3v2</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>
@@ -150,7 +150,7 @@
  <connections/>
  <buttongroups>
   <buttongroup name="usageButtonGroup"/>
-  <buttongroup name="multipleSucessiveButtonGroup"/>
   <buttongroup name="versionButtonGroup"/>
+  <buttongroup name="multipleSucessiveButtonGroup"/>
  </buttongroups>
 </ui>

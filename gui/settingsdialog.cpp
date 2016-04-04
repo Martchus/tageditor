@@ -9,6 +9,7 @@
 
 #include <qtutilities/settingsdialog/optioncategory.h>
 #include <qtutilities/settingsdialog/optioncategorymodel.h>
+#include <qtutilities/settingsdialog/qtsettings.h>
 
 #include <QFileDialog>
 
@@ -22,16 +23,12 @@ using namespace Media;
 namespace QtGui {
 
 // FileBrowserGeneralOptionPage
-FileBrowserGeneralOptionPage::FileBrowserGeneralOptionPage()
+FileBrowserGeneralOptionPage::FileBrowserGeneralOptionPage(QWidget *parentWidget) :
+    FileBrowserGeneralOptionPageBase(parentWidget)
 {}
 
 FileBrowserGeneralOptionPage::~FileBrowserGeneralOptionPage()
 {}
-
-QString FileBrowserGeneralOptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::FileBrowserGeneralOptionPage", "General");
-}
 
 bool FileBrowserGeneralOptionPage::apply()
 {
@@ -51,16 +48,12 @@ void FileBrowserGeneralOptionPage::reset()
 }
 
 // EditorGeneralOptionPage
-EditorGeneralOptionPage::EditorGeneralOptionPage()
+EditorGeneralOptionPage::EditorGeneralOptionPage(QWidget *parentWidget) :
+    EditorGeneralOptionPageBase(parentWidget)
 {}
 
 EditorGeneralOptionPage::~EditorGeneralOptionPage()
 {}
-
-QString EditorGeneralOptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::EditorGeneralOptionPage", "General");
-}
 
 bool EditorGeneralOptionPage::apply()
 {
@@ -114,16 +107,11 @@ void EditorGeneralOptionPage::reset()
 
 // EditorTempOptionPage
 EditorTempOptionPage::EditorTempOptionPage(QWidget *parentWindow) :
-    UiFileBasedOptionPage<Ui::EditorTempOptionPage>(parentWindow)
+    EditorTempOptionPageBase(parentWindow)
 {}
 
 EditorTempOptionPage::~EditorTempOptionPage()
 {}
-
-QString EditorTempOptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::EditorTempOptionPage", "Temp files");
-}
 
 bool EditorTempOptionPage::apply()
 {
@@ -142,7 +130,7 @@ void EditorTempOptionPage::reset()
 
 QWidget *EditorTempOptionPage::setupWidget()
 {
-    auto *widget = UiFileBasedOptionPage<Ui::EditorTempOptionPage>::setupWidget();
+    auto *widget = EditorTempOptionPageBase::setupWidget();
     QObject::connect(ui()->selectPushButton, &QPushButton::clicked, std::bind(&EditorTempOptionPage::showDirectorySelection, this));
     ui()->notificationLabel->setText(QApplication::tr("Currently this directory must be on the same partition as the files you want to edit."));
     ui()->notificationLabel->setNotificationType(NotificationType::Information);
@@ -162,17 +150,12 @@ void EditorTempOptionPage::showDirectorySelection()
 }
 
 // EditorFieldsOptionPage
-EditorFieldsOptionPage::EditorFieldsOptionPage() :
+EditorFieldsOptionPage::EditorFieldsOptionPage(QWidget *parentWidget) :
     m_model(nullptr)
 {}
 
 EditorFieldsOptionPage::~EditorFieldsOptionPage()
 {}
-
-QString EditorFieldsOptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::EditorFieldsOptionPage", "Fields");
-}
 
 bool EditorFieldsOptionPage::apply()
 {
@@ -191,7 +174,7 @@ void EditorFieldsOptionPage::reset()
 
 QWidget *EditorFieldsOptionPage::setupWidget()
 {
-    auto *w = UiFileBasedOptionPage<Ui::EditorFieldsOptionPage>::setupWidget();
+    auto *w = EditorFieldsOptionPageBase::setupWidget();
     if(!m_model) {
         m_model = new KnownFieldModel(w);
     }
@@ -200,17 +183,13 @@ QWidget *EditorFieldsOptionPage::setupWidget()
 }
 
 // EditorAutoCorrectionOptionPage
-EditorAutoCorrectionOptionPage::EditorAutoCorrectionOptionPage() :
+EditorAutoCorrectionOptionPage::EditorAutoCorrectionOptionPage(QWidget *parentWidget) :
+    EditorAutoCorrectionOptionPageBase(parentWidget),
     m_model(nullptr)
 {}
 
 EditorAutoCorrectionOptionPage::~EditorAutoCorrectionOptionPage()
 {}
-
-QString EditorAutoCorrectionOptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::EditorAutoCorrectionOptionPage", "Auto correction/completion");
-}
 
 bool EditorAutoCorrectionOptionPage::apply()
 {
@@ -241,7 +220,7 @@ void EditorAutoCorrectionOptionPage::reset()
 
 QWidget *EditorAutoCorrectionOptionPage::setupWidget()
 {
-    auto *w = UiFileBasedOptionPage<Ui::EditorAutoCorrectionOptionPage>::setupWidget();
+    auto *w = EditorAutoCorrectionOptionPageBase::setupWidget();
     if(!m_model) {
         m_model = new KnownFieldModel(w);
     }
@@ -250,16 +229,12 @@ QWidget *EditorAutoCorrectionOptionPage::setupWidget()
 }
 
 // EditorDbQueryOptionsPage
-EditorDbQueryOptionsPage::EditorDbQueryOptionsPage()
+EditorDbQueryOptionsPage::EditorDbQueryOptionsPage(QWidget *parentWidget) :
+    EditorDbQueryOptionsPageBase(parentWidget)
 {}
 
 EditorDbQueryOptionsPage::~EditorDbQueryOptionsPage()
 {}
-
-QString EditorDbQueryOptionsPage::displayName() const
-{
-    return QApplication::translate("QtGui::EditorDbQueryOptionsPage", "Database queries");
-}
 
 bool EditorDbQueryOptionsPage::apply()
 {
@@ -279,16 +254,12 @@ void EditorDbQueryOptionsPage::reset()
 }
 
 // InfoOptionPage
-InfoOptionPage::InfoOptionPage()
+InfoOptionPage::InfoOptionPage(QWidget *parentWidget) :
+    InfoOptionPageBase(parentWidget)
 {}
 
 InfoOptionPage::~InfoOptionPage()
 {}
-
-QString InfoOptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::InfoOptionPage", "Info");
-}
 
 bool InfoOptionPage::apply()
 {
@@ -306,16 +277,12 @@ void InfoOptionPage::reset()
 }
 
 // TagProcessingGeneralOptionPage
-TagProcessingGeneralOptionPage::TagProcessingGeneralOptionPage()
+TagProcessingGeneralOptionPage::TagProcessingGeneralOptionPage(QWidget *parentWidget) :
+    TagProcessingGeneralOptionPageBase(parentWidget)
 {}
 
 TagProcessingGeneralOptionPage::~TagProcessingGeneralOptionPage()
 {}
-
-QString TagProcessingGeneralOptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::TagProcessingGeneralOptionPage", "General");
-}
 
 bool TagProcessingGeneralOptionPage::apply()
 {
@@ -375,16 +342,12 @@ void TagProcessingGeneralOptionPage::reset()
 }
 
 // Id3v1OptionPage
-Id3v1OptionPage::Id3v1OptionPage()
+Id3v1OptionPage::Id3v1OptionPage(QWidget *parentWidget) :
+    Id3v1OptionPageBase(parentWidget)
 {}
 
 Id3v1OptionPage::~Id3v1OptionPage()
 {}
-
-QString Id3v1OptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::Id3v1OptionPage", "ID3v1");
-}
 
 bool Id3v1OptionPage::apply()
 {
@@ -418,16 +381,12 @@ void Id3v1OptionPage::reset()
 }
 
 // Id3v2OptionPage
-Id3v2OptionPage::Id3v2OptionPage()
+Id3v2OptionPage::Id3v2OptionPage(QWidget *parentWidget) :
+    Id3v2OptionPageBase(parentWidget)
 {}
 
 Id3v2OptionPage::~Id3v2OptionPage()
 {}
-
-QString Id3v2OptionPage::displayName() const
-{
-    return QApplication::translate("QtGui::Id3v2OptionPage", "ID3v2");
-}
 
 bool Id3v2OptionPage::apply()
 {
@@ -487,26 +446,28 @@ void Id3v2OptionPage::reset()
 }
 
 // FileLayoutPage
-FileLayoutPage::FileLayoutPage()
+FileLayoutPage::FileLayoutPage(QWidget *parentWidget) :
+    FileLayoutPageBase(parentWidget)
 {}
 
 FileLayoutPage::~FileLayoutPage()
 {}
 
-QString FileLayoutPage::displayName() const
-{
-    return QApplication::translate("QtGui::FileLayoutPage", "File layout");
-}
-
 bool FileLayoutPage::apply()
 {
+    // error handling
+    errors().clear();
+    bool ok = true;
+
     if(hasBeenShown()) {
         Settings::forceRewrite() = ui()->forceRewriteCheckBox->isChecked();
         if(ui()->minPaddingSpinBox->value() > ui()->maxPaddingSpinBox->value()) {
-            return false;
+            errors() << QCoreApplication::translate("QtGui::FileLayoutPage", "Minimum padding must be less or equal than maximum padding.");
+            ok = false;
+        } else {
+            Settings::maxPadding() = static_cast<size_t>(ui()->maxPaddingSpinBox->value());
+            Settings::minPadding() = static_cast<size_t>(ui()->minPaddingSpinBox->value());
         }
-        Settings::maxPadding() = static_cast<size_t>(ui()->maxPaddingSpinBox->value());
-        Settings::minPadding() = static_cast<size_t>(ui()->minPaddingSpinBox->value());
         Settings::preferredPadding() = static_cast<size_t>(ui()->preferredPaddingSpinBox->value());
         if(ui()->tagPosBeforeDataRadioButton->isChecked()) {
             preferredTagPosition() = ElementPosition::BeforeData;
@@ -525,7 +486,7 @@ bool FileLayoutPage::apply()
         }
         forceIndexPosition() = ui()->indexPosForceCheckBox->isChecked();
     }
-    return true;
+    return ok;
 }
 
 void FileLayoutPage::reset()
@@ -564,7 +525,7 @@ void FileLayoutPage::reset()
 
 QWidget *FileLayoutPage::setupWidget()
 {
-    auto *widget = Dialogs::UiFileBasedOptionPage<Ui::FileLayoutPage>::setupWidget();
+    auto *widget = FileLayoutPageBase::setupWidget();
     ui()->preferredTagPosLabel->setNotificationType(NotificationType::Warning);
     ui()->preferredTagPosLabel->setText(QApplication::translate("QtGui::FileLayoutPage", "These options might be ignored if not supported by either the format or the implementation."));
     QObject::connect(ui()->minPaddingSpinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), ui()->maxPaddingSpinBox, &QSpinBox::setMinimum);
@@ -607,6 +568,9 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->setIcon(QIcon::fromTheme(QStringLiteral("view-list-tree"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/system-file-manager.png"))));
     category->assignPages(QList<Dialogs::OptionPage *>() << new FileBrowserGeneralOptionPage);
     categories << category;
+
+    categories <<  Dialogs::qtOptionCategory(this);
+
     categoryModel()->setCategories(categories);
 
     setMinimumSize(800, 450);
@@ -615,6 +579,5 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
 SettingsDialog::~SettingsDialog()
 {}
-
 
 }

@@ -2,8 +2,16 @@
 <ui version="4.0">
  <class>QtGui::TagProcessingGeneralOptionPage</class>
  <widget class="QWidget" name="QtGui::TagProcessingGeneralOptionPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>361</width>
+    <height>398</height>
+   </rect>
+  </property>
   <property name="windowTitle">
-   <string>General options page</string>
+   <string>General</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>
@@ -18,7 +26,7 @@
       <item>
        <widget class="QRadioButton" name="autoRadioButton">
         <property name="text">
-         <string>no preference (most appropriate encoding will be used)</string>
+         <string>&amp;no preference (most appropriate encoding will be used)</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">preferredTextEncodingButtonGroup</string>
@@ -28,7 +36,7 @@
       <item>
        <widget class="QRadioButton" name="latin1RadioButton">
         <property name="text">
-         <string>ISO 8859-1/Latin-1</string>
+         <string>ISO &amp;8859-1/Latin-1</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">preferredTextEncodingButtonGroup</string>
@@ -48,7 +56,7 @@
       <item>
        <widget class="QRadioButton" name="utf16leRadioButton">
         <property name="text">
-         <string>UTF-16 Little Endian</string>
+         <string>UTF-&amp;16 Little Endian</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">preferredTextEncodingButtonGroup</string>
@@ -58,7 +66,7 @@
       <item>
        <widget class="QRadioButton" name="utf16beRadioButton">
         <property name="text">
-         <string>UTF-16 Big Endian</string>
+         <string>UTF-1&amp;6 Big Endian</string>
         </property>
        </widget>
       </item>
@@ -74,7 +82,7 @@
       <item>
        <widget class="QRadioButton" name="ignoreUnsupportedRadioButton">
         <property name="text">
-         <string>Ignore them but keep them when saving</string>
+         <string>Ignore &amp;them but keep them when saving</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">unsupportedButtonGroup</string>
@@ -84,7 +92,7 @@
       <item>
        <widget class="QRadioButton" name="discardUnsupportedRadioButton">
         <property name="text">
-         <string>Discard them when saving</string>
+         <string>Dis&amp;card them when saving</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">unsupportedButtonGroup</string>

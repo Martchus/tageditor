@@ -24,197 +24,36 @@ class KnownFieldModel;
 
 namespace QtGui {
 
-// FileBrowserGeneralOptionPage
-namespace Ui {
-class FileBrowserGeneralOptionPage;
-}
+DECLARE_UI_FILE_BASED_OPTION_PAGE(FileBrowserGeneralOptionPage)
 
-class FileBrowserGeneralOptionPage : public Dialogs::UiFileBasedOptionPage<Ui::FileBrowserGeneralOptionPage>
-{
-public:
-    explicit FileBrowserGeneralOptionPage();
-    ~FileBrowserGeneralOptionPage();
+DECLARE_UI_FILE_BASED_OPTION_PAGE(EditorGeneralOptionPage)
 
-    QString displayName() const;
-    bool apply();
-    void reset();
-};
-
-// EditorGeneralOptionPage
-namespace Ui {
-class EditorGeneralOptionPage;
-}
-
-class EditorGeneralOptionPage : public Dialogs::UiFileBasedOptionPage<Ui::EditorGeneralOptionPage>
-{
-public:
-    explicit EditorGeneralOptionPage();
-    ~EditorGeneralOptionPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-};
-
-// EditorTempOptionPage
-namespace Ui {
-class EditorTempOptionPage;
-}
-
-class EditorTempOptionPage : public Dialogs::UiFileBasedOptionPage<Ui::EditorTempOptionPage>
-{
-public:
-    explicit EditorTempOptionPage(QWidget *parentWindow);
-    ~EditorTempOptionPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-
-protected:
-    QWidget *setupWidget();
-
-private:
+BEGIN_DECLARE_UI_FILE_BASED_OPTION_PAGE(EditorTempOptionPage)
+    DECLARE_SETUP_WIDGETS
     void showDirectorySelection();
-};
+END_DECLARE_OPTION_PAGE
 
-// EditorFieldsOptionPage
-namespace Ui {
-class EditorFieldsOptionPage;
-}
-
-class EditorFieldsOptionPage : public Dialogs::UiFileBasedOptionPage<Ui::EditorFieldsOptionPage>
-{
-public:
-    explicit EditorFieldsOptionPage();
-    ~EditorFieldsOptionPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-private:
-    QWidget *setupWidget();
+BEGIN_DECLARE_UI_FILE_BASED_OPTION_PAGE(EditorFieldsOptionPage)
+    DECLARE_SETUP_WIDGETS
     Settings::KnownFieldModel *m_model;
-};
+END_DECLARE_OPTION_PAGE
 
-// EditorAutoCorrectionOptionPage
-namespace Ui {
-class EditorAutoCorrectionOptionPage;
-}
-
-class EditorAutoCorrectionOptionPage : public Dialogs::UiFileBasedOptionPage<Ui::EditorAutoCorrectionOptionPage>
-{
-public:
-    explicit EditorAutoCorrectionOptionPage();
-    ~EditorAutoCorrectionOptionPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-private:
-    QWidget *setupWidget();
+BEGIN_DECLARE_UI_FILE_BASED_OPTION_PAGE(EditorAutoCorrectionOptionPage)
+    DECLARE_SETUP_WIDGETS
     Settings::KnownFieldModel *m_model;
-};
+END_DECLARE_OPTION_PAGE
 
-// EditorDbQueryOptionPage
-namespace Ui {
-class EditorDbQueryOptionsPage;
-}
+DECLARE_UI_FILE_BASED_OPTION_PAGE(EditorDbQueryOptionsPage)
 
-class EditorDbQueryOptionsPage : public Dialogs::UiFileBasedOptionPage<Ui::EditorDbQueryOptionsPage>
-{
-public:
-    explicit EditorDbQueryOptionsPage();
-    ~EditorDbQueryOptionsPage();
+DECLARE_UI_FILE_BASED_OPTION_PAGE(InfoOptionPage)
 
-    QString displayName() const;
-    bool apply();
-    void reset();
-};
+DECLARE_UI_FILE_BASED_OPTION_PAGE(TagProcessingGeneralOptionPage)
 
-// EditorInfoOptionPage
-namespace Ui {
-class InfoOptionPage;
-}
+DECLARE_UI_FILE_BASED_OPTION_PAGE(Id3v1OptionPage)
 
-class InfoOptionPage : public Dialogs::UiFileBasedOptionPage<Ui::InfoOptionPage>
-{
-public:
-    explicit InfoOptionPage();
-    ~InfoOptionPage();
+DECLARE_UI_FILE_BASED_OPTION_PAGE(Id3v2OptionPage)
 
-    QString displayName() const;
-    bool apply();
-    void reset();
-};
-
-
-// TagProcessingGeneralOptionPage
-namespace Ui {
-class TagProcessingGeneralOptionPage;
-}
-
-class TagProcessingGeneralOptionPage : public Dialogs::UiFileBasedOptionPage<Ui::TagProcessingGeneralOptionPage>
-{
-public:
-    explicit TagProcessingGeneralOptionPage();
-    ~TagProcessingGeneralOptionPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-};
-
-// Id3v1OptionPage
-namespace Ui {
-class Id3v1OptionPage;
-}
-
-class Id3v1OptionPage : public Dialogs::UiFileBasedOptionPage<Ui::Id3v1OptionPage>
-{
-public:
-    explicit Id3v1OptionPage();
-    ~Id3v1OptionPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-};
-
-// Id3v2OptionPage
-namespace Ui {
-class Id3v2OptionPage;
-}
-
-class Id3v2OptionPage : public Dialogs::UiFileBasedOptionPage<Ui::Id3v2OptionPage>
-{    
-public:
-    explicit Id3v2OptionPage();
-    ~Id3v2OptionPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-};
-
-// FileLayoutPage
-namespace Ui {
-class FileLayoutPage;
-}
-
-class FileLayoutPage : public Dialogs::UiFileBasedOptionPage<Ui::FileLayoutPage>
-{
-public:
-    explicit FileLayoutPage();
-    ~FileLayoutPage();
-
-    QString displayName() const;
-    bool apply();
-    void reset();
-
-private:
-    QWidget *setupWidget();
-};
+DECLARE_UI_FILE_BASED_OPTION_PAGE_CUSTOM_SETUP(FileLayoutPage)
 
 class SettingsDialog : public Dialogs::SettingsDialog
 {
@@ -222,7 +61,6 @@ class SettingsDialog : public Dialogs::SettingsDialog
 public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
-
 };
 
 }
