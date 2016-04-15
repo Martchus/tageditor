@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Renaming utility (Tag Editor)
-GenericName=Renaming utility (Tag Editor)
-Comment=Tool to rename files using tag information.
-Exec=tageditor qt-gui --renaming-utility
-Icon=tageditor
-Terminal=false
-Type=Application
-Categories=Utility;Audio;Video;
