@@ -22,6 +22,10 @@ namespace Settings {
 class KnownFieldModel;
 }
 
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE(QtAppearanceOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE(QtLanguageOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE(QtEnvOptionPage)
+
 namespace QtGui {
 
 DECLARE_UI_FILE_BASED_OPTION_PAGE(FileBrowserGeneralOptionPage)
