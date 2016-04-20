@@ -31,7 +31,7 @@ Taking advantage of padding is currently not supported when dealing with Ogg str
 
 ## Download / repository
 I currently provide packages for Arch Linux and Windows. For more information checkout my
-[website](http://martchus.netai.net/page.php?name=programming).
+[website](http://martchus.no-ip.biz/website/page.php?name=programming).
 
 ## Usage
 The Tag Editor has a GUI (Qt 5) and a command line interface.
@@ -116,13 +116,12 @@ Here are some Bash examples which illustrate getting and setting tag information
 The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries
 which are also available on my GitHub profile.
 
-The following Qt 5 modules are requried: core gui qml/script widgets webenginewidgets/webkitwidgets
+The following Qt 5 modules are requried: core concurrent gui network declarative/script widgets webenginewidgets/webkitwidgets
 
 * If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against Qt QML.
-  To force usage of Qt QML add "CONFIG+=forcejsengine" to the qmake arguments.
+* To force usage of Qt Script/Qt QML add `-DJS_PROVIDER=script/qml` to the cmake arguments.
 * If Qt WebKitWidgets is installed on the system, the editor will link against it. Otherwise it will link against Qt WebEngineWidgets.
-  To force usage of Qt WebEngineWidgets add "CONFIG+=forcewebengine" to the qmake arguments.
-* When building with CMake the Qt modules can be selected explicitely by specifying -DWEBVIEW_PROVIDER=webkit/webengine and/or -DJS_PROVIDER=script/qml.
+* To force usage of Qt WebKit/Qt WebEngine add `-DWEBVIEW_PROVIDER=webkit/webengine` to the cmake arguments.
 
 ## TODO
 - Support more formats (EXIF, PDF metadata, Theora, ...).
