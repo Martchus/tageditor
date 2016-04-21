@@ -45,6 +45,13 @@ bool &forceFullParse()
     static bool v = false;
     return v;
 }
+#ifndef TAGEDITOR_NO_WEBVIEW
+bool &noWebView()
+{
+    static bool v = false;
+    return v;
+}
+#endif
 
 // file browser
 bool &hideBackupFiles()
@@ -308,6 +315,9 @@ void restore()
 
     settings.beginGroup(QStringLiteral("info"));
     Settings::forceFullParse() = settings.value(QStringLiteral("forcefullparse"), false).toBool();
+#ifndef TAGEDITOR_NO_WEBVIEW
+    Settings::noWebView() = settings.value(QStringLiteral("nowebview"), false).toBool();
+#endif
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("filebrowser"));
@@ -436,6 +446,9 @@ void save()
 
     settings.beginGroup(QStringLiteral("info"));
     settings.setValue(QStringLiteral("forcefullparse"), Settings::forceFullParse());
+#ifndef TAGEDITOR_NO_WEBVIEW
+    settings.setValue(QStringLiteral("nowebview"), Settings::noWebView());
+#endif
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("filebrowser"));

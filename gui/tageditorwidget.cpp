@@ -78,7 +78,7 @@ enum LoadingResult : char
  */
 TagEditorWidget::TagEditorWidget(QWidget *parent) :
     QWidget(parent),
-    m_ui(new Ui::TagEditorWidget()),
+    m_ui(new Ui::TagEditorWidget),
     m_nextFileAfterSaving(false),
     m_makingResultsAvailable(false),
     m_abortClicked(false)
@@ -86,14 +86,8 @@ TagEditorWidget::TagEditorWidget(QWidget *parent) :
     // setup UI
     m_ui->setupUi(this);
     makeHeading(m_ui->fileNameLabel);
-    // setup web view
-#ifndef TAGEDITOR_NO_WEBVIEW
-    m_infoWebView = new WEB_VIEW_PROVIDER(m_ui->tagSplitter);
-    m_infoWebView->setAcceptDrops(false);
-    m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &TagEditorWidget::showInfoWebViewContextMenu);
-    m_ui->tagSplitter->addWidget(m_infoWebView);
-#endif
+    // setup (web) view
+    initInfoView();
     // setup file watcher
     m_fileWatcher = new QFileSystemWatcher(this);
     m_fileChangedOnDisk = false;
@@ -193,7 +187,7 @@ bool TagEditorWidget::event(QEvent *event)
 {
     switch(event->type()) {
     case QEvent::PaletteChange:
-        updateInfoWebView();
+        updateInfoView();
         break;
     case QEvent::DragEnter:
     case QEvent::Drop: {
@@ -446,7 +440,9 @@ void TagEditorWidget::updateFileStatusStatus()
     m_ui->stackedWidget->setEnabled(hasTag);
     // webview
 #ifndef TAGEDITOR_NO_WEBVIEW
-    m_infoWebView->setEnabled(opened);
+    if(m_infoWebView) {
+        m_infoWebView->setEnabled(opened);
+    }
 #endif
     // inform the main window about the file status change as well
     emit fileStatusChange(opened, hasTag);
@@ -542,22 +538,41 @@ void TagEditorWidget::insertTitleFromFilename()
     }
 }
 
-/*!
- * \brief Updates the info web view to show information about the
- *        currently opened file.
- */
-void TagEditorWidget::updateInfoWebView()
+void TagEditorWidget::initInfoView()
 {
 #ifndef TAGEDITOR_NO_WEBVIEW
-    if(m_fileInfo.isOpen()) {
-        m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
-        m_infoWebView->setContent(m_fileInfoHtml, QStringLiteral("application/xhtml+xml"));
-    } else {
-        m_infoWebView->setUrl(QStringLiteral("about:blank"));
+    if(!Settings::noWebView() && !m_infoWebView) {
+        m_infoWebView = new WEB_VIEW_PROVIDER(m_ui->tagSplitter);
+        m_infoWebView->setAcceptDrops(false);
+        m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &TagEditorWidget::showInfoWebViewContextMenu);
+        m_ui->tagSplitter->addWidget(m_infoWebView);
+    } else if(Settings::noWebView() && m_infoWebView) {
+        m_infoWebView->deleteLater();
+        m_infoWebView = nullptr;
     }
 #endif
 }
 
+/*!
+ * \brief Updates the info web view to show information about the
+ *        currently opened file.
+ */
+void TagEditorWidget::updateInfoView()
+{
+#ifndef TAGEDITOR_NO_WEBVIEW
+    if(m_infoWebView) {
+        if(m_fileInfo.isOpen()) {
+            m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
+            m_infoWebView->setContent(m_fileInfoHtml, QStringLiteral("application/xhtml+xml"));
+        } else {
+            m_infoWebView->setUrl(QStringLiteral("about:blank"));
+        }
+    }
+#endif
+}
+
+#ifndef TAGEDITOR_NO_WEBVIEW
 /*!
  * \brief Shows the context menu for the info web view.
  */
@@ -578,6 +593,7 @@ void TagEditorWidget::copyInfoWebViewSelection()
 {
     QApplication::clipboard()->setText(m_infoWebView->selectedText());
 }
+#endif
 
 /*!
  * \brief Calls the specified \a function for each of the currently present tag edits.
@@ -719,7 +735,7 @@ void TagEditorWidget::showFile(char result)
         emit statusMessage(statusMsg);
     } else {
         // update webview
-        updateInfoWebView();
+        updateInfoView();
         // show parsing status/result using parsing notification widget
         auto worstNotificationType = m_fileInfo.worstNotificationTypeIncludingRelatedObjects();
         if(worstNotificationType >= Media::NotificationType::Critical) {
@@ -1131,6 +1147,9 @@ void TagEditorWidget::applySettingsFromDialog()
         break;
     }
     m_ui->actionManage_tags_automatically_when_loading_file->setChecked(Settings::autoTagManagement());
+    // ensure info view is displayed/not displayed according to settings
+    initInfoView();
+    updateInfoView();
 }
 
 /*!

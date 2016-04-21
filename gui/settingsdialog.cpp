@@ -265,6 +265,9 @@ bool InfoOptionPage::apply()
 {
     if(hasBeenShown()) {
         Settings::forceFullParse() = ui()->forceFullParseCheckBox->isChecked();
+#ifndef TAGEDITOR_NO_WEBVIEW
+        Settings::noWebView() = ui()->noWebViewCheckBox->isChecked();
+#endif
     }
     return true;
 }
@@ -273,6 +276,12 @@ void InfoOptionPage::reset()
 {
     if(hasBeenShown()) {
         ui()->forceFullParseCheckBox->setChecked(Settings::forceFullParse());
+#ifdef TAGEDITOR_NO_WEBVIEW
+        ui()->noWebViewCheckBox->setChecked(true);
+        ui()->noWebViewCheckBox->setEnabled(false);
+#else
+        ui()->noWebViewCheckBox->setChecked(Settings::noWebView());
+#endif
     }
 }
 

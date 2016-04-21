@@ -12,11 +12,12 @@
 #include <functional>
 
 #if defined(TAGEDITOR_NO_WEBVIEW)
-# error "not supported (yet)."
 #elif defined(TAGEDITOR_USE_WEBENGINE)
 # define WEB_VIEW_PROVIDER QWebEngineView
-#else
+#elif defined(TAGEDITOR_USE_WEBKIT)
 # define WEB_VIEW_PROVIDER QWebView
+#else
+# error "Macro for WebView provider not specified."
 #endif
 
 QT_FORWARD_DECLARE_CLASS(QFileSystemWatcher)
@@ -53,6 +54,7 @@ public:
     QMutex &fileOperationMutex();
     const QString &currentPath() const;
     Media::MediaFileInfo &fileInfo();
+    Media::NotificationList &originalNotifications();
     bool isTagEditShown() const;
     const QByteArray &fileInfoHtml() const;
     bool isFileNameVisible() const;
@@ -110,10 +112,13 @@ private slots:
     // saving
     void showSavingResult(bool processingError, bool ioError);
 
-    // web view
-    void updateInfoWebView();
+    // info (web) view
+    void initInfoView();
+    void updateInfoView();
+#ifndef TAGEDITOR_NO_WEBVIEW
     void showInfoWebViewContextMenu(const QPoint &);
     void copyInfoWebViewSelection();
+#endif
 
 private:
     void updateDocumentTitleEdits();
@@ -131,7 +136,9 @@ private:
     QMenu *m_addTagMenu;
     QMenu *m_removeTagMenu;
     QMenu *m_changeTargetMenu;
+#ifndef TAGEDITOR_NO_WEBVIEW
     WEB_VIEW_PROVIDER *m_infoWebView;
+#endif
     // tag, file, directory management
     QString m_currentPath;
     QFileSystemWatcher *m_fileWatcher;
@@ -174,6 +181,14 @@ inline const QString &TagEditorWidget::currentPath() const
 inline Media::MediaFileInfo &TagEditorWidget::fileInfo()
 {
     return m_fileInfo;
+}
+
+/*!
+ * \brief Returns the original notifications.
+ */
+inline Media::NotificationList &TagEditorWidget::originalNotifications()
+{
+    return m_originalNotifications;
 }
 
 /*!

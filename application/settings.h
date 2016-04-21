@@ -43,6 +43,9 @@ enum class MultipleTagHandling
 MultipleTagHandling &multipleTagHandling();
 bool &hideTagSelectionComboBox();
 bool &forceFullParse();
+#ifndef TAGEDITOR_NO_WEBVIEW
+bool &noWebView();
+#endif
 
 // file browser
 bool &hideBackupFiles();

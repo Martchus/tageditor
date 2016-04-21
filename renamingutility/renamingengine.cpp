@@ -18,8 +18,10 @@ namespace RenamingUtility {
 
 RemamingEngine::RemamingEngine(QObject *parent) :
     QObject(parent),
+#ifndef TAGEDITOR_NO_JSENGINE
     m_tagEditorQObj(new TagEditorObject(&m_engine)),
     m_tagEditorJsObj(TAGEDITOR_JS_QOBJECT(m_engine, m_tagEditorQObj)),
+#endif
     m_itemsProcessed(0),
     m_errorsOccured(0),
     m_aborted(false),
@@ -28,11 +30,14 @@ RemamingEngine::RemamingEngine(QObject *parent) :
     m_currentModel(nullptr),
     m_previewModel(nullptr)
 {
+#ifndef TAGEDITOR_NO_JSENGINE
     m_engine.globalObject().setProperty(QStringLiteral("tageditor"), m_tagEditorJsObj);
+#endif
     connect(this, &RemamingEngine::previewGenerated, this, &RemamingEngine::processPreviewGenerated);
     connect(this, &RemamingEngine::changingsApplied, this, &RemamingEngine::processChangingsApplied);
 }
 
+#ifndef TAGEDITOR_NO_JSENGINE
 bool RemamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
 {
     if(TAGEDITOR_JS_IS_VALID_PROG(program)) {
@@ -49,14 +54,22 @@ bool RemamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
     }
     return false;
 }
+#endif
 
 bool RemamingEngine::setProgram(const QString &program)
 {
+#ifndef TAGEDITOR_NO_JSENGINE
     return setProgram(m_engine.evaluate(QStringLiteral("(function(){") % program % QStringLiteral("})")));
+#else
+    m_errorLineNumber = 0;
+    m_errorMessage = tr("Not compiled with ECMA support.");
+    return false;
+#endif
 }
 
 bool RemamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubdirs)
 {
+#ifndef TAGEDITOR_NO_JSENGINE
     TryLocker<> locker(m_mutex);
     if(locker) {
         setRootItem();
@@ -76,6 +89,9 @@ bool RemamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubd
     } else {
         return false;
     }
+#else
+    return false;
+#endif
 }
 
 bool RemamingEngine::applyChangings()
@@ -183,6 +199,7 @@ void RemamingEngine::updateModel(FileSystemItem *rootItem)
     }
 }
 
+#ifndef TAGEDITOR_NO_JSENGINE
 unique_ptr<FileSystemItem> RemamingEngine::generatePreview(const QDir &dir, FileSystemItem *parent)
 {
     auto item = make_unique<FileSystemItem>(ItemStatus::Current, ItemType::Dir, dir.dirName(), parent);
@@ -215,6 +232,7 @@ unique_ptr<FileSystemItem> RemamingEngine::generatePreview(const QDir &dir, File
     emit progress(m_itemsProcessed, m_errorsOccured);
     return item;
 }
+#endif
 
 void RemamingEngine::applyChangings(FileSystemItem *parentItem)
 {
@@ -298,6 +316,7 @@ void RemamingEngine::setError(const QList<FileSystemItem *> items)
     }
 }
 
+#ifndef TAGEDITOR_NO_JSENGINE
 void RemamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemItem *item)
 {
     // make file info for the specified item available in the script
@@ -359,5 +378,6 @@ void RemamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         }
     }
 }
+#endif
 
 } // namespace RenamingUtility

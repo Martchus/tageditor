@@ -3,7 +3,7 @@
 
 #include <QtGlobal>
 
-#if TAGEDITOR_USE_JSENGINE
+#if defined(TAGEDITOR_USE_JSENGINE)
 # define TAGEDITOR_JS_ENGINE QJSEngine
 # define TAGEDITOR_JS_VALUE QJSValue
 # define TAGEDITOR_JS_READONLY
@@ -13,7 +13,7 @@
 # define TAGEDITOR_JS_IS_VALID_PROG(program) (!program.isError() && program.isCallable())
 QT_FORWARD_DECLARE_CLASS(QJSValue)
 QT_FORWARD_DECLARE_CLASS(QJSEngine)
-#else
+#elif defined(TAGEDITOR_USE_SCRIPT)
 # define TAGEDITOR_JS_ENGINE QScriptEngine
 # define TAGEDITOR_JS_VALUE QScriptValue
 # define TAGEDITOR_JS_READONLY ,QScriptValue::ReadOnly

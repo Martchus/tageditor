@@ -39,7 +39,7 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    virtual ~MainWindow();
+    ~MainWindow();
 
     // file browser
     QString currentDirectory();

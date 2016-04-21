@@ -1,12 +1,14 @@
 #ifndef RENAMINGUTILITY_SCRIPTFUNCTIONS_H
 #define RENAMINGUTILITY_SCRIPTFUNCTIONS_H
 
+#ifndef TAGEDITOR_NO_JSENGINE
+
 #include "./scriptdefs.h"
 
 #include <QObject>
-#ifdef TAGEDITOR_USE_JSENGINE
+#if defined(TAGEDITOR_USE_JSENGINE)
 # include <QJSValue>
-#else
+#elif defined(TAGEDITOR_USE_SCRIPT)
 # include <QScriptValue>
 #endif
 
@@ -72,4 +74,5 @@ inline ActionType TagEditorObject::action() const
 
 } // namespace RenamingUtility
 
+#endif // TAGEDITOR_NO_JSENGINE
 #endif // RENAMINGUTILITY_SCRIPTFUNCTIONS_H

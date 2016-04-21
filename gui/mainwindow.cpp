@@ -6,6 +6,9 @@
 
 #include "../application/settings.h"
 #include "../misc/utility.h"
+#ifdef TAGEDITOR_NO_WEBVIEW
+# include "../misc/htmlinfo.h"
+#endif
 
 #include "ui_mainwindow.h"
 
@@ -440,23 +443,33 @@ void MainWindow::saveFileInformation()
 {
     TryLocker<> locker(fileOperationMutex());
     if(locker) {
-        if(fileInfo().isOpen() && m_ui->tagEditorWidget->fileInfoHtml().size()) {
-            const QString path = QFileDialog::getSaveFileName(this, windowTitle());
-            if(!path.isEmpty()) {
-                QFile file(path);
-                if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-                    QTextStream stream(&file);
-                    stream << m_ui->tagEditorWidget->fileInfoHtml();
-                    file.close();
-                    if(file.error() != QFileDevice::NoError) {
-                        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file.\n%1").arg(file.errorString()));
+        if(fileInfo().isOpen()) {
+            const QByteArray &htmlData =
+        #ifndef TAGEDITOR_NO_WEBVIEW
+                    !Settings::noWebView() ?
+                        m_ui->tagEditorWidget->fileInfoHtml().size() :
+            #endif
+                        HtmlInfo::generateInfo(fileInfo(), m_ui->tagEditorWidget->originalNotifications());
+            if(!htmlData.isEmpty()) {
+                const QString path = QFileDialog::getSaveFileName(this, windowTitle());
+                if(!path.isEmpty()) {
+                    QFile file(path);
+                    if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+                        QTextStream stream(&file);
+                        stream << htmlData;
+                        file.close();
+                        if(file.error() != QFileDevice::NoError) {
+                            QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file.\n%1").arg(file.errorString()));
+                        }
+                    } else {
+                        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
                     }
-                } else {
-                    QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
                 }
+            } else {
+                QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
             }
         } else {
-            QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
+            QMessageBox::information(this, QApplication::applicationName(), tr("No file is opened."));
         }
     } else {
         m_ui->statusBar->showMessage(tr("Unable to save file information because the current process hasn't been finished yet."));

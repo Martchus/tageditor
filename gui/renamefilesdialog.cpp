@@ -165,8 +165,12 @@ void RenameFilesDialog::startGeneratingPreview()
                     m_engine->generatePreview(directory(), m_ui->includeSubdirsCheckBox->isChecked());
                 } else {
                     m_engine->clearPreview();
-                    m_ui->notificationLabel->setText(tr("The script is not valid.\nError in line %1: %3")
-                                                    .arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
+                    if(m_engine->errorLineNumber()) {
+                        m_ui->notificationLabel->setText(tr("The script is not valid.\nError in line %1: %3")
+                                                        .arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
+                    } else {
+                        m_ui->notificationLabel->setText(tr("An error occured when parsing the script: %1").arg(m_engine->errorMessage()));
+                    }
                     m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
                 }
             } else {

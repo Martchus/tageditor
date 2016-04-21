@@ -9,10 +9,10 @@
 #include <QDir>
 #include <QMutex>
 #include <QAtomicInteger>
-#if TAGEDITOR_USE_JSENGINE
+#if defined(TAGEDITOR_USE_JSENGINE)
 # include <QJSEngine>
 # include <QJSValue>
-#else
+#elif defined(TAGEDITOR_USE_SCRIPT)
 # include <QScriptEngine>
 # include <QScriptValue>
 #endif
@@ -35,8 +35,10 @@ public:
     RemamingEngine(QObject *parent = nullptr);
 
     FileSystemItem *rootItem() const;
+#ifndef TAGEDITOR_NO_JSENGINE
     const TAGEDITOR_JS_VALUE &scriptProgram() const;
     bool setProgram(const TAGEDITOR_JS_VALUE &program);
+#endif
     bool setProgram(const QString &program);
     const QDir &rootDirectory() const;
     bool subdirsIncluded() const;
@@ -66,20 +68,28 @@ private slots:
 private:
     void setRootItem(std::unique_ptr<FileSystemItem> &&rootItem = std::unique_ptr<FileSystemItem>());
     void updateModel(FileSystemItem *rootItem);
+#ifndef TAGEDITOR_NO_JSENGINE
     std::unique_ptr<FileSystemItem> generatePreview(const QDir &dir, FileSystemItem *parent = nullptr);
+#endif
     void applyChangings(FileSystemItem *parentItem);
     static void setError(const QList<FileSystemItem *> items);
+#ifndef TAGEDITOR_NO_JSENGINE
     void executeScriptForItem(const QFileInfo &fileInfo, FileSystemItem *item);
+#endif
 
+#ifndef TAGEDITOR_NO_JSENGINE
     TagEditorObject *m_tagEditorQObj;
     TAGEDITOR_JS_ENGINE m_engine;
     TAGEDITOR_JS_VALUE m_tagEditorJsObj;
+#endif
     std::unique_ptr<FileSystemItem> m_rootItem;
     std::unique_ptr<FileSystemItem> m_newlyGeneratedRootItem;
     int m_itemsProcessed;
     int m_errorsOccured;
     QAtomicInteger<unsigned char> m_aborted;
+#ifndef TAGEDITOR_NO_JSENGINE
     TAGEDITOR_JS_VALUE m_program;
+#endif
     QDir m_dir;
     bool m_includeSubdirs;
     QMutex m_mutex;
@@ -95,10 +105,12 @@ inline FileSystemItem *RemamingEngine::rootItem() const
     return m_rootItem.get();
 }
 
+#ifndef TAGEDITOR_NO_JSENGINE
 inline const TAGEDITOR_JS_VALUE &RemamingEngine::scriptProgram() const
 {
     return m_program;
 }
+#endif
 
 inline const QDir &RemamingEngine::rootDirectory() const
 {

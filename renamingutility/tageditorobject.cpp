@@ -1,3 +1,5 @@
+#ifndef TAGEDITOR_NO_JSENGINE
+
 #include "./tageditorobject.h"
 #include "./filesystemitem.h"
 
@@ -12,10 +14,10 @@
 
 #include <QDir>
 
-#ifdef TAGEDITOR_USE_JSENGINE
+#if defined(TAGEDITOR_USE_JSENGINE)
 # include <QJSEngine>
 # include <QJSValue>
-#else
+#elif defined(TAGEDITOR_USE_SCRIPT)
 # include <QScriptEngine>
 # include <QScriptValue>
 #endif
@@ -248,3 +250,5 @@ void TagEditorObject::skip()
 }
 
 } // namespace RenamingUtility
+
+#endif

@@ -43,8 +43,8 @@ private slots:
     void showPreviewProgress(int itemsProcessed, int errorsOccured);
     void showPreviewResults();
     void showChangsingsResults();
-    void currentItemSelected(const QItemSelection & selected, const QItemSelection & deselected);
-    void previewItemSelected(const QItemSelection & selected, const QItemSelection & deselected);
+    void currentItemSelected(const QItemSelection &selected, const QItemSelection &deselected);
+    void previewItemSelected(const QItemSelection &selected, const QItemSelection &deselected);
     void pasteScriptFromFile(const QString &fileName);
     void pasteScriptFromClipboard();
     void pasteDefaultExampleScript();
