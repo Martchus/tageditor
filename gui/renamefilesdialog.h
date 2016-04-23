@@ -36,7 +36,6 @@ protected:
     bool event(QEvent *event);
 
 private slots:
-    void showDirectorySelectionDlg();
     void showScriptFileSelectionDlg();
     void startGeneratingPreview();
     void startApplyChangings();

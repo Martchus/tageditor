@@ -61,7 +61,6 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     m_ui->pasteScriptPushButton->setMenu(pasteScriptButtonMenu);
 
     // setup icons
-    m_ui->selectDirectoryPushButton->setIcon(style()->standardIcon(QStyle::SP_DirOpenIcon, nullptr, m_ui->selectDirectoryPushButton));
     m_ui->generatePreviewPushButton->setIcon(style()->standardIcon(QStyle::SP_BrowserReload, nullptr, m_ui->generatePreviewPushButton));
     m_ui->applyChangingsPushButton->setIcon(style()->standardIcon(QStyle::SP_DialogApplyButton, nullptr, m_ui->applyChangingsPushButton));
     m_ui->applyChangingsPushButton->setEnabled(false);
@@ -74,7 +73,6 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     m_ui->scriptFilePathLineEdit->setText(Settings::externalScript());
 
     // connect signals and slots
-    connect(m_ui->selectDirectoryPushButton, &QPushButton::clicked, this, &RenameFilesDialog::showDirectorySelectionDlg);
     connect(m_ui->generatePreviewPushButton, &QPushButton::clicked, this, &RenameFilesDialog::startGeneratingPreview);
     connect(m_ui->applyChangingsPushButton, &QPushButton::clicked, this, &RenameFilesDialog::startApplyChangings);
     connect(m_ui->abortClosePushButton, &QPushButton::clicked, this, &RenameFilesDialog::abortClose);
@@ -94,12 +92,12 @@ RenameFilesDialog::~RenameFilesDialog()
 
 QString RenameFilesDialog::directory() const
 {
-    return m_ui->directoryLineEdit->text();
+    return m_ui->directoryWidget->lineEdit()->text();
 }
 
 void RenameFilesDialog::setDirectory(const QString &directory)
 {
-    m_ui->directoryLineEdit->setText(directory);
+    m_ui->directoryWidget->lineEdit()->setText(directory);
 }
 
 bool RenameFilesDialog::event(QEvent *event)
@@ -114,14 +112,6 @@ bool RenameFilesDialog::event(QEvent *event)
         ;
     }
     return QDialog::event(event);
-}
-
-void RenameFilesDialog::showDirectorySelectionDlg()
-{
-    QString dir = QFileDialog::getExistingDirectory(this, QApplication::applicationName(), m_ui->directoryLineEdit->text());
-    if(!dir.isEmpty()) {
-        setDirectory(dir);
-    }
 }
 
 void RenameFilesDialog::showScriptFileSelectionDlg()

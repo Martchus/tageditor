@@ -42,18 +42,7 @@
          </widget>
         </item>
         <item>
-         <widget class="PathLineEdit" name="directoryLineEdit"/>
-        </item>
-        <item>
-         <widget class="QPushButton" name="selectDirectoryPushButton">
-          <property name="text">
-           <string>Select</string>
-          </property>
-          <property name="icon">
-           <iconset theme="folder-open">
-            <normaloff>.</normaloff>.</iconset>
-          </property>
-         </widget>
+         <widget class="Widgets::PathSelection" name="directoryWidget" native="true"/>
         </item>
        </layout>
       </item>
@@ -750,6 +739,12 @@
    <class>CodeEdit</class>
    <extends>QPlainTextEdit</extends>
    <header>gui/codeedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>Widgets::PathSelection</class>
+   <extends>QWidget</extends>
+   <header location="global">qtutilities/widgets/pathselection.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>
