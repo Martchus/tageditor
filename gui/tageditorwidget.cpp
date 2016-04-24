@@ -573,6 +573,10 @@ void TagEditorWidget::initInfoView()
 #endif
         if(!m_infoTreeView) {
             m_infoTreeView = new QTreeView(this);
+            m_infoTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
+            m_infoTreeView->setSelectionBehavior(QAbstractItemView::SelectItems);
+            m_infoTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+            connect(m_infoTreeView, &QWidget::customContextMenuRequested, this, &TagEditorWidget::showInfoTreeViewContextMenu);
             m_ui->tagSplitter->addWidget(m_infoTreeView);
         }
         if(!m_infoModel) {
@@ -605,6 +609,34 @@ void TagEditorWidget::updateInfoView()
     }
 }
 
+void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &)
+{
+    QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
+    copyAction.setDisabled(m_infoTreeView->selectionModel()->selectedIndexes().isEmpty());
+    connect(&copyAction, &QAction::triggered, [this] {
+        const auto selection = m_infoTreeView->selectionModel()->selectedIndexes();
+        if(!selection.isEmpty()) {
+            QStringList text;
+            text.reserve(selection.size());
+            for(const QModelIndex &index : selection) {
+                text << index.data().toString();
+            }
+            QApplication::clipboard()->setText(text.join(QChar(' ')));
+            // TODO: improve copied text
+        }
+    });
+    QAction expandAllAction(QIcon::fromTheme(QStringLiteral("expand-menu-hover")), tr("Expand all"), nullptr);
+    connect(&expandAllAction, &QAction::triggered, m_infoTreeView, &QTreeView::expandAll);
+    QAction collapseAllAction(QIcon::fromTheme(QStringLiteral("collapse-menu-hover")), tr("Collapse all"), nullptr);
+    connect(&collapseAllAction, &QAction::triggered, m_infoTreeView, &QTreeView::collapseAll);
+    QMenu menu;
+    menu.addAction(&copyAction);
+    menu.addSeparator();
+    menu.addAction(&expandAllAction);
+    menu.addAction(&collapseAllAction);
+    menu.exec(QCursor::pos());
+}
+
 #ifndef TAGEDITOR_NO_WEBVIEW
 /*!
  * \brief Shows the context menu for the info web view.
@@ -613,18 +645,12 @@ void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &)
 {
     QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoWebView->selectedText().isEmpty());
-    connect(&copyAction, &QAction::triggered, this, &TagEditorWidget::copyInfoWebViewSelection);
+    connect(&copyAction, &QAction::triggered, [this] {
+        QApplication::clipboard()->setText(m_infoWebView->selectedText());
+    });
     QMenu menu;
     menu.addAction(&copyAction);
     menu.exec(QCursor::pos());
-}
-
-/*!
- * \brief Copies the current selection of the info web view.
- */
-void TagEditorWidget::copyInfoWebViewSelection()
-{
-    QApplication::clipboard()->setText(m_infoWebView->selectedText());
 }
 #endif
 

@@ -118,9 +118,9 @@ private slots:
     // info (web) view
     void initInfoView();
     void updateInfoView();
+    void showInfoTreeViewContextMenu(const QPoint &);
 #ifndef TAGEDITOR_NO_WEBVIEW
     void showInfoWebViewContextMenu(const QPoint &);
-    void copyInfoWebViewSelection();
 #endif
 
 private:

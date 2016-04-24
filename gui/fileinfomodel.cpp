@@ -151,8 +151,11 @@ template<class ElementType, bool isAdditional = false> void addElementNode(Eleme
             auto *firstItem = defaultItem(QString::fromLatin1(element->idToString().data()));
             parent->appendRow(QList<QStandardItem *>()
                               << firstItem
-                              << defaultItem(QStringLiteral("offset: 0x") + QString::number(element->startOffset(), 16))
-                              << defaultItem(QStringLiteral("size: 0x") + QString::number(element->totalSize(), 16)));
+                              << defaultItem(
+                                  QStringLiteral("offset: 0x")
+                                  % QString::number(element->startOffset(), 16)
+                                  % QStringLiteral(", size: 0x")
+                                  % QString::number(element->totalSize(), 16)));
             if(element->firstChild()) {
                 addElementNode(element->firstChild(), firstItem);
             }
@@ -198,11 +201,9 @@ QVariant FileInfoModel::headerData(int section, Qt::Orientation orientation, int
         case Qt::DisplayRole:
             switch(section) {
             case 0:
-                tr("Property");
-                break;
+                return tr("Property");
             case 1:
-                tr("Value");
-                break;
+                return tr("Value");
             default:
                 ;
             }
