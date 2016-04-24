@@ -132,7 +132,7 @@ QWidget *EditorTempOptionPage::setupWidget()
 {
     auto *widget = EditorTempOptionPageBase::setupWidget();
     QObject::connect(ui()->selectPushButton, &QPushButton::clicked, std::bind(&EditorTempOptionPage::showDirectorySelection, this));
-    ui()->notificationLabel->setText(QApplication::tr("Currently this directory must be on the same partition as the files you want to edit."));
+    ui()->notificationLabel->setText(QCoreApplication::translate("QtGui::EditorTempOptionPage", "Currently this directory must be on the same partition as the files you want to edit."));
     ui()->notificationLabel->setNotificationType(NotificationType::Information);
     return widget;
 }
@@ -142,7 +142,7 @@ void EditorTempOptionPage::showDirectorySelection()
     QFileDialog dlg(parentWindow());
     dlg.setModal(true);
     dlg.setFileMode(QFileDialog::DirectoryOnly);
-    dlg.setWindowTitle(QApplication::translate("QtGui::EditorTempOptionPage", "Select directory to store temporary files"));
+    dlg.setWindowTitle(QCoreApplication::translate("QtGui::EditorTempOptionPage", "Select directory to store temporary files"));
     dlg.setDirectory(ui()->pathLineEdit->text());
     if(dlg.exec() == QFileDialog::Accepted && dlg.selectedFiles().size() == 1) {
         ui()->pathLineEdit->setText(dlg.selectedFiles().front());

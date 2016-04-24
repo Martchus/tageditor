@@ -17,17 +17,17 @@
 #include <c++utilities/conversion/stringconversion.h>
 
 #if defined(GUI_QTWIDGETS)
-#include <QApplication>
-#include <QStyle>
+# include <QApplication>
+# include <QStyle>
 #elif defined(GUI_QTQUICK)
-#include <QGuiApplication>
+# include <QGuiApplication>
 #elif !defined(GUI_NONE)
-#define GUI_NONE
+# define GUI_NONE
 #endif
 #ifndef GUI_NONE
-#include <QFont>
-#include <QFontMetrics>
-#include <QIcon>
+# include <QFont>
+# include <QFontMetrics>
+# include <QIcon>
 #endif
 #include <QString>
 #include <QStringBuilder>
@@ -36,7 +36,7 @@
 #include <QByteArray>
 #include <QXmlStreamWriter>
 #ifdef QT_DEBUG
-#include <QFile>
+# include <QFile>
 #endif
 
 #include <list>
@@ -512,8 +512,7 @@ public:
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Type"), qstr(track->mediaTypeName()));
         const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format"), QCoreApplication::translate("HtmlInfo", "The unabbreviated name of the track's format."), qstr(fmtName));
-        if(strcmp(fmtName, fmtAbbr)) {
-            // format name and abbreviation differ
+        if(strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr));
         }
         if(track->version()) {
@@ -579,7 +578,7 @@ public:
         if(!track->displaySize().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Display size"), qstr(track->displaySize().toString()));
         }
-        if(!track->pixelAspectRatio().isValid()) {
+        if(track->pixelAspectRatio().isValid()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Pixel Aspect Ratio"), QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ") % QString::number(track->pixelAspectRatio().denominator));
         }
         if(!track->cropping().isNull()) {
@@ -606,27 +605,27 @@ public:
         if(track->chromaFormat()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chroma format"), qstr(track->chromaFormat()));
         }
-        list<string> labels;
+        QStringList labels;
         if(track->isInterlaced()) {
-            labels.push_back("interlaced");
+            labels << QCoreApplication::translate("HtmlInfo", "interlaced");
         }
         if(!track->isEnabled()) {
-            labels.push_back("disabled");
+            labels << QCoreApplication::translate("HtmlInfo", "disabled");
         }
         if(track->isDefault()) {
-            labels.push_back("default");
+            labels << QCoreApplication::translate("HtmlInfo", "default");
         }
         if(track->isForced()) {
-            labels.push_back("forced");
+            labels << QCoreApplication::translate("HtmlInfo", "forced");
         }
         if(track->hasLacing()) {
-            labels.push_back("has lacing");
+            labels << QCoreApplication::translate("HtmlInfo", "has lacing");
         }
         if(track->isEncrypted()) {
-            labels.push_back("encrypted");
+            labels << QCoreApplication::translate("HtmlInfo", "encrypted");
         }
-        if(labels.size()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), qstr(joinStrings(labels, ", ")));
+        if(!labels.isEmpty()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), labels.join(QStringLiteral(", ")));
         }
         rowMaker.endSubTab();
     }
@@ -662,26 +661,26 @@ public:
         }
         for(const LocaleAwareString &name : chapter.names()) {
             static const string delim(", ");
-            string locale = joinStrings(initializer_list<string>{joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true)}, delim, true);
+            const string locale = joinStrings(initializer_list<string>{joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true)}, delim, true);
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name (%1)").arg(qstr(locale)), qstr(name));
         }
-        if(chapter.startTime().totalTicks() > 0) {
+        if(!chapter.startTime().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Start time"), qstr(chapter.startTime().toString(TimeSpanOutputFormat::WithMeasures)));
         }
-        if(chapter.endTime().totalTicks() > 0) {
+        if(!chapter.endTime().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "End time"), qstr(chapter.endTime().toString(TimeSpanOutputFormat::WithMeasures)));
         }
-        list<string> labels;
+        QStringList labels;
         if(chapter.isHidden()) {
-            labels.push_back("hidden");
+            labels << QCoreApplication::translate("HtmlInfo", "hidden");
         }
         if(!chapter.isEnabled()) {
-            labels.push_back("disabled");
+            labels << QCoreApplication::translate("HtmlInfo", "disabled");
         }
-        if(labels.size()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), qstr(joinStrings(labels, ", ")));
+        if(!labels.empty()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), labels.join(QStringLiteral(", ")));
         }
-        if(chapter.tracks().size()) {
+        if(!chapter.tracks().empty()) {
             QStringList trackIds;
             for(uint64 id : chapter.tracks()) {
                 trackIds << QString::number(id);
@@ -702,18 +701,18 @@ public:
         if(edition.id()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QString::number(edition.id()));
         }
-        list<string> labels;
+        QStringList labels;
         if(edition.isHidden()) {
-            labels.push_back("hidden");
+            labels << QCoreApplication::translate("HtmlInfo", "hidden");
         }
         if(edition.isDefault()) {
-            labels.push_back("default");
+            labels << QCoreApplication::translate("HtmlInfo", "default");
         }
         if(edition.isOrdered()) {
-            labels.push_back("ordered");
+            labels << QCoreApplication::translate("HtmlInfo", "ordered");
         }
-        if(labels.size()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), qstr(joinStrings(labels, ", ")));
+        if(!labels.isEmpty()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), labels.join(QStringLiteral(", ")));
         }
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chapters"),
                                   QCoreApplication::translate("HtmlInfo", "edition contains %1 chapter(s)", nullptr, edition.chapters().size()).arg(edition.chapters().size()));
@@ -792,7 +791,7 @@ public:
         if(notifications.size()) {
             startTableSection();
             const QString moreId(reparsing ? QStringLiteral("notificationsReparsingMore") : QStringLiteral("notificationsMore"));
-            m_rowMaker.startRow(reparsing ? QCoreApplication::translate("HtmlInfo", "Notifications (reparsing)") : QCoreApplication::translate("HtmlInfo", "Notifications"));
+            m_rowMaker.startRow(reparsing ? QCoreApplication::translate("HtmlInfo", "Notifications (reparsing after saving)") : QCoreApplication::translate("HtmlInfo", "Notifications"));
             m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 notification(s) available", 0, notifications.size()).arg(notifications.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show notifications"));
@@ -850,22 +849,22 @@ public:
         m_writer.writeStartElement(QStringLiteral("body"));
         startVerticalTable();
 
-        // general
+        // general information
         startTableSection(QStringLiteral("general"));
         m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Path"), qstr(m_file.path()));
         m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(m_file.size(), true)));
-        TimeSpan duration = m_file.duration();
+        const TimeSpan duration = m_file.duration();
         if(!duration.isNull()) {
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(duration.toString(TimeSpanOutputFormat::WithMeasures)));
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Overall avg. bitrate"), qstr(bitrateToString(0.0078125 * m_file.size() / duration.totalSeconds())));
         }
-        const char *mimeType = m_file.mimeType();
+        const char *const mimeType = m_file.mimeType();
         if(*mimeType) {
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Mime-type"), qstr(mimeType));
         }
         m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Container"));
         m_writer.writeCharacters(qstr(m_file.containerFormatName()));
-        const char *subversion = m_file.containerFormatSubversion();
+        const char *const subversion = m_file.containerFormatSubversion();
         if(*subversion) {
             mkSpace();
             m_writer.writeCharacters(qstr(subversion));
@@ -946,7 +945,7 @@ public:
         }
 
         // tracks
-        auto tracks = m_file.tracks();
+        const auto tracks = m_file.tracks();
         if(!tracks.empty()) {
             startTableSection();
             const QString moreId(QStringLiteral("tracksMore"));
@@ -990,11 +989,12 @@ public:
         // chapters
         if(container) {
             if(m_file.containerFormat() == ContainerFormat::Matroska) {
-                if(size_t editionCount = static_cast<const MatroskaContainer *>(container)->editionEntires().size()) {
+                const auto &editionEntries = static_cast<const MatroskaContainer *>(container)->editionEntires();
+                if(!editionEntries.empty()) {
                     startTableSection();
                     const QString moreId(QStringLiteral("editionsMore"));
                     m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Editions/chapters"));
-                    m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", 0, editionCount).arg(editionCount));
+                    m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", 0, editionEntries.size()).arg(editionEntries.size()));
                     mkSpace();
                     mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
                     m_rowMaker.endRow();
@@ -1104,8 +1104,6 @@ private:
     const MediaFileInfo &m_file;
     NotificationList &originalNotifications;
 };
-
-
 
 /*!
  * \brief Generates technical information for the specified \a file.

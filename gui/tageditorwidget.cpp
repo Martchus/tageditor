@@ -3,6 +3,7 @@
 #include "./tagedit.h"
 #include "./attachmentsedit.h"
 #include "./entertargetdialog.h"
+#include "./fileinfomodel.h"
 
 #include "../application/settings.h"
 #include "../misc/htmlinfo.h"
@@ -38,6 +39,7 @@
 #include <QFileSystemWatcher>
 #include <QMenu>
 #include <QCheckBox>
+#include <QTreeView>
 #include <QtConcurrent>
 #if defined(TAGEDITOR_NO_WEBVIEW)
 #elif defined(TAGEDITOR_USE_WEBENGINE)
@@ -79,6 +81,11 @@ enum LoadingResult : char
 TagEditorWidget::TagEditorWidget(QWidget *parent) :
     QWidget(parent),
     m_ui(new Ui::TagEditorWidget),
+    #ifndef TAGEDITOR_NO_WEBVIEW
+    m_infoWebView(nullptr),
+    #endif
+    m_infoModel(nullptr),
+    m_infoTreeView(nullptr),
     m_nextFileAfterSaving(false),
     m_makingResultsAvailable(false),
     m_abortClicked(false)
@@ -444,6 +451,9 @@ void TagEditorWidget::updateFileStatusStatus()
         m_infoWebView->setEnabled(opened);
     }
 #endif
+    if(m_infoTreeView) {
+        m_infoTreeView->setEnabled(opened);
+    }
     // inform the main window about the file status change as well
     emit fileStatusChange(opened, hasTag);
 }
@@ -542,14 +552,34 @@ void TagEditorWidget::initInfoView()
 {
 #ifndef TAGEDITOR_NO_WEBVIEW
     if(!Settings::noWebView() && !m_infoWebView) {
+        if(m_infoTreeView) {
+           m_infoTreeView->deleteLater();
+           m_infoTreeView = nullptr;
+        }
+        if(m_infoModel) {
+            m_infoModel->deleteLater();
+            m_infoModel = nullptr;
+        }
         m_infoWebView = new WEB_VIEW_PROVIDER(m_ui->tagSplitter);
         m_infoWebView->setAcceptDrops(false);
         m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &TagEditorWidget::showInfoWebViewContextMenu);
         m_ui->tagSplitter->addWidget(m_infoWebView);
-    } else if(Settings::noWebView() && m_infoWebView) {
-        m_infoWebView->deleteLater();
-        m_infoWebView = nullptr;
+    } else if(Settings::noWebView() && !m_infoTreeView) {
+        if(m_infoWebView) {
+            m_infoWebView->deleteLater();
+            m_infoWebView = nullptr;
+        }
+#endif
+        if(!m_infoTreeView) {
+            m_infoTreeView = new QTreeView(this);
+            m_ui->tagSplitter->addWidget(m_infoTreeView);
+        }
+        if(!m_infoModel) {
+            m_infoModel = new FileInfoModel(m_fileInfo.isOpen() ? &m_fileInfo : nullptr, this);
+            m_infoTreeView->setModel(m_infoModel);
+        }
+#ifndef TAGEDITOR_NO_WEBVIEW
     }
 #endif
 }
@@ -570,6 +600,9 @@ void TagEditorWidget::updateInfoView()
         }
     }
 #endif
+    if(m_infoModel) {
+        m_infoModel->setFileInfo(m_fileInfo.isOpen() ? &m_fileInfo : nullptr); // resets the model
+    }
 }
 
 #ifndef TAGEDITOR_NO_WEBVIEW

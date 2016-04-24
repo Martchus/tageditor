@@ -6,9 +6,7 @@
 
 #include "../application/settings.h"
 #include "../misc/utility.h"
-#ifdef TAGEDITOR_NO_WEBVIEW
-# include "../misc/htmlinfo.h"
-#endif
+#include "../misc/htmlinfo.h"
 
 #include "ui_mainwindow.h"
 
@@ -322,6 +320,7 @@ void MainWindow::showSettingsDlg()
     }
     if(m_settingsDlg->exec() == QDialog::Accepted) {
         applySettingsFromDialog();
+        m_ui->tagEditorWidget->applySettingsFromDialog();
     }
 }
 
@@ -444,10 +443,10 @@ void MainWindow::saveFileInformation()
     TryLocker<> locker(fileOperationMutex());
     if(locker) {
         if(fileInfo().isOpen()) {
-            const QByteArray &htmlData =
+            const QByteArray htmlData =
         #ifndef TAGEDITOR_NO_WEBVIEW
-                    !Settings::noWebView() ?
-                        m_ui->tagEditorWidget->fileInfoHtml().size() :
+                   !m_ui->tagEditorWidget->fileInfoHtml().isEmpty() ?
+                        m_ui->tagEditorWidget->fileInfoHtml() :
             #endif
                         HtmlInfo::generateInfo(fileInfo(), m_ui->tagEditorWidget->originalNotifications());
             if(!htmlData.isEmpty()) {

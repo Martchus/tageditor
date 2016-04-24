@@ -3,21 +3,21 @@
 
 #include "./previousvaluehandling.h"
 
+#include <c++utilities/application/global.h>
+
 #include <QList>
 #include <QMap>
 #include <QWidget>
 
 #include <initializer_list>
 
-QT_BEGIN_NAMESPACE
-class QFormLayout;
-class QVBoxLayout;
-QT_END_NAMESPACE
+QT_FORWARD_DECLARE_CLASS(QFormLayout)
+QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
 
 namespace Media {
 class Tag;
 class TagValue;
-enum class KnownField : unsigned int;
+DECLARE_ENUM(KnownField, unsigned int)
 }
 
 namespace QtGui {

@@ -4,10 +4,7 @@
 
 #include "../application/settings.h"
 
-// include configuration from separate header file when building with CMake
-#ifndef APP_METADATA_AVAIL
-# include "resources/config.h"
-#endif
+#include "resources/config.h"
 
 #include <qtutilities/resources/qtconfigarguments.h>
 #include <qtutilities/resources/resources.h>

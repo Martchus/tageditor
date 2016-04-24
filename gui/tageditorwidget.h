@@ -22,6 +22,7 @@
 
 QT_FORWARD_DECLARE_CLASS(QFileSystemWatcher)
 QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(QTreeView)
 #ifndef TAGEDITOR_NO_WEBVIEW
 QT_FORWARD_DECLARE_CLASS(WEB_VIEW_PROVIDER)
 #endif
@@ -37,6 +38,7 @@ class TagEditorWidget;
 }
 
 class TagEdit;
+class FileInfoModel;
 
 class TagEditorWidget : public QWidget
 {
@@ -73,6 +75,8 @@ public slots:
     bool applyEntriesAndSaveChangings();
     bool deleteAllTagsAndSave();
     void closeFile();
+    // misc
+    void applySettingsFromDialog();
 
 signals:
     /*!
@@ -104,7 +108,6 @@ private slots:
     void showFile(char result);
     void handleReturnPressed();
     void handleKeepPreviousValuesActionTriggered(QAction *action);
-    void applySettingsFromDialog();
     void addTag(const std::function<Media::Tag *(Media::MediaFileInfo &)> &createTag);
     void removeTag(Media::Tag *tag);
     void changeTarget(Media::Tag *tag);
@@ -139,6 +142,8 @@ private:
 #ifndef TAGEDITOR_NO_WEBVIEW
     WEB_VIEW_PROVIDER *m_infoWebView;
 #endif
+    FileInfoModel *m_infoModel;
+    QTreeView *m_infoTreeView;
     // tag, file, directory management
     QString m_currentPath;
     QFileSystemWatcher *m_fileWatcher;

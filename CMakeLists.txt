@@ -49,6 +49,7 @@ set(WIDGETS_HEADER_FILES
     gui/tagedit.h
     gui/tagfieldedit.h
     gui/tageditorwidget.h
+    gui/fileinfomodel.h
     dbquery/dbquery.h
     gui/dbquerywidget.h
     misc/networkaccessmanager.h
@@ -78,6 +79,7 @@ set(WIDGETS_SRC_FILES
     gui/tagedit.cpp
     gui/tagfieldedit.cpp
     gui/tageditorwidget.cpp
+    gui/fileinfomodel.cpp
     dbquery/dbquery.cpp
     gui/dbquerywidget.cpp
     misc/networkaccessmanager.cpp
