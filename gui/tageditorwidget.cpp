@@ -582,6 +582,8 @@ void TagEditorWidget::initInfoView()
         if(!m_infoModel) {
             m_infoModel = new FileInfoModel(m_fileInfo.isOpen() ? &m_fileInfo : nullptr, this);
             m_infoTreeView->setModel(m_infoModel);
+            m_infoTreeView->setHeaderHidden(true);
+            m_infoTreeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
         }
 #ifndef TAGEDITOR_NO_WEBVIEW
     }

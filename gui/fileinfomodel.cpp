@@ -138,8 +138,8 @@ void addNotifications(Media::NotificationList *notifications, QStandardItem *par
         }
         parent->appendRow(QList<QStandardItem *>()
                           << firstItem
-                          << defaultItem(QString::fromLocal8Bit(notification.context().data()))
-                          << defaultItem(QString::fromLocal8Bit(notification.message().data())));
+                          << defaultItem(QString::fromLocal8Bit(notification.message().data()))
+                          << defaultItem(QString::fromLocal8Bit(notification.context().data())));
     }
 
 }
