@@ -317,6 +317,7 @@ void MainWindow::showSettingsDlg()
     if(!m_settingsDlg) {
         m_settingsDlg = new SettingsDialog(this);
         //connect(m_settingsDlg, &SettingsDialog::accept, this, &MainWindow::applySettingsFromDialog);
+        //connect(m_settingsDlg, &SettingsDialog::accept, m_ui->tagEditorWidget, &TagEditorWidget::applySettingsFromDialog);
     }
     if(m_settingsDlg->exec() == QDialog::Accepted) {
         applySettingsFromDialog();

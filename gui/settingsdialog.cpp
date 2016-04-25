@@ -9,7 +9,7 @@
 
 #include <qtutilities/settingsdialog/optioncategory.h>
 #include <qtutilities/settingsdialog/optioncategorymodel.h>
-#include <qtutilities/settingsdialog/qtsettings.h>
+//#include <qtutilities/settingsdialog/qtsettings.h>
 
 #include <QFileDialog>
 
@@ -578,7 +578,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->assignPages(QList<Dialogs::OptionPage *>() << new FileBrowserGeneralOptionPage);
     categories << category;
 
-    categories <<  Dialogs::qtOptionCategory(this);
+    //categories <<  Dialogs::qtOptionCategory(this);
 
     categoryModel()->setCategories(categories);
 
