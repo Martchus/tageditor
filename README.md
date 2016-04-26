@@ -1,5 +1,5 @@
 # Tag Editor
-A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3, Vorbis and Matroska.
+A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus and Matroska.
 
 ## Supported formats
 The tag editor can read and write the following tag formats:
@@ -119,13 +119,13 @@ which are also available on my GitHub profile.
 The following Qt 5 modules are requried: core concurrent gui network declarative/script widgets webenginewidgets/webkitwidgets
 
 * If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against Qt QML.
-* To force usage of Qt Script/Qt QML add `-DJS_PROVIDER=script/qml` to the cmake arguments.
+* To force usage of Qt Script/Qt QML or to disable both add `-DJS_PROVIDER=script/qml/none` to the cmake arguments.
 * If Qt WebKitWidgets is installed on the system, the editor will link against it. Otherwise it will link against Qt WebEngineWidgets.
-* To force usage of Qt WebKit/Qt WebEngine add `-DWEBVIEW_PROVIDER=webkit/webengine` to the cmake arguments.
+* To force usage of Qt WebKit/Qt WebEngine or to disable both add `-DWEBVIEW_PROVIDER=webkit/webengine/none` to the cmake arguments.
 
 ## TODO
-- Support more formats (EXIF, PDF metadata, Theora, ...).
-- Allow adding tags to specific streams when dealing with OGG.
+- Support more formats (EXIF, PDF metadata, Theora in Ogg, ...).
+- Allow adding tags to specific streams when dealing with Ogg.
 - Do tests with Matroska files which have multiple segments.
 - Set tag information concurrently if multiple files have been specified (CLI).
 
