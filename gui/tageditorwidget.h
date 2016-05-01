@@ -156,6 +156,7 @@ private:
      */
     QString m_currentDir;
     QString m_lastDir;
+    QString m_saveFilePath;
     // status
     bool m_nextFileAfterSaving;
     bool m_makingResultsAvailable;

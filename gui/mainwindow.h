@@ -57,6 +57,7 @@ private slots:
     void selectNextFile(QItemSelectionModel *selectionModel, const QModelIndex &currentIndex, bool notDeeper);
     void showNextFileNotFound();
     void showOpenFileDlg();
+    void showSaveAsDlg();
     void saveFileInformation();
     void handleFileStatusChange(bool opened, bool hasTag);
     void handleFileSaved(const QString &currentPath);

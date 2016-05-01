@@ -703,6 +703,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
             m_fileInfo.close();
             // set path of file info
             m_currentPath = path;
+            m_fileInfo.setSaveFilePath(string());
             m_fileInfo.setPath(path.toLocal8Bit().data());
             // update directory
             m_lastDir = m_currentDir;
@@ -907,7 +908,7 @@ bool TagEditorWidget::applyEntriesAndSaveChangings()
                 m_ui->makingNotificationWidget->setText(statusMsg);
                 emit statusMessage(statusMsg);
             } else {
-                QString statusMsg(tr("No file has been opened."));
+                static const QString statusMsg(tr("No file has been opened."));
                 m_ui->makingNotificationWidget->setText(statusMsg);
                 QMessageBox::warning(this, QApplication::applicationName(), statusMsg);
                 return false;
@@ -1102,13 +1103,17 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         // -> the main window will ensure the current file is still selected
         emit fileSaved(m_currentPath);
         // show next file (only if there are critical notifications)
-        if(critical < 1 && m_nextFileAfterSaving) {
+        if(!critical && m_nextFileAfterSaving) {
             emit nextFileSelected();
         } else {
-            startParsing(m_currentPath, true);
+            // the current path might have changed through "save file path" mechanism
+            startParsing(m_currentPath = QString::fromLocal8Bit(m_fileInfo.path().data()), true);
         }
         m_nextFileAfterSaving = false;
     } else {
+        // fatal errors occured
+
+        // -> show status
         static const QString processingErrorMsg(tr("The tags couldn't be saved. See the info box for detail."));
         static const QString ioErrorMsg(tr("The tags couldn't be saved because an IO error occured."));
         const auto &errorMsg = ioError ? ioErrorMsg : processingErrorMsg;
@@ -1116,6 +1121,10 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         emit statusMessage(errorMsg);
         m_ui->makingNotificationWidget->setText(errorMsg);
         m_ui->makingNotificationWidget->setNotificationType(NotificationType::Critical);
+
+        // -> reset "save as path" in any case after fatal error
+        m_fileInfo.setSaveFilePath(string());
+
         m_fileOperationMutex.unlock();
         startParsing(m_currentPath, true);
     }

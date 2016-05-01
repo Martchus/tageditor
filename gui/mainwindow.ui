@@ -59,6 +59,7 @@
     <addaction name="actionReload"/>
     <addaction name="actionExternalPlayer"/>
     <addaction name="actionSave"/>
+    <addaction name="actionSave_as"/>
     <addaction name="actionDelete_all_tags"/>
     <addaction name="separator"/>
     <addaction name="actionClose"/>
@@ -100,7 +101,7 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>File selection</string>
+    <string>F&amp;ile selection</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -150,7 +151,7 @@
     <bool>false</bool>
    </property>
    <property name="windowTitle">
-    <string>MusicBrains search (beta)</string>
+    <string>&amp;MusicBrains search (beta)</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -335,6 +336,20 @@
    </property>
    <property name="shortcut">
     <string>F10</string>
+   </property>
+  </action>
+  <action name="actionSave_as">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="document-save-as"/>
+   </property>
+   <property name="text">
+    <string>Save (entered tags) as ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>

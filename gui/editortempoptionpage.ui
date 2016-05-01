@@ -22,22 +22,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="PathLineEdit" name="pathLineEdit">
-       <property name="placeholderText">
-        <string>none selected</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="selectPushButton">
-       <property name="text">
-        <string>Select</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="Widgets::PathSelection" name="directoryWidget" native="true"/>
    </item>
    <item>
     <widget class="NotificationLabel" name="notificationLabel" native="true"/>
@@ -59,14 +44,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PathLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>gui/pathlineedit.h</header>
-  </customwidget>
-  <customwidget>
    <class>NotificationLabel</class>
    <extends>QWidget</extends>
    <header>gui/notificationlabel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Widgets::PathSelection</class>
+   <extends>QWidget</extends>
+   <header location="global">qtutilities/widgets/pathselection.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

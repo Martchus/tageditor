@@ -116,7 +116,7 @@ EditorTempOptionPage::~EditorTempOptionPage()
 bool EditorTempOptionPage::apply()
 {
     if(hasBeenShown()) {
-        BackupHelper::backupDirectory() = ui()->pathLineEdit->text().toStdString();
+        BackupHelper::backupDirectory() = ui()->directoryWidget->lineEdit()->text().toStdString();
     }
     return true;
 }
@@ -124,29 +124,16 @@ bool EditorTempOptionPage::apply()
 void EditorTempOptionPage::reset()
 {
     if(hasBeenShown()) {
-        ui()->pathLineEdit->setText(QString::fromStdString(BackupHelper::backupDirectory()));
+        ui()->directoryWidget->lineEdit()->setText(QString::fromStdString(BackupHelper::backupDirectory()));
     }
 }
 
 QWidget *EditorTempOptionPage::setupWidget()
 {
     auto *widget = EditorTempOptionPageBase::setupWidget();
-    QObject::connect(ui()->selectPushButton, &QPushButton::clicked, std::bind(&EditorTempOptionPage::showDirectorySelection, this));
-    ui()->notificationLabel->setText(QCoreApplication::translate("QtGui::EditorTempOptionPage", "Currently this directory must be on the same partition as the files you want to edit."));
+    ui()->notificationLabel->setText(QCoreApplication::translate("QtGui::EditorTempOptionPage", "To avoid unnecessary copying this directory should be on the same partition as the files you want to edit."));
     ui()->notificationLabel->setNotificationType(NotificationType::Information);
     return widget;
-}
-
-void EditorTempOptionPage::showDirectorySelection()
-{
-    QFileDialog dlg(parentWindow());
-    dlg.setModal(true);
-    dlg.setFileMode(QFileDialog::DirectoryOnly);
-    dlg.setWindowTitle(QCoreApplication::translate("QtGui::EditorTempOptionPage", "Select directory to store temporary files"));
-    dlg.setDirectory(ui()->pathLineEdit->text());
-    if(dlg.exec() == QFileDialog::Accepted && dlg.selectedFiles().size() == 1) {
-        ui()->pathLineEdit->setText(dlg.selectedFiles().front());
-    }
 }
 
 // EditorFieldsOptionPage

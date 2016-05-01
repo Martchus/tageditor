@@ -26,7 +26,10 @@
    <item>
     <widget class="QCheckBox" name="forceRewriteCheckBox">
      <property name="text">
-      <string>force rewrite when applying changes</string>
+      <string>force rewrite when applying changes
+• enforces creation of a temporary/backup file
+• enforces use of preferred padding
+• causes longer saving-times</string>
      </property>
     </widget>
    </item>
@@ -196,7 +199,7 @@ another position would prevent rewriting the entire file</string>
       <item>
        <widget class="QRadioButton" name="indexPosAfterDataRadioButton">
         <property name="text">
-         <string>after (&amp;media) data / at the end of the file</string>
+         <string>after (media) data / at the end of the fi&amp;le</string>
         </property>
        </widget>
       </item>

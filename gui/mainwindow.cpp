@@ -122,6 +122,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //  menu: file
     connect(m_ui->actionOpen, &QAction::triggered, this, &MainWindow::showOpenFileDlg);
     connect(m_ui->actionSave, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::applyEntriesAndSaveChangings);
+    connect(m_ui->actionSave_as, &QAction::triggered, this, &MainWindow::showSaveAsDlg);
     connect(m_ui->actionDelete_all_tags, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::deleteAllTagsAndSave);
     connect(m_ui->actionSave_file_information, &QAction::triggered, this, &MainWindow::saveFileInformation);
     connect(m_ui->actionClose, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::closeFile);
@@ -252,6 +253,7 @@ void MainWindow::handleFileStatusChange(bool opened, bool hasTag)
     m_ui->actionSave->setEnabled(opened);
     m_ui->actionDelete_all_tags->setEnabled(hasTag);
     m_ui->actionSave_file_information->setEnabled(opened);
+    m_ui->actionSave_as->setEnabled(opened);
     m_ui->actionClose->setEnabled(opened);
     m_ui->actionReload->setEnabled(opened);
     m_ui->actionExternalPlayer->setEnabled(opened);
@@ -430,9 +432,21 @@ void MainWindow::showNextFileNotFound()
  */
 void MainWindow::showOpenFileDlg()
 {
-    const QString path = QFileDialog::getOpenFileName(this, QApplication::applicationName());
+    const QString path = QFileDialog::getOpenFileName(this, tr("Open file - ") + QCoreApplication::applicationName());
     if(!path.isEmpty()) {
         startParsing(path);
+    }
+}
+
+/*!
+ * \brief Shows an save file dialog and triggers saving the changes under the selected location.
+ */
+void MainWindow::showSaveAsDlg()
+{
+    const QString path = QFileDialog::getSaveFileName(this, tr("Save changes as - ") + QCoreApplication::applicationName());
+    if(!path.isEmpty()) {
+        m_ui->tagEditorWidget->fileInfo().setSaveFilePath(path.toLocal8Bit().data());
+        m_ui->tagEditorWidget->applyEntriesAndSaveChangings();
     }
 }
 
@@ -451,7 +465,7 @@ void MainWindow::saveFileInformation()
             #endif
                         HtmlInfo::generateInfo(fileInfo(), m_ui->tagEditorWidget->originalNotifications());
             if(!htmlData.isEmpty()) {
-                const QString path = QFileDialog::getSaveFileName(this, windowTitle());
+                const QString path = QFileDialog::getSaveFileName(this, tr("Save file information - ") + QCoreApplication::applicationName());
                 if(!path.isEmpty()) {
                     QFile file(path);
                     if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
