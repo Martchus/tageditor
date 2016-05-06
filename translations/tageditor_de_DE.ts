@@ -2334,8 +2334,8 @@ another position would prevent rewriting the entire file</source>
     </message>
     <message>
         <location filename="../gui/renamefilesdialog.ui" line="697"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="208"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="233"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="220"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="245"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2355,8 +2355,8 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="152"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="187"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="164"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="199"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2402,28 +2402,28 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="150"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="162"/>
         <source>Generating preview ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="159"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="171"/>
         <source>The script is not valid.
 Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="175"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="187"/>
         <source>The selected directory doesn&apos;t exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="185"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="197"/>
         <source>Applying changings ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="198"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="210"/>
         <source>%1 files/directories processed</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2431,13 +2431,13 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="212"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="224"/>
         <source>Preview has been generated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="226"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="244"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="238"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="256"/>
         <source>%1 error(s) occured.</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2445,8 +2445,8 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="213"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="237"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="225"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="249"/>
         <source>%1 files/directories have been processed.</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2454,12 +2454,12 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="217"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="229"/>
         <source>No files and directories have been found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="201"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="213"/>
         <source>%1 error(s) occured</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -2467,62 +2467,62 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="137"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="149"/>
         <source>There is no external script file is selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="144"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="156"/>
         <source>Unable to open external script file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="162"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="174"/>
         <source>An error occured when parsing the script: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="170"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="182"/>
         <source>The script is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="222"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="234"/>
         <source>Generation of preview has been aborted prematurely.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="236"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="248"/>
         <source>Changins applied.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="240"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="252"/>
         <source>Applying has been aborted prematurely.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="308"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="320"/>
         <source>Unable to open script file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="314"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="326"/>
         <source>Select script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="335"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="347"/>
         <source>Clipboard contains no text.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="348"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="360"/>
         <source>Expand all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="349"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="361"/>
         <source>Collapse all</source>
         <translation type="unfinished"></translation>
     </message>

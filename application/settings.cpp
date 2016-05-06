@@ -273,6 +273,12 @@ QString &externalScript()
     return v;
 }
 
+QString &editorScript()
+{
+    static QString v;
+    return v;
+}
+
 void restore()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,  QApplication::organizationName(), QApplication::applicationName());
@@ -418,6 +424,7 @@ void restore()
     settings.beginGroup(QStringLiteral("renamedlg"));
     scriptSource() = settings.value(QStringLiteral("src")).toInt();
     externalScript() = settings.value(QStringLiteral("file")).toString();
+    editorScript() = settings.value(QStringLiteral("script")).toString();
     settings.endGroup();
 }
 
@@ -498,6 +505,7 @@ void save()
     settings.beginGroup(QStringLiteral("renamedlg"));
     settings.setValue(QStringLiteral("src"), Settings::scriptSource());
     settings.setValue(QStringLiteral("file"), Settings::externalScript());
+    settings.setValue(QStringLiteral("script"), Settings::editorScript());
     settings.endGroup();
 }
 

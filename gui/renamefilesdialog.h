@@ -51,6 +51,7 @@ private slots:
     void showSelectScriptFileDlg();
     void abortClose();
     void toggleScriptSource();
+    void setScriptModified(bool scriptModified);
 
 private:
     std::unique_ptr<Ui::RenameFilesDialog> m_ui;
@@ -59,6 +60,7 @@ private:
     int m_itemsProcessed;
     int m_errorsOccured;
     bool m_changingSelection;
+    bool m_scriptModified;
 };
 
 }

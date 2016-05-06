@@ -104,6 +104,7 @@ QString &coverArtArchiveUrl();
 // rename files dialog
 int &scriptSource();
 QString &externalScript();
+QString &editorScript();
 
 void restore();
 void save();

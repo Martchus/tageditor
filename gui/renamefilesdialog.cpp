@@ -30,7 +30,8 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     m_ui(new Ui::RenameFilesDialog),
     m_itemsProcessed(0),
     m_errorsOccured(0),
-    m_changingSelection(false)
+    m_changingSelection(false),
+    m_scriptModified(false)
 {
     setAttribute(Qt::WA_QuitOnClose, false);
     m_ui->setupUi(this);
@@ -42,7 +43,6 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     font.setFixedPitch(true);
     m_ui->javaScriptPlainTextEdit->setFont(font);
     m_highlighter = new JavaScriptHighlighter(m_ui->javaScriptPlainTextEdit->document());
-    pasteDefaultExampleScript();
     m_ui->externalScriptPage->setBackgroundRole(QPalette::Base);
 
     // setup preview tree view
@@ -71,6 +71,12 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
         m_ui->sourceFileStackedWidget->setCurrentIndex(Settings::scriptSource());
     }
     m_ui->scriptFilePathLineEdit->setText(Settings::externalScript());
+    if(!Settings::editorScript().isEmpty()) {
+        m_ui->javaScriptPlainTextEdit->setPlainText(Settings::editorScript());
+        m_scriptModified = true;
+    } else {
+        pasteDefaultExampleScript();
+    }
 
     // connect signals and slots
     connect(m_ui->generatePreviewPushButton, &QPushButton::clicked, this, &RenameFilesDialog::startGeneratingPreview);
@@ -85,6 +91,7 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     connect(m_ui->previewTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &RenameFilesDialog::previewItemSelected);
     connect(m_ui->toggleScriptSourcePushButton, &QPushButton::clicked, this, &RenameFilesDialog::toggleScriptSource);
     connect(m_ui->selectScriptFilePushButton, &QPushButton::clicked, this, &RenameFilesDialog::showScriptFileSelectionDlg);
+    connect(m_ui->javaScriptPlainTextEdit, &QPlainTextEdit::undoAvailable, this, &RenameFilesDialog::setScriptModified);
 }
 
 RenameFilesDialog::~RenameFilesDialog()
@@ -107,6 +114,11 @@ bool RenameFilesDialog::event(QEvent *event)
         // save settings
         Settings::scriptSource() = m_ui->sourceFileStackedWidget->currentIndex();
         Settings::externalScript() = m_ui->scriptFilePathLineEdit->text();
+        if(m_scriptModified) {
+            Settings::editorScript() = m_ui->javaScriptPlainTextEdit->toPlainText();
+        } else {
+            Settings::editorScript().clear();
+        }
         break;
     default:
         ;
@@ -371,6 +383,11 @@ void RenameFilesDialog::toggleScriptSource()
         m_ui->pasteScriptPushButton->setVisible(false);
         m_ui->toggleScriptSourcePushButton->setText("Use editor");
     }
+}
+
+void RenameFilesDialog::setScriptModified(bool scriptModified)
+{
+    m_scriptModified = scriptModified;
 }
 
 }
