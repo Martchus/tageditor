@@ -7,7 +7,8 @@
 
 namespace RenamingUtility {
 
-class FilteredFileSystemItemModel : public QSortFilterProxyModel {
+class FilteredFileSystemItemModel : public QSortFilterProxyModel
+{
     Q_OBJECT
 
 public:

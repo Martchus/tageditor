@@ -12,7 +12,8 @@ enum FileSystemItemModelRole {
 
 class FileSystemItem;
 
-class FileSystemItemModel : public QAbstractItemModel {
+class FileSystemItemModel : public QAbstractItemModel
+{
     Q_OBJECT
 
 public:

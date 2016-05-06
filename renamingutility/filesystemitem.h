@@ -6,23 +6,27 @@
 
 namespace RenamingUtility {
 
-enum class ActionType {
+enum class ActionType
+{
     None,
     Rename,
     Skip
 };
 
-enum class ItemStatus {
+enum class ItemStatus
+{
     Current,
     New
 };
 
-enum class ItemType {
+enum class ItemType
+{
     Dir,
     File
 };
 
-class FileSystemItem {
+class FileSystemItem
+{
 
 public:
     FileSystemItem(ItemStatus status = ItemStatus::Current, ItemType type = ItemType::File, const QString &name = QString(), FileSystemItem *parent = nullptr);
