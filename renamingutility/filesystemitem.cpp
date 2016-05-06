@@ -150,13 +150,20 @@ FileSystemItem *FileSystemItem::makeChildAvailable(const QString &relativePath)
 {
     QStringList dirs = relativePath.split(QDir::separator(), QString::SkipEmptyParts);
     FileSystemItem *parent = this;
-    for(const QString &dir : dirs) {
-        FileSystemItem *child = parent->findChild(dir);
-        if(!child) {
-            child = new FileSystemItem(ItemStatus::New, ItemType::Dir, dir);
-            child->setParent(parent);
+    if(!dirs.isEmpty()) {
+        if(relativePath.startsWith(QChar('/'))) {
+            // we actually just got an absolute path
+            // -> just leave the / there to handle absolute path as well
+            dirs.front().prepend(QChar('/'));
         }
-        parent = child;
+        for(const QString &dir : dirs) {
+            FileSystemItem *child = parent->findChild(dir);
+            if(!child) {
+                child = new FileSystemItem(ItemStatus::New, ItemType::Dir, dir);
+                child->setParent(parent);
+            }
+            parent = child;
+        }
     }
     return parent;
 }
@@ -180,7 +187,7 @@ void FileSystemItem::relativePath(QString &res) const
     if(m_parent) {
         m_parent->relativePath(res);
         if(!res.isEmpty()) {
-            res.append("/");
+            res.append(QLatin1Char('/'));
         }
         res.append(name());
     }

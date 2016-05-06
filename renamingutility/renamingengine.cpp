@@ -257,7 +257,7 @@ void RemamingEngine::applyChangings(FileSystemItem *parentItem)
                                 item->setNote(tr("unable to move, there is already an entry with the same name"));
                             }
                             item->setErrorOccured(true);
-                        } if(m_dir.rename(currentPath, newPath)) {
+                        } else if(m_dir.rename(currentPath, newPath)) {
                             if(item->parent() == counterpartItem->parent()) {
                                 item->setNote(tr("renamed"));
                             } else {
