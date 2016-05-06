@@ -5,12 +5,14 @@ A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3,
 The tag editor can read and write the following tag formats:
 - iTunes-style MP4 tags (MP4-DASH is supported)
 - ID3v1 and ID3v2 tags
-- Vorbis and Opus comments (cover art via "METADATA_BLOCK_PICTURE" is supported) in Ogg streams
+  - conversion between ID3v1 and different versions of ID3v2
+- Vorbis and Opus comments in Ogg streams
+  - cover art via "METADATA_BLOCK_PICTURE" is supported
 - Matroska/WebM tags and attachments
 
 ## Additional features
-The tag editor can also display technical information such as the ID, format, language, bitrate,
-duration, size, timestamps, sampling frequency, FPS and other information of the tracks.
+The tag editor can also display technical information such as the ID, format,
+language, bitrate, duration, size, timestamps, sampling frequency, FPS and other information of the tracks.
 
 It also allows to inspect and validate the element structure of MP4 and Matroska files.
 
@@ -18,6 +20,9 @@ It also allows to inspect and validate the element structure of MP4 and Matroska
 ### Tag position
 The editor allows you to choose whether tags should be placed at the beginning or at
 the end of an MP4/Matroska file.
+
+ID3v2 tags and Vorbis/Opus comments can only be placed at the beginning. ID3v1 tags
+can only be placed at the end of the file.
 
 ### Padding
 Padding allows adding additional tag information without rewriting the entire file
@@ -34,7 +39,8 @@ I currently provide packages for Arch Linux and Windows. For more information ch
 [website](http://martchus.no-ip.biz/website/page.php?name=programming).
 
 ## Usage
-The Tag Editor has a GUI (Qt 5) and a command line interface.
+The Tag Editor has a GUI (Qt 5) and a command line interface. For a C++ library
+interface checkout the underlying tagparser library.
 
 ### GUI
 The GUI should be self-explaining. Just open a file, edit the tags and save the changings.
@@ -45,11 +51,11 @@ information like album name or artist for all files in an album again and again.
 #### Settings
 Checkout the settings dialog. You can:
 - customize which fields the editor shows and in which order
-- change settings regarding the tag processing (ID3 version(s) to be used, preferred character set,
-  usage of padding, ...)
+- change settings regarding the tag processing (ID3 version(s) to be used, preferred character set, usage of padding, ...)
 - set whether unknown/unsupported tags should be ignored/kept or removed
 - set whether ID3v1 and ID3v2 tags should be edited together or separately
 - set the directory used to store temporary files
+- set the desired file layout options (see section "File layout options")
 - and more.
 
 Settings of the GUI do not affect the CLI.
@@ -58,6 +64,9 @@ Settings of the GUI do not affect the CLI.
 There is also a tool to rename files using the tag information stored in the files. The new name is generated
 by a small JavaScript which can be customized. An example script is provided. Before any actual changes are made,
 you will see a preview with the generated file names.
+
+#### MusicBrainz search
+The tag editor also features a MusicBrainz and Cover Art Archive search which can be opened with *F10*. However, this feature is still experimental.
 
 ### CLI
 Usage:
