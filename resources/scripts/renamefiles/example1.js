@@ -184,7 +184,7 @@ if(tageditor.isFile) {
             var album = validDirectoryName(tag.album);
             if(notEmpty(album)) {
                 if(notEmpty(tag.year)) {
-                    path.push([tag.year, album].join(" - "));
+                    path.push([tag.year.split("-")[0], album].join(" - "));
                 } else {
                     path.push(album);
                 }
