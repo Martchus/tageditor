@@ -327,7 +327,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
                 emit pictureChanged();
             }
         }
-    } catch (ios_base::failure &) {
+    } catch (const ios_base::failure &) {
         QMessageBox::critical(this, QApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
     } catch (Media::Failure &) {
         QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to parse specified cover file."));

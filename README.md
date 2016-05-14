@@ -6,7 +6,7 @@ The tag editor can read and write the following tag formats:
 - iTunes-style MP4 tags (MP4-DASH is supported)
 - ID3v1 and ID3v2 tags
   - conversion between ID3v1 and different versions of ID3v2
-- Vorbis and Opus comments in Ogg streams
+- Vorbis, Opus and FLAC comments in Ogg streams
   - cover art via "METADATA_BLOCK_PICTURE" is supported
 - Matroska/WebM tags and attachments
 

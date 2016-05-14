@@ -13,14 +13,12 @@
 
 #include <tagparser/exceptions.h>
 #include <tagparser/signature.h>
-#include <tagparser/abstractcontainer.h>
-#include <tagparser/tag.h>
 #include <tagparser/id3/id3v1tag.h>
 #include <tagparser/id3/id3v2tag.h>
 #include <tagparser/mp4/mp4container.h>
 #include <tagparser/mp4/mp4tag.h>
 #include <tagparser/matroska/matroskatag.h>
-#include <tagparser/vorbis/vorbiscomment.h>
+#include <tagparser/ogg/oggcontainer.h>
 
 #include <qtutilities/misc/dialogutils.h>
 #include <qtutilities/misc/trylocker.h>
@@ -517,12 +515,20 @@ void TagEditorWidget::updateTagManagementMenu()
         }
         // add "Remove tag" and "Change target" actions
         for(Tag *tag : m_tags) {
-            // check whether the tag is not from a Vorbis stream because in this case removing the tag seems to cause problems and hence shouldn't be proposed
-            if(tag->type() != TagType::VorbisComment || static_cast<VorbisComment *>(tag)->oggParams().streamFormat != GeneralMediaFormat::Vorbis) {
-                connect(m_removeTagMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::removeTag, this, tag));
-                if(tag->supportsTarget()) {
-                    connect(m_changeTargetMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::changeTarget, this, tag));
+            // don't propose removal for Vorbis comments from Voribs or FLAC streams (removing from Opus streams should be ok)
+            if(tag->type() == TagType::OggVorbisComment) {
+                switch(static_cast<OggVorbisComment *>(tag)->oggParams().streamFormat) {
+                case GeneralMediaFormat::Vorbis:
+                case GeneralMediaFormat::Flac:
+                    continue;
+                default:
+                    ;
                 }
+            }
+
+            connect(m_removeTagMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::removeTag, this, tag));
+            if(tag->supportsTarget()) {
+                connect(m_changeTargetMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::changeTarget, this, tag));
             }
         }
     }
