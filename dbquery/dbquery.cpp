@@ -6,6 +6,7 @@
 
 #include <tagparser/tagvalue.h>
 #include <tagparser/tag.h>
+#include <tagparser/signature.h>
 
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -78,7 +79,9 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
             return TagValue(res.totalTracks);
         case KnownField::Cover:
             if(!res.cover.isEmpty()) {
-                return TagValue(res.cover.data(), res.cover.size(), TagDataType::Picture);
+                TagValue tagValue(res.cover.data(), res.cover.size(), TagDataType::Picture);
+                tagValue.setMimeType(containerMimeType(parseSignature(res.cover.data(), res.cover.size())));
+                return tagValue;
             }
             break;
         default:
