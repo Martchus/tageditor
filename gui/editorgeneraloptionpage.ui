@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QtGui::EditorGeneralOptionPage</class>
  <widget class="QWidget" name="QtGui::EditorGeneralOptionPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>468</width>
-    <height>374</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>General</string>
   </property>
@@ -103,6 +95,13 @@
        <widget class="QCheckBox" name="hideTagSelectionComboBoxCheckBox">
         <property name="text">
          <string>Hide tag selection combo box when not needed</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="hideCoverButtonsCheckBox">
+        <property name="text">
+         <string>Hide cover buttons</string>
         </property>
        </widget>
       </item>

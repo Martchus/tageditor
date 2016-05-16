@@ -52,6 +52,11 @@ bool &noWebView()
     return v;
 }
 #endif
+bool &hideCoverButtons()
+{
+    static bool v = false;
+    return v;
+}
 
 // file browser
 bool &hideBackupFiles()
@@ -313,6 +318,7 @@ void restore()
     fixUmlauts() = settings.value(QStringLiteral("fixumlauts"), false).toBool();
     settings.endGroup();
     BackupHelper::backupDirectory() = settings.value(QStringLiteral("tempdir")).toString().toStdString();
+    Settings::hideCoverButtons() = settings.value(QStringLiteral("hidecoverbtn"), false).toBool();
     settings.endGroup();
 
     selectedFieldsModel().restore(settings, QStringLiteral("selectedfields"));
@@ -445,6 +451,7 @@ void save()
     settings.setValue(QStringLiteral("fixumlauts"), Settings::fixUmlauts());
     settings.endGroup();
     settings.setValue(QStringLiteral("tempdir"), QString::fromStdString(BackupHelper::backupDirectory()));
+    settings.setValue(QStringLiteral("hidecoverbtn"), Settings::hideCoverButtons());
     settings.endGroup();
 
     selectedFieldsModel().save(settings, QStringLiteral("selectedfields"));

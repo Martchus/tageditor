@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="toBeShownLabel">
      <property name="styleSheet">
       <string notr="true">font-weight: bold;</string>
      </property>

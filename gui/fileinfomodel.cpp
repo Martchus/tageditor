@@ -365,7 +365,7 @@ void FileInfoModel::updateCache()
                     trackHelper.appendRow(tr("Type"), track->mediaTypeName());
                     const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
                     trackHelper.appendRow(tr("Format"), fmtName);
-                    if(strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
+                    if(track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
                         trackHelper.appendRow(tr("Abbreviation"), fmtAbbr);
                     }
                     if(track->version()) {

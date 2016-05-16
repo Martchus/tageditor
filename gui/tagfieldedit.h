@@ -53,6 +53,7 @@ public slots:
     void clear();
     void apply();
     void restore();
+    void setCoverButtonsHidden(bool hideCoverButtons);
 
 signals:
     void returnPressed();

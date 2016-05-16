@@ -26,9 +26,13 @@
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QMimeData>
+#include <QCursor>
+#include <QMenu>
+#include <QAction>
 
 #include <stdexcept>
 #include <functional>
+#include <cassert>
 
 using namespace std;
 using namespace Media;
@@ -50,11 +54,13 @@ PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWi
     m_currentTypeIndex(0)
 {
     m_ui->setupUi(this);
+    m_ui->coverButtonsWidget->setHidden(Settings::hideCoverButtons());
     connect(m_ui->addButton, &QPushButton::clicked, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
     connect(m_ui->removeButton, &QPushButton::clicked, this, &PicturePreviewSelection::removeSelected);
     connect(m_ui->extractButton, &QPushButton::clicked, this, &PicturePreviewSelection::extractSelected);
     connect(m_ui->displayButton, &QPushButton::clicked, this, &PicturePreviewSelection::displaySelected);
     connect(m_ui->restoreButton, &QPushButton::clicked, std::bind(&PicturePreviewSelection::setup, this, PreviousValueHandling::Clear));
+    connect(m_ui->previewGraphicsView, &QGraphicsView::customContextMenuRequested, this, &PicturePreviewSelection::showContextMenu);
     setup();
     setAcceptDrops(true);
 }
@@ -70,16 +76,15 @@ PicturePreviewSelection::~PicturePreviewSelection()
  */
 void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
-    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.count())) {
-        TagValue &currentValue = m_values[m_currentTypeIndex];
-        if(previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
-            if(previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty()) {
-                currentValue = value; // TODO: move(value);
-                emit pictureChanged();
-            }
+    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    TagValue &currentValue = m_values[m_currentTypeIndex];
+    if(previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
+        if(previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty()) {
+            currentValue = value; // TODO: move(value);
+            emit pictureChanged();
         }
-        updatePreview(m_currentTypeIndex);
     }
+    updatePreview(m_currentTypeIndex);
 }
 
 /*!
@@ -164,7 +169,7 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
                                                    << tr("Illustration")
                                                    << tr("Band/artist logotype")
                                                    << tr("Publisher/Studio logotype")
-                                                  );
+                                                   );
             }
             int first;
             switch(m_tag->type()) {
@@ -172,6 +177,7 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
                 first = fetchId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
                 break;
             case TagType::VorbisComment:
+            case TagType::OggVorbisComment:
                 first = fetchId3v2CoverValues(static_cast<VorbisComment *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
                 break;
             default:
@@ -224,9 +230,9 @@ template<class TagType>
 void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<Media::TagValue> &values)
 {
     auto &fields = tag->fields();
-    auto id = tag->fieldId(field);
-    auto range = fields.equal_range(id);
-    auto first = range.first;
+    const auto id = tag->fieldId(field);
+    const auto range = fields.equal_range(id);
+    const auto first = range.first;
     // iterate through all tag values
     for(unsigned int index = 0, valueCount = values.size(); index < valueCount; ++index) {
         // check whether there is already a tag value with the current index/type
@@ -236,11 +242,10 @@ void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<Media::Tag
             // -> update this value
             pair->second.setValue(values[index]);
             // check whether there are more values with the current index/type assigned
-            while((pair = find_if(++first, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1))) != range.second) {
+            while((pair = find_if(++pair, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1))) != range.second) {
                 // -> remove these values as we only support one value of a type in the same tag
                 pair->second.setValue(TagValue());
             }
-            first = range.first; // reset the first value
         } else if(!values[index].isEmpty()) {
             typename TagType::fieldType field(id, values[index]);
             field.setTypeInfo(index);
@@ -293,13 +298,10 @@ void PicturePreviewSelection::clear()
  */
 void PicturePreviewSelection::addOfSelectedType()
 {
-    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.count())) {
-        QString path = QFileDialog::getOpenFileName(this, tr("Select a picture to add as cover"));
-        if(!path.isEmpty()) {
-            addOfSelectedType(path);
-        }
-    } else {
-        throw logic_error("Invalid type selected (no corresponding value assigned).");
+    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    QString path = QFileDialog::getOpenFileName(this, tr("Select a picture to add as cover"));
+    if(!path.isEmpty()) {
+        addOfSelectedType(path);
     }
 }
 
@@ -308,6 +310,7 @@ void PicturePreviewSelection::addOfSelectedType()
  */
 void PicturePreviewSelection::addOfSelectedType(const QString &path)
 {
+    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     try {
         MediaFileInfo fileInfo(path.toLocal8Bit().constData());
@@ -340,7 +343,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
  */
 void PicturePreviewSelection::removeSelected()
 {
-    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.count())) {
+    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.size())) {
         if(m_values[m_currentTypeIndex].isEmpty()) {
             QMessageBox::information(this, QApplication::applicationName(), tr("There is no cover to remove."));
         } else {
@@ -358,28 +361,25 @@ void PicturePreviewSelection::removeSelected()
  */
 void PicturePreviewSelection::extractSelected()
 {
-    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.count())) {
-        TagValue &value = m_values[m_currentTypeIndex];
-        if(value.isEmpty()) {
-            QMessageBox::information(this, QApplication::applicationName(), tr("There is no image attached to be extracted."));
-        } else {
-            const auto path = QFileDialog::getSaveFileName(this, tr("Where do you want to save the cover?"));
-            if(!path.isEmpty()) {
-                QFile file(path);
-                if(file.open(QIODevice::WriteOnly)) {
-                    if(file.write(value.dataPointer(), value.dataSize()) > 0) {
-                        QMessageBox::information(this, QApplication::applicationName(), tr("The cover has extracted."));
-                    } else {
-                        QMessageBox::warning(this, QApplication::applicationName(), tr("Unable to write to output file."));
-                    }
-                    file.close();
+    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    TagValue &value = m_values[m_currentTypeIndex];
+    if(value.isEmpty()) {
+        QMessageBox::information(this, QApplication::applicationName(), tr("There is no image attached to be extracted."));
+    } else {
+        const auto path = QFileDialog::getSaveFileName(this, tr("Where do you want to save the cover?"));
+        if(!path.isEmpty()) {
+            QFile file(path);
+            if(file.open(QIODevice::WriteOnly)) {
+                if(file.write(value.dataPointer(), value.dataSize()) > 0) {
+                    QMessageBox::information(this, QApplication::applicationName(), tr("The cover has extracted."));
                 } else {
-                    QMessageBox::warning(this, QApplication::applicationName(), tr("Unable to open output file."));
+                    QMessageBox::warning(this, QApplication::applicationName(), tr("Unable to write to output file."));
                 }
+                file.close();
+            } else {
+                QMessageBox::warning(this, QApplication::applicationName(), tr("Unable to open output file."));
             }
         }
-    } else {
-        throw logic_error("Invalid type selected (no corresponding value assigned).");
     }
 }
 
@@ -388,44 +388,65 @@ void PicturePreviewSelection::extractSelected()
  */
 void PicturePreviewSelection::displaySelected()
 {
-    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.count())) {
-        TagValue &value = m_values[m_currentTypeIndex];
-        if(!value.isEmpty()) {
-            QImage img;
-            if(value.mimeType() == "-->") {
-                QFile file(Utility::stringToQString(value.toString(), value.dataEncoding()));
-                if(file.open(QFile::ReadOnly)) {
-                    img = QImage::fromData(file.readAll());
-                } else {
-                    QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be found."));
-                    return;
-                }
+    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    TagValue &value = m_values[m_currentTypeIndex];
+    if(!value.isEmpty()) {
+        QImage img;
+        if(value.mimeType() == "-->") {
+            QFile file(Utility::stringToQString(value.toString(), value.dataEncoding()));
+            if(file.open(QFile::ReadOnly)) {
+                img = QImage::fromData(file.readAll());
             } else {
-                img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
-            }
-            if(img.isNull()) {
-                QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be displayed."));
-            } else {
-                QDialog dlg;
-                dlg.setWindowFlags(Qt::Tool);
-                dlg.setWindowTitle(tr("Cover - %1").arg(QApplication::applicationName()));
-                QBoxLayout layout(QBoxLayout::Up);
-                layout.setMargin(0);
-                QGraphicsView view(&dlg);
-                QGraphicsScene scene;
-                layout.addWidget(&view);
-                scene.addItem(new QGraphicsPixmapItem(QPixmap::fromImage(img)));
-                view.setScene(&scene);
-                view.show();
-                dlg.setLayout(&layout);
-                dlg.exec();
+                QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be found."));
+                return;
             }
         } else {
-            QMessageBox::warning(this, QApplication::applicationName(), tr("There is no image attached."));
+            img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
+        }
+        if(img.isNull()) {
+            QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be displayed."));
+        } else {
+            QDialog dlg;
+            dlg.setWindowFlags(Qt::Tool);
+            dlg.setWindowTitle(tr("Cover - %1").arg(QApplication::applicationName()));
+            QBoxLayout layout(QBoxLayout::Up);
+            layout.setMargin(0);
+            QGraphicsView view(&dlg);
+            QGraphicsScene scene;
+            layout.addWidget(&view);
+            scene.addItem(new QGraphicsPixmapItem(QPixmap::fromImage(img)));
+            view.setScene(&scene);
+            view.show();
+            dlg.setLayout(&layout);
+            dlg.exec();
         }
     } else {
-        throw logic_error("Invalid type selected (no corresponding value assigned).");
+        QMessageBox::warning(this, QApplication::applicationName(), tr("There is no image attached."));
     }
+}
+
+/*!
+ * \brief Asks the user to alter the MIME-type of the selected cover.
+ */
+void PicturePreviewSelection::changeMimeTypeOfSelected()
+{
+    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    TagValue &selectedCover = m_values[m_currentTypeIndex];
+    auto mimeType = QString::fromLocal8Bit(selectedCover.mimeType().data());
+    bool ok;
+    mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
+    if(ok) {
+        selectedCover.setMimeType(mimeType.toLocal8Bit().data());
+    }
+
+}
+
+/*!
+ * \brief Sets whether cover buttons are hidden.
+ */
+void PicturePreviewSelection::setCoverButtonsHidden(bool hideCoverButtons)
+{
+    m_ui->coverButtonsWidget->setHidden(hideCoverButtons);
 }
 
 void PicturePreviewSelection::changeEvent(QEvent *event)
@@ -499,11 +520,9 @@ void PicturePreviewSelection::dropEvent(QDropEvent *event)
  */
 void PicturePreviewSelection::typeSwitched(int index)
 {
-    if(m_currentTypeIndex >= static_cast<unsigned int>(m_values.count())) {
-        throw logic_error("current type index is invalid");
-    }
+    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
     int lastIndex = m_currentTypeIndex;
-    if(index < 0 || index >= m_values.count()) {
+    if(index < 0 || index >= m_values.size()) {
         throw logic_error("current type index is invalid");
     } else {
         m_currentTypeIndex = static_cast<unsigned int>(index);
@@ -598,6 +617,42 @@ void PicturePreviewSelection::updatePreview(int index)
         m_ui->addButton->setText(tr("Change"));
     }
     m_rectItem->setRect(0, 0, m_ui->previewGraphicsView->width(), m_ui->previewGraphicsView->height());
+}
+
+void PicturePreviewSelection::showContextMenu()
+{
+    QMenu menu;
+    QAction *addAction = menu.addAction(m_ui->addButton->text());
+    addAction->setIcon(QIcon::fromTheme(QStringLiteral("list-add")));
+    connect(addAction, &QAction::triggered, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
+    if(m_ui->extractButton->isEnabled()) {
+        QAction *mimeAction = menu.addAction(tr("Change MIME-type"));
+        mimeAction->setIcon(QIcon::fromTheme(QStringLiteral("document-properties")));
+        connect(mimeAction, &QAction::triggered, this, &PicturePreviewSelection::changeMimeTypeOfSelected);
+    }
+    menu.addSeparator();
+    if(m_ui->removeButton->isEnabled()) {
+        QAction *removeAction = menu.addAction(m_ui->removeButton->text());
+        removeAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-delete")));
+        connect(removeAction, &QAction::triggered, this, &PicturePreviewSelection::removeSelected);
+    }
+    if(m_ui->restoreButton->isEnabled()) {
+        QAction *restoreAction = menu.addAction(m_ui->restoreButton->text());
+        restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("document-revert")));
+        connect(restoreAction, &QAction::triggered, std::bind(&PicturePreviewSelection::setup, this, PreviousValueHandling::Clear));
+    }
+    menu.addSeparator();
+    if(m_ui->extractButton->isEnabled()) {
+        QAction *extractAction = menu.addAction(m_ui->extractButton->text());
+        extractAction->setIcon(QIcon::fromTheme(QStringLiteral("document-save")));
+        connect(extractAction, &QAction::triggered, this, &PicturePreviewSelection::extractSelected);
+    }
+    if(m_ui->displayButton->isEnabled()) {
+        QAction *displayAction = menu.addAction(m_ui->displayButton->text());
+        displayAction->setIcon(QIcon::fromTheme(QStringLiteral("image-x-generic")));
+        connect(displayAction, &QAction::triggered, this, &PicturePreviewSelection::displaySelected);
+    }
+    menu.exec(QCursor::pos());
 }
 
 }

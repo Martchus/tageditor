@@ -512,7 +512,7 @@ public:
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Type"), qstr(track->mediaTypeName()));
         const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format"), QCoreApplication::translate("HtmlInfo", "The unabbreviated name of the track's format."), qstr(fmtName));
-        if(strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
+        if(track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr));
         }
         if(track->version()) {

@@ -212,6 +212,16 @@ void TagEdit::invalidate()
 }
 
 /*!
+ * \brief Sets whether cover buttons are hidden.
+ */
+void TagEdit::setCoverButtonsHidden(bool hideCoverButtons)
+{
+    for(auto i = m_widgets.begin(), end = m_widgets.end(); i != end; ++i) {
+        i.value()->setCoverButtonsHidden(hideCoverButtons);
+    }
+}
+
+/*!
  * \brief Internally called to setup the UI.
  */
 void TagEdit::setupUi()

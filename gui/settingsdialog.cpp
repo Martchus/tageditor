@@ -73,6 +73,7 @@ bool EditorGeneralOptionPage::apply()
         saveAndShowNextOnEnter() = ui()->nextWhenPressingEnterCheckBox->isChecked();
         askBeforeDeleting() = ui()->askBeforeDeletingCheckBox->isChecked();
         hideTagSelectionComboBox() = ui()->hideTagSelectionComboBoxCheckBox->isChecked();
+        hideCoverButtons() = ui()->hideCoverButtonsCheckBox->isChecked();
     }
     return true;
 }
@@ -102,6 +103,7 @@ void EditorGeneralOptionPage::reset()
         ui()->nextWhenPressingEnterCheckBox->setChecked(saveAndShowNextOnEnter());
         ui()->askBeforeDeletingCheckBox->setChecked(askBeforeDeleting());
         ui()->hideTagSelectionComboBoxCheckBox->setChecked(hideTagSelectionComboBox());
+        ui()->hideCoverButtonsCheckBox->setChecked(hideCoverButtons());
     }
 }
 

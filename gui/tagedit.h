@@ -48,6 +48,7 @@ public slots:
     void restore();
     void apply();
     void invalidate();
+    void setCoverButtonsHidden(bool hideCoverButtons);
 
 signals:
     void returnPressed();

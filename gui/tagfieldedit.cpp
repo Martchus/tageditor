@@ -213,6 +213,16 @@ bool TagFieldEdit::canApply(KnownField field) const
 }
 
 /*!
+ * \brief Sets whether the cover buttons are hidden.
+ */
+void TagFieldEdit::setCoverButtonsHidden(bool hideCoverButtons)
+{
+    if(m_pictureSelection) {
+        m_pictureSelection->setCoverButtonsHidden(hideCoverButtons);
+    }
+}
+
+/*!
  * \brief Internally called to determine the data type of the current tag field.
  */
 TagDataType TagFieldEdit::determineDataType()

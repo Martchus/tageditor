@@ -51,6 +51,8 @@ public slots:
     void removeSelected();
     void extractSelected();
     void displaySelected();
+    void changeMimeTypeOfSelected();
+    void setCoverButtonsHidden(bool hideCoverButtons);
 
 signals:
     void pictureChanged();
@@ -66,6 +68,7 @@ private slots:
     void updateDescription(int newIndex);
     void updateDescription(int lastIndex, int newIndex);
     void updatePreview(int index);
+    void showContextMenu();
 
 private:
     void setup(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);

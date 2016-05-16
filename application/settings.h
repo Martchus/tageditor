@@ -46,6 +46,7 @@ bool &forceFullParse();
 #ifndef TAGEDITOR_NO_WEBVIEW
 bool &noWebView();
 #endif
+bool &hideCoverButtons();
 
 // file browser
 bool &hideBackupFiles();

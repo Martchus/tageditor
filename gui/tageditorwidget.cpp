@@ -50,6 +50,7 @@
 #include <algorithm>
 
 using namespace std;
+using namespace std::placeholders;
 using namespace Utility;
 using namespace Dialogs;
 using namespace Widgets;
@@ -1223,6 +1224,7 @@ void TagEditorWidget::applySettingsFromDialog()
         break;
     }
     m_ui->actionManage_tags_automatically_when_loading_file->setChecked(Settings::autoTagManagement());
+    foreachTagEdit(bind(&TagEdit::setCoverButtonsHidden, _1, Settings::hideCoverButtons()));
     // ensure info view is displayed/not displayed according to settings
     initInfoView();
     updateInfoView();

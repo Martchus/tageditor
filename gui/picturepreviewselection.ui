@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>284</width>
-    <height>230</height>
+    <height>242</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -99,6 +99,9 @@
           <width>190</width>
           <height>170</height>
          </size>
+        </property>
+        <property name="contextMenuPolicy">
+         <enum>Qt::CustomContextMenu</enum>
         </property>
         <property name="verticalScrollBarPolicy">
          <enum>Qt::ScrollBarAlwaysOff</enum>
