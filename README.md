@@ -1,13 +1,14 @@
 # Tag Editor
-A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus and Matroska.
+A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska.
 
 ## Supported formats
 The tag editor can read and write the following tag formats:
-- iTunes-style MP4 tags (MP4-DASH is supported)
+- iTunes-style MP4/M4A tags (MP4-DASH is supported)
 - ID3v1 and ID3v2 tags
-  - conversion between ID3v1 and different versions of ID3v2
+  - conversion between ID3v1 and different versions of ID3v2 is possible
 - Vorbis, Opus and FLAC comments in Ogg streams
   - cover art via "METADATA_BLOCK_PICTURE" is supported
+- Vorbis comments and "METADATA_BLOCK_PICTURE" in raw FLAC streams
 - Matroska/WebM tags and attachments
 
 ## Additional features
@@ -32,7 +33,8 @@ or appending the tag. Usage of padding can be configured:
 
 However, it is also possible to force rewriting the entire file.
 
-Taking advantage of padding is currently not supported when dealing with Ogg streams.
+Taking advantage of padding is currently not supported when dealing with Ogg streams (it is supported when
+dealing with raw FLAC streams).
 
 ## Download / repository
 I currently provide packages for Arch Linux and Windows. For more information checkout my
