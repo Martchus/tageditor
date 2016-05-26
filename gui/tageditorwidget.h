@@ -50,7 +50,7 @@ class TagEditorWidget : public QWidget
     
 public:
     explicit TagEditorWidget(QWidget *parent = nullptr);
-    virtual ~TagEditorWidget();
+    ~TagEditorWidget();
 
 public:
     QMutex &fileOperationMutex();

@@ -6,6 +6,7 @@
 #include "./fileinfomodel.h"
 
 #include "../application/settings.h"
+#include "../application/targetlevelmodel.h"
 #include "../misc/htmlinfo.h"
 #include "../misc/utility.h"
 
@@ -56,6 +57,7 @@ using namespace Dialogs;
 using namespace Widgets;
 using namespace ThreadingUtils;
 using namespace Media;
+using namespace Models;
 
 namespace QtGui {
 
@@ -237,7 +239,7 @@ void TagEditorWidget::updateDocumentTitleEdits()
 {
     // get container, segment count and present titles
     AbstractContainer *container = m_fileInfo.container();
-    int segmentCount = container ? static_cast<int>(container->segmentCount()) : 0;
+    const int segmentCount = container ? static_cast<int>(container->segmentCount()) : 0;
     const vector<string> &titles = container ? container->titles() : vector<string>();
 
     // get layout
@@ -470,7 +472,9 @@ void TagEditorWidget::updateTagManagementMenu()
         if(m_fileInfo.areTagsSupported() && m_fileInfo.container()) {
             // there is a container object which is able to create tags
             QString label;
-            if(m_fileInfo.containerFormat() == ContainerFormat::Matroska) {
+            switch(m_fileInfo.containerFormat()) {
+            case ContainerFormat::Matroska:
+            case ContainerFormat::Webm:
                 // tag format supports targets (Matroska tags are currently the only tag format supporting targets.)
                 label = tr("Matroska tag");
                 connect(m_addTagMenu->addAction(label), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [this] (MediaFileInfo &file) -> Media::Tag * {
@@ -483,7 +487,9 @@ void TagEditorWidget::updateTagManagementMenu()
                             }
                             return nullptr;
                         }));
-            } else {
+                break;
+
+            default:
                 // tag format does not support targets
                 if(!m_fileInfo.container()->tagCount()) {
                     switch(m_fileInfo.containerFormat()) {
@@ -491,7 +497,7 @@ void TagEditorWidget::updateTagManagementMenu()
                         label = tr("MP4/iTunes tag");
                         break;
                     case ContainerFormat::Ogg:
-                        label = tr("Vorbis/Opus comment");
+                        label = tr("Vorbis comment");
                         break;
                     default:
                         label = tr("Tag");
@@ -502,16 +508,28 @@ void TagEditorWidget::updateTagManagementMenu()
                 }
             }
         } else {
-            // there is no container object which is able to create tags; creation of ID3 tags is always possible
-            if(!m_fileInfo.hasId3v1Tag()) {
-                connect(m_addTagMenu->addAction(tr("ID3v1 tag")), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [] (MediaFileInfo &file) {
-                            return file.createId3v1Tag();
-                        }));
-            }
-            if(!m_fileInfo.hasId3v2Tag()) {
-                connect(m_addTagMenu->addAction(tr("ID3v2 tag")), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [] (MediaFileInfo &file) {
-                            return file.createId3v2Tag();
-                        }));
+            // there is no container object which is able to create tags
+            switch(m_fileInfo.containerFormat()) {
+            case ContainerFormat::Flac:
+                if(!m_fileInfo.vorbisComment()) {
+                    connect(m_addTagMenu->addAction(tr("Vorbis comment")), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [] (MediaFileInfo &file) {
+                                return file.createVorbisComment();
+                            }));
+                }
+                break;
+
+            default:
+                // creation of ID3 tags is always possible
+                if(!m_fileInfo.hasId3v1Tag()) {
+                    connect(m_addTagMenu->addAction(tr("ID3v1 tag")), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [] (MediaFileInfo &file) {
+                                return file.createId3v1Tag();
+                            }));
+                }
+                if(!m_fileInfo.hasId3v2Tag()) {
+                    connect(m_addTagMenu->addAction(tr("ID3v2 tag")), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [] (MediaFileInfo &file) {
+                                return file.createId3v2Tag();
+                            }));
+                }
             }
         }
         // add "Remove tag" and "Change target" actions
@@ -539,7 +557,7 @@ void TagEditorWidget::updateTagManagementMenu()
 }
 
 /*!
- * \brief Inserts the title from the filename keeping a possibly available title from the tags.
+ * \brief Inserts the title from the filename if no title is available from the tags.
  * \remarks Does nothing if there are no tags assigned and if this feature is not enabled in the settings.
  */
 void TagEditorWidget::insertTitleFromFilename()
@@ -548,8 +566,13 @@ void TagEditorWidget::insertTitleFromFilename()
         QString title;
         int trackNum;
         parseFileName(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()), title, trackNum);
-        TagValue titleValue = qstringToTagValue(title, TagTextEncoding::Utf16LittleEndian);
+        const TagValue titleValue = qstringToTagValue(title, TagTextEncoding::Utf16LittleEndian);
         foreachTagEdit([&titleValue] (TagEdit *edit) {
+            for(const Tag *tag : edit->tags()) {
+                if(tag->supportsTarget() && tag->isTargetingLevel(TagTargetLevel::Part)) {
+                    return;
+                }
+            }
             edit->setValue(KnownField::Title, titleValue, PreviousValueHandling::Keep);
         });
     }
@@ -849,11 +872,19 @@ void TagEditorWidget::showFile(char result)
         }
         // create appropriate tags according to file type and user preferences when automatic tag management is enabled
         if(Settings::autoTagManagement()) {
+            const QList<ChecklistItem> &targetItems = Settings::defaultTargetsModel().items();
+            vector<TagTarget> requiredTargets;
+            requiredTargets.reserve(2);
+            for(const ChecklistItem &targetItem : targetItems) {
+                if(targetItem.isChecked()) {
+                    requiredTargets.emplace_back(containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
+                }
+            }
             if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                                 Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed())) {
+                                                 Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets)) {
                 if(confirmCreationOfId3TagForUnsupportedFile()) {
                     m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                                     Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed());
+                                                     Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets);
                 }
             }
             // tags might have been adjusted -> reload tags

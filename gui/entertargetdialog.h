@@ -13,6 +13,7 @@ class ChecklistModel;
 
 namespace Media {
 class MediaFileInfo;
+enum class ContainerFormat;
 }
 
 namespace QtGui {
@@ -42,6 +43,7 @@ private:
     Models::ChecklistModel *m_chaptersModel;
     Models::ChecklistModel *m_editionsModel;
     Models::ChecklistModel *m_attachmentsModel;
+    Media::ContainerFormat m_currentContainerFormat;
 };
 
 }

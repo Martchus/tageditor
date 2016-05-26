@@ -79,6 +79,10 @@ size_t &minPadding();
 size_t &maxPadding();
 size_t &preferredPadding();
 
+// targets
+class TargetLevelModel;
+TargetLevelModel &defaultTargetsModel();
+
 // fields
 class KnownFieldModel;
 KnownFieldModel &selectedFieldsModel();

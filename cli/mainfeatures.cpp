@@ -791,7 +791,7 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
                     // write tag name and target, eg. MP4/iTunes tag
                     cout << tag->typeName();
                     if(!tag->target().isEmpty()) {
-                        cout << " targeting \"" << tag->target().toString() << "\"";
+                        cout << " targeting \"" << tag->targetString() << "\"";
                     }
                     cout << endl;
                     // iterate through fields specified by the user

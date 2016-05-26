@@ -1,5 +1,6 @@
 #include "./settings.h"
 #include "./knownfieldmodel.h"
+#include "./targetlevelmodel.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
@@ -167,6 +168,13 @@ size_t &preferredPadding()
 {
     static size_t v = 0;
     return v;
+}
+
+// targets
+TargetLevelModel &defaultTargetsModel()
+{
+    static TargetLevelModel model(nullptr, TargetLevelModel::DefaultSelection::MostUsefulTargets);
+    return model;
 }
 
 // fields
@@ -387,6 +395,7 @@ void restore()
     keepVersionOfExistingId3v2Tag() = settings.value(QStringLiteral("keepversionofexistingtag"), true).toBool();
     mergeMultipleSuccessiveId3v2Tags() = settings.value(QStringLiteral("mergemultiplesuccessivetags"), true).toBool();
     settings.endGroup();
+    defaultTargetsModel().restore(settings, QStringLiteral("targets"));
     settings.beginGroup(QStringLiteral("filelayout"));
     forceRewrite() = settings.value(QStringLiteral("forcerewrite"), true).toBool();
     switch(settings.value(QStringLiteral("tagpos")).toInt()) {
@@ -483,6 +492,7 @@ void save()
     settings.setValue(QStringLiteral("keepversionofexistingtag"), keepVersionOfExistingId3v2Tag());
     settings.setValue(QStringLiteral("mergemultiplesuccessivetags"), mergeMultipleSuccessiveId3v2Tags());
     settings.endGroup();
+    defaultTargetsModel().save(settings, QStringLiteral("targets"));
     settings.beginGroup(QStringLiteral("filelayout"));
     settings.setValue(QStringLiteral("forcerewrite"), forceRewrite());
     settings.setValue(QStringLiteral("tagpos"), static_cast<int>(preferredTagPosition()));

@@ -61,6 +61,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
     ChecklistModel(parent)
 {
     QList<ChecklistItem> items;
+    items.reserve(27);
     Qt::CheckState defaultSelected = defaultSelection == DefaultSelection::CommonFields ? Qt::Checked : Qt::Unchecked;
     items << mkItem(KnownField::Title, defaultSelected);
     items << mkItem(KnownField::Album, defaultSelected);

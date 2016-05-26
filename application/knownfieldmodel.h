@@ -1,5 +1,5 @@
-#ifndef KNOWNFIELDSELECTION_H
-#define KNOWNFIELDSELECTION_H
+#ifndef KNOWNFIELDMODEL_H
+#define KNOWNFIELDMODEL_H
 
 #include <qtutilities/models/checklistmodel.h>
 
@@ -40,4 +40,4 @@ inline Models::ChecklistItem KnownFieldModel::mkItem(Media::KnownField field, Qt
 
 }
 
-#endif // KNOWNFIELDSELECTION_H
+#endif // KNOWNFIELDMODEL_H

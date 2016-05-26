@@ -14,6 +14,7 @@ set(META_VERSION_PATCH 1)
 # add project files
 set(HEADER_FILES
     application/knownfieldmodel.h
+    application/targetlevelmodel.h
     application/main.h
     application/settings.h
     cli/mainfeatures.h
@@ -22,6 +23,7 @@ set(HEADER_FILES
 )
 set(SRC_FILES
     application/knownfieldmodel.cpp
+    application/targetlevelmodel.cpp
     application/main.cpp
     application/settings.cpp
     cli/mainfeatures.cpp
@@ -95,6 +97,7 @@ set(WIDGETS_UI_FILES
     gui/id3v2optionpage.ui
     gui/id3v1optionpage.ui
     gui/tagprocessinggeneraloptionpage.ui
+    gui/tagprocessingtargetsoptionpage.ui
     gui/editorgeneraloptionpage.ui
     gui/filebrowsergeneraloptionpage.ui
     gui/mainwindow.ui

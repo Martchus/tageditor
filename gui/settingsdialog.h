@@ -11,6 +11,7 @@
 #include "ui_tagprocessinggeneraloptionpage.h"
 #include "ui_id3v1optionpage.h"
 #include "ui_id3v2optionpage.h"
+#include "ui_tagprocessingtargetsoptionpage.h"
 #include "ui_filelayout.h"
 
 #include <qtutilities/settingsdialog/settingsdialog.h>
@@ -20,6 +21,7 @@
 
 namespace Settings {
 class KnownFieldModel;
+class TargetLevelModel;
 }
 
 DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE(QtAppearanceOptionPage)
@@ -53,6 +55,11 @@ DECLARE_UI_FILE_BASED_OPTION_PAGE(TagProcessingGeneralOptionPage)
 DECLARE_UI_FILE_BASED_OPTION_PAGE(Id3v1OptionPage)
 
 DECLARE_UI_FILE_BASED_OPTION_PAGE(Id3v2OptionPage)
+
+BEGIN_DECLARE_UI_FILE_BASED_OPTION_PAGE(TagProcessingTargetsOptionPage)
+    DECLARE_SETUP_WIDGETS
+    Settings::TargetLevelModel *m_model;
+END_DECLARE_OPTION_PAGE
 
 DECLARE_UI_FILE_BASED_OPTION_PAGE_CUSTOM_SETUP(FileLayoutPage)
 

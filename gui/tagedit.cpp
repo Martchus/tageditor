@@ -144,7 +144,7 @@ QString TagEdit::generateLabel() const
             res.append(tr(" with different targets"));
         } else {
             if(!target.isEmpty()) {
-                res.append(tr(" targeting %1").arg(QString::fromLocal8Bit(target.toString().c_str())));
+                res.append(tr(" targeting %1").arg(QString::fromLocal8Bit(m_tags.front()->targetString().c_str())));
             }
         }
         return res;

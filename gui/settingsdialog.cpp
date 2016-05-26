@@ -3,6 +3,7 @@
 
 #include "../application/settings.h"
 #include "../application/knownfieldmodel.h"
+#include "../application/targetlevelmodel.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/backuphelper.h>
@@ -140,6 +141,7 @@ QWidget *EditorTempOptionPage::setupWidget()
 
 // EditorFieldsOptionPage
 EditorFieldsOptionPage::EditorFieldsOptionPage(QWidget *parentWidget) :
+    EditorFieldsOptionPageBase(parentWidget),
     m_model(nullptr)
 {}
 
@@ -443,6 +445,40 @@ void Id3v2OptionPage::reset()
     }
 }
 
+// TagProcessingTargetsOptionPage
+TagProcessingTargetsOptionPage::TagProcessingTargetsOptionPage(QWidget *parentWidget) :
+    TagProcessingTargetsOptionPageBase(parentWidget),
+    m_model(nullptr)
+{}
+
+TagProcessingTargetsOptionPage::~TagProcessingTargetsOptionPage()
+{}
+
+bool TagProcessingTargetsOptionPage::apply()
+{
+    if(hasBeenShown() && m_model) {
+        Settings::defaultTargetsModel().setItems(m_model->items());
+    }
+    return true;
+}
+
+void TagProcessingTargetsOptionPage::reset()
+{
+    if(hasBeenShown() && m_model) {
+        m_model->setItems(Settings::defaultTargetsModel().items());
+    }
+}
+
+QWidget *TagProcessingTargetsOptionPage::setupWidget()
+{
+    auto *w = TagProcessingTargetsOptionPageBase::setupWidget();
+    if(!m_model) {
+        m_model = new TargetLevelModel(w);
+    }
+    ui()->targetsToBeAddedListView->setModel(m_model);
+    return w;
+}
+
 // FileLayoutPage
 FileLayoutPage::FileLayoutPage(QWidget *parentWidget) :
     FileLayoutPageBase(parentWidget)
@@ -548,8 +584,8 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category = new Dialogs::OptionCategory(this);
     category->setDisplayName(tr("Tag processing"));
     category->assignPages(QList<Dialogs::OptionPage *>()
-                          << new TagProcessingGeneralOptionPage
-                          << new Id3v1OptionPage << new Id3v2OptionPage << new FileLayoutPage);
+                          << new TagProcessingGeneralOptionPage << new Id3v1OptionPage
+                          << new Id3v2OptionPage << new TagProcessingTargetsOptionPage << new FileLayoutPage);
     category->setIcon(QIcon::fromTheme(QStringLiteral("tag"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png"))));
     categories << category;
 

@@ -31,24 +31,24 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     filesArg(filesArg),
     verboseArg(verboseArg),
     docTitleArg("doc-title", "d", "specifies the document title (has no affect if not supported by the container)"),
-    removeOtherFieldsArg("remove-other-fields", string(), "if present ALL unspecified tag fields will be removed (to remove a specific field use eg. \"album=\")"),
-    treatUnknownFilesAsMp3FilesArg("treat-unknown-as-mp3", string(), "if present unknown files will be treatet as MP3 files"),
-    id3v1UsageArg("id3v1-usage", string(), "specifies the ID3v1 usage (only used when already present by default); only relevant when dealing with MP3 files (or files treated as such)"),
-    id3v2UsageArg("id3v2-usage", string(), "specifies the ID3v2 usage (always used by default); only relevant when dealing with MP3 files (or files treated as such)"),
-    mergeMultipleSuccessiveTagsArg("merge-successive-tags", string(), "if present multiple successive ID3v2 tags will be merged"),
-    id3v2VersionArg("id3v2-version", string(), "forces a specific ID3v2 version to be used; only relevant when ID3v2 is used"),
-    encodingArg("encoding", string(), "specifies the preferred encoding"),
-    removeTargetsArg("remove-targets", string(), "removes all tags with the specified targets (which must be separated by \",\")"),
-    attachmentsArg("attachments", string(), "specifies attachments to be added/updated/removed (multiple attachments must be separated by \",\""),
+    removeOtherFieldsArg("remove-other-fields", nullptr, "if present ALL unspecified tag fields will be removed (to remove a specific field use eg. \"album=\")"),
+    treatUnknownFilesAsMp3FilesArg("treat-unknown-as-mp3", nullptr, "if present unknown files will be treatet as MP3 files"),
+    id3v1UsageArg("id3v1-usage", nullptr, "specifies the ID3v1 usage (only used when already present by default); only relevant when dealing with MP3 files (or files treated as such)"),
+    id3v2UsageArg("id3v2-usage", nullptr, "specifies the ID3v2 usage (always used by default); only relevant when dealing with MP3 files (or files treated as such)"),
+    mergeMultipleSuccessiveTagsArg("merge-successive-tags", nullptr, "if present multiple successive ID3v2 tags will be merged"),
+    id3v2VersionArg("id3v2-version", nullptr, "forces a specific ID3v2 version to be used; only relevant when ID3v2 is used"),
+    encodingArg("encoding", nullptr, "specifies the preferred encoding"),
+    removeTargetsArg("remove-targets", nullptr, "removes all tags with the specified targets (which must be separated by \",\")"),
+    attachmentsArg("attachments", nullptr, "specifies attachments to be added/updated/removed (multiple attachments must be separated by \",\""),
     removeExistingAttachmentsArg("remove-existing-attachments", "ra", "specifies names/IDs of existing attachments to be removed"),
-    minPaddingArg("min-padding", string(), "specifies the minimum padding before the media data"),
-    maxPaddingArg("max-padding", string(), "specifies the maximum padding before the media data"),
-    prefPaddingArg("preferred-padding", string(), "specifies the preferred padding before the media data"),
-    tagPosArg("tag-pos", string(), "specifies the preferred tag position"),
-    forceTagPosArg("force-tag-pos", string(), "forces the specified tag postion to be used even if it requires the file to be rewritten"),
-    indexPosArg("index-pos", string(), "specifies the preferred index position"),
-    forceIndexPosArg("force-index-pos", string(), "forces the specified index postion to be used even if it requires the file to be rewritten"),
-    forceRewriteArg("force-rewrite", string(), "forces the file to rewritten from the scratch"),
+    minPaddingArg("min-padding", nullptr, "specifies the minimum padding before the media data"),
+    maxPaddingArg("max-padding", nullptr, "specifies the maximum padding before the media data"),
+    prefPaddingArg("preferred-padding", nullptr, "specifies the preferred padding before the media data"),
+    tagPosArg("tag-pos", nullptr, "specifies the preferred tag position"),
+    forceTagPosArg("force-tag-pos", nullptr, "forces the specified tag postion to be used even if it requires the file to be rewritten"),
+    indexPosArg("index-pos", nullptr, "specifies the preferred index position"),
+    forceIndexPosArg("force-index-pos", nullptr, "forces the specified index postion to be used even if it requires the file to be rewritten"),
+    forceRewriteArg("force-rewrite", nullptr, "forces the file to rewritten from the scratch"),
     setTagInfoArg("set-tag-info", "set", "sets the values of all specified tag fields")
 {
     docTitleArg.setCombinable(true);
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     outputFileArg.setRequired(true);
     outputFileArg.setCombinable(true);
     // print field names
-    Argument printFieldNamesArg("print-field-names", string(), "prints available field names");
+    Argument printFieldNamesArg("print-field-names", nullptr, "prints available field names");
     printFieldNamesArg.setCallback(Cli::printFieldNames);
     // display general file info
     Argument displayFileInfoArg("display-file-info", "info", "displays general file information");
@@ -162,19 +162,19 @@ int main(int argc, char *argv[])
     Argument validateArg("validate", "c", "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     validateArg.setDenotesOperation(true);
     validateArg.setCombinable(true);
-    Argument genInfoArg("html-info", string(), "generates technical information about the specified file as HTML document");
+    Argument genInfoArg("html-info", nullptr, "generates technical information about the specified file as HTML document");
     genInfoArg.setDenotesOperation(true);
     genInfoArg.setSecondaryArguments({&fileArg, &validateArg, &outputFileArg});
     genInfoArg.setCallback(std::bind(Cli::generateFileInfo, _1, std::cref(fileArg), std::cref(outputFileArg), std::cref(validateArg)));
     // remove backup files
-    Argument remBackupFilesArg("remove-backup-files", string(), "removes all files with \".bak\" suffix in the given directory and in subdirectories if recursive option is present");
+    Argument remBackupFilesArg("remove-backup-files", nullptr, "removes all files with \".bak\" suffix in the given directory and in subdirectories if recursive option is present");
     remBackupFilesArg.setDenotesOperation(true);
     remBackupFilesArg.setCallback(std::bind(Cli::removeBackupFiles, _1, std::cref(recursiveArg)));
     remBackupFilesArg.setValueNames({"directory"});
     remBackupFilesArg.setRequiredValueCount(1);
     remBackupFilesArg.setSecondaryArguments({&recursiveArg});
     // renaming utility
-    Argument renamingUtilityArg("renaming-utility", string(), "launches the renaming utility instead of the main GUI");
+    Argument renamingUtilityArg("renaming-utility", nullptr, "launches the renaming utility instead of the main GUI");
     renamingUtilityArg.setCombinable(true);
     // set arguments to parser
     qtConfigArgs.qtWidgetsGuiArg().addSecondaryArgument(&filesArg);

@@ -64,7 +64,8 @@ EnterTargetDialog::EnterTargetDialog(QWidget *parent) :
     m_tracksModel(new ChecklistModel(this)),
     m_chaptersModel(new ChecklistModel(this)),
     m_editionsModel(new ChecklistModel(this)),
-    m_attachmentsModel(new ChecklistModel(this))
+    m_attachmentsModel(new ChecklistModel(this)),
+    m_currentContainerFormat(ContainerFormat::Unknown)
 {
     // setup UI
     m_ui->setupUi(this);
@@ -79,7 +80,7 @@ EnterTargetDialog::EnterTargetDialog(QWidget *parent) :
     m_ui->attachmentsListView->setModel(m_attachmentsModel);
     // connect signals and slots
     connect(m_ui->levelSpinBox, static_cast<void (QSpinBox:: *) (int)>(&QSpinBox::valueChanged), this, &EnterTargetDialog::updateLevelNamePlaceholderText);
-    connect(m_ui->confirmPushButton,  &QPushButton::clicked, this, &EnterTargetDialog::accept);
+    connect(m_ui->confirmPushButton, &QPushButton::clicked, this, &EnterTargetDialog::accept);
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &EnterTargetDialog::reject);
 }
 
@@ -88,7 +89,8 @@ EnterTargetDialog::~EnterTargetDialog()
 
 void EnterTargetDialog::updateLevelNamePlaceholderText(int i)
 {
-    m_ui->levelNameLineEdit->setPlaceholderText(QString::fromLocal8Bit(matroskaTargetTypeName(static_cast<uint32>(i))));
+    const char *levelName = i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<uint32>(i))) : nullptr;
+    m_ui->levelNameLineEdit->setPlaceholderText(levelName ? QString::fromUtf8(levelName) : QString());
 }
 
 Media::TagTarget EnterTargetDialog::target() const
@@ -105,6 +107,7 @@ Media::TagTarget EnterTargetDialog::target() const
 
 void EnterTargetDialog::setTarget(const TagTarget &target, const MediaFileInfo *file)
 {
+    m_currentContainerFormat = file ? file->containerFormat() : ContainerFormat::Unknown;
     if(m_ui->levelSpinBox->maximum() >= 0
             && target.level() <= static_cast<unsigned int>(m_ui->levelSpinBox->maximum())
             && (m_ui->levelSpinBox->minimum() < 0 || target.level() >= static_cast<unsigned int>(m_ui->levelSpinBox->minimum()))) {

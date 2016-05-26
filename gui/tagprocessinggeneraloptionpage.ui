@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>361</width>
-    <height>398</height>
+    <width>647</width>
+    <height>330</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -106,7 +106,7 @@
     <widget class="QLabel" name="label">
      <property name="text">
       <string>&lt;span style=&quot;font-weight: bold;&quot;&gt;Automatic tag management&lt;/span&gt;
-&lt;br&gt;If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually and settings like ID3 usage have no effect.</string>
+&lt;br&gt;If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually (eg. adding an ID3 tag if none is present yet) and settings like ID3 usage have no effect.</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -138,7 +138,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="preferredTextEncodingButtonGroup"/>
   <buttongroup name="unsupportedButtonGroup"/>
+  <buttongroup name="preferredTextEncodingButtonGroup"/>
  </buttongroups>
 </ui>

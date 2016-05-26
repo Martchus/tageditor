@@ -935,7 +935,7 @@ public:
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"), qstr(tag->version()));
                 }
                 if(tag->supportsTarget() && !tag->target().isEmpty()) {
-                    rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Target level"), qstr(tag->target().toString()));
+                    rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Target level"), qstr(tag->targetString()));
                 }
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(tag->size(), true)));
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Field count"), QString::number(tag->fieldCount()));

@@ -339,7 +339,7 @@ void FileInfoModel::updateCache()
                     auto *tagItem = defaultItem(tag->typeName());
                     ItemHelper tagHelper(tagItem);
                     tagHelper.appendRow(tr("Version"), tag->version());
-                    tagHelper.appendRow(tr("Target level"), tag->target().toString());
+                    tagHelper.appendRow(tr("Target level"), tag->targetString());
                     tagHelper.appendRow(tr("Size"), dataSizeToString(tag->size()));
                     tagHelper.appendRow(tr("Field count"), tag->fieldCount());
                     tagsItem->appendRow(tagItem);
