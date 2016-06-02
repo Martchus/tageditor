@@ -35,7 +35,8 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     m_ui(new Ui::DbQueryWidget),
     m_tagEditorWidget(tagEditorWidget),
     m_model(nullptr),
-    m_coverIndex(-1)
+    m_coverIndex(-1),
+    m_menu(new QMenu(parent))
 {
     m_ui->setupUi(this);
 #ifdef Q_OS_WIN32
@@ -60,6 +61,16 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
 
     // restore settings
     m_ui->overrideCheckBox->setChecked(Settings::dbQueryOverride());
+
+    // setup menu
+    m_insertPresentDataAction = m_menu->addAction(tr("Insert present data"));
+    m_insertPresentDataAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-copy")));
+    m_insertPresentDataAction->setEnabled(m_tagEditorWidget->activeTagEdit());
+    connect(m_insertPresentDataAction, &QAction::triggered, this, &DbQueryWidget::insertSearchTermsFromActiveTagEdit);
+    QAction *clearSearchCriteria = m_menu->addAction(tr("Clear search criteria"));
+    clearSearchCriteria->setIcon(QIcon::fromTheme(QStringLiteral("edit-clear")));
+    connect(clearSearchCriteria, &QAction::triggered, this, &DbQueryWidget::clearSearchCriteria);
+    m_ui->menuPushButton->setMenu(m_menu);
 
     // connect signals and slots
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
@@ -194,7 +205,8 @@ void DbQueryWidget::setStatus(bool aborted)
 void DbQueryWidget::fileStatusChanged(bool, bool hasTags)
 {
     m_ui->applyPushButton->setEnabled(hasTags && m_ui->resultsTreeView->selectionModel() && m_ui->resultsTreeView->selectionModel()->hasSelection());
-    insertSearchTermsFromTagEdit(m_tagEditorWidget->activeTagEdit());
+    insertSearchTermsFromActiveTagEdit();
+    m_insertPresentDataAction->setEnabled(hasTags);
 }
 
 void DbQueryWidget::applyResults()
@@ -246,6 +258,11 @@ void DbQueryWidget::applyResults()
             }
         }
     }
+}
+
+void DbQueryWidget::insertSearchTermsFromActiveTagEdit()
+{
+    insertSearchTermsFromTagEdit(m_tagEditorWidget->activeTagEdit());
 }
 
 void DbQueryWidget::showResultsContextMenu()
@@ -320,6 +337,14 @@ void DbQueryWidget::showCoverFromIndex(const QModelIndex &index)
         m_coverIndex = -1;
         showCover(*m_model->cover(index));
     }
+}
+
+void DbQueryWidget::clearSearchCriteria()
+{
+    m_ui->titleLineEdit->clear();
+    m_ui->albumLineEdit->clear();
+    m_ui->artistLineEdit->clear();
+    m_ui->trackSpinBox->setValue(0);
 }
 
 bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)

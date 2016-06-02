@@ -646,7 +646,7 @@
     </message>
     <message>
         <location filename="../gui/dbquerywidget.ui" line="53"/>
-        <source>Search criteria</source>
+        <source>Search &amp;criteria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -683,47 +683,62 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="264"/>
+        <location filename="../gui/dbquerywidget.ui" line="280"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="271"/>
+        <location filename="../gui/dbquerywidget.ui" line="287"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="285"/>
+        <location filename="../gui/dbquerywidget.ui" line="301"/>
+        <source>Inserts the selected result into the current tag (doesn&apos;t save anything)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.ui" line="304"/>
         <source>Apply results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="47"/>
+        <location filename="../gui/dbquerywidget.cpp" line="48"/>
         <source>Search hasn&apos;t been started.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="114"/>
+        <location filename="../gui/dbquerywidget.cpp" line="66"/>
+        <source>Insert present data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="70"/>
+        <source>Clear search criteria</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="125"/>
         <source>Insufficient search criteria supplied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="124"/>
+        <location filename="../gui/dbquerywidget.cpp" line="135"/>
         <source>Retrieving meta data ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="154"/>
+        <location filename="../gui/dbquerywidget.cpp" line="165"/>
         <source>Aborted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="166"/>
+        <location filename="../gui/dbquerywidget.cpp" line="177"/>
         <source>No results available</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/dbquerywidget.cpp" line="168"/>
+        <location filename="../gui/dbquerywidget.cpp" line="179"/>
         <source>%1 result(s) available</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -731,22 +746,22 @@
         </translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="229"/>
+        <location filename="../gui/dbquerywidget.cpp" line="241"/>
         <source>Retrieving cover art to be applied ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="261"/>
+        <location filename="../gui/dbquerywidget.cpp" line="278"/>
         <source>Show cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="290"/>
+        <location filename="../gui/dbquerywidget.cpp" line="307"/>
         <source>Retrieving cover art ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="304"/>
+        <location filename="../gui/dbquerywidget.cpp" line="321"/>
         <source>Cover - %1</source>
         <translation type="unfinished"></translation>
     </message>

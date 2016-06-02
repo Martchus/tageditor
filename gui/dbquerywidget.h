@@ -6,6 +6,8 @@
 #include <memory>
 
 QT_FORWARD_DECLARE_CLASS(QItemSelection)
+QT_FORWARD_DECLARE_CLASS(QMenu)
+QT_FORWARD_DECLARE_CLASS(QAction)
 
 namespace Settings {
 class KnownFieldModel;
@@ -34,12 +36,14 @@ public:
 public slots:
     void startSearch();
     void abortSearch();
+    void applyResults();
+    void insertSearchTermsFromActiveTagEdit();
+    void clearSearchCriteria();
 
 private slots:
     void showResults();
     void setStatus(bool aborted);
     void fileStatusChanged(bool opened, bool hasTags);
-    void applyResults();
     void showResultsContextMenu();
     void fetchAndShowCoverForSelection();
     void showCover(const QByteArray &data);
@@ -53,6 +57,8 @@ private:
     TagEditorWidget *m_tagEditorWidget;
     QueryResultsModel *m_model;
     int m_coverIndex;
+    QMenu *m_menu;
+    QAction *m_insertPresentDataAction;
 };
 
 }
