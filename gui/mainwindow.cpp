@@ -24,6 +24,7 @@
 #include <QFileDialog>
 #include <QFileSystemModel>
 #include <QTextStream>
+#include <QTextCodec>
 
 #include <iomanip>
 
@@ -467,6 +468,7 @@ void MainWindow::saveFileInformation()
                     QFile file(path);
                     if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
                         QTextStream stream(&file);
+                        stream.setCodec(QTextCodec::codecForName("UTF-8"));
                         stream << htmlData;
                         file.close();
                         if(file.error() != QFileDevice::NoError) {
