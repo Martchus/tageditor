@@ -29,7 +29,6 @@ public:
     Media::MediaFileInfo *fileInfo();
     void setFileInfo(Media::MediaFileInfo *fileInfo, bool updateUi = true);
     const QList<Media::AbstractAttachment *> &currentAttachments() const;
-    //template<class Container = std::initializer_list<Media::AbstractAttachment *> > void setCurrentAttachments(const Container &currentAttachments, bool updateUi = true);
 
 public slots:
     void clear();
@@ -63,19 +62,6 @@ inline const QList<Media::AbstractAttachment *> &AttachmentsEdit::currentAttachm
 {
     return m_currentAttachments;
 }
-
-//template<class Container>
-//void AttachmentsEdit::setCurrentAttachments(const Container &attachments, bool updateUi)
-//{
-//    m_currentAttachments.clear();
-//    m_currentAttachments.reserve(attachments.size());
-//    for(auto *attachment : attachments) {
-//        m_currentAttachments << attachment;
-//    }
-//    if(updateUi) {
-//        setupUi();
-//    }
-//}
 
 }
 
