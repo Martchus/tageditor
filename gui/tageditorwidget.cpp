@@ -823,7 +823,13 @@ void TagEditorWidget::showFile(char result)
         // update status
         updateFileStatusStatus();
         static const QString statusMsg(tr("The file could not be opened because an IO error occurred."));
-        QMessageBox::critical(this, windowTitle(), statusMsg);
+        auto msgBox = new QMessageBox(this);
+        msgBox->setIcon(QMessageBox::Critical);
+        msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+        msgBox->setWindowTitle(tr("Opening file - %1").arg(windowTitle()));
+        msgBox->setText(statusMsg);
+        msgBox->setInformativeText(tr("Opening file: ") + m_currentPath);
+        msgBox->show();
         emit statusMessage(statusMsg);
     } else {
         // update webview

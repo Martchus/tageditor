@@ -536,7 +536,7 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(track->size(), true)));
         }
         if(!track->duration().isNull()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(track->duration().toString(TimeSpanOutputFormat::WithMeasures)));
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(track->duration().toString(TimeSpanOutputFormat::WithMeasures)) % QStringLiteral(" (") % QString::number(track->duration().totalTicks()) % QChar(')'));
         }
         if(track->bitrate()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Avg. bitrate"), qstr(bitrateToString(track->bitrate())));

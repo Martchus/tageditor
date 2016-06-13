@@ -348,7 +348,7 @@ void MainWindow::showRenameFilesDlg()
 void MainWindow::selectNextFile()
 {
     QItemSelectionModel *selectionModel = m_ui->filesTreeView->selectionModel();
-    QModelIndexList selectedIndexes = selectionModel->selectedIndexes();
+    const QModelIndexList selectedIndexes = selectionModel->selectedIndexes();
     if(!selectedIndexes.isEmpty()) {
         selectNextFile(selectionModel, selectedIndexes.at(0), false);
     }
@@ -367,8 +367,8 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
         // a directory is selected -> go deeper
         if(m_fileFilterModel->canFetchMore(currentIndex)) {
             // files and subdirectories have to be fetched
-            // -> QFileSystemModel seems to use an extra thread to fetch files and directories
-            // -> fetchMore will return immediatly because
+            // -> QFileSystemModel seems to fetch files and directories async
+            // -> hence fetchMore will return immediatly
             // -> select next file when rowsInserted is emitted
             auto conn = make_shared<QMetaObject::Connection>();
             *conn = connect(m_fileFilterModel, &QAbstractItemModel::rowsInserted, [this, selectionModel, currentIndex, conn] (const QModelIndex &parent, int, int) {
