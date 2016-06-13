@@ -6,7 +6,7 @@ set(META_APP_NAME "Tag Editor")
 set(META_APP_CATEGORIES "Utility;Audio;Video;")
 set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
-set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus and Matroska.")
+set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska.")
 set(META_VERSION_MAJOR 1)
 set(META_VERSION_MINOR 4)
 set(META_VERSION_PATCH 1)
@@ -128,6 +128,10 @@ set(TS_FILES
 
 set(ICON_FILES
     resources/icons/hicolor/scalable/apps/${META_PROJECT_NAME}.svg
+)
+
+set(DOC_FILES
+    README.md
 )
 
 # find c++utilities

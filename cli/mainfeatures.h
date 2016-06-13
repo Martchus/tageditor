@@ -8,10 +8,7 @@
 #include <vector>
 
 namespace ApplicationUtilities {
-
-typedef std::vector<std::string> StringVector;
 class Argument;
-
 }
 
 namespace Cli {
@@ -35,21 +32,24 @@ struct SetTagInfoArgs
     ApplicationUtilities::Argument minPaddingArg;
     ApplicationUtilities::Argument maxPaddingArg;
     ApplicationUtilities::Argument prefPaddingArg;
-    ApplicationUtilities::Argument tagPosArg;
+    ApplicationUtilities::Argument tagPosValueArg;
     ApplicationUtilities::Argument forceTagPosArg;
-    ApplicationUtilities::Argument indexPosArg;
+    ApplicationUtilities::Argument tagPosArg;
+    ApplicationUtilities::Argument indexPosValueArg;
     ApplicationUtilities::Argument forceIndexPosArg;
+    ApplicationUtilities::Argument indexPosArg;
     ApplicationUtilities::Argument forceRewriteArg;
+    ApplicationUtilities::Argument valuesArg;
     ApplicationUtilities::Argument setTagInfoArg;
 };
 
-void printFieldNames(const ApplicationUtilities::StringVector &parameterValues);
-void displayFileInfo(const ApplicationUtilities::StringVector &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
-void generateFileInfo(const ApplicationUtilities::StringVector &parameterValues, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
-void displayTagInfo(const ApplicationUtilities::StringVector &parameterValues, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
-void setTagInfo(const ApplicationUtilities::StringVector &parameterValues, const Cli::SetTagInfoArgs &args);
-void extractField(const ApplicationUtilities::StringVector &parameterValues, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &verboseArg);
-void removeBackupFiles(const ApplicationUtilities::StringVector &parameterValues, const ApplicationUtilities::Argument &recursiveArg);
+void printFieldNames(const std::vector<const char *> &parameterValues);
+void displayFileInfo(const std::vector<const char *> &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
+void generateFileInfo(const std::vector<const char *> &parameterValues, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
+void displayTagInfo(const std::vector<const char *> &parameterValues, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
+void setTagInfo(const std::vector<const char *> &parameterValues, const Cli::SetTagInfoArgs &args);
+void extractField(const std::vector<const char *> &parameterValues, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &verboseArg);
+void removeBackupFiles(const std::vector<const char *> &parameterValues, const ApplicationUtilities::Argument &recursiveArg);
 
 }
 

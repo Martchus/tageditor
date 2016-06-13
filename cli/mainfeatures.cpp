@@ -151,7 +151,7 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullpt
     printNotifications(notifications, head, beVerbose);
 }
 
-void printFieldNames(const StringVector &parameterValues)
+void printFieldNames(const std::vector<const char *> &parameterValues)
 {
     CMD_UTILS_START_CONSOLE;
     VAR_UNUSED(parameterValues)
@@ -160,7 +160,7 @@ void printFieldNames(const StringVector &parameterValues)
             "recordlabel cover composer rating description" << endl;
 }
 
-void removeBackupFiles(const StringVector &parameterValues, const Argument &recursiveArg)
+void removeBackupFiles(const std::vector<const char *> &parameterValues, const Argument &recursiveArg)
 {
     CMD_UTILS_START_CONSOLE;
     QDir dir(QString::fromStdString(parameterValues.at(0)));
@@ -173,11 +173,11 @@ TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)
 {
     if(usageArg.isPresent()) {
         const auto &val = usageArg.values().front();
-        if(val == "never") {
+        if(!strcmp(val, "never")) {
             return TagUsage::Never;
-        } else if(val == "keepexisting") {
+        } else if(!strcmp(val, "keepexisting")) {
             return TagUsage::KeepExisting;
-        } else if(val == "always") {
+        } else if(!strcmp(val, "always")) {
             return TagUsage::Always;
         } else {
             cout << "Warning: The specified tag usage \"" << val << "\" is invalid and will be ignored." << endl;
@@ -190,15 +190,15 @@ TagTextEncoding parseEncodingDenotation(const Argument &encodingArg, TagTextEnco
 {
     if(encodingArg.isPresent()) {
         const auto &val = encodingArg.values().front();
-        if(val == "utf8") {
+        if(!strcmp(val, "utf8")) {
             return TagTextEncoding::Utf8;
-        } else if(val == "latin1") {
+        } else if(!strcmp(val, "latin1")) {
             return TagTextEncoding::Latin1;
-        } else if(val == "utf16be") {
+        } else if(!strcmp(val, "utf16be")) {
             return TagTextEncoding::Utf16BigEndian;
-        } else if(val == "utf16le") {
+        } else if(!strcmp(val, "utf16le")) {
             return TagTextEncoding::Utf16LittleEndian;
-        } else if(val == "auto") {
+        } else if(!strcmp(val, "auto")) {
         } else {
             cout << "Warning: The specified encoding \"" << val << "\" is invalid and will be ignored." << endl;
         }
@@ -210,11 +210,11 @@ ElementPosition parsePositionDenotation(const Argument &posArg, ElementPosition 
 {
     if(posArg.isPresent()) {
         const auto &val = posArg.values().front();
-        if(val == "front") {
+        if(!strcmp(val, "front")) {
             return ElementPosition::BeforeData;
-        } else if(val == "back") {
+        } else if(!strcmp(val, "back")) {
             return ElementPosition::AfterData;
-        } else if(val == "keep") {
+        } else if(!strcmp(val, "keep")) {
             return ElementPosition::Keep;
         } else {
             cout << "Warning: The specified position \"" << val << "\" is invalid and will be ignored." << endl;
@@ -227,8 +227,8 @@ uint64 parseUInt64(const Argument &arg, uint64 defaultValue)
 {
     if(arg.isPresent()) {
         try {
-            if(startsWith<string>(arg.values().front(), "0x")) {
-                return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front().substr(2), 16);
+            if(*arg.values().front() == '0' && *(arg.values().front() + 1) == 'x') {
+                return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front() + 2, 16);
             } else {
                 return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front());
             }
@@ -284,20 +284,21 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
     }
 }
 
-vector<FieldDenotation> parseFieldDenotations(const StringVector &fieldDenotations, bool readOnly)
+vector<FieldDenotation> parseFieldDenotations(const std::vector<const char *> &fieldDenotations, bool readOnly)
 {
     vector<FieldDenotation> fields;
     fields.reserve(fieldDenotations.size());
     TagType currentTagType = TagType::Unspecified;
     TagTarget currentTagTarget;
-    for(const string &fieldDenotationString : fieldDenotations) {
+    for(const char *fieldDenotationString : fieldDenotations) {
         // check for tag or target specifier
-        if(strncmp(fieldDenotationString.c_str(), "tag:", 4) == 0) {
-            if(fieldDenotationString.size() == 4) {
+        const auto fieldDenotationLen = strlen(fieldDenotationString);
+        if(strncmp(fieldDenotationString, "tag:", 4) == 0) {
+            if(fieldDenotationLen == 4) {
                 cout << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
             } else {
                 TagType tagType = TagType::Unspecified;
-                for(const auto &part : splitString(fieldDenotationString.substr(4), ",", EmptyPartsTreat::Omit)) {
+                for(const auto &part : splitString(fieldDenotationString + 4, ",", EmptyPartsTreat::Omit)) {
                     if(part == "id3v1") {
                         tagType |= TagType::Id3v1Tag;
                     } else if(part == "id3v2") {
@@ -326,8 +327,8 @@ vector<FieldDenotation> parseFieldDenotations(const StringVector &fieldDenotatio
             continue;
         }
         // read field name
-        auto equationPos = fieldDenotationString.find('=');
-        auto fieldName = equationPos != string::npos ? fieldDenotationString.substr(0, equationPos) : fieldDenotationString;        
+        const auto equationPos = strchr(fieldDenotationString, '=');
+        auto fieldName = equationPos ? string(fieldDenotationString, static_cast<size_t>(equationPos - fieldDenotationString)) : fieldDenotationString;
         // field name might denote increment ("+") or path disclosure (">")
         auto fieldNamePos = fieldName.size();
         DenotationType type = DenotationType::Normal;
@@ -354,7 +355,7 @@ vector<FieldDenotation> parseFieldDenotations(const StringVector &fieldDenotatio
             cout << "Warning: Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified." << endl;
             continue;
         } else if(++fieldNamePos < fieldName.size()) {
-            fieldName = fieldName.substr(0, fieldNamePos);
+            fieldName = string(fieldName, fieldNamePos);
         }
         // parse the denoted filed
         KnownField field;
@@ -424,11 +425,11 @@ vector<FieldDenotation> parseFieldDenotations(const StringVector &fieldDenotatio
         fieldDenotation.type = type;
         fieldDenotation.tagType = currentTagType;
         fieldDenotation.tagTarget = currentTagTarget;
-        if(equationPos != string::npos) {
+        if(equationPos) {
             if(readOnly) {
                 cout << "Warning: Specified value for \"" << fieldName << "\" will be ignored." << endl;
             } else {
-                fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(fieldDenotationString.data() + equationPos + 1)));
+                fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(equationPos + 1)));
             }
         }
     }
@@ -569,7 +570,7 @@ bool AttachmentInfo::next(AbstractContainer *container)
     return true;
 }
 
-void generateFileInfo(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
+void generateFileInfo(const std::vector<const char *> &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
     VAR_UNUSED(parameterValues)
@@ -581,7 +582,7 @@ void generateFileInfo(const StringVector &parameterValues, const Argument &input
         inputFileInfo.parseEverything();
         cout << "Saving file info of \"" << inputFileArg.values().front() << "\" ..." << endl;
         NotificationList origNotify;
-        QFile file(QString::fromLocal8Bit(outputFileArg.values().front().c_str()));
+        QFile file(QString::fromLocal8Bit(outputFileArg.values().front()));
         if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
             cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
         } else {
@@ -639,10 +640,10 @@ void printProperty(const char *propName, const intType value, const char *suffix
     }
 }
 
-void displayFileInfo(const StringVector &, const Argument &filesArg, const Argument &verboseArg)
+void displayFileInfo(const std::vector<const char *> &, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
-    if(!filesArg.valueCount()) {
+    if(filesArg.values().empty()) {
         cout << "Error: No files have been specified." << endl;
         return;
     }
@@ -766,10 +767,10 @@ void displayFileInfo(const StringVector &, const Argument &filesArg, const Argum
     }
 }
 
-void displayTagInfo(const StringVector &parameterValues, const Argument &filesArg, const Argument &verboseArg)
+void displayTagInfo(const std::vector<const char *> &parameterValues, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
-    if(!filesArg.valueCount()) {
+    if(filesArg.values().empty()) {
         cout << "Error: No files have been specified." << endl;
         return;
     }
@@ -864,10 +865,10 @@ void displayTagInfo(const StringVector &parameterValues, const Argument &filesAr
     }
 }
 
-void setTagInfo(const StringVector &parameterValues, const SetTagInfoArgs &args)
+void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagInfoArgs &args)
 {
     CMD_UTILS_START_CONSOLE;
-    if(!args.setTagInfoArg.valueCount()) {
+    if(args.setTagInfoArg.values().empty()) {
         cout << "Error: No files have been specified." << endl;
         return;
     }
@@ -888,7 +889,7 @@ void setTagInfo(const StringVector &parameterValues, const SetTagInfoArgs &args)
     targetsToRemove.emplace_back();
     bool validRemoveTargetsSpecified = false;
     for(const auto &targetDenotation : args.removeTargetsArg.values()) {
-        if(targetDenotation == ",") {
+        if(!strcmp(targetDenotation, ",")) {
             if(validRemoveTargetsSpecified) {
                 targetsToRemove.emplace_back();
             }
@@ -906,7 +907,7 @@ void setTagInfo(const StringVector &parameterValues, const SetTagInfoArgs &args)
             if(id3v2Version < 1 || id3v2Version > 4) {
                 throw ConversionException();
             }
-        } catch (ConversionException &) {
+        } catch (const ConversionException &) {
             id3v2Version = 3;
             cout << "Warning: The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << endl;
         }
@@ -1041,36 +1042,35 @@ void setTagInfo(const StringVector &parameterValues, const SetTagInfoArgs &args)
                         }
                         // add/update/remove attachments explicitely
                         AttachmentInfo currentInfo;
-                        for(const auto &value : args.attachmentsArg.values()) {
-                            const auto *data = value.data();
-                            if(value == ",") {
+                        for(const char *value : args.attachmentsArg.values()) {
+                            if(!strcmp(value, ",")) {
                                 attachmentsModified |= currentInfo.next(container);
-                            } else if(value == "add") {
+                            } else if(!strcmp(value, "add")) {
                                 currentInfo.action = AttachmentAction::Add;
-                            } else if(value == "update-by-id") {
+                            } else if(!strcmp(value, "update-by-id")) {
                                 currentInfo.action = AttachmentAction::UpdateById;
-                            } else if(value == "update-by-name") {
+                            } else if(!strcmp(value, "update-by-name")) {
                                 currentInfo.action = AttachmentAction::UpdateByName;
-                            } else if(value == "remove-by-id") {
+                            } else if(!strcmp(value, "remove-by-id")) {
                                 currentInfo.action = AttachmentAction::RemoveById;
-                            } else if(value == "remove-by-name") {
+                            } else if(!strcmp(value, "remove-by-name")) {
                                 currentInfo.action = AttachmentAction::RemoveByName;
-                            } else if(!strncmp(data, "id=", 3)) {
+                            } else if(!strncmp(value, "id=", 3)) {
                                 try {
-                                    currentInfo.id = stringToNumber<uint64, string>(data + 3);
+                                    currentInfo.id = stringToNumber<uint64, string>(value + 3);
                                 } catch(const ConversionException &) {
-                                    container->addNotification(NotificationType::Warning, "The specified attachment ID \"" + string(data + 3) + "\" is invalid.", context);
+                                    container->addNotification(NotificationType::Warning, "The specified attachment ID \"" + string(value + 3) + "\" is invalid.", context);
                                 }
-                            } else if(!strncmp(data, "path=", 5)) {
-                                currentInfo.path = data + 5;
-                            } else if(!strncmp(data, "name=", 5)) {
-                                currentInfo.name = data + 5;
-                            } else if(!strncmp(data, "mime=", 5)) {
-                                currentInfo.mime = data + 5;
-                            } else if(!strncmp(data, "desc=", 5)) {
-                                currentInfo.desc = data + 5;
+                            } else if(!strncmp(value, "path=", 5)) {
+                                currentInfo.path = value + 5;
+                            } else if(!strncmp(value, "name=", 5)) {
+                                currentInfo.name = value + 5;
+                            } else if(!strncmp(value, "mime=", 5)) {
+                                currentInfo.mime = value + 5;
+                            } else if(!strncmp(value, "desc=", 5)) {
+                                currentInfo.desc = value + 5;
                             } else {
-                                container->addNotification(NotificationType::Warning, "The attachment specification \"" + value + "\" is invalid and will be ignored.", context);
+                                container->addNotification(NotificationType::Warning, "The attachment specification \"" + string(value) + "\" is invalid and will be ignored.", context);
                             }
                         }
                         attachmentsModified |= currentInfo.next(container);
@@ -1105,7 +1105,7 @@ void setTagInfo(const StringVector &parameterValues, const SetTagInfoArgs &args)
     }
 }
 
-void extractField(const StringVector &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &verboseArg)
+void extractField(const std::vector<const char *> &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     const auto fields = parseFieldDenotations(parameterValues, true);
