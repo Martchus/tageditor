@@ -829,7 +829,7 @@ void TagEditorWidget::showFile(char result)
         auto msgBox = new QMessageBox(this);
         msgBox->setIcon(QMessageBox::Critical);
         msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
-        msgBox->setWindowTitle(tr("Opening file - %1").arg(windowTitle()));
+        msgBox->setWindowTitle(tr("Opening file - %1").arg(QCoreApplication::applicationName()));
         msgBox->setText(statusMsg);
         msgBox->setInformativeText(tr("Opening file: ") + m_currentPath);
         msgBox->show();
