@@ -8,6 +8,7 @@
 #include <tagparser/abstractattachment.h>
 
 #include <c++utilities/io/copy.h>
+#include <c++utilities/io/catchiofailure.h>
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -106,7 +107,8 @@ void AttachmentsEdit::showFileSelection()
             addFile(path);
         } catch(const Failure &) {
             QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added because the attachments of the file could not be parsed successfully."));
-        } catch(const ios_base::failure &) {
+        } catch(...) {
+            ::IoUtilities::catchIoFailure();
             QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added because an IO error occured."));
         }
     }
@@ -129,7 +131,8 @@ void AttachmentsEdit::extractSelected()
                         file.open(fileName.toLocal8Bit().data(), ios_base::out | ios_base::binary);
                         CopyHelper<0x1000> helper;
                         helper.copy(input, file, data->size());
-                    } catch (ios_base::failure &) {
+                    } catch(...) {
+                        ::IoUtilities::catchIoFailure();
                         QMessageBox::warning(this, QApplication::applicationName(), tr("An IO error occured when extracting the attached file."));
                     }
                 }

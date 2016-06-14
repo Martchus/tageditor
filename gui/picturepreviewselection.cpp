@@ -13,6 +13,7 @@
 #include <tagparser/vorbis/vorbiscommentfield.h>
 
 #include <c++utilities/misc/memory.h>
+#include <c++utilities/io/catchiofailure.h>
 
 #include <QEvent>
 #include <QGraphicsScene>
@@ -330,10 +331,11 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
                 emit pictureChanged();
             }
         }
-    } catch (const ios_base::failure &) {
-        QMessageBox::critical(this, QApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
-    } catch (Media::Failure &) {
+    } catch (const Media::Failure &) {
         QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to parse specified cover file."));
+    } catch(...) {
+        ::IoUtilities::catchIoFailure();
+        QMessageBox::critical(this, QApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
     }
     updatePreview(m_currentTypeIndex);
 }

@@ -28,6 +28,7 @@
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
+#include <c++utilities/io/catchiofailure.h>
 
 #include <QMessageBox>
 #include <QKeyEvent>
@@ -754,7 +755,8 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                 try {
                     // try to open with write access
                     m_fileInfo.reopen(false);
-                } catch(const ios_base::failure &) {
+                } catch(...) {
+                    ::IoUtilities::catchIoFailure();
                     // try to open read-only if opening with write access failed
                     m_fileInfo.reopen(true);
                 }
@@ -764,7 +766,8 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
             } catch(const Failure &) {
                 // the file has been opened; parsing notifications will be shown in the info box
                 result = FatalParsingError;
-            } catch(const ios_base::failure &) {
+            } catch(...) {
+                ::IoUtilities::catchIoFailure();
                 // the file could not be opened because an IO error occured
                 m_fileInfo.close(); // ensure file is closed
                 result = IoError;
@@ -1076,7 +1079,8 @@ bool TagEditorWidget::startSaving()
                 m_fileInfo.applyChanges();
             } catch(const Failure &) {
                 processingError = true;
-            } catch(const ios_base::failure &) {
+            } catch(...) {
+                ::IoUtilities::catchIoFailure();
                 ioError = true;
             }
             m_fileInfo.unregisterAllCallbacks();

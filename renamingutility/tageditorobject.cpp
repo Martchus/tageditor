@@ -11,6 +11,7 @@
 #include <tagparser/exceptions.h>
 
 #include <c++utilities/conversion/conversionexception.h>
+#include <c++utilities/io/catchiofailure.h>
 
 #include <QDir>
 
@@ -147,10 +148,11 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     bool critical = false;
     try {
         fileInfo.parseEverything();
-    } catch(Failure &) {
+    } catch(const Failure &) {
         // parsing notifications will be addded anyways
         critical = true;
-    } catch(ios_base::failure &) {
+    } catch(...) {
+        ::IoUtilities::catchIoFailure();
         critical = true;
     }
 

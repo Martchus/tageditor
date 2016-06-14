@@ -15,6 +15,7 @@
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/io/ansiescapecodes.h>
+#include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/misc/memory.h>
 
 #include <QDir>
@@ -180,7 +181,7 @@ TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)
         } else if(!strcmp(val, "always")) {
             return TagUsage::Always;
         } else {
-            cout << "Warning: The specified tag usage \"" << val << "\" is invalid and will be ignored." << endl;
+            cerr << "Warning: The specified tag usage \"" << val << "\" is invalid and will be ignored." << endl;
         }
     }
     return defaultUsage;
@@ -200,7 +201,7 @@ TagTextEncoding parseEncodingDenotation(const Argument &encodingArg, TagTextEnco
             return TagTextEncoding::Utf16LittleEndian;
         } else if(!strcmp(val, "auto")) {
         } else {
-            cout << "Warning: The specified encoding \"" << val << "\" is invalid and will be ignored." << endl;
+            cerr << "Warning: The specified encoding \"" << val << "\" is invalid and will be ignored." << endl;
         }
     }
     return defaultEncoding;
@@ -217,7 +218,7 @@ ElementPosition parsePositionDenotation(const Argument &posArg, ElementPosition 
         } else if(!strcmp(val, "keep")) {
             return ElementPosition::Keep;
         } else {
-            cout << "Warning: The specified position \"" << val << "\" is invalid and will be ignored." << endl;
+            cerr << "Warning: The specified position \"" << val << "\" is invalid and will be ignored." << endl;
         }
     }
     return defaultPos;
@@ -233,7 +234,7 @@ uint64 parseUInt64(const Argument &arg, uint64 defaultValue)
                 return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front());
             }
         } catch(const ConversionException &) {
-            cout << "Warning: The specified value \"" << arg.values().front() << "\" is no valid unsigned integer and will be ignored." << endl;
+            cerr << "Warning: The specified value \"" << arg.values().front() << "\" is no valid unsigned integer and will be ignored." << endl;
         }
     }
     return defaultValue;
@@ -248,7 +249,7 @@ TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
         try {
             convertedIds.push_back(stringToNumber<TagTarget::IdType>(id));
         } catch(const ConversionException &) {
-            cout << "Warning: The specified ID \"" << id << "\" is invalid and will be ignored." << endl;
+            cerr << "Warning: The specified ID \"" << id << "\" is invalid and will be ignored." << endl;
         }
     }
     return convertedIds;
@@ -261,7 +262,7 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
             try {
                 target.setLevel(stringToNumber<uint64>(configStr.substr(13)));
             } catch (const ConversionException &) {
-                cout << "Warning: The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored." << endl;
+                cerr << "Warning: The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored." << endl;
             }
         } else if(configStr.compare(0, 17, "target-levelname=") == 0) {
             target.setLevelName(configStr.substr(17));
@@ -295,7 +296,7 @@ vector<FieldDenotation> parseFieldDenotations(const std::vector<const char *> &f
         const auto fieldDenotationLen = strlen(fieldDenotationString);
         if(strncmp(fieldDenotationString, "tag:", 4) == 0) {
             if(fieldDenotationLen == 4) {
-                cout << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
+                cerr << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
             } else {
                 TagType tagType = TagType::Unspecified;
                 for(const auto &part : splitString(fieldDenotationString + 4, ",", EmptyPartsTreat::Omit)) {
@@ -315,7 +316,7 @@ vector<FieldDenotation> parseFieldDenotations(const std::vector<const char *> &f
                         tagType = TagType::Unspecified;
                         break;
                     } else {
-                        cout << "Warning: The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
+                        cerr << "Warning: The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
                         tagType = currentTagType;
                         break;
                     }
@@ -352,7 +353,7 @@ vector<FieldDenotation> parseFieldDenotations(const std::vector<const char *> &f
             fileIndex += static_cast<unsigned int>(fieldName.at(fieldNamePos) - '0') * mult;
         }
         if(fieldNamePos == static_cast<string::size_type>(-1)) {
-            cout << "Warning: Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified." << endl;
+            cerr << "Warning: Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified." << endl;
             continue;
         } else if(++fieldNamePos < fieldName.size()) {
             fieldName = string(fieldName, fieldNamePos);
@@ -416,7 +417,7 @@ vector<FieldDenotation> parseFieldDenotations(const std::vector<const char *> &f
             field = KnownField::Description;
         } else {
             // no "KnownField" value matching -> discard the field denotation
-            cout << "The field name \"" << fieldName << "\" is unknown and will be ingored." << endl;
+            cerr << "Warning: The field name \"" << fieldName << "\" is unknown and will be ingored." << endl;
             continue;
         }
         // add field denotation with parsed values
@@ -427,7 +428,7 @@ vector<FieldDenotation> parseFieldDenotations(const std::vector<const char *> &f
         fieldDenotation.tagTarget = currentTagTarget;
         if(equationPos) {
             if(readOnly) {
-                cout << "Warning: Specified value for \"" << fieldName << "\" will be ignored." << endl;
+                cerr << "Warning: Specified value for \"" << fieldName << "\" will be ignored." << endl;
             } else {
                 fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(equationPos + 1)));
             }
@@ -586,12 +587,13 @@ void generateFileInfo(const std::vector<const char *> &parameterValues, const Ar
         if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
             cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
         } else {
-            cout << "Error: An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << endl;
+            cerr << "Error: An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << endl;
         }
-    } catch(ios_base::failure &) {
-        cout << "Error: An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
-    } catch(ApplicationUtilities::Failure &) {
-        cout << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
+    } catch(const ApplicationUtilities::Failure &) {
+        cerr << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
+    } catch(...) {
+        ::IoUtilities::catchIoFailure();
+        cerr << "Error: An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
     }
 }
 
@@ -757,10 +759,11 @@ void displayFileInfo(const std::vector<const char *> &, const Argument &filesArg
                     }
                 }
             }
-        } catch(ios_base::failure &) {
-            cout << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
-        } catch(ApplicationUtilities::Failure &) {
-            cout << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+        } catch(const ApplicationUtilities::Failure &) {
+            cerr << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+        } catch(...) {
+            ::IoUtilities::catchIoFailure();
+            cerr << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
         }
         printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
         cout << endl;
@@ -815,7 +818,7 @@ void displayTagInfo(const std::vector<const char *> &parameterValues, const Argu
                                     } else {
                                         cout << textValue.toLocal8Bit().data();
                                     }
-                                } catch(ConversionException &) {
+                                } catch(const ConversionException &) {
                                     cout << "conversion error";
                                 }
                                 cout << endl;
@@ -843,7 +846,7 @@ void displayTagInfo(const std::vector<const char *> &parameterValues, const Argu
                                         } else {
                                             cout << textValue.toLocal8Bit().data();
                                         }
-                                    } catch(ConversionException &) {
+                                    } catch(const ConversionException &) {
                                         cout << "conversion error";
                                     }
                                 }
@@ -855,10 +858,11 @@ void displayTagInfo(const std::vector<const char *> &parameterValues, const Argu
             } else {
                 cout << " File has no (supported) tag information." << endl;
             }
-        } catch(ios_base::failure &) {
-            cout << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
-        } catch(ApplicationUtilities::Failure &) {
-            cout << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+        } catch(const ApplicationUtilities::Failure &) {
+            cerr << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+        } catch(...) {
+            ::IoUtilities::catchIoFailure();
+            cerr << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
         }
         printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
         cout << endl;
@@ -869,12 +873,12 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
 {
     CMD_UTILS_START_CONSOLE;
     if(args.setTagInfoArg.values().empty()) {
-        cout << "Error: No files have been specified." << endl;
+        cerr << "Error: No files have been specified." << endl;
         return;
     }
     auto fields = parseFieldDenotations(parameterValues, false);
     if(fields.empty() && args.attachmentsArg.values().empty() && args.docTitleArg.values().empty()) {
-        cout << "Error: No fields/attachments have been specified." << endl;
+        cerr << "Error: No fields/attachments have been specified." << endl;
         return;
     }
     // determine required targets
@@ -896,7 +900,7 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
         } else if(applyTargetConfiguration(targetsToRemove.back(), targetDenotation)) {
             validRemoveTargetsSpecified = true;
         } else {
-            cout << "Warning: The given target specification \"" << targetDenotation << "\" is invalid and will be ignored." << endl;
+            cerr << "Warning: The given target specification \"" << targetDenotation << "\" is invalid and will be ignored." << endl;
         }
     }
     // parse other settings
@@ -909,7 +913,7 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
             }
         } catch (const ConversionException &) {
             id3v2Version = 3;
-            cout << "Warning: The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << endl;
+            cerr << "Warning: The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << endl;
         }
     }
     const TagTextEncoding denotedEncoding = parseEncodingDenotation(args.encodingArg, TagTextEncoding::Utf8);
@@ -959,12 +963,12 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
                             container->setTitle(newTitle, segmentIndex);
                             docTitleModified = true;
                         } else {
-                            cout << "Warning: The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments." << endl;
+                            cerr << "Warning: The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments." << endl;
                         }
                         ++segmentIndex;
                     }
                 } else {
-                    cout << "Warning: Setting the document title is not supported for the file." << endl;
+                    cerr << "Warning: Setting the document title is not supported for the file." << endl;
                 }
             }
             fileInfo.tags(tags);
@@ -1004,10 +1008,11 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
                                             TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
                                             value.setMimeType(fileInfo.mimeType());
                                             tag->setValue(fieldDenotation.field, move(value));
-                                        } catch (ios_base::failure &) {
-                                            fileInfo.addNotification(NotificationType::Critical, "An IO error occured when parsing the specified cover file.", context);
-                                        } catch (Media::Failure &) {
+                                        } catch(const Media::Failure &) {
                                             fileInfo.addNotification(NotificationType::Critical, "Unable to parse specified cover file.", context);
+                                        } catch(...) {
+                                            ::IoUtilities::catchIoFailure();
+                                            fileInfo.addNotification(NotificationType::Critical, "An IO error occured when parsing the specified cover file.", context);
                                         }
                                     }
                                 } else {
@@ -1090,15 +1095,15 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
                     fileInfo.gatherRelatedNotifications(notifications);
                     cout << "Changes have been applied." << endl;
                 } catch(const ApplicationUtilities::Failure &) {
-                    cout << "Error: Failed to apply changes." << endl;
+                    cerr << "Error: Failed to apply changes." << endl;
                 }
             } else {
-                cout << "Warning: No changed to be applied." << endl;
+                cerr << "Warning: No changed to be applied." << endl;
             }
         } catch(const ios_base::failure &) {
-            cout << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
+            cerr << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
         } catch(const ApplicationUtilities::Failure &) {
-            cout << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
+            cerr << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
         }
         printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
         ++fileIndex;
@@ -1110,7 +1115,7 @@ void extractField(const std::vector<const char *> &parameterValues, const Argume
     CMD_UTILS_START_CONSOLE;
     const auto fields = parseFieldDenotations(parameterValues, true);
     if(fields.size() != 1) {
-        cout << "Error: Excactly one field needs to be specified." << endl;
+        cerr << "Error: Excactly one field needs to be specified." << endl;
         return;
     }
     MediaFileInfo inputFileInfo;
@@ -1132,7 +1137,7 @@ void extractField(const std::vector<const char *> &parameterValues, const Argume
             }
         }
         if(values.empty()) {
-            cout << "File has no (supported) " << parameterValues.front() << " field." << endl;
+            cerr << "File has no (supported) " << parameterValues.front() << " field." << endl;
         } else {
             string outputFilePathWithoutExtension, outputFileExtension;
             if(values.size() > 1) {
@@ -1148,15 +1153,17 @@ void extractField(const std::vector<const char *> &parameterValues, const Argume
                     outputFileStream.write(value.first->dataPointer(), value.first->dataSize());
                     outputFileStream.flush();
                     cout << "Value has been saved to \"" << path << "\"." << endl;
-                } catch(ios_base::failure &) {
-                    cout << "An IO error occured when writing the file \"" << path << "\"." << endl;
+                } catch(...) {
+                    ::IoUtilities::catchIoFailure();
+                    cerr << "Error: An IO error occured when writing the file \"" << path << "\"." << endl;
                 }
             }
         }
-    } catch(ios_base::failure &) {
-        cout << "Error: An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
-    } catch(ApplicationUtilities::Failure &) {
-        cout << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
+    } catch(const ApplicationUtilities::Failure &) {
+        cerr << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
+    } catch(...) {
+        ::IoUtilities::catchIoFailure();
+        cerr << "Error: An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
     }
     printNotifications(inputFileInfo, "Parsing notifications:", verboseArg.isPresent());
 }
