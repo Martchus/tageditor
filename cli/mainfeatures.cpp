@@ -285,152 +285,152 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
     }
 }
 
-vector<FieldDenotation> parseFieldDenotations(const std::vector<const char *> &fieldDenotations, bool readOnly)
+vector<FieldDenotation> parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
 {
     vector<FieldDenotation> fields;
-    fields.reserve(fieldDenotations.size());
-    TagType currentTagType = TagType::Unspecified;
-    TagTarget currentTagTarget;
-    for(const char *fieldDenotationString : fieldDenotations) {
-        // check for tag or target specifier
-        const auto fieldDenotationLen = strlen(fieldDenotationString);
-        if(strncmp(fieldDenotationString, "tag:", 4) == 0) {
-            if(fieldDenotationLen == 4) {
-                cerr << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
-            } else {
-                TagType tagType = TagType::Unspecified;
-                for(const auto &part : splitString(fieldDenotationString + 4, ",", EmptyPartsTreat::Omit)) {
-                    if(part == "id3v1") {
-                        tagType |= TagType::Id3v1Tag;
-                    } else if(part == "id3v2") {
-                        tagType |= TagType::Id3v2Tag;
-                    } else if(part == "id3") {
-                        tagType |= TagType::Id3v1Tag | TagType::Id3v2Tag;
-                    } else if(part == "itunes" || part == "mp4") {
-                        tagType |= TagType::Mp4Tag;
-                    } else if(part == "vorbis") {
-                        tagType |= TagType::VorbisComment;
-                    } else if(part == "matroska") {
-                        tagType |= TagType::MatroskaTag;
-                    } else if(part == "all" || part == "any") {
-                        tagType = TagType::Unspecified;
-                        break;
-                    } else {
-                        cerr << "Warning: The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
-                        tagType = currentTagType;
-                        break;
+    if(fieldsArg.isPresent()) {
+        const vector<const char *> &fieldDenotations = fieldsArg.values();
+        fields.reserve(fieldDenotations.size());
+        TagType currentTagType = TagType::Unspecified;
+        TagTarget currentTagTarget;
+        for(const char *fieldDenotationString : fieldDenotations) {
+            // check for tag or target specifier
+            const auto fieldDenotationLen = strlen(fieldDenotationString);
+            if(!strncmp(fieldDenotationString, "tag:", 4)) {
+                if(fieldDenotationLen == 4) {
+                    cerr << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
+                } else {
+                    TagType tagType = TagType::Unspecified;
+                    for(const auto &part : splitString(fieldDenotationString + 4, ",", EmptyPartsTreat::Omit)) {
+                        if(part == "id3v1") {
+                            tagType |= TagType::Id3v1Tag;
+                        } else if(part == "id3v2") {
+                            tagType |= TagType::Id3v2Tag;
+                        } else if(part == "id3") {
+                            tagType |= TagType::Id3v1Tag | TagType::Id3v2Tag;
+                        } else if(part == "itunes" || part == "mp4") {
+                            tagType |= TagType::Mp4Tag;
+                        } else if(part == "vorbis") {
+                            tagType |= TagType::VorbisComment;
+                        } else if(part == "matroska") {
+                            tagType |= TagType::MatroskaTag;
+                        } else if(part == "all" || part == "any") {
+                            tagType = TagType::Unspecified;
+                            break;
+                        } else {
+                            cerr << "Warning: The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
+                            tagType = currentTagType;
+                            break;
+                        }
                     }
+                    currentTagType = tagType;
+                    break;
                 }
-                currentTagType = tagType;
-                break;
+            } else if(applyTargetConfiguration(currentTagTarget, fieldDenotationString)) {
+                continue;
             }
-        } else if(applyTargetConfiguration(currentTagTarget, fieldDenotationString)) {
-            continue;
-        }
-        // read field name
-        const auto equationPos = strchr(fieldDenotationString, '=');
-        auto fieldName = equationPos ? string(fieldDenotationString, static_cast<size_t>(equationPos - fieldDenotationString)) : fieldDenotationString;
-        // field name might denote increment ("+") or path disclosure (">")
-        auto fieldNamePos = fieldName.size();
-        DenotationType type = DenotationType::Normal;
-        if(fieldNamePos) {
-            switch(fieldName.at(--fieldNamePos)) {
-            case '+':
-                type = DenotationType::Increment;
-                --fieldNamePos;
-                break;
-            case '>':
-                type = DenotationType::File;
-                --fieldNamePos;
-                break;
-            default:
-                ;
+            // read field name
+            const auto equationPos = strchr(fieldDenotationString, '=');
+            size_t fieldNameLen = equationPos ? static_cast<size_t>(equationPos - fieldDenotationString) : strlen(fieldDenotationString);
+            // field name might denote increment ("+") or path disclosure (">")
+            DenotationType type = DenotationType::Normal;
+            if(fieldNameLen && equationPos) {
+                switch(*(equationPos - 1)) {
+                case '+':
+                    type = DenotationType::Increment;
+                    --fieldNameLen;
+                    break;
+                case '>':
+                    type = DenotationType::File;
+                    --fieldNameLen;
+                    break;
+                default:
+                    ;
+                }
             }
-        }
-        // field name might specify a file index
-        unsigned int fileIndex = 0, mult = 1;
-        for(; fieldNamePos != static_cast<string::size_type>(-1) && isDigit(fieldName.at(fieldNamePos)); --fieldNamePos, mult *= 10) {
-            fileIndex += static_cast<unsigned int>(fieldName.at(fieldNamePos) - '0') * mult;
-        }
-        if(fieldNamePos == static_cast<string::size_type>(-1)) {
-            cerr << "Warning: Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified." << endl;
-            continue;
-        } else if(++fieldNamePos < fieldName.size()) {
-            fieldName = string(fieldName, fieldNamePos);
-        }
-        // parse the denoted filed
-        KnownField field;
-        if(fieldName == "title") {
-            field = KnownField::Title;
-        } else if(fieldName == "album") {
-            field = KnownField::Album;
-        } else if(fieldName == "artist") {
-            field = KnownField::Artist;
-        } else if(fieldName == "genre") {
-            field = KnownField::Genre;
-        } else if(fieldName == "year") {
-            field = KnownField::Year;
-        } else if(fieldName == "comment") {
-            field = KnownField::Comment;
-        } else if(fieldName == "bpm") {
-            field = KnownField::Bpm;
-        } else if(fieldName == "bps") {
-            field = KnownField::Bps;
-        } else if(fieldName == "lyricist") {
-            field = KnownField::Lyricist;
-        } else if(fieldName == "track") {
-            field = KnownField::TrackPosition;
-        } else if(fieldName == "disk") {
-            field = KnownField::DiskPosition;
-        } else if(fieldName == "part") {
-            field = KnownField::PartNumber;
-        } else if(fieldName == "totalparts") {
-            field = KnownField::TotalParts;
-        } else if(fieldName == "encoder") {
-            field = KnownField::Encoder;
-        } else if(fieldName == "recorddate") {
-            field = KnownField::RecordDate;
-        } else if(fieldName == "performers") {
-            field = KnownField::Performers;
-        } else if(fieldName == "duration") {
-            field = KnownField::Length;
-        } else if(fieldName == "language") {
-            field = KnownField::Language;
-        } else if(fieldName == "encodersettings") {
-            field = KnownField::EncoderSettings;
-        } else if(fieldName == "lyrics") {
-            field = KnownField::Lyrics;
-        } else if(fieldName == "synchronizedlyrics") {
-            field = KnownField::SynchronizedLyrics;
-        } else if(fieldName == "grouping") {
-            field = KnownField::Grouping;
-        } else if(fieldName == "recordlabel") {
-            field = KnownField::RecordLabel;
-        } else if(fieldName == "cover") {
-            field = KnownField::Cover;
-            type = DenotationType::File; // read cover always from file
-        } else if(fieldName == "composer") {
-            field = KnownField::Composer;
-        } else if(fieldName == "rating") {
-            field = KnownField::Rating;
-        } else if(fieldName == "description") {
-            field = KnownField::Description;
-        } else {
-            // no "KnownField" value matching -> discard the field denotation
-            cerr << "Warning: The field name \"" << fieldName << "\" is unknown and will be ingored." << endl;
-            continue;
-        }
-        // add field denotation with parsed values
-        fields.emplace_back(field);
-        FieldDenotation &fieldDenotation = fields.back();
-        fieldDenotation.type = type;
-        fieldDenotation.tagType = currentTagType;
-        fieldDenotation.tagTarget = currentTagTarget;
-        if(equationPos) {
-            if(readOnly) {
-                cerr << "Warning: Specified value for \"" << fieldName << "\" will be ignored." << endl;
+            // field name might specify a file index
+            unsigned int fileIndex = 0, mult = 1;
+            for(const char *digitPos = fieldDenotationString + fieldNameLen - 1; fieldNameLen && isDigit(*digitPos); --fieldNameLen, --digitPos, mult *= 10) {
+                fileIndex += static_cast<unsigned int>(*digitPos - '0') * mult;
+            }
+            if(!fieldNameLen) {
+                cerr << "Warning: Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified." << endl;
+                continue;
+            }
+            // parse the denoted filed
+            KnownField field;
+            if(!strncmp(fieldDenotationString, "title", fieldNameLen)) {
+                field = KnownField::Title;
+            } else if(!strncmp(fieldDenotationString, "album", fieldNameLen)) {
+                field = KnownField::Album;
+            } else if(!strncmp(fieldDenotationString, "artist", fieldNameLen)) {
+                field = KnownField::Artist;
+            } else if(!strncmp(fieldDenotationString, "genre", fieldNameLen)) {
+                field = KnownField::Genre;
+            } else if(!strncmp(fieldDenotationString, "year", fieldNameLen)) {
+                field = KnownField::Year;
+            } else if(!strncmp(fieldDenotationString, "comment", fieldNameLen)) {
+                field = KnownField::Comment;
+            } else if(!strncmp(fieldDenotationString, "bpm", fieldNameLen)) {
+                field = KnownField::Bpm;
+            } else if(!strncmp(fieldDenotationString, "bps", fieldNameLen)) {
+                field = KnownField::Bps;
+            } else if(!strncmp(fieldDenotationString, "lyricist", fieldNameLen)) {
+                field = KnownField::Lyricist;
+            } else if(!strncmp(fieldDenotationString, "track", fieldNameLen)) {
+                field = KnownField::TrackPosition;
+            } else if(!strncmp(fieldDenotationString, "disk", fieldNameLen)) {
+                field = KnownField::DiskPosition;
+            } else if(!strncmp(fieldDenotationString, "part", fieldNameLen)) {
+                field = KnownField::PartNumber;
+            } else if(!strncmp(fieldDenotationString, "totalparts", fieldNameLen)) {
+                field = KnownField::TotalParts;
+            } else if(!strncmp(fieldDenotationString, "encoder", fieldNameLen)) {
+                field = KnownField::Encoder;
+            } else if(!strncmp(fieldDenotationString, "recorddate", fieldNameLen)) {
+                field = KnownField::RecordDate;
+            } else if(!strncmp(fieldDenotationString, "performers", fieldNameLen)) {
+                field = KnownField::Performers;
+            } else if(!strncmp(fieldDenotationString, "duration", fieldNameLen)) {
+                field = KnownField::Length;
+            } else if(!strncmp(fieldDenotationString, "language", fieldNameLen)) {
+                field = KnownField::Language;
+            } else if(!strncmp(fieldDenotationString, "encodersettings", fieldNameLen)) {
+                field = KnownField::EncoderSettings;
+            } else if(!strncmp(fieldDenotationString, "lyrics", fieldNameLen)) {
+                field = KnownField::Lyrics;
+            } else if(!strncmp(fieldDenotationString, "synchronizedlyrics", fieldNameLen)) {
+                field = KnownField::SynchronizedLyrics;
+            } else if(!strncmp(fieldDenotationString, "grouping", fieldNameLen)) {
+                field = KnownField::Grouping;
+            } else if(!strncmp(fieldDenotationString, "recordlabel", fieldNameLen)) {
+                field = KnownField::RecordLabel;
+            } else if(!strncmp(fieldDenotationString, "cover", fieldNameLen)) {
+                field = KnownField::Cover;
+                type = DenotationType::File; // read cover always from file
+            } else if(!strncmp(fieldDenotationString, "composer", fieldNameLen)) {
+                field = KnownField::Composer;
+            } else if(!strncmp(fieldDenotationString, "rating", fieldNameLen)) {
+                field = KnownField::Rating;
+            } else if(!strncmp(fieldDenotationString, "description", fieldNameLen)) {
+                field = KnownField::Description;
             } else {
-                fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(equationPos + 1)));
+                // no "KnownField" value matching -> discard the field denotation
+                cerr << "Warning: The field name \"" << string(fieldDenotationString, fieldNameLen) << "\" is unknown and will be ingored." << endl;
+                continue;
+            }
+            // add field denotation with parsed values
+            fields.emplace_back(field);
+            FieldDenotation &fieldDenotation = fields.back();
+            fieldDenotation.type = type;
+            fieldDenotation.tagType = currentTagType;
+            fieldDenotation.tagTarget = currentTagTarget;
+            if(equationPos) {
+                if(readOnly) {
+                    cerr << "Warning: Specified value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << endl;
+                } else {
+                    fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(equationPos + 1)));
+                }
             }
         }
     }
@@ -645,7 +645,7 @@ void printProperty(const char *propName, const intType value, const char *suffix
 void displayFileInfo(const std::vector<const char *> &, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
-    if(filesArg.values().empty()) {
+    if(!filesArg.isPresent() || filesArg.values().empty()) {
         cout << "Error: No files have been specified." << endl;
         return;
     }
@@ -770,14 +770,14 @@ void displayFileInfo(const std::vector<const char *> &, const Argument &filesArg
     }
 }
 
-void displayTagInfo(const std::vector<const char *> &parameterValues, const Argument &filesArg, const Argument &verboseArg)
+void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
-    if(filesArg.values().empty()) {
+    if(!filesArg.isPresent() || filesArg.values().empty()) {
         cout << "Error: No files have been specified." << endl;
         return;
     }
-    const auto fields = parseFieldDenotations(parameterValues, true);
+    const auto fields = parseFieldDenotations(fieldsArg, true);
     MediaFileInfo fileInfo;
     for(const auto &file : filesArg.values()) {
         try {
@@ -869,14 +869,14 @@ void displayTagInfo(const std::vector<const char *> &parameterValues, const Argu
     }
 }
 
-void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagInfoArgs &args)
+void setTagInfo(const SetTagInfoArgs &args)
 {
     CMD_UTILS_START_CONSOLE;
-    if(args.setTagInfoArg.values().empty()) {
+    if(!args.filesArg.isPresent() || args.filesArg.values().empty()) {
         cerr << "Error: No files have been specified." << endl;
         return;
     }
-    auto fields = parseFieldDenotations(parameterValues, false);
+    auto fields = parseFieldDenotations(args.valuesArg, false);
     if(fields.empty() && args.attachmentsArg.values().empty() && args.docTitleArg.values().empty()) {
         cerr << "Error: No fields/attachments have been specified." << endl;
         return;
@@ -892,15 +892,17 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
     vector<TagTarget> targetsToRemove;
     targetsToRemove.emplace_back();
     bool validRemoveTargetsSpecified = false;
-    for(const auto &targetDenotation : args.removeTargetsArg.values()) {
-        if(!strcmp(targetDenotation, ",")) {
-            if(validRemoveTargetsSpecified) {
-                targetsToRemove.emplace_back();
+    if(args.removeTargetsArg.isPresent()) {
+        for(const auto &targetDenotation : args.removeTargetsArg.values()) {
+            if(!strcmp(targetDenotation, ",")) {
+                if(validRemoveTargetsSpecified) {
+                    targetsToRemove.emplace_back();
+                }
+            } else if(applyTargetConfiguration(targetsToRemove.back(), targetDenotation)) {
+                validRemoveTargetsSpecified = true;
+            } else {
+                cerr << "Warning: The given target specification \"" << targetDenotation << "\" is invalid and will be ignored." << endl;
             }
-        } else if(applyTargetConfiguration(targetsToRemove.back(), targetDenotation)) {
-            validRemoveTargetsSpecified = true;
-        } else {
-            cerr << "Warning: The given target specification \"" << targetDenotation << "\" is invalid and will be ignored." << endl;
         }
     }
     // parse other settings
@@ -955,7 +957,7 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
             fileInfo.createAppropriateTags(args.treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, args.mergeMultipleSuccessiveTagsArg.isPresent(), !args.id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
             auto container = fileInfo.container();
             bool docTitleModified = false;
-            if(!args.docTitleArg.values().empty()) {
+            if(args.docTitleArg.isPresent() && !args.docTitleArg.values().empty()) {
                 if(container && container->supportsTitle()) {
                     size_t segmentIndex = 0, segmentCount = container->titles().size();
                     for(const auto &newTitle : args.docTitleArg.values()) {
@@ -1100,20 +1102,21 @@ void setTagInfo(const std::vector<const char *> &parameterValues, const SetTagIn
             } else {
                 cerr << "Warning: No changed to be applied." << endl;
             }
-        } catch(const ios_base::failure &) {
-            cerr << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
         } catch(const ApplicationUtilities::Failure &) {
             cerr << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
+        } catch(...) {
+            ::IoUtilities::catchIoFailure();
+            cerr << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
         }
         printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
         ++fileIndex;
     }
 }
 
-void extractField(const std::vector<const char *> &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &verboseArg)
+void extractField(const Argument &fieldsArg, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
-    const auto fields = parseFieldDenotations(parameterValues, true);
+    const auto fields = parseFieldDenotations(fieldsArg, true);
     if(fields.size() != 1) {
         cerr << "Error: Excactly one field needs to be specified." << endl;
         return;
@@ -1124,7 +1127,7 @@ void extractField(const std::vector<const char *> &parameterValues, const Argume
         inputFileInfo.setPath(inputFileArg.values().front());
         inputFileInfo.open(true);
         inputFileInfo.parseTags();
-        cout << "Extracting " << parameterValues.front() << " of \"" << inputFileArg.values().front() << "\" ..." << endl;
+        cout << "Extracting " << fieldsArg.values().front() << " of \"" << inputFileArg.values().front() << "\" ..." << endl;
         auto tags = inputFileInfo.tags();
         vector<pair<const TagValue *, string> > values;
         // iterate through all tags
@@ -1137,7 +1140,7 @@ void extractField(const std::vector<const char *> &parameterValues, const Argume
             }
         }
         if(values.empty()) {
-            cerr << "File has no (supported) " << parameterValues.front() << " field." << endl;
+            cerr << "File has no (supported) " << fieldsArg.values().front() << " field." << endl;
         } else {
             string outputFilePathWithoutExtension, outputFileExtension;
             if(values.size() > 1) {

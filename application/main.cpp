@@ -103,7 +103,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     valuesArg.setRequiredValueCount(-1);
     valuesArg.setImplicit(true);
     setTagInfoArg.setDenotesOperation(true);
-    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, _1, std::cref(*this)));
+    setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg,
                                          &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetsArg, &attachmentsArg,
                                          &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg, &prefPaddingArg, &tagPosArg,
@@ -155,7 +155,7 @@ int main(int argc, char *argv[])
     fieldsArg.setImplicit(true);
     Argument displayTagInfoArg("get", 'g', "displays the values of all specified tag fields (displays all fields if none specified)");
     displayTagInfoArg.setDenotesOperation(true);
-    displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, _1, std::cref(filesArg), std::cref(verboseArg)));
+    displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, std::cref(fieldsArg), std::cref(filesArg), std::cref(verboseArg)));
     displayTagInfoArg.setSubArguments({&fieldsArg, &filesArg, &verboseArg});
     // set tag info
     Cli::SetTagInfoArgs setTagInfoArgs(filesArg, verboseArg);
@@ -167,7 +167,7 @@ int main(int argc, char *argv[])
     Argument extractFieldArg("extract", 'e', "extracts the specified field from the specified file");
     extractFieldArg.setSubArguments({&fieldArg, &fileArg, &outputFileArg, &verboseArg});
     extractFieldArg.setDenotesOperation(true);
-    extractFieldArg.setCallback(std::bind(Cli::extractField, _1, std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
+    extractFieldArg.setCallback(std::bind(Cli::extractField, std::cref(fieldsArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
     // file info
     Argument validateArg("validate", 'c', "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     validateArg.setCombinable(true);
