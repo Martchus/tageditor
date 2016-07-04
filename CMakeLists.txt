@@ -135,7 +135,7 @@ set(DOC_FILES
 )
 
 # find c++utilities
-find_package(c++utilities 3.3.0 REQUIRED)
+find_package(c++utilities 4.0.0 REQUIRED)
 use_cpp_utilities()
 
 # find qtutilities
@@ -157,6 +157,7 @@ include(JsProviderConfig)
 include(WebViewProviderConfig)
 include(WindowsResources)
 include(AppTarget)
+include(ShellCompletion)
 
 # create desktop file using previously defined meta data
 add_desktop_file()

@@ -152,19 +152,21 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullpt
     printNotifications(notifications, head, beVerbose);
 }
 
-void printFieldNames(const std::vector<const char *> &parameterValues)
+const char *const fieldNames = "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n"
+                               "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"
+                               "recordlabel cover composer rating description";
+
+void printFieldNames(const ArgumentOccurance &occurance)
 {
     CMD_UTILS_START_CONSOLE;
-    VAR_UNUSED(parameterValues)
-    cout << "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n"
-            "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"
-            "recordlabel cover composer rating description" << endl;
+    VAR_UNUSED(occurance)
+    cout << fieldNames << endl;
 }
 
-void removeBackupFiles(const std::vector<const char *> &parameterValues, const Argument &recursiveArg)
+void removeBackupFiles(const ArgumentOccurance &occurance, const Argument &recursiveArg)
 {
     CMD_UTILS_START_CONSOLE;
-    QDir dir(QString::fromStdString(parameterValues.at(0)));
+    QDir dir(QString::fromStdString(occurance.values.front()));
     QStringList affectedFiles;
     int filesFound = Utility::removeBackupFiles(dir, affectedFiles, &cout, recursiveArg.isPresent());
     cout << affectedFiles.size() << " of " << filesFound << " backup files have been removed." << endl;
@@ -571,10 +573,9 @@ bool AttachmentInfo::next(AbstractContainer *container)
     return true;
 }
 
-void generateFileInfo(const std::vector<const char *> &parameterValues, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
+void generateFileInfo(const ArgumentOccurance &, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
-    VAR_UNUSED(parameterValues)
     try {
         // parse tags
         MediaFileInfo inputFileInfo(inputFileArg.values().front());
@@ -642,7 +643,7 @@ void printProperty(const char *propName, const intType value, const char *suffix
     }
 }
 
-void displayFileInfo(const std::vector<const char *> &, const Argument &filesArg, const Argument &verboseArg)
+void displayFileInfo(const ArgumentOccurance &, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.isPresent() || filesArg.values().empty()) {

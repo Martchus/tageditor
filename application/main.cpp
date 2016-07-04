@@ -51,7 +51,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     forceIndexPosArg("force", 'f', "forces the specified position even if the file to be rewritten"),
     indexPosArg("index-pos", '\0', "specifies the preferred index position"),
     forceRewriteArg("force-rewrite", '\0', "forces the file to rewritten from the scratch"),
-    valuesArg("fields", 'n', "specifies the values to be set"),
+    valuesArg("values", 'n', "specifies the values to be set"),
     setTagInfoArg("set", 's', "sets the values of all specified tag fields")
 {
     docTitleArg.setCombinable(true);
@@ -61,9 +61,11 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     treatUnknownFilesAsMp3FilesArg.setCombinable(true);
     id3v1UsageArg.setRequiredValueCount(1);
     id3v1UsageArg.setValueNames({"always/keepexisting/never"});
+    id3v1UsageArg.setPreDefinedCompletionValues("always keepexisting never");
     id3v1UsageArg.setCombinable(true);
     id3v2UsageArg.setRequiredValueCount(1);
     id3v2UsageArg.setValueNames({"always/keepexisting/never"});
+    id3v2UsageArg.setPreDefinedCompletionValues("always keepexisting never");
     id3v2UsageArg.setCombinable(true);
     mergeMultipleSuccessiveTagsArg.setCombinable(true);
     id3v2VersionArg.setRequiredValueCount(1);
@@ -71,6 +73,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     id3v2VersionArg.setCombinable(true);
     encodingArg.setRequiredValueCount(1);
     encodingArg.setValueNames({"latin1/utf8/utf16le/utf16be"});
+    encodingArg.setPreDefinedCompletionValues("latin1 utf8 utf16le utf16be");
     encodingArg.setCombinable(true);
     removeTargetsArg.setRequiredValueCount(-1);
     removeTargetsArg.setValueNames({});
@@ -89,19 +92,25 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     prefPaddingArg.setValueNames({"preferred padding in byte"});
     prefPaddingArg.setCombinable(true);
     tagPosValueArg.setRequiredValueCount(1);
-    forceTagPosArg.setCombinable(true);
-    tagPosArg.setValueNames({"front/back/current"});
+    tagPosValueArg.setValueNames({"front/back/current"});
+    tagPosValueArg.setPreDefinedCompletionValues("front back current");
+    tagPosValueArg.setImplicit(true);
+    forceTagPosArg.setCombinable(true);    
     tagPosArg.setCombinable(true);
     tagPosArg.setSubArguments({&tagPosValueArg, &forceTagPosArg});
-    indexPosValueArg.setRequiredValueCount(1);
     forceIndexPosArg.setCombinable(true);
-    indexPosArg.setValueNames({"front/back/current"});
+    indexPosValueArg.setRequiredValueCount(1);
+    indexPosValueArg.setValueNames({"front/back/current"});
+    indexPosValueArg.setPreDefinedCompletionValues("front back current");
+    indexPosValueArg.setImplicit(true);
     indexPosArg.setCombinable(true);
     indexPosArg.setSubArguments({&indexPosValueArg, &forceIndexPosArg});
     forceRewriteArg.setCombinable(true);
     valuesArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
     valuesArg.setRequiredValueCount(-1);
     valuesArg.setImplicit(true);
+    valuesArg.setPreDefinedCompletionValues(Cli::fieldNames);
+    valuesArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     setTagInfoArg.setDenotesOperation(true);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg,
@@ -152,6 +161,7 @@ int main(int argc, char *argv[])
     Argument fieldsArg("fields", 'n', "specifies the field names to be displayed");
     fieldsArg.setValueNames({"title", "album", "artist", "trackpos"});
     fieldsArg.setRequiredValueCount(-1);
+    fieldsArg.setPreDefinedCompletionValues(Cli::fieldNames);
     fieldsArg.setImplicit(true);
     Argument displayTagInfoArg("get", 'g', "displays the values of all specified tag fields (displays all fields if none specified)");
     displayTagInfoArg.setDenotesOperation(true);

@@ -43,13 +43,14 @@ struct SetTagInfoArgs
     ApplicationUtilities::Argument setTagInfoArg;
 };
 
-void printFieldNames(const std::vector<const char *> &parameterValues);
-void displayFileInfo(const std::vector<const char *> &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
-void generateFileInfo(const std::vector<const char *> &parameterValues, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
+extern const char *const fieldNames;
+void printFieldNames(const ApplicationUtilities::ArgumentOccurance &occurance);
+void displayFileInfo(const ApplicationUtilities::ArgumentOccurance &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
+void generateFileInfo(const ApplicationUtilities::ArgumentOccurance &, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
 void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
 void extractField(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &verboseArg);
-void removeBackupFiles(const std::vector<const char *> &parameterValues, const ApplicationUtilities::Argument &recursiveArg);
+void removeBackupFiles(const ApplicationUtilities::ArgumentOccurance &occurance, const ApplicationUtilities::Argument &recursiveArg);
 
 }
 
