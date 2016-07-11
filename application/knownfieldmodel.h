@@ -7,7 +7,7 @@
 #include <QList>
 
 namespace Media {
-DECLARE_ENUM(KnownField, unsigned int)
+DECLARE_ENUM_CLASS(KnownField, unsigned int);
 }
 
 namespace Settings {

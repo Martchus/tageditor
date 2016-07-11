@@ -17,13 +17,13 @@ QT_FORWARD_DECLARE_CLASS(QGraphicsRectItem)
 
 namespace Media {
 class Tag;
-DECLARE_ENUM(KnownField, unsigned int)
 class TagValue;
+DECLARE_ENUM_CLASS(KnownField, unsigned int);
 }
 
 namespace QtGui {
 
-DECLARE_ENUM(PreviousValueHandling, int)
+DECLARE_ENUM_CLASS(PreviousValueHandling, int);
 
 namespace Ui {
 class PicturePreviewSelection;

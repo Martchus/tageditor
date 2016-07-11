@@ -15,7 +15,7 @@ QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
 QT_FORWARD_DECLARE_CLASS(QMutex)
 
 namespace Media {
-DECLARE_ENUM(TagType, unsigned int)
+DECLARE_ENUM_CLASS(TagType, unsigned int);
 }
 
 namespace Dialogs {

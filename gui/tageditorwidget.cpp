@@ -65,7 +65,7 @@ namespace QtGui {
 /*!
  * \brief The LoadingResult enum specifies whether the file could be parsed.
  */
-enum LoadingResult : char
+DECLARE_ENUM(LoadingResult, char)
 {
     ParsingSuccessful,
     FatalParsingError,

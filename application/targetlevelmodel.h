@@ -7,7 +7,7 @@
 #include <QList>
 
 namespace Media {
-DECLARE_ENUM(TagTargetLevel, unsigned char)
+DECLARE_ENUM_CLASS(TagTargetLevel, unsigned char);
 }
 
 namespace Settings {

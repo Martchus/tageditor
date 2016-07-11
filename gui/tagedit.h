@@ -17,7 +17,7 @@ QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
 namespace Media {
 class Tag;
 class TagValue;
-DECLARE_ENUM(KnownField, unsigned int)
+DECLARE_ENUM_CLASS(KnownField, unsigned int);
 }
 
 namespace QtGui {

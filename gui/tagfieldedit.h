@@ -8,17 +8,15 @@
 #include <QPair>
 #include <QWidget>
 
-QT_BEGIN_NAMESPACE
-class QVBoxLayout;
-class QLabel;
-QT_END_NAMESPACE
+QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
+QT_FORWARD_DECLARE_CLASS(QLabel)
 
 namespace Media {
-class Tag;
-DECLARE_ENUM(KnownField, unsigned int)
-DECLARE_ENUM(TagDataType, unsigned int)
-DECLARE_ENUM(TagTextEncoding, unsigned int)
 class TagValue;
+class Tag;
+DECLARE_ENUM_CLASS(KnownField, unsigned int);
+DECLARE_ENUM_CLASS(TagDataType, unsigned int);
+DECLARE_ENUM_CLASS(TagTextEncoding, unsigned int);
 }
 
 namespace Widgets {

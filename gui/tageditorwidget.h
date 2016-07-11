@@ -28,7 +28,7 @@ QT_FORWARD_DECLARE_CLASS(WEB_VIEW_PROVIDER)
 #endif
 
 namespace Media {
-DECLARE_ENUM(TagType, unsigned int)
+DECLARE_ENUM_CLASS(TagType, unsigned int);
 }
 
 namespace QtGui {
