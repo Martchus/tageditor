@@ -342,6 +342,14 @@
         <source>Chapters</source>
         <translation type="unfinished"></translation>
     </message>
+    <message numerus="yes">
+        <location filename="../misc/htmlinfo.cpp" line="718"/>
+        <source>edition contains %1 chapter(s)</source>
+        <translation>
+            <numerusform>edition contains %1 chapter</numerusform>
+            <numerusform>edition contains %1 chapters</numerusform>
+        </translation>
+    </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="750"/>
         <source>, size: </source>
@@ -361,14 +369,6 @@
         <location filename="../misc/htmlinfo.cpp" line="794"/>
         <source>Notifications</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../misc/htmlinfo.cpp" line="795"/>
-        <source>%1 notification(s) available</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
     </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="797"/>
@@ -463,9 +463,9 @@
     <message numerus="yes">
         <location filename="../misc/htmlinfo.cpp" line="924"/>
         <source>%1 tag(s) assigned</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%1 tag assigned</numerusform>
+            <numerusform>%1 tags assigned</numerusform>
         </translation>
     </message>
     <message>
@@ -481,9 +481,9 @@
     <message numerus="yes">
         <location filename="../misc/htmlinfo.cpp" line="953"/>
         <source>file has %1 track(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>file has %1 track</numerusform>
+            <numerusform>file has %1 tracks</numerusform>
         </translation>
     </message>
     <message>
@@ -494,9 +494,9 @@
     <message numerus="yes">
         <location filename="../misc/htmlinfo.cpp" line="974"/>
         <source>%1 attachment(s) assigned</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%1 attachment assigned</numerusform>
+            <numerusform>%1 attachments assigned</numerusform>
         </translation>
     </message>
     <message>
@@ -507,9 +507,9 @@
     <message numerus="yes">
         <location filename="../misc/htmlinfo.cpp" line="997"/>
         <source>file has %1 edition(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>file has %1 edition</numerusform>
+            <numerusform>file has %1 editions</numerusform>
         </translation>
     </message>
     <message>
@@ -520,9 +520,9 @@
     <message numerus="yes">
         <location filename="../misc/htmlinfo.cpp" line="1015"/>
         <source>file has %1 chapter(s)</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>file has %1 chapter</numerusform>
+            <numerusform>file has %1 chapters</numerusform>
         </translation>
     </message>
     <message>
@@ -544,6 +544,14 @@
         <location filename="../misc/htmlinfo.cpp" line="1055"/>
         <source>hex</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../misc/htmlinfo.cpp" line="795"/>
+        <source>%1 notification(s) available</source>
+        <translation>
+            <numerusform>%1 notification available</numerusform>
+            <numerusform>%1 notifications available</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -640,6 +648,69 @@
 <context>
     <name>QtGui::DbQueryWidget</name>
     <message>
+        <location filename="../gui/dbquerywidget.cpp" line="48"/>
+        <source>Search hasn&apos;t been started.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="66"/>
+        <source>Insert present data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="70"/>
+        <source>Clear search criteria</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="125"/>
+        <source>Insufficient search criteria supplied</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="135"/>
+        <source>Retrieving meta data ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="165"/>
+        <source>Aborted</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="177"/>
+        <source>No results available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui/dbquerywidget.cpp" line="179"/>
+        <source>%1 result(s) available</source>
+        <translation type="unfinished">
+            <numerusform>%1 result available</numerusform>
+            <numerusform>%1 results available</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="241"/>
+        <source>Retrieving cover art to be applied ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="278"/>
+        <source>Show cover</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="307"/>
+        <source>Retrieving cover art ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="321"/>
+        <source>Cover - %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../gui/dbquerywidget.ui" line="14"/>
         <source>MusicBrainz search</source>
         <translation type="unfinished"></translation>
@@ -700,69 +771,6 @@
     <message>
         <location filename="../gui/dbquerywidget.ui" line="304"/>
         <source>Apply results</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="48"/>
-        <source>Search hasn&apos;t been started.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="66"/>
-        <source>Insert present data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="70"/>
-        <source>Clear search criteria</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="125"/>
-        <source>Insufficient search criteria supplied</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="135"/>
-        <source>Retrieving meta data ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="165"/>
-        <source>Aborted</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="177"/>
-        <source>No results available</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../gui/dbquerywidget.cpp" line="179"/>
-        <source>%1 result(s) available</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="241"/>
-        <source>Retrieving cover art to be applied ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="278"/>
-        <source>Show cover</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="307"/>
-        <source>Retrieving cover art ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/dbquerywidget.cpp" line="321"/>
-        <source>Cover - %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1027,6 +1035,15 @@ Remarks
     </message>
 </context>
 <context>
+    <name>QtGui::FileFilterProxyModel</name>
+    <message>
+        <location filename="../gui/filefilterproxymodel.cpp" line="7"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>QtGui::FileInfoModel</name>
     <message>
         <location filename="../gui/fileinfomodel.cpp" line="204"/>
@@ -1123,9 +1140,9 @@ Remarks
     <message numerus="yes">
         <location filename="../gui/fileinfomodel.cpp" line="336"/>
         <source>%1 tag(s) assigned</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%1 tag assigned</numerusform>
+            <numerusform>%1 tags assigned</numerusform>
         </translation>
     </message>
     <message>
@@ -1140,16 +1157,16 @@ Remarks
     </message>
     <message>
         <location filename="../gui/fileinfomodel.cpp" line="354"/>
-        <location filename="../gui/fileinfomodel.cpp" line="496"/>
+        <location filename="../gui/fileinfomodel.cpp" line="500"/>
         <source>Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
         <location filename="../gui/fileinfomodel.cpp" line="356"/>
         <source>%1 track(s) contained</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%1 track contained</numerusform>
+            <numerusform>%1 tracks contained</numerusform>
         </translation>
     </message>
     <message>
@@ -1161,7 +1178,7 @@ Remarks
         <location filename="../gui/fileinfomodel.cpp" line="362"/>
         <location filename="../gui/fileinfomodel.cpp" line="456"/>
         <location filename="../gui/fileinfomodel.cpp" line="473"/>
-        <location filename="../gui/fileinfomodel.cpp" line="514"/>
+        <location filename="../gui/fileinfomodel.cpp" line="518"/>
         <source>ID</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1313,13 +1330,13 @@ Remarks
     </message>
     <message>
         <location filename="../gui/fileinfomodel.cpp" line="422"/>
-        <location filename="../gui/fileinfomodel.cpp" line="486"/>
+        <location filename="../gui/fileinfomodel.cpp" line="490"/>
         <source>disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/fileinfomodel.cpp" line="425"/>
-        <location filename="../gui/fileinfomodel.cpp" line="520"/>
+        <location filename="../gui/fileinfomodel.cpp" line="524"/>
         <source>default</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1340,8 +1357,8 @@ Remarks
     </message>
     <message>
         <location filename="../gui/fileinfomodel.cpp" line="437"/>
-        <location filename="../gui/fileinfomodel.cpp" line="489"/>
-        <location filename="../gui/fileinfomodel.cpp" line="526"/>
+        <location filename="../gui/fileinfomodel.cpp" line="493"/>
+        <location filename="../gui/fileinfomodel.cpp" line="530"/>
         <source>Labeled as</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1353,9 +1370,9 @@ Remarks
     <message numerus="yes">
         <location filename="../gui/fileinfomodel.cpp" line="450"/>
         <source>%1 attachment(s) present</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%1 attachment present</numerusform>
+            <numerusform>%1 attachments present</numerusform>
         </translation>
     </message>
     <message>
@@ -1379,70 +1396,70 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="479"/>
+        <location filename="../gui/fileinfomodel.cpp" line="480"/>
         <source>Start time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="480"/>
+        <location filename="../gui/fileinfomodel.cpp" line="483"/>
         <source>End time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="483"/>
-        <location filename="../gui/fileinfomodel.cpp" line="517"/>
+        <location filename="../gui/fileinfomodel.cpp" line="487"/>
+        <location filename="../gui/fileinfomodel.cpp" line="521"/>
         <source>hidden</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="507"/>
+        <location filename="../gui/fileinfomodel.cpp" line="511"/>
         <source>Editions</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="509"/>
+        <location filename="../gui/fileinfomodel.cpp" line="513"/>
         <source>%1 edition(s) present</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%1 edition present</numerusform>
+            <numerusform>%1 editions present</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="512"/>
+        <location filename="../gui/fileinfomodel.cpp" line="516"/>
         <source>Edition #%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="523"/>
+        <location filename="../gui/fileinfomodel.cpp" line="527"/>
         <source>ordered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="537"/>
+        <location filename="../gui/fileinfomodel.cpp" line="541"/>
         <source>Chapters</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="539"/>
+        <location filename="../gui/fileinfomodel.cpp" line="543"/>
         <source>%1 chapter(s) present</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>%1 chapter present</numerusform>
+            <numerusform>%1 chapters present</numerusform>
         </translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="554"/>
+        <location filename="../gui/fileinfomodel.cpp" line="558"/>
         <source>Structure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="578"/>
+        <location filename="../gui/fileinfomodel.cpp" line="582"/>
         <source>Notifications (reparsing after saving)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="578"/>
-        <location filename="../gui/fileinfomodel.cpp" line="583"/>
+        <location filename="../gui/fileinfomodel.cpp" line="582"/>
+        <location filename="../gui/fileinfomodel.cpp" line="587"/>
         <source>Notifications</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1683,7 +1700,22 @@ another position would prevent rewriting the entire file</source>
     </message>
 </context>
 <context>
+    <name>QtGui::InfoWidgetBase</name>
+    <message>
+        <location filename="../gui/infowidgetbase.cpp" line="26"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>QtGui::MainWindow</name>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="51"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="14"/>
         <source>Tag editor</source>
@@ -1710,13 +1742,13 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="104"/>
-        <source>F&amp;ile selection</source>
+        <location filename="../gui/mainwindow.ui" line="142"/>
+        <source>Select next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="142"/>
-        <source>Select next file</source>
+        <location filename="../gui/mainwindow.ui" line="104"/>
+        <source>F&amp;ile selection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1937,6 +1969,12 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::NotificationModel</name>
     <message>
+        <location filename="../gui/notificationmodel.cpp" line="15"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../gui/notificationmodel.cpp" line="27"/>
         <source>Context</source>
         <translation type="unfinished"></translation>
@@ -1960,6 +1998,12 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::PathLineEdit</name>
     <message>
+        <location filename="../gui/pathlineedit.cpp" line="17"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../gui/pathlineedit.cpp" line="55"/>
         <source>Select directory ...</source>
         <translation type="unfinished"></translation>
@@ -1977,6 +2021,12 @@ another position would prevent rewriting the entire file</source>
 </context>
 <context>
     <name>QtGui::PicturePreviewSelection</name>
+    <message>
+        <location filename="../gui/picturepreviewselection.cpp" line="30"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
     <message>
         <location filename="../gui/picturepreviewselection.ui" line="14"/>
         <source>Form</source>
@@ -2151,13 +2201,13 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="335"/>
-        <source>Unable to parse specified cover file.</source>
+        <location filename="../gui/picturepreviewselection.cpp" line="338"/>
+        <source>An IO error occured when parsing the specified cover file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="338"/>
-        <source>An IO error occured when parsing the specified cover file.</source>
+        <location filename="../gui/picturepreviewselection.cpp" line="335"/>
+        <source>Unable to parse specified cover file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2278,6 +2328,158 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::RenameFilesDialog</name>
     <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="25"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui/renamefilesdialog.cpp" line="210"/>
+        <source>%1 files/directories processed</source>
+        <translation>
+            <numerusform>%1 file/directory processed</numerusform>
+            <numerusform>%1 files/directories processed</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="224"/>
+        <source>Preview has been generated.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="229"/>
+        <source>No files and directories have been found.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="234"/>
+        <source>Generation of preview has been aborted prematurely.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui/renamefilesdialog.cpp" line="238"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="256"/>
+        <source>%1 error(s) occured.</source>
+        <translation>
+            <numerusform>%1 error occured.</numerusform>
+            <numerusform>%1 errors occured.</numerusform>
+        </translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui/renamefilesdialog.cpp" line="225"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="249"/>
+        <source>%1 files/directories have been processed.</source>
+        <translation>
+            <numerusform>%1 file/directory has been processed.</numerusform>
+            <numerusform>%1 files/directories have been processed.</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="58"/>
+        <source>from file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="59"/>
+        <source>from clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="60"/>
+        <source>default script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="149"/>
+        <source>There is no external script file is selected.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="156"/>
+        <source>Unable to open external script file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="162"/>
+        <source>Generating preview ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="164"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="199"/>
+        <source>Abort</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="171"/>
+        <source>The script is not valid.
+Error in line %1: %3</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="174"/>
+        <source>An error occured when parsing the script: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="182"/>
+        <source>The script is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="187"/>
+        <source>The selected directory doesn&apos;t exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="197"/>
+        <source>Applying changings ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui/renamefilesdialog.cpp" line="213"/>
+        <source>%1 error(s) occured</source>
+        <translation>
+            <numerusform>%1 error occured</numerusform>
+            <numerusform>%1 errors occured</numerusform>
+        </translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="248"/>
+        <source>Changins applied.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="252"/>
+        <source>Applying has been aborted prematurely.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="320"/>
+        <source>Unable to open script file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="326"/>
+        <source>Select script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="347"/>
+        <source>Clipboard contains no text.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="360"/>
+        <source>Expand all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/renamefilesdialog.cpp" line="361"/>
+        <source>Collapse all</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../gui/renamefilesdialog.ui" line="14"/>
         <source>Rename files and directories</source>
         <translation type="unfinished"></translation>
@@ -2359,157 +2561,11 @@ another position would prevent rewriting the entire file</source>
         <source>Apply generated names</source>
         <translation type="unfinished"></translation>
     </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="58"/>
-        <source>from file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="59"/>
-        <source>from clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="60"/>
-        <source>default script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="149"/>
-        <source>There is no external script file is selected.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="156"/>
-        <source>Unable to open external script file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="162"/>
-        <source>Generating preview ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="164"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="199"/>
-        <source>Abort</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="171"/>
-        <source>The script is not valid.
-Error in line %1: %3</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="174"/>
-        <source>An error occured when parsing the script: %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="182"/>
-        <source>The script is empty.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="187"/>
-        <source>The selected directory doesn&apos;t exist.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="197"/>
-        <source>Applying changings ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="210"/>
-        <source>%1 files/directories processed</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="213"/>
-        <source>%1 error(s) occured</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="224"/>
-        <source>Preview has been generated.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="225"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="249"/>
-        <source>%1 files/directories have been processed.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="229"/>
-        <source>No files and directories have been found.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="234"/>
-        <source>Generation of preview has been aborted prematurely.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="238"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="256"/>
-        <source>%1 error(s) occured.</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
-        </translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="248"/>
-        <source>Changins applied.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="252"/>
-        <source>Applying has been aborted prematurely.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="320"/>
-        <source>Unable to open script file.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="326"/>
-        <source>Select script</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="347"/>
-        <source>Clipboard contains no text.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="360"/>
-        <source>Expand all</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="361"/>
-        <source>Collapse all</source>
-        <translation type="unfinished"></translation>
-    </message>
 </context>
 <context>
     <name>QtGui::SettingsDialog</name>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="572"/>
+        <location filename="../gui/settingsdialog.cpp" line="349"/>
         <source></source>
         <comment>Necessary for lupdate.</comment>
         <translation></translation>
@@ -2533,6 +2589,12 @@ Error in line %1: %3</source>
 <context>
     <name>QtGui::TagEdit</name>
     <message>
+        <location filename="../gui/tagedit.cpp" line="20"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../gui/tagedit.cpp" line="144"/>
         <source> with different targets</source>
         <translation type="unfinished"></translation>
@@ -2545,136 +2607,6 @@ Error in line %1: %3</source>
 </context>
 <context>
     <name>QtGui::TagEditorWidget</name>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="32"/>
-        <source>No file selected</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="67"/>
-        <source>Document title</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="95"/>
-        <source>Let you choose whether the values of the
-previously opened file should be cleared when
-opening the next file.
-Keeping these values might be useful when
-tagging multiple files of the same album.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="102"/>
-        <source>Keep previous values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="115"/>
-        <source>Let you enable or disable the automatic
-creation or removal of tags (according to
-the settings) when loading a file.
-
-You can also create or remove tags manually.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="122"/>
-        <source>Tag management</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="135"/>
-        <source>Restores the original values read from
-the file reverting all unsaved changings.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="139"/>
-        <source>Restore</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="162"/>
-        <source>Clears all values.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="165"/>
-        <source>Clear</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="209"/>
-        <source>Aborts the saving process. The tageditor will try to restore the original file from the backup.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="212"/>
-        <location filename="../gui/tageditorwidget.cpp" line="1191"/>
-        <source>Abort</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="243"/>
-        <source>Save</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="246"/>
-        <source>all entered values</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="253"/>
-        <source>Delete</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="256"/>
-        <source>all tags from the file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="263"/>
-        <source>Open next file</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="266"/>
-        <source>and save current before</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="273"/>
-        <source>Close</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="276"/>
-        <source>the file and discard changings</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="289"/>
-        <source>No, disable this feature</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="297"/>
-        <source>Yes, but only if both files are in the same directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="305"/>
-        <source>Yes, regardless where the files are stored</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.ui" line="317"/>
-        <source>Manage tags automatically when loading file</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="121"/>
         <source>Add tag</source>
@@ -2885,25 +2817,25 @@ the file reverting all unsaved changings.</source>
     <message numerus="yes">
         <location filename="../gui/tageditorwidget.cpp" line="1137"/>
         <source>The tags have been saved, but there is/are %1 warning(s) </source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>The tags have been saved, but there is %1 warning</numerusform>
+            <numerusform>The tags have been saved, but there are %1 warnings</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="../gui/tageditorwidget.cpp" line="1138"/>
         <source>and %1 error(s).</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>and %1 error.</numerusform>
+            <numerusform>and %1 error.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
         <location filename="../gui/tageditorwidget.cpp" line="1140"/>
         <source>The tags have been saved, but there is/are %1 warning(s).</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-            <numerusform></numerusform>
+        <translation>
+            <numerusform>The tags have been saved, but there is %1 warning.</numerusform>
+            <numerusform>The tags have been saved, but there are %1 warnings.</numerusform>
         </translation>
     </message>
     <message>
@@ -2976,9 +2908,145 @@ the file reverting all unsaved changings.</source>
         <source>Unable to change the target because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="32"/>
+        <source>No file selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="67"/>
+        <source>Document title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="95"/>
+        <source>Let you choose whether the values of the
+previously opened file should be cleared when
+opening the next file.
+Keeping these values might be useful when
+tagging multiple files of the same album.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="102"/>
+        <source>Keep previous values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="115"/>
+        <source>Let you enable or disable the automatic
+creation or removal of tags (according to
+the settings) when loading a file.
+
+You can also create or remove tags manually.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="122"/>
+        <source>Tag management</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="135"/>
+        <source>Restores the original values read from
+the file reverting all unsaved changings.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="139"/>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="162"/>
+        <source>Clears all values.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="165"/>
+        <source>Clear</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="209"/>
+        <source>Aborts the saving process. The tageditor will try to restore the original file from the backup.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="212"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1191"/>
+        <source>Abort</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="243"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="246"/>
+        <source>all entered values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="253"/>
+        <source>Delete</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="256"/>
+        <source>all tags from the file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="263"/>
+        <source>Open next file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="266"/>
+        <source>and save current before</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="273"/>
+        <source>Close</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="276"/>
+        <source>the file and discard changings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="289"/>
+        <source>No, disable this feature</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="297"/>
+        <source>Yes, but only if both files are in the same directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="305"/>
+        <source>Yes, regardless where the files are stored</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.ui" line="317"/>
+        <source>Manage tags automatically when loading file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>QtGui::TagFieldEdit</name>
+    <message>
+        <location filename="../gui/tagfieldedit.cpp" line="49"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
     <message>
         <location filename="../gui/tagfieldedit.cpp" line="309"/>
         <location filename="../gui/tagfieldedit.cpp" line="341"/>
@@ -4105,6 +4173,12 @@ Remarks
 <context>
     <name>RenamingUtility::RemamingEngine</name>
     <message>
+        <location filename="../renamingutility/renamingengine.cpp" line="17"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../renamingutility/renamingengine.cpp" line="52"/>
         <source>Program is not callable.</source>
         <translation type="unfinished"></translation>
@@ -4221,9 +4295,18 @@ Remarks
     </message>
 </context>
 <context>
+    <name>RenamingUtility::ScriptFunctions</name>
+    <message>
+        <location filename="../renamingutility/scriptfunctions.cpp" line="23"/>
+        <source></source>
+        <comment>Necessary for lupdate.</comment>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>Settings::KnownFieldModel</name>
     <message>
-        <location filename="../application/knownfieldmodel.cpp" line="10"/>
+        <location filename="../application/knownfieldmodel.cpp" line="9"/>
         <source></source>
         <comment>Necessary for lupdate.</comment>
         <translation></translation>
