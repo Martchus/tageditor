@@ -664,10 +664,10 @@ public:
             const string locale = joinStrings(initializer_list<string>{joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true)}, delim, true);
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name (%1)").arg(qstr(locale)), qstr(name));
         }
-        if(!chapter.startTime().isNull()) {
+        if(!chapter.startTime().isNegative()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Start time"), qstr(chapter.startTime().toString(TimeSpanOutputFormat::WithMeasures)));
         }
-        if(!chapter.endTime().isNull()) {
+        if(!chapter.endTime().isNegative()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "End time"), qstr(chapter.endTime().toString(TimeSpanOutputFormat::WithMeasures)));
         }
         QStringList labels;

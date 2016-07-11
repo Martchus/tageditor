@@ -476,8 +476,12 @@ void FileInfoModel::updateCache()
                     const string locale = joinStrings(initializer_list<string>{joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true)}, delim, true);
                     chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromLocal8Bit(locale.data())), name);
                 }
-                chapterHelper.appendRow(tr("Start time"), chapter->startTime());
-                chapterHelper.appendRow(tr("End time"), chapter->endTime());
+                if(!chapter->startTime().isNegative()) {
+                    chapterHelper.appendRow(tr("Start time"), chapter->startTime());
+                }
+                if(!chapter->endTime().isNegative()) {
+                    chapterHelper.appendRow(tr("End time"), chapter->endTime());
+                }
                 QStringList labels;
                 if(chapter->isHidden()) {
                     labels << tr("hidden");

@@ -750,10 +750,10 @@ void displayFileInfo(const ArgumentOccurance &, const Argument &filesArg, const 
                         if(!chapter->names().empty()) {
                             printProperty("Name", static_cast<string>(chapter->names().front()));
                         }
-                        if(!chapter->startTime().isNull()) {
+                        if(!chapter->startTime().isNegative()) {
                             printProperty("Start time", chapter->startTime().toString());
                         }
-                        if(!chapter->endTime().isNull()) {
+                        if(!chapter->endTime().isNegative()) {
                             printProperty("End time", chapter->endTime().toString());
                         }
                         cout << endl;
