@@ -25,7 +25,6 @@ Media::TagValue qstringToTagValue(const QString &value, Media::TagTextEncoding t
 QString formatName(const QString &str, bool underscoreToWhitespace = true);
 QString fixUmlauts(const QString &str);
 void parseFileName(const QString &fileName, QString &title, int &trackNumber);
-int removeBackupFiles(const QDir &directory, QStringList &affectedFiles, std::ostream *log = nullptr, bool recursive = false);
 QString printModel(QAbstractItemModel *model);
 void printModelIndex(const QModelIndex &index, QString &res, int level);
 

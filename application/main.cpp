@@ -185,15 +185,6 @@ int main(int argc, char *argv[])
     genInfoArg.setDenotesOperation(true);
     genInfoArg.setSubArguments({&fileArg, &validateArg, &outputFileArg});
     genInfoArg.setCallback(std::bind(Cli::generateFileInfo, _1, std::cref(fileArg), std::cref(outputFileArg), std::cref(validateArg)));
-    // remove backup files
-    Argument directoryArg("directory", 'd', "specifies the directory");
-    directoryArg.setRequiredValueCount(1);
-    directoryArg.setValueNames({"path"});
-    directoryArg.setImplicit(true);
-    Argument remBackupFilesArg("remove-backup-files", '\0', "removes all files with \".bak\" suffix in the given directory and in subdirectories if recursive option is present");
-    remBackupFilesArg.setDenotesOperation(true);
-    remBackupFilesArg.setCallback(std::bind(Cli::removeBackupFiles, _1, std::cref(recursiveArg)));
-    remBackupFilesArg.setSubArguments({&directoryArg, &recursiveArg});
     // renaming utility
     Argument renamingUtilityArg("renaming-utility", '\0', "launches the renaming utility instead of the main GUI");
     renamingUtilityArg.setCombinable(true);
@@ -201,7 +192,7 @@ int main(int argc, char *argv[])
     qtConfigArgs.qtWidgetsGuiArg().setAbbreviation('\0');
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&defaultFileArg);
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&renamingUtilityArg);
-    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &remBackupFilesArg, &helpArg});
+    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &helpArg});
     // parse given arguments
     try {
         parser.parseArgs(argc, argv);

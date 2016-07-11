@@ -163,15 +163,6 @@ void printFieldNames(const ArgumentOccurance &occurance)
     cout << fieldNames << endl;
 }
 
-void removeBackupFiles(const ArgumentOccurance &occurance, const Argument &recursiveArg)
-{
-    CMD_UTILS_START_CONSOLE;
-    QDir dir(QString::fromStdString(occurance.values.front()));
-    QStringList affectedFiles;
-    int filesFound = Utility::removeBackupFiles(dir, affectedFiles, &cout, recursiveArg.isPresent());
-    cout << affectedFiles.size() << " of " << filesFound << " backup files have been removed." << endl;
-}
-
 TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)
 {
     if(usageArg.isPresent()) {

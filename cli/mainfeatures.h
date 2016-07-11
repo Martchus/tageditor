@@ -50,7 +50,6 @@ void generateFileInfo(const ApplicationUtilities::ArgumentOccurance &, const App
 void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
 void extractField(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &verboseArg);
-void removeBackupFiles(const ApplicationUtilities::ArgumentOccurance &occurance, const ApplicationUtilities::Argument &recursiveArg);
 
 }
 

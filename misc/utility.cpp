@@ -109,31 +109,6 @@ TagValue qstringToTagValue(const QString &value, TagTextEncoding textEncoding)
     return value.isEmpty() ? TagValue() : TagValue(qstringToString(value, textEncoding), textEncoding);
 }
 
-int removeBackupFiles(const QDir &directory, QStringList &affectedFiles, ostream *log, bool recursive)
-{
-    QDirIterator iterator(directory, recursive ? QDirIterator::Subdirectories : QDirIterator::NoIteratorFlags);
-    QString path;
-    int filesFound = 0;
-    while(iterator.hasNext()) {
-        path = iterator.next();
-        const auto fileInfo = iterator.fileInfo();
-        if(fileInfo.isFile()) {
-            if(fileInfo.suffix() == QLatin1String("bak")) {
-                ++filesFound;
-                if(QFile::remove(path)) {
-                    affectedFiles << path;
-                    if(log) {
-                        *log << "\"" << path.toStdString() << "\" has been removed." << endl;
-                    }
-                } else if(log) {
-                    *log << "Unable to remove \"" << path.toStdString() << "\"." << endl;
-                }
-            }
-        }
-    }
-    return filesFound;
-}
-
 QString formatName(const QString &str, bool underscoreToWhitespace)
 {
     QString res;
