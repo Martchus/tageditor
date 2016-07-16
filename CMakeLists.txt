@@ -134,6 +134,47 @@ set(DOC_FILES
     README.md
 )
 
+set(REQUIRED_ICONS
+    collapse-menu-hover
+    edit-paste
+    window-close
+    document-save-as
+    document-open
+    view-list-tree
+    edit-copy
+    preferences-other
+    document-edit
+    edit-delete
+    document-revert
+    document-open-recent
+    view-preview
+    dialog-ok
+    tag-add
+    process-stop
+    edit-find
+    media-playback-start
+    dialog-cancel
+    edit-clear
+    list-add
+    dialog-ok-apply
+    tag
+    help-about
+    application-exit
+    edit-undo
+    document-properties
+    tag-delete
+    system-file-manager
+    image-x-generic
+    document-save
+    tag-properties
+    system-run
+    edit-rename
+    go-next
+    qtcreator
+    expand-menu-hover
+    autocorrection
+)
+
 # find c++utilities
 find_package(c++utilities 4.0.0 REQUIRED)
 use_cpp_utilities()
@@ -152,9 +193,9 @@ list(APPEND ADDITIONAL_QT_MODULES Concurrent Network)
 # include modules to apply configuration
 include(BasicConfig)
 include(QtGuiConfig)
-include(QtConfig)
 include(JsProviderConfig)
 include(WebViewProviderConfig)
+include(QtConfig)
 include(WindowsResources)
 include(AppTarget)
 include(ShellCompletion)
