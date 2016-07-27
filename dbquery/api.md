@@ -1,4 +1,4 @@
- # MusicBrainz API
+# MusicBrainz API
 * Regular meta data is available at ```http://musicbrainz.org/ws/2``` and ```http://mb.videolan.org/ws/2```.
 * Cover art is available at ```http://coverartarchive.org```.
 

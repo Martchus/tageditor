@@ -119,8 +119,7 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
 void DbQueryWidget::startSearch()
 {
     // check whether enought search terms are supplied
-    if((m_ui->titleLineEdit->text().isEmpty() && !m_ui->trackSpinBox->value() && (m_ui->albumLineEdit->text().isEmpty() || m_ui->artistLineEdit->text().isEmpty()))
-            || (m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty() && m_ui->titleLineEdit->text().isEmpty())) {
+    if(m_ui->titleLineEdit->text().isEmpty() && m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
         m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied"));
         return;

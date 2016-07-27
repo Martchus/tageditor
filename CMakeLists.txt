@@ -217,7 +217,7 @@ add_desktop_file()
 add_custom_desktop_file(
     "${META_PROJECT_NAME}-renamingutility"
     "Renaming utility (${META_APP_NAME})"
-    "Tool to rename tags using tag information."
+    "Tool to rename files using its tag information"
     "${META_APP_CATEGORIES}"
     "${META_PROJECT_NAME} qt-gui --renaming-utility"
     "${META_PROJECT_NAME}"
