@@ -1,8 +1,10 @@
 #include "./mainfeatures.h"
 
 #include "../application/knownfieldmodel.h"
-#include "../misc/utility.h"
-#include "../misc/htmlinfo.h"
+#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+# include "../misc/utility.h"
+# include "../misc/htmlinfo.h"
+#endif
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
@@ -18,18 +20,24 @@
 #include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/misc/memory.h>
 
-#include <QDir>
+#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+# include <QDir>
+#endif
 
 #include <iostream>
+#include <cstring>
+#include <algorithm>
 
 using namespace std;
 using namespace ApplicationUtilities;
 using namespace ConversionUtilities;
 using namespace ChronoUtilities;
 using namespace EscapeCodes;
-using namespace Utility;
 using namespace Settings;
 using namespace Media;
+#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+using namespace Utility;
+#endif
 
 namespace Cli {
 
@@ -57,7 +65,7 @@ struct FieldDenotation
     DenotationType type;
     TagType tagType;
     TagTarget tagTarget;
-    std::vector<std::pair<unsigned int, QString> > values;
+    vector<pair<unsigned int, string> > values;
 };
 
 FieldDenotation::FieldDenotation(KnownField field) :
@@ -71,23 +79,23 @@ inline bool isDigit(char c)
     return c >= '0' && c <= '9';
 }
 
-QString incremented(const QString &str, unsigned int toIncrement = 1)
+string incremented(const string &str, unsigned int toIncrement = 1)
 {
-    QString res;
+    string res;
     res.reserve(str.size());
     unsigned int value = 0;
     bool hasValue = false;
-    for(const QChar &c : str) {
-        if(toIncrement && c.isDigit()) {
-            value = value * 10 + static_cast<unsigned int>(c.digitValue());
+    for(const char &c : str) {
+        if(toIncrement && c >= '0' && c <= '9') {
+            value = value * 10 + static_cast<unsigned int>(c - '0');
             hasValue = true;
         } else {
             if(hasValue) {
-                res.append(QString::number(value + 1));
+                res += numberToString(value + 1);
                 hasValue = false;
                 --toIncrement;
             }
-            res.append(c);
+            res += c;
         }
     }
     return res;
@@ -422,7 +430,7 @@ vector<FieldDenotation> parseFieldDenotations(const Argument &fieldsArg, bool re
                 if(readOnly) {
                     cerr << "Warning: Specified value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << endl;
                 } else {
-                    fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, QString::fromLocal8Bit(equationPos + 1)));
+                    fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, (equationPos + 1)));
                 }
             }
         }
@@ -567,6 +575,7 @@ bool AttachmentInfo::next(AbstractContainer *container)
 void generateFileInfo(const ArgumentOccurance &, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
+#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
     try {
         // parse tags
         MediaFileInfo inputFileInfo(inputFileArg.values().front());
@@ -587,6 +596,12 @@ void generateFileInfo(const ArgumentOccurance &, const Argument &inputFileArg, c
         ::IoUtilities::catchIoFailure();
         cerr << "Error: An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
     }
+#else
+    VAR_UNUSED(inputFileArg);
+    VAR_UNUSED(outputFileArg);
+    VAR_UNUSED(validateArg);
+    cerr << "Error: Generating HTML info is only available if built with Qt support." << endl;
+#endif
 }
 
 void printProperty(const char *propName, const char *value, const char *suffix = nullptr, size_t intention = 4)
@@ -804,11 +819,11 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                                 }
                                 // write value
                                 try {
-                                    const auto textValue = tagValueToQString(value);
-                                    if(textValue.isEmpty()) {
+                                    const auto textValue = value.toString(TagTextEncoding::Utf8);
+                                    if(textValue.empty()) {
                                         cout << "can't display here (see --extract)";
                                     } else {
-                                        cout << textValue.toLocal8Bit().data();
+                                        cout << textValue;
                                     }
                                 } catch(const ConversionException &) {
                                     cout << "conversion error";
@@ -832,11 +847,11 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                                     cout << "none";
                                 } else {
                                     try {
-                                        const auto textValue = tagValueToQString(value);
-                                        if(textValue.isEmpty()) {
+                                        const auto textValue = value.toString(TagTextEncoding::Utf8);
+                                        if(textValue.empty()) {
                                             cout << "can't display here (see --extract)";
                                         } else {
-                                            cout << textValue.toLocal8Bit().data();
+                                            cout << textValue;
                                         }
                                     } catch(const ConversionException &) {
                                         cout << "conversion error";
@@ -979,7 +994,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         if((fieldDenotation.tagType == TagType::Unspecified
                             || (fieldDenotation.tagType | tagType) != TagType::Unspecified)
                                 && (!targetSupported || fieldDenotation.tagTarget == tagTarget)) {
-                            pair<unsigned int, QString> *selectedDenotatedValue = nullptr;
+                            pair<unsigned int, string> *selectedDenotatedValue = nullptr;
                             for(auto &someDenotatedValue : fieldDenotation.values) {
                                 if(someDenotatedValue.first <= fileIndex) {
                                     if(!selectedDenotatedValue || (someDenotatedValue.first > selectedDenotatedValue->first)) {
@@ -989,11 +1004,11 @@ void setTagInfo(const SetTagInfoArgs &args)
                             }
                             if(selectedDenotatedValue) {
                                 if(fieldDenotation.type == DenotationType::File) {
-                                    if(selectedDenotatedValue->second.isEmpty()) {
+                                    if(selectedDenotatedValue->second.empty()) {
                                         tag->setValue(fieldDenotation.field, TagValue());
                                     } else {
                                         try {
-                                            MediaFileInfo fileInfo(selectedDenotatedValue->second.toLocal8Bit().constData());
+                                            MediaFileInfo fileInfo(selectedDenotatedValue->second);
                                             fileInfo.open(true);
                                             fileInfo.parseContainerFormat();
                                             auto buff = make_unique<char []>(fileInfo.size());
@@ -1014,7 +1029,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     if(!tag->canEncodingBeUsed(denotedEncoding)) {
                                         usedEncoding = tag->proposedTextEncoding();
                                     }
-                                    tag->setValue(fieldDenotation.field, qstringToTagValue(selectedDenotatedValue->second, usedEncoding));
+                                    tag->setValue(fieldDenotation.field, TagValue(selectedDenotatedValue->second, TagTextEncoding::Utf8, usedEncoding));
                                     if(fieldDenotation.type == DenotationType::Increment && tag == tags.back()) {
                                         selectedDenotatedValue->second = incremented(selectedDenotatedValue->second);
                                     }

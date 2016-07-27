@@ -2,8 +2,13 @@
 
 #include <tagparser/tag.h>
 
-using namespace Models;
 using namespace Media;
+
+#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+using namespace Models;
+#else
+# define QT_TR_NOOP(x) x
+#endif
 
 namespace Settings {
 
@@ -47,6 +52,7 @@ const char *KnownFieldModel::fieldName(KnownField field)
     }
 }
 
+#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
 QString KnownFieldModel::translatedFieldName(KnownField field)
 {
     return tr(fieldName(field));
@@ -118,5 +124,6 @@ QVariant KnownFieldModel::headerData(int section, Qt::Orientation orientation, i
     }
     return QVariant();
 }
+#endif
 
 }

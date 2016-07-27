@@ -36,7 +36,7 @@ However, it is also possible to force rewriting the entire file.
 Taking advantage of padding is currently not supported when dealing with Ogg streams (it is supported when
 dealing with raw FLAC streams).
 
-## Download / repository
+## Download / binary repository
 I currently provide packages for Arch Linux and Windows. For more information checkout my
 [website](http://martchus.no-ip.biz/website/page.php?name=programming).
 
@@ -71,27 +71,30 @@ you will see a preview with the generated file names.
 The tag editor also features a MusicBrainz and Cover Art Archive search which can be opened with *F10*. However, this feature is still experimental.
 
 ### CLI
-Usage:
+#### Usage
 ```
 tageditor <operation> [options]
 ```
-
 Checkout the available operations and options with --help.
+
+#### Examples
 Here are some Bash examples which illustrate getting and setting tag information:
 
-* Displays title, album and artist of all *.m4a files in the specified directory:
+* *Displays* title, album and artist of all *.m4a files in the specified directory:
 
   ```
   tageditor get title album artist --files /some/dir/*.m4a
   ```
 
-* Displays technical information about all *.m4a files in the specified directory:
+  **Note**: All values are printed in UTF-8 encoding, no matter which  encoding is actually used within the tag.
+
+* *Displays* technical information about all *.m4a files in the specified directory:
 
   ```
   tageditor info --files /some/dir/*.m4a
   ```
 
-* Sets title, album, artist, cover and track number of all *.m4a files in the specified directory:
+* *Sets* title, album, artist, cover and track number of all *.m4a files in the specified directory:
 
   ```
   tageditor set "title=Title of "{1st,2nd,3rd}" file" "title=Title of "{4..16}"th file" \
@@ -102,6 +105,8 @@ Here are some Bash examples which illustrate getting and setting tag information
   The first file will get the name *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
   The 16th and following files will all get the name *Title of the 16th file*. The same scheme is used for the track numbers.
   All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
+
+  **Note**: All specified values are assumed to be UTF-8 encoded, no matter which encoding has been specified as preferred encoding via ``--encoding`` option. (This mentioned option only affects the encoding to be used *within* the tag.)
 
 * Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
 
@@ -124,15 +129,24 @@ Here are some Bash examples which illustrate getting and setting tag information
   a file has been processed.
 
 ## Build instructions
-The application depends on c++utilities, qtutilities and tagparser and is built in the same way as these libaries
-which are also available on my GitHub profile.
+The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
 
+### Building with Qt 5 GUI
 The following Qt 5 modules are requried: core concurrent gui network declarative/script widgets webenginewidgets/webkitwidgets
 
+#### Select Qt modules for JavaScript and WebView
 * If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against Qt QML.
-* To force usage of Qt Script/Qt QML or to disable both add `-DJS_PROVIDER=script/qml/none` to the cmake arguments.
+* To force usage of Qt Script/Qt QML or to disable both add `-DJS_PROVIDER=script/qml/none` to the CMake arguments.
 * If Qt WebKitWidgets is installed on the system, the editor will link against it. Otherwise it will link against Qt WebEngineWidgets.
-* To force usage of Qt WebKit/Qt WebEngine or to disable both add `-DWEBVIEW_PROVIDER=webkit/webengine/none` to the cmake arguments.
+* To force usage of Qt WebKit/Qt WebEngine or to disable both add `-DWEBVIEW_PROVIDER=webkit/webengine/none` to the CMake arguments.
+
+### Building without Qt 5 GUI
+It is possible to build without the GUI if only the CLI is needed. In this case no Qt dependencies (including qtutilities) are required.
+
+To build without GUI, add the following parameters to the CMake call:
+```
+-DWIDGETS_GUI=OFF -DQUICK_GUI=OFF
+```
 
 ## TODO
 - Support more formats (EXIF, PDF metadata, Theora in Ogg, ...).

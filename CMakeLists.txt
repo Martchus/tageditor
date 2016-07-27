@@ -2,31 +2,37 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
 # meta data
 set(META_PROJECT_NAME tageditor)
+set(META_PROJECT_TYPE application)
 set(META_APP_NAME "Tag Editor")
 set(META_APP_CATEGORIES "Utility;Audio;Video;")
 set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
-set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska.")
+set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska")
 set(META_VERSION_MAJOR 1)
 set(META_VERSION_MINOR 4)
 set(META_VERSION_PATCH 1)
 
 # add project files
 set(HEADER_FILES
-    application/knownfieldmodel.h
-    application/targetlevelmodel.h
     application/main.h
-    application/settings.h
     cli/mainfeatures.h
+    application/knownfieldmodel.h
+)
+set(SRC_FILES
+    application/main.cpp
+    cli/mainfeatures.cpp
+    application/knownfieldmodel.cpp
+)
+
+set(GUI_HEADER_FILES
+    application/targetlevelmodel.h
+    application/settings.h
     misc/htmlinfo.h
     misc/utility.h
 )
-set(SRC_FILES
-    application/knownfieldmodel.cpp
+set(GUI_SRC_FILES
     application/targetlevelmodel.cpp
-    application/main.cpp
     application/settings.cpp
-    cli/mainfeatures.cpp
     misc/htmlinfo.cpp
     misc/utility.cpp
 )
@@ -180,8 +186,10 @@ find_package(c++utilities 4.0.0 REQUIRED)
 use_cpp_utilities()
 
 # find qtutilities
-find_package(qtutilities 4.0.0 REQUIRED)
-use_qt_utilities()
+if(WIDGETS_GUI OR QUICK_GUI)
+    find_package(qtutilities 5.0.0 REQUIRED)
+    use_qt_utilities()
+endif()
 
 # find tagparser
 find_package(tagparser 6.0.0 REQUIRED)
@@ -192,10 +200,12 @@ list(APPEND ADDITIONAL_QT_MODULES Concurrent Network)
 
 # include modules to apply configuration
 include(BasicConfig)
-include(QtGuiConfig)
-include(JsProviderConfig)
-include(WebViewProviderConfig)
-include(QtConfig)
+if(WIDGETS_GUI OR QUICK_GUI)
+    include(QtGuiConfig)
+    include(JsProviderConfig)
+    include(WebViewProviderConfig)
+    include(QtConfig)
+endif()
 include(WindowsResources)
 include(AppTarget)
 include(ShellCompletion)
