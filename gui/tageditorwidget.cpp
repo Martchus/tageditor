@@ -835,8 +835,35 @@ void TagEditorWidget::showFile(char result)
         msgBox->show();
         emit statusMessage(statusMsg);
     } else {
-        // update webview
-        updateInfoView();
+        // load existing tags
+        m_tags.clear();
+        m_fileInfo.tags(m_tags);
+        // show notification if no existing tag(s) could be found
+        if(!m_tags.size()) {
+            m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
+        }
+
+        // create appropriate tags according to file type and user preferences when automatic tag management is enabled
+        if(Settings::autoTagManagement()) {
+            vector<TagTarget> requiredTargets;
+            requiredTargets.reserve(2);
+            for(const ChecklistItem &targetItem : Settings::defaultTargetsModel().items()) {
+                if(targetItem.isChecked()) {
+                    requiredTargets.emplace_back(containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
+                }
+            }
+            if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
+                                                 Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets)) {
+                if(confirmCreationOfId3TagForUnsupportedFile()) {
+                    m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
+                                                     Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets);
+                }
+            }
+            // tags might have been adjusted -> reload tags
+            m_tags.clear();
+            m_fileInfo.tags(m_tags);
+        }
+
         // show parsing status/result using parsing notification widget
         auto worstNotificationType = m_fileInfo.worstNotificationTypeIncludingRelatedObjects();
         if(worstNotificationType >= Media::NotificationType::Critical) {
@@ -872,44 +899,16 @@ void TagEditorWidget::showFile(char result)
         if(multipleSegmentsNotTested) {
             m_ui->parsingNotificationWidget->appendLine(tr("The file is composed of multiple segments. Dealing with such files has not been tested yet and might be broken."));
         }
-        // load existing tags
-        m_tags.clear();
-        m_fileInfo.tags(m_tags);
-        // show notification if no existing tag(s) could be found
-        if(!m_tags.size()) {
-            m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
-        }
-        // create appropriate tags according to file type and user preferences when automatic tag management is enabled
-        if(Settings::autoTagManagement()) {
-            const QList<ChecklistItem> &targetItems = Settings::defaultTargetsModel().items();
-            vector<TagTarget> requiredTargets;
-            requiredTargets.reserve(2);
-            for(const ChecklistItem &targetItem : targetItems) {
-                if(targetItem.isChecked()) {
-                    requiredTargets.emplace_back(containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
-                }
-            }
-            if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                                 Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets)) {
-                if(confirmCreationOfId3TagForUnsupportedFile()) {
-                    m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                                     Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets);
-                }
-            }
-            // tags might have been adjusted -> reload tags
-            m_tags.clear();
-            m_fileInfo.tags(m_tags);
-        }
-        // update file watcher
+
+        // update relevant (UI) components
         m_fileWatcher->addPath(m_currentPath);
         m_fileChangedOnDisk = false;
-        // update related widgets
+        updateInfoView();
         updateDocumentTitleEdits();
         updateTagEditsAndAttachmentEdits();
         updateTagSelectionComboBox();
         updateTagManagementMenu();
         insertTitleFromFilename();
-        // update status
         emit statusMessage(tr("The file %1 has been opened.").arg(m_currentPath));
         updateFileStatusStatus();
     }
