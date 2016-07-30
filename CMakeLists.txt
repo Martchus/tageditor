@@ -127,6 +127,13 @@ set(WIDGETS_UI_FILES
 #    resources/icons.qrc
 #)
 
+set(TEST_HEADER_FILES
+)
+set(TEST_SRC_FILES
+    tests/cppunit.cpp
+    tests/cli.cpp
+)
+
 set(TS_FILES
     translations/${META_PROJECT_NAME}_de_DE.ts
     translations/${META_PROJECT_NAME}_en_US.ts
@@ -207,6 +214,7 @@ if(WIDGETS_GUI OR QUICK_GUI)
     include(QtConfig)
 endif()
 include(WindowsResources)
+include(TestTarget)
 include(AppTarget)
 include(ShellCompletion)
 include(ConfigHeader)

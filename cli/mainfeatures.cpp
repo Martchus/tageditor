@@ -27,6 +27,7 @@
 #include <iostream>
 #include <cstring>
 #include <algorithm>
+#include <unordered_map>
 
 using namespace std;
 using namespace ApplicationUtilities;
@@ -41,6 +42,8 @@ using namespace Utility;
 
 namespace Cli {
 
+// define enums, operators and structs to handle specified field denotations
+
 enum class DenotationType
 {
     Normal,
@@ -53,28 +56,99 @@ inline TagType operator| (TagType lhs, TagType rhs)
     return static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
 }
 
+inline TagType operator& (TagType lhs, TagType rhs)
+{
+    return static_cast<TagType>(static_cast<unsigned int>(lhs) & static_cast<unsigned int>(rhs));
+}
+
 inline TagType &operator|= (TagType &lhs, TagType rhs)
 {
     return lhs = static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
 }
 
-struct FieldDenotation
+struct FieldScope
 {
-    FieldDenotation(KnownField field);
+    FieldScope(KnownField field = KnownField::Invalid, TagType tagType = TagType::Unspecified, TagTarget tagTarget = TagTarget());
+    bool operator ==(const FieldScope &other) const;
     KnownField field;
-    DenotationType type;
     TagType tagType;
     TagTarget tagTarget;
-    vector<pair<unsigned int, string> > values;
 };
 
-FieldDenotation::FieldDenotation(KnownField field) :
+FieldScope::FieldScope(KnownField field, TagType tagType, TagTarget tagTarget) :
     field(field),
-    type(DenotationType::Normal),
-    tagType(TagType::Unspecified)
+    tagType(tagType),
+    tagTarget(tagTarget)
 {}
 
-inline bool isDigit(char c)
+bool FieldScope::operator ==(const FieldScope &other) const
+{
+    return field == other.field && tagType == other.tagType && tagTarget == other.tagTarget;
+}
+
+struct FieldValue
+{
+    FieldValue(DenotationType type, unsigned int fileIndex, const char *value);
+    DenotationType type;
+    unsigned int fileIndex;
+    string value;
+};
+
+inline FieldValue::FieldValue(DenotationType type, unsigned int fileIndex, const char *value) :
+    type(type),
+    fileIndex(fileIndex),
+    value(value)
+{}
+
+}
+
+namespace std {
+
+using namespace Cli;
+
+template <> struct hash<TagTarget::IdContainerType>
+{
+    std::size_t operator()(const TagTarget::IdContainerType &ids) const
+    {
+        using std::hash;
+        auto seed = ids.size();
+        for(auto id : ids) {
+            seed ^= id + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+    }
+};
+
+template <> struct hash<TagTarget>
+{
+    std::size_t operator()(const TagTarget& target) const
+    {
+        using std::hash;
+        return ((hash<uint64>()(target.level())
+                 ^ (hash<TagTarget::IdContainerType>()(target.tracks()) << 1)) >> 1)
+                ^ (hash<TagTarget::IdContainerType>()(target.attachments()) << 1);
+    }
+};
+
+template <> struct hash<FieldScope>
+{
+    std::size_t operator()(const FieldScope& scope) const
+    {
+        using std::hash;
+        return ((hash<KnownField>()(scope.field)
+                 ^ (hash<TagType>()(scope.tagType) << 1)) >> 1)
+                ^ (hash<TagTarget>()(scope.tagTarget) << 1);
+    }
+};
+
+}
+
+namespace Cli {
+
+typedef vector<FieldValue> FieldValues;
+typedef unordered_map<FieldScope, FieldValues> FieldDenotations;
+
+constexpr bool isDigit(char c)
 {
     return c >= '0' && c <= '9';
 }
@@ -98,6 +172,9 @@ string incremented(const string &str, unsigned int toIncrement = 1)
             res += c;
         }
     }
+    if(hasValue) {
+        res += numberToString(value + 1);
+    }
     return res;
 }
 
@@ -116,7 +193,7 @@ void printNotifications(NotificationList &notifications, const char *head = null
         return;
     }
     if(!notifications.empty()) {
-        printNotifications:
+printNotifications:
         if(head) {
             cout << head << endl;
         }
@@ -168,7 +245,7 @@ void printFieldNames(const ArgumentOccurance &occurance)
 {
     CMD_UTILS_START_CONSOLE;
     VAR_UNUSED(occurance)
-    cout << fieldNames << endl;
+            cout << fieldNames << endl;
 }
 
 TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)
@@ -286,18 +363,16 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
     }
 }
 
-vector<FieldDenotation> parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
+FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
 {
-    vector<FieldDenotation> fields;
+    FieldDenotations fields;
     if(fieldsArg.isPresent()) {
         const vector<const char *> &fieldDenotations = fieldsArg.values();
-        fields.reserve(fieldDenotations.size());
-        TagType currentTagType = TagType::Unspecified;
-        TagTarget currentTagTarget;
+        FieldScope scope;
         for(const char *fieldDenotationString : fieldDenotations) {
             // check for tag or target specifier
             const auto fieldDenotationLen = strlen(fieldDenotationString);
-            if(!strncmp(fieldDenotationString, "tag:", 4)) {
+            if(!strncmp(fieldDenotationString, "tag=", 4)) {
                 if(fieldDenotationLen == 4) {
                     cerr << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
                 } else {
@@ -320,14 +395,14 @@ vector<FieldDenotation> parseFieldDenotations(const Argument &fieldsArg, bool re
                             break;
                         } else {
                             cerr << "Warning: The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
-                            tagType = currentTagType;
+                            tagType = scope.tagType;
                             break;
                         }
                     }
-                    currentTagType = tagType;
+                    scope.tagType = tagType;
                     break;
                 }
-            } else if(applyTargetConfiguration(currentTagTarget, fieldDenotationString)) {
+            } else if(applyTargetConfiguration(scope.tagTarget, fieldDenotationString)) {
                 continue;
             }
             // read field name
@@ -359,78 +434,77 @@ vector<FieldDenotation> parseFieldDenotations(const Argument &fieldsArg, bool re
                 continue;
             }
             // parse the denoted filed
-            KnownField field;
             if(!strncmp(fieldDenotationString, "title", fieldNameLen)) {
-                field = KnownField::Title;
+                scope.field = KnownField::Title;
             } else if(!strncmp(fieldDenotationString, "album", fieldNameLen)) {
-                field = KnownField::Album;
+                scope.field = KnownField::Album;
             } else if(!strncmp(fieldDenotationString, "artist", fieldNameLen)) {
-                field = KnownField::Artist;
+                scope.field = KnownField::Artist;
             } else if(!strncmp(fieldDenotationString, "genre", fieldNameLen)) {
-                field = KnownField::Genre;
+                scope.field = KnownField::Genre;
             } else if(!strncmp(fieldDenotationString, "year", fieldNameLen)) {
-                field = KnownField::Year;
+                scope.field = KnownField::Year;
             } else if(!strncmp(fieldDenotationString, "comment", fieldNameLen)) {
-                field = KnownField::Comment;
+                scope.field = KnownField::Comment;
             } else if(!strncmp(fieldDenotationString, "bpm", fieldNameLen)) {
-                field = KnownField::Bpm;
+                scope.field = KnownField::Bpm;
             } else if(!strncmp(fieldDenotationString, "bps", fieldNameLen)) {
-                field = KnownField::Bps;
+                scope.field = KnownField::Bps;
             } else if(!strncmp(fieldDenotationString, "lyricist", fieldNameLen)) {
-                field = KnownField::Lyricist;
+                scope.field = KnownField::Lyricist;
             } else if(!strncmp(fieldDenotationString, "track", fieldNameLen)) {
-                field = KnownField::TrackPosition;
+                scope.field = KnownField::TrackPosition;
             } else if(!strncmp(fieldDenotationString, "disk", fieldNameLen)) {
-                field = KnownField::DiskPosition;
+                scope.field = KnownField::DiskPosition;
             } else if(!strncmp(fieldDenotationString, "part", fieldNameLen)) {
-                field = KnownField::PartNumber;
+                scope.field = KnownField::PartNumber;
             } else if(!strncmp(fieldDenotationString, "totalparts", fieldNameLen)) {
-                field = KnownField::TotalParts;
+                scope.field = KnownField::TotalParts;
             } else if(!strncmp(fieldDenotationString, "encoder", fieldNameLen)) {
-                field = KnownField::Encoder;
+                scope.field = KnownField::Encoder;
             } else if(!strncmp(fieldDenotationString, "recorddate", fieldNameLen)) {
-                field = KnownField::RecordDate;
+                scope.field = KnownField::RecordDate;
             } else if(!strncmp(fieldDenotationString, "performers", fieldNameLen)) {
-                field = KnownField::Performers;
+                scope.field = KnownField::Performers;
             } else if(!strncmp(fieldDenotationString, "duration", fieldNameLen)) {
-                field = KnownField::Length;
+                scope.field = KnownField::Length;
             } else if(!strncmp(fieldDenotationString, "language", fieldNameLen)) {
-                field = KnownField::Language;
+                scope.field = KnownField::Language;
             } else if(!strncmp(fieldDenotationString, "encodersettings", fieldNameLen)) {
-                field = KnownField::EncoderSettings;
+                scope.field = KnownField::EncoderSettings;
             } else if(!strncmp(fieldDenotationString, "lyrics", fieldNameLen)) {
-                field = KnownField::Lyrics;
+                scope.field = KnownField::Lyrics;
             } else if(!strncmp(fieldDenotationString, "synchronizedlyrics", fieldNameLen)) {
-                field = KnownField::SynchronizedLyrics;
+                scope.field = KnownField::SynchronizedLyrics;
             } else if(!strncmp(fieldDenotationString, "grouping", fieldNameLen)) {
-                field = KnownField::Grouping;
+                scope.field = KnownField::Grouping;
             } else if(!strncmp(fieldDenotationString, "recordlabel", fieldNameLen)) {
-                field = KnownField::RecordLabel;
+                scope.field = KnownField::RecordLabel;
             } else if(!strncmp(fieldDenotationString, "cover", fieldNameLen)) {
-                field = KnownField::Cover;
+                scope.field = KnownField::Cover;
                 type = DenotationType::File; // read cover always from file
             } else if(!strncmp(fieldDenotationString, "composer", fieldNameLen)) {
-                field = KnownField::Composer;
+                scope.field = KnownField::Composer;
             } else if(!strncmp(fieldDenotationString, "rating", fieldNameLen)) {
-                field = KnownField::Rating;
+                scope.field = KnownField::Rating;
             } else if(!strncmp(fieldDenotationString, "description", fieldNameLen)) {
-                field = KnownField::Description;
+                scope.field = KnownField::Description;
             } else {
                 // no "KnownField" value matching -> discard the field denotation
                 cerr << "Warning: The field name \"" << string(fieldDenotationString, fieldNameLen) << "\" is unknown and will be ingored." << endl;
                 continue;
             }
-            // add field denotation with parsed values
-            fields.emplace_back(field);
-            FieldDenotation &fieldDenotation = fields.back();
-            fieldDenotation.type = type;
-            fieldDenotation.tagType = currentTagType;
-            fieldDenotation.tagTarget = currentTagTarget;
+            // add field denotation scope
+            auto &fieldValues = fields[scope];
+            // add value to the scope (if present)
             if(equationPos) {
                 if(readOnly) {
                     cerr << "Warning: Specified value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << endl;
                 } else {
-                    fieldDenotation.values.emplace_back(make_pair(mult == 1 ? fieldDenotation.values.size() : fileIndex, (equationPos + 1)));
+                    // file index might have been specified explicitely
+                    // if not (mult == 1) use the index of the last value and increase it by one
+                    // if there are no previous values, just use the index 0
+                    fieldValues.emplace_back(FieldValue(type, mult == 1 ? (fieldValues.empty() ? 0 : fieldValues.back().fileIndex + 1) : fileIndex, (equationPos + 1)));
                 }
             }
         }
@@ -653,7 +727,7 @@ void displayFileInfo(const ArgumentOccurance &, const Argument &filesArg, const 
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.isPresent() || filesArg.values().empty()) {
-        cout << "Error: No files have been specified." << endl;
+        cerr << "Error: No files have been specified." << endl;
         return;
     }
     MediaFileInfo fileInfo;
@@ -781,7 +855,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.isPresent() || filesArg.values().empty()) {
-        cout << "Error: No files have been specified." << endl;
+        cerr << "Error: No files have been specified." << endl;
         return;
     }
     const auto fields = parseFieldDenotations(fieldsArg, true);
@@ -801,7 +875,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                     TagType tagType = tag->type();
                     // write tag name and target, eg. MP4/iTunes tag
                     cout << tag->typeName();
-                    if(!tag->target().isEmpty()) {
+                    if(tagType == TagType::MatroskaTag || !tag->target().isEmpty()) {
                         cout << " targeting \"" << tag->targetString() << "\"";
                     }
                     cout << endl;
@@ -832,11 +906,12 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                             }
                         }
                     } else {
-                        for(const FieldDenotation &fieldDenotation : fields) {
-                            const auto &value = tag->value(fieldDenotation.field);
-                            if(fieldDenotation.tagType == TagType::Unspecified || (fieldDenotation.tagType | tagType) != TagType::Unspecified) {
+                        for(const auto &fieldDenotation : fields) {
+                            const FieldScope &denotedScope = fieldDenotation.first;
+                            const TagValue &value = tag->value(denotedScope.field);
+                            if(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType | tagType) != TagType::Unspecified) {
                                 // write field name
-                                const char *fieldName = KnownFieldModel::fieldName(fieldDenotation.field);
+                                const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
                                 cout << ' ' << fieldName;
                                 // write padding
                                 for(auto i = strlen(fieldName); i < 18; ++i) {
@@ -884,15 +959,16 @@ void setTagInfo(const SetTagInfoArgs &args)
         return;
     }
     auto fields = parseFieldDenotations(args.valuesArg, false);
-    if(fields.empty() && args.attachmentsArg.values().empty() && args.docTitleArg.values().empty()) {
+    if(fields.empty() && (!args.removeTargetsArg.isPresent() || args.removeTargetsArg.values().empty()) && (!args.attachmentsArg.isPresent() || args.attachmentsArg.values().empty()) && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty())) {
         cerr << "Error: No fields/attachments have been specified." << endl;
         return;
     }
     // determine required targets
     vector<TagTarget> requiredTargets;
-    for(const FieldDenotation &fieldDenotation : fields) {
-        if(find(requiredTargets.cbegin(), requiredTargets.cend(), fieldDenotation.tagTarget) == requiredTargets.cend()) {
-            requiredTargets.push_back(fieldDenotation.tagTarget);
+    for(const auto &fieldDenotation : fields) {
+        const FieldScope &scope = fieldDenotation.first;
+        if(find(requiredTargets.cbegin(), requiredTargets.cend(), scope.tagTarget) == requiredTargets.cend()) {
+            requiredTargets.push_back(scope.tagTarget);
         }
     }
     // determine targets to remove
@@ -984,31 +1060,38 @@ void setTagInfo(const SetTagInfoArgs &args)
             if(!tags.empty()) {
                 // iterate through all tags
                 for(auto *tag : tags) {
+                    // clear current values if option is present
                     if(args.removeOtherFieldsArg.isPresent()) {
                         tag->removeAllFields();
                     }
-                    auto tagType = tag->type();
-                    bool targetSupported = tag->supportsTarget();
-                    auto tagTarget = tag->target();
-                    for(FieldDenotation &fieldDenotation : fields) {
-                        if((fieldDenotation.tagType == TagType::Unspecified
-                            || (fieldDenotation.tagType | tagType) != TagType::Unspecified)
-                                && (!targetSupported || fieldDenotation.tagTarget == tagTarget)) {
-                            pair<unsigned int, string> *selectedDenotatedValue = nullptr;
-                            for(auto &someDenotatedValue : fieldDenotation.values) {
-                                if(someDenotatedValue.first <= fileIndex) {
-                                    if(!selectedDenotatedValue || (someDenotatedValue.first > selectedDenotatedValue->first)) {
-                                        selectedDenotatedValue = &someDenotatedValue;
+                    // determine required information for deciding whether specified values match the scope of the current tag
+                    const auto tagType = tag->type();
+                    const bool targetSupported = tag->supportsTarget();
+                    const auto tagTarget = tag->target();
+                    // iterate through all denoted field values
+                    for(auto &fieldDenotation : fields) {
+                        const FieldScope &denotedScope = fieldDenotation.first;
+                        FieldValues &denotedValues = fieldDenotation.second;
+                        // decide whether the scope of the denotation matches of the current tag
+                        if((denotedScope.tagType == TagType::Unspecified
+                            || (denotedScope.tagType & tagType) != TagType::Unspecified)
+                                && (!targetSupported || denotedScope.tagTarget == tagTarget)) {
+                            // select the value for the current file index
+                            FieldValue *selectedDenotedValue = nullptr;
+                            for(FieldValue &denotatedValue : denotedValues) {
+                                if(denotatedValue.fileIndex <= fileIndex) {
+                                    if(!selectedDenotedValue || (denotatedValue.fileIndex > selectedDenotedValue->fileIndex)) {
+                                        selectedDenotedValue = &denotatedValue;
                                     }
                                 }
                             }
-                            if(selectedDenotatedValue) {
-                                if(fieldDenotation.type == DenotationType::File) {
-                                    if(selectedDenotatedValue->second.empty()) {
-                                        tag->setValue(fieldDenotation.field, TagValue());
-                                    } else {
+                            if(selectedDenotedValue) {
+                                // one of the denoted values
+                                if(!selectedDenotedValue->value.empty()) {
+                                    if(selectedDenotedValue->type == DenotationType::File) {
                                         try {
-                                            MediaFileInfo fileInfo(selectedDenotatedValue->second);
+                                            // assume the file refers to a picture
+                                            MediaFileInfo fileInfo(selectedDenotedValue->value);
                                             fileInfo.open(true);
                                             fileInfo.parseContainerFormat();
                                             auto buff = make_unique<char []>(fileInfo.size());
@@ -1016,23 +1099,26 @@ void setTagInfo(const SetTagInfoArgs &args)
                                             fileInfo.stream().read(buff.get(), fileInfo.size());
                                             TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
                                             value.setMimeType(fileInfo.mimeType());
-                                            tag->setValue(fieldDenotation.field, move(value));
+                                            tag->setValue(denotedScope.field, move(value));
                                         } catch(const Media::Failure &) {
                                             fileInfo.addNotification(NotificationType::Critical, "Unable to parse specified cover file.", context);
                                         } catch(...) {
                                             ::IoUtilities::catchIoFailure();
                                             fileInfo.addNotification(NotificationType::Critical, "An IO error occured when parsing the specified cover file.", context);
                                         }
+                                    } else {
+                                        TagTextEncoding usedEncoding = denotedEncoding;
+                                        if(!tag->canEncodingBeUsed(denotedEncoding)) {
+                                            usedEncoding = tag->proposedTextEncoding();
+                                        }
+                                        tag->setValue(denotedScope.field, TagValue(selectedDenotedValue->value, TagTextEncoding::Utf8, usedEncoding));
+                                        if(selectedDenotedValue->type == DenotationType::Increment && tag == tags.back()) {
+                                            selectedDenotedValue->value = incremented(selectedDenotedValue->value);
+                                        }
                                     }
                                 } else {
-                                    TagTextEncoding usedEncoding = denotedEncoding;
-                                    if(!tag->canEncodingBeUsed(denotedEncoding)) {
-                                        usedEncoding = tag->proposedTextEncoding();
-                                    }
-                                    tag->setValue(fieldDenotation.field, TagValue(selectedDenotatedValue->second, TagTextEncoding::Utf8, usedEncoding));
-                                    if(fieldDenotation.type == DenotationType::Increment && tag == tags.back()) {
-                                        selectedDenotatedValue->second = incremented(selectedDenotatedValue->second);
-                                    }
+                                    // if the denoted value is empty, just assign an empty TagValue to remove the field
+                                    tag->setValue(denotedScope.field, TagValue());
                                 }
                             }
                         }
@@ -1140,7 +1226,7 @@ void extractField(const Argument &fieldsArg, const Argument &inputFileArg, const
         // iterate through all tags
         for(const Tag *tag : tags) {
             for(const auto &fieldDenotation : fields) {
-                const auto &value = tag->value(fieldDenotation.field);
+                const auto &value = tag->value(fieldDenotation.first.field);
                 if(!value.isEmpty()) {
                     values.emplace_back(&value, joinStrings({tag->typeName(), numberToString(values.size())}, "-"));
                 }

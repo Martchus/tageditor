@@ -80,33 +80,59 @@ Checkout the available operations and options with --help.
 #### Examples
 Here are some Bash examples which illustrate getting and setting tag information:
 
+##### Reading tags
 * *Displays* title, album and artist of all *.m4a files in the specified directory:
-
   ```
   tageditor get title album artist --files /some/dir/*.m4a
   ```
 
-  **Note**: All values are printed in UTF-8 encoding, no matter which  encoding is actually used within the tag.
+* *Displays* all supported fields of all *.mkv files in the specified directory:
+    ```
+    tageditor get --files /some/dir/*.mkv
+    ```
+
+
+  * *Displays* technical information about all *.m4a files in the specified directory:
+    ```
+    tageditor info --files /some/dir/*.m4a
+    ```
 
 * *Displays* technical information about all *.m4a files in the specified directory:
-
   ```
   tageditor info --files /some/dir/*.m4a
   ```
 
+**Note**: All values are printed in UTF-8 encoding, no matter which  encoding is actually used within the tag.
+
+##### Writing tags
 * *Sets* title, album, artist, cover and track number of all *.m4a files in the specified directory:
 
   ```
-  tageditor set "title=Title of "{1st,2nd,3rd}" file" "title=Title of "{4..16}"th file" \
-    "album=The Album" "artist=The Artist" \
+  tageditor set title="Title of "{1st,2nd,3rd}" file" title="Title of "{4..16}"th file" \
+    album="The Album" artist="The Artist" \
     cover=/path/to/image track={1..16}/16 --files /some/dir/*.m4a
   ```
 
-  The first file will get the name *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
-  The 16th and following files will all get the name *Title of the 16th file*. The same scheme is used for the track numbers.
-  All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
+  - The first file will get the title *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
+  - The 16th and following files will all get the title *Title of the 16th file*.
+  - The same scheme is used for the track numbers.
+  - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
 
-  **Note**: All specified values are assumed to be UTF-8 encoded, no matter which encoding has been specified as preferred encoding via ``--encoding`` option. (This mentioned option only affects the encoding to be used *within* the tag.)
+* *Sets* title of both specified files and the album of the second specified file:
+    ```
+    tageditor set title0="Title for both files" album1="Album for 2nd file" \
+      --files file1.ogg file2.mp3
+    ```
+    The number after the field name specifies the index of the first file to use the value for. The first index is 0.
+
+* *Sets* the title specificly for the track with the ID ``3134325680`` and removes
+  the tags targeting the song/track and the album/movie/episode in general:
+    ```
+    tageditor set target-level=30 target-tracks=3134325680 title="Title for track 3134325680" \
+      --remove-targets target-level=50 , target-level=30 \
+      --files file.mka
+    ```
+    For more information checkout the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).
 
 * Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
 
@@ -122,11 +148,13 @@ Here are some Bash examples which illustrate getting and setting tag information
       titles+=("title=${title%.*}"); \
   done
   # now set the titles and other tag information
-  tageditor set "${titles[@]}" "album=Some Album" track+=1/25 disk=1/1 -f *.m4a
+  tageditor set "${titles[@]}" album="Some Album" track+=1/25 disk=1/1 -f *.m4a
   ```
 
-  Note the *+* sign after the field name *track* which indicates that the field value should be increased after
+  **Note**: The *+* sign after the field name *track* which indicates that the field value should be increased after
   a file has been processed.
+
+**Note**: All specified values are assumed to be UTF-8 encoded, no matter which encoding has been specified as preferred encoding via ``--encoding`` option. (This mentioned option only affects the encoding to be used *within* the tag.)
 
 ## Build instructions
 The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
