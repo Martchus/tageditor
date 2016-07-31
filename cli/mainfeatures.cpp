@@ -237,15 +237,24 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullpt
     printNotifications(notifications, head, beVerbose);
 }
 
-const char *const fieldNames = "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n"
-                               "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"
-                               "recordlabel cover composer rating description";
+#define FIELD_NAMES "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n" \
+                    "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n" \
+                    "recordlabel cover composer rating description"
 
-void printFieldNames(const ArgumentOccurance &occurance)
+#define TAG_MODIFIER "tag=id3v1 tag=id3v2 tag=id3 tag=itunes tag=vorbis tag=matroska tag=all"
+#define TARGET_MODIFIER "target-level target-levelname target-tracks target-tracks\n" \
+                        "target-chapters target-editions target-attachments target-reset"
+
+const char *const fieldNames = FIELD_NAMES;
+const char *const fieldNamesForSet = FIELD_NAMES " " TAG_MODIFIER " " TARGET_MODIFIER;
+
+void printFieldNames(const ArgumentOccurrence &occurrence)
 {
     CMD_UTILS_START_CONSOLE;
-    VAR_UNUSED(occurance)
-            cout << fieldNames << endl;
+    VAR_UNUSED(occurrence)
+    cout << fieldNames;
+    cout << "\nTag modifier: " << TAG_MODIFIER;
+    cout << "\nTarget modifier: " << TARGET_MODIFIER << endl;
 }
 
 TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)
@@ -350,8 +359,13 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
             target.chapters() = parseIds(configStr.substr(16));
         } else if(configStr.compare(0, 16, "target-editions=") == 0) {
             target.editions() = parseIds(configStr.substr(16));
-        } else if(configStr.compare(0, 17, "target-attachments=") == 0) {
+        } else if(configStr.compare(0, 19, "target-attachments=") == 0) {
             target.attachments() = parseIds(configStr.substr(17));
+        } else if(configStr.compare(0, 13, "target-reset=") == 0) {
+            if(*(configStr.data() + 13)) {
+                cerr << "Warning: Invalid assignment " << (configStr.data() + 13) << " for target-reset will be ignored." << endl;
+            }
+            target.clear();
         } else if(configStr == "target-reset") {
             target.clear();
         } else {
@@ -514,16 +528,15 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
 
 enum class AttachmentAction {
     Add,
-    UpdateById,
-    UpdateByName,
-    RemoveById,
-    RemoveByName
+    Update,
+    Remove
 };
 
 class AttachmentInfo
 {
 public:
     AttachmentInfo();
+    void parseDenotation(const char *denotation);
     void apply(AbstractContainer *container);
     void apply(AbstractAttachment *attachment);
     void reset();
@@ -531,16 +544,44 @@ public:
 
     AttachmentAction action;
     uint64 id;
-    string path;
-    string name;
-    string mime;
-    string desc;
+    bool hasId;
+    const char *path;
+    const char *name;
+    const char *mime;
+    const char *desc;
 };
 
 AttachmentInfo::AttachmentInfo() :
     action(AttachmentAction::Add),
-    id(0)
+    id(0),
+    hasId(false),
+    path(nullptr),
+    name(nullptr),
+    mime(nullptr),
+    desc(nullptr)
 {}
+
+void AttachmentInfo::parseDenotation(const char *denotation)
+{
+    if(!strncmp(denotation, "id=", 3)) {
+        try {
+            id = stringToNumber<uint64, string>(denotation + 3);
+            hasId = true;
+        } catch(const ConversionException &) {
+            cerr << "The specified attachment ID \"" << (denotation + 3) << "\" is invalid.";
+        }
+    } else if(!strncmp(denotation, "path=", 5)) {
+        path = denotation + 5;
+    } else if(!strncmp(denotation, "name=", 5)) {
+        name = denotation + 5;
+    } else if(!strncmp(denotation, "mime=", 5)) {
+        mime = denotation + 5;
+    } else if(!strncmp(denotation, "desc=", 5)) {
+        desc = denotation + 5;
+    } else {
+        cerr << "The attachment specification \"" << denotation << "\" is invalid and will be ignored.";
+    }
+}
 
 void AttachmentInfo::apply(AbstractContainer *container)
 {
@@ -549,58 +590,64 @@ void AttachmentInfo::apply(AbstractContainer *container)
     bool attachmentFound = false;
     switch(action) {
     case AttachmentAction::Add:
-        if(path.empty() || name.empty()) {
-            container->addNotification(NotificationType::Critical, "No name or path specified for new attachment to be added.", context);
+        if(!path || !name) {
+            cerr << "Argument --update-argument specified but no name/path provided." << endl;
             return;
         }
         apply(container->createAttachment());
         break;
-    case AttachmentAction::UpdateById:
-        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
-            attachment = container->attachment(i);
-            if(attachment->id() == id) {
-                apply(attachment);
-                attachmentFound = true;
+    case AttachmentAction::Update:
+        if(hasId) {
+            for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+                attachment = container->attachment(i);
+                if(attachment->id() == id) {
+                    apply(attachment);
+                    attachmentFound = true;
+                }
             }
-        }
-        if(!attachmentFound == true) {
-            container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be updated.", context);
+            if(!attachmentFound) {
+                container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be updated.", context);
+            }
+        } else if(name) {
+            for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+                attachment = container->attachment(i);
+                if(attachment->name() == name) {
+                    apply(attachment);
+                    attachmentFound = true;
+                }
+            }
+            if(!attachmentFound) {
+                container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + string(name) + "\" does not exist and hence can't be updated.", context);
+            }
+        } else {
+            cerr << "Argument --update-argument specified but no ID/name provided." << endl;
         }
         break;
-    case AttachmentAction::UpdateByName:
-        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
-            attachment = container->attachment(i);
-            if(attachment->name() == name) {
-                apply(attachment);
-                attachmentFound = true;
+    case AttachmentAction::Remove:
+        if(hasId) {
+            for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+                attachment = container->attachment(i);
+                if(attachment->id() == id) {
+                    attachment->setIgnored(true);
+                    attachmentFound = true;
+                }
             }
-        }
-        if(!attachmentFound == true) {
-            container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + name + "\" does not exist and hence can't be updated.", context);
-        }
-        break;
-    case AttachmentAction::RemoveById:
-        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
-            attachment = container->attachment(i);
-            if(attachment->id() == id) {
-                attachment->setIgnored(true);
-                attachmentFound = true;
+            if(!attachmentFound) {
+                container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be removed.", context);
             }
-        }
-        if(!attachmentFound == true) {
-            container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be removed.", context);
-        }
-        break;
-    case AttachmentAction::RemoveByName:
-        for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
-            attachment = container->attachment(i);
-            if(attachment->name() == name) {
-                attachment->setIgnored(true);
-                attachmentFound = true;
+        } else if(name) {
+            for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+                attachment = container->attachment(i);
+                if(attachment->name() == name) {
+                    attachment->setIgnored(true);
+                    attachmentFound = true;
+                }
             }
-        }
-        if(!attachmentFound == true) {
-            container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + name + "\" does not exist and hence can't be removed.", context);
+            if(!attachmentFound) {
+                container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + string(name) + "\" does not exist and hence can't be removed.", context);
+            }
+        } else {
+            cerr << "Argument --remove-argument specified but no ID/name provided." << endl;
         }
         break;
     }
@@ -608,19 +655,19 @@ void AttachmentInfo::apply(AbstractContainer *container)
 
 void AttachmentInfo::apply(AbstractAttachment *attachment)
 {
-    if(id) {
+    if(hasId) {
         attachment->setId(id);
     }
-    if(!path.empty()) {
+    if(path) {
         attachment->setFile(path);
     }
-    if(!name.empty()) {
+    if(name) {
         attachment->setName(name);
     }
-    if(!mime.empty()) {
+    if(mime) {
         attachment->setMimeType(mime);
     }
-    if(!desc.empty()) {
+    if(desc) {
         attachment->setDescription(desc);
     }
 }
@@ -629,15 +676,13 @@ void AttachmentInfo::reset()
 {
     action = AttachmentAction::Add;
     id = 0;
-    path.clear();
-    name.clear();
-    mime.clear();
-    desc.clear();
+    hasId = false;
+    path = name = mime = desc = nullptr;
 }
 
 bool AttachmentInfo::next(AbstractContainer *container)
 {
-    if(!id && path.empty() && name.empty() && mime.empty() && desc.empty()) {
+    if(!id && !path && !name && !mime && !desc) {
         // skip empty attachment infos
         return false;
     }
@@ -646,7 +691,7 @@ bool AttachmentInfo::next(AbstractContainer *container)
     return true;
 }
 
-void generateFileInfo(const ArgumentOccurance &, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
+void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
@@ -723,7 +768,7 @@ void printProperty(const char *propName, const intType value, const char *suffix
     }
 }
 
-void displayFileInfo(const ArgumentOccurance &, const Argument &filesArg, const Argument &verboseArg)
+void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.isPresent() || filesArg.values().empty()) {
@@ -809,11 +854,11 @@ void displayFileInfo(const ArgumentOccurance &, const Argument &filesArg, const 
             { // attachments
                 const auto attachments = fileInfo.attachments();
                 if(!attachments.empty()) {
+                    cout << "Attachments:" << endl;
                     for(const auto *attachment : attachments) {
                         printProperty("ID", attachment->id());
                         printProperty("Name", attachment->name());
                         printProperty("MIME-type", attachment->mimeType());
-                        printProperty("Label", attachment->label());
                         printProperty("Description", attachment->description());
                         if(attachment->data()) {
                             printProperty("Size", dataSizeToString(attachment->data()->size(), true));
@@ -825,6 +870,7 @@ void displayFileInfo(const ArgumentOccurance &, const Argument &filesArg, const 
             { // chapters
                 const auto chapters = fileInfo.chapters();
                 if(!chapters.empty()) {
+                    cout << "Chapters:" << endl;
                     for(const auto *chapter : chapters) {
                         printProperty("ID", chapter->id());
                         if(!chapter->names().empty()) {
@@ -959,7 +1005,12 @@ void setTagInfo(const SetTagInfoArgs &args)
         return;
     }
     auto fields = parseFieldDenotations(args.valuesArg, false);
-    if(fields.empty() && (!args.removeTargetsArg.isPresent() || args.removeTargetsArg.values().empty()) && (!args.attachmentsArg.isPresent() || args.attachmentsArg.values().empty()) && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty())) {
+    if(fields.empty()
+            && (!args.removeTargetArg.isPresent() || args.removeTargetArg.values().empty())
+            && (!args.addAttachmentArg.isPresent() || args.addAttachmentArg.values().empty())
+            && (!args.updateAttachmentArg.isPresent() || args.updateAttachmentArg.values().empty())
+            && (!args.removeAttachmentArg.isPresent() || args.removeAttachmentArg.values().empty())
+            && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty())) {
         cerr << "Error: No fields/attachments have been specified." << endl;
         return;
     }
@@ -973,10 +1024,10 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
     // determine targets to remove
     vector<TagTarget> targetsToRemove;
-    targetsToRemove.emplace_back();
     bool validRemoveTargetsSpecified = false;
-    if(args.removeTargetsArg.isPresent()) {
-        for(const auto &targetDenotation : args.removeTargetsArg.values()) {
+    for(size_t i = 0, max = args.removeTargetArg.occurrences(); i != max; ++i) {
+        for(const auto &targetDenotation : args.removeTargetArg.values(i)) {
+            targetsToRemove.emplace_back();
             if(!strcmp(targetDenotation, ",")) {
                 if(validRemoveTargetsSpecified) {
                     targetsToRemove.emplace_back();
@@ -1128,7 +1179,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                 fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
             }
             bool attachmentsModified = false;
-            if(args.attachmentsArg.isPresent() || args.removeExistingAttachmentsArg.isPresent()) {
+            if(args.addAttachmentArg.isPresent() || args.updateAttachmentArg.isPresent() || args.removeAttachmentArg.isPresent() || args.removeExistingAttachmentsArg.isPresent()) {
                 static const string context("setting attachments");
                 fileInfo.parseAttachments();
                 if(fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok) {
@@ -1140,40 +1191,29 @@ void setTagInfo(const SetTagInfoArgs &args)
                             }
                             attachmentsModified = true;
                         }
-                        // add/update/remove attachments explicitely
+                        // add/update/remove attachments
                         AttachmentInfo currentInfo;
-                        for(const char *value : args.attachmentsArg.values()) {
-                            if(!strcmp(value, ",")) {
-                                attachmentsModified |= currentInfo.next(container);
-                            } else if(!strcmp(value, "add")) {
-                                currentInfo.action = AttachmentAction::Add;
-                            } else if(!strcmp(value, "update-by-id")) {
-                                currentInfo.action = AttachmentAction::UpdateById;
-                            } else if(!strcmp(value, "update-by-name")) {
-                                currentInfo.action = AttachmentAction::UpdateByName;
-                            } else if(!strcmp(value, "remove-by-id")) {
-                                currentInfo.action = AttachmentAction::RemoveById;
-                            } else if(!strcmp(value, "remove-by-name")) {
-                                currentInfo.action = AttachmentAction::RemoveByName;
-                            } else if(!strncmp(value, "id=", 3)) {
-                                try {
-                                    currentInfo.id = stringToNumber<uint64, string>(value + 3);
-                                } catch(const ConversionException &) {
-                                    container->addNotification(NotificationType::Warning, "The specified attachment ID \"" + string(value + 3) + "\" is invalid.", context);
-                                }
-                            } else if(!strncmp(value, "path=", 5)) {
-                                currentInfo.path = value + 5;
-                            } else if(!strncmp(value, "name=", 5)) {
-                                currentInfo.name = value + 5;
-                            } else if(!strncmp(value, "mime=", 5)) {
-                                currentInfo.mime = value + 5;
-                            } else if(!strncmp(value, "desc=", 5)) {
-                                currentInfo.desc = value + 5;
-                            } else {
-                                container->addNotification(NotificationType::Warning, "The attachment specification \"" + string(value) + "\" is invalid and will be ignored.", context);
+                        currentInfo.action = AttachmentAction::Add;
+                        for(size_t i = 0, occurrences = args.addAttachmentArg.occurrences(); i != occurrences; ++i) {
+                            for(const char *value : args.addAttachmentArg.values(i)) {
+                                currentInfo.parseDenotation(value);
                             }
+                            attachmentsModified |= currentInfo.next(container);
                         }
-                        attachmentsModified |= currentInfo.next(container);
+                        currentInfo.action = AttachmentAction::Update;
+                        for(size_t i = 0, occurrences = args.updateAttachmentArg.occurrences(); i != occurrences; ++i) {
+                            for(const char *value : args.updateAttachmentArg.values(i)) {
+                                currentInfo.parseDenotation(value);
+                            }
+                            attachmentsModified |= currentInfo.next(container);
+                        }
+                        currentInfo.action = AttachmentAction::Remove;
+                        for(size_t i = 0, occurrences = args.removeAttachmentArg.occurrences(); i != occurrences; ++i) {
+                            for(const char *value : args.removeAttachmentArg.values(i)) {
+                                currentInfo.parseDenotation(value);
+                            }
+                            attachmentsModified |= currentInfo.next(container);
+                        }
                     } else {
                         fileInfo.addNotification(NotificationType::Critical, "Unable to assign attachments because the container object has not been initialized.", context);
                     }
@@ -1220,7 +1260,7 @@ void extractField(const Argument &fieldsArg, const Argument &inputFileArg, const
         inputFileInfo.setPath(inputFileArg.values().front());
         inputFileInfo.open(true);
         inputFileInfo.parseTags();
-        cout << "Extracting " << fieldsArg.values().front() << " of \"" << inputFileArg.values().front() << "\" ..." << endl;
+        (outputFileArg.isPresent() ? cout : cerr) << "Extracting " << fieldsArg.values().front() << " of \"" << inputFileArg.values().front() << "\" ..." << endl;
         auto tags = inputFileInfo.tags();
         vector<pair<const TagValue *, string> > values;
         // iterate through all tags
@@ -1234,7 +1274,7 @@ void extractField(const Argument &fieldsArg, const Argument &inputFileArg, const
         }
         if(values.empty()) {
             cerr << "File has no (supported) " << fieldsArg.values().front() << " field." << endl;
-        } else {
+        } else if(outputFileArg.isPresent()) {
             string outputFilePathWithoutExtension, outputFileExtension;
             if(values.size() > 1) {
                 outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
@@ -1253,6 +1293,11 @@ void extractField(const Argument &fieldsArg, const Argument &inputFileArg, const
                     ::IoUtilities::catchIoFailure();
                     cerr << "Error: An IO error occured when writing the file \"" << path << "\"." << endl;
                 }
+            }
+        } else {
+            // write data to stdout if no output file has been specified
+            for(const auto &value : values) {
+                cout.write(value.first->dataPointer(), value.first->dataSize());
             }
         }
     } catch(const ApplicationUtilities::Failure &) {

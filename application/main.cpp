@@ -1,5 +1,3 @@
-#include "./main.h"
-
 #include "../cli/mainfeatures.h"
 #if defined(GUI_QTWIDGETS)
 # include "../gui/initiate.h"
@@ -31,16 +29,18 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     filesArg(filesArg),
     verboseArg(verboseArg),
     docTitleArg("doc-title", 'd', "specifies the document title (has no affect if not supported by the container)"),
-    removeOtherFieldsArg("remove-other-fields", '\0', "if present ALL unspecified tag fields will be removed (to remove a specific field use eg. \"album=\")"),
+    removeOtherFieldsArg("remove-other-fields", '\0', "removes ALL fields where no value has been provided for (to remove a specific field use eg. \"album=\")"),
     treatUnknownFilesAsMp3FilesArg("treat-unknown-as-mp3", '\0', "if present unknown files will be treatet as MP3 files"),
     id3v1UsageArg("id3v1-usage", '\0', "specifies the ID3v1 usage (only used when already present by default); only relevant when dealing with MP3 files (or files treated as such)"),
     id3v2UsageArg("id3v2-usage", '\0', "specifies the ID3v2 usage (always used by default); only relevant when dealing with MP3 files (or files treated as such)"),
     mergeMultipleSuccessiveTagsArg("merge-successive-tags", '\0', "if present multiple successive ID3v2 tags will be merged"),
     id3v2VersionArg("id3v2-version", '\0', "forces a specific ID3v2 version to be used; only relevant when ID3v2 is used"),
     encodingArg("encoding", '\0', "specifies the preferred encoding"),
-    removeTargetsArg("remove-targets", '\0', "removes all tags with the specified targets (which must be separated by \",\")"),
-    attachmentsArg("attachments", '\0', "specifies attachments to be added/updated/removed (multiple attachments must be separated by \",\""),
-    removeExistingAttachmentsArg("remove-existing-attachments", 'r', "specifies names/IDs of existing attachments to be removed"),
+    removeTargetArg("remove-target", '\0', "removes all tags with the specified target"),
+    addAttachmentArg("add-attachment", '\0', "adds a new attachment"),
+    updateAttachmentArg("update-attachment", '\0', "updates an existing attachment"),
+    removeAttachmentArg("remove-attachment", '\0', "removes an existing attachment"),
+    removeExistingAttachmentsArg("remove-existing-attachments", 'r', "removes ALL existing attachments (to remove a specific attachment use --remove-attachment)"),
     minPaddingArg("min-padding", '\0', "specifies the minimum padding before the media data"),
     maxPaddingArg("max-padding", '\0', "specifies the maximum padding before the media data"),
     prefPaddingArg("preferred-padding", '\0', "specifies the preferred padding before the media data"),
@@ -52,7 +52,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     indexPosArg("index-pos", '\0', "specifies the preferred index position"),
     forceRewriteArg("force-rewrite", '\0', "forces the file to rewritten from the scratch"),
     valuesArg("values", 'n', "specifies the values to be set"),
-    setTagInfoArg("set", 's', "sets the values of all specified tag fields")
+    setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setCombinable(true);
     docTitleArg.setRequiredValueCount(-1);
@@ -75,12 +75,28 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     encodingArg.setValueNames({"latin1/utf8/utf16le/utf16be"});
     encodingArg.setPreDefinedCompletionValues("latin1 utf8 utf16le utf16be");
     encodingArg.setCombinable(true);
-    removeTargetsArg.setRequiredValueCount(-1);
-    removeTargetsArg.setValueNames({});
-    removeTargetsArg.setCombinable(true);
-    attachmentsArg.setRequiredValueCount(-1);
-    attachmentsArg.setValueNames({"path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type", ",", "path=another/file"});
-    attachmentsArg.setCombinable(true);
+    removeTargetArg.setRequiredValueCount(-1);
+    removeTargetArg.setValueNames({});
+    removeTargetArg.setCombinable(true);
+    removeTargetArg.setConstraints(0, -1);
+    addAttachmentArg.setRequiredValueCount(-1);
+    addAttachmentArg.setValueNames({"path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type"});
+    addAttachmentArg.setCombinable(true);
+    addAttachmentArg.setConstraints(0, -1);
+    addAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
+    addAttachmentArg.setPreDefinedCompletionValues("name id path desc mime");
+    updateAttachmentArg.setRequiredValueCount(-1);
+    updateAttachmentArg.setValueNames({"path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type"});
+    updateAttachmentArg.setCombinable(true);
+    updateAttachmentArg.setConstraints(0, -1);
+    updateAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
+    updateAttachmentArg.setPreDefinedCompletionValues("name id path desc mime");
+    removeAttachmentArg.setRequiredValueCount(1);
+    removeAttachmentArg.setValueNames({"name=to_remove"});
+    removeAttachmentArg.setCombinable(true);
+    removeAttachmentArg.setConstraints(0, -1);
+    removeAttachmentArg.setPreDefinedCompletionValues("name id");
+    removeAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     removeExistingAttachmentsArg.setCombinable(true);
     minPaddingArg.setRequiredValueCount(1);
     minPaddingArg.setValueNames({"min padding in byte"});
@@ -109,12 +125,12 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     valuesArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
     valuesArg.setRequiredValueCount(-1);
     valuesArg.setImplicit(true);
-    valuesArg.setPreDefinedCompletionValues(Cli::fieldNames);
+    valuesArg.setPreDefinedCompletionValues(Cli::fieldNamesForSet);
     valuesArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     setTagInfoArg.setDenotesOperation(true);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg,
-                                         &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetsArg, &attachmentsArg,
+                                         &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg,
                                          &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg, &prefPaddingArg, &tagPosArg,
                                          &indexPosArg, &forceRewriteArg, &verboseArg});
 }
@@ -147,13 +163,12 @@ int main(int argc, char *argv[])
     Argument outputFileArg("output-file", 'o', "specifies the path of the output file");
     outputFileArg.setValueNames({"path"});
     outputFileArg.setRequiredValueCount(1);
-    outputFileArg.setRequired(true);
     outputFileArg.setCombinable(true);
     // print field names
     Argument printFieldNamesArg("print-field-names", '\0', "prints available field names");
     printFieldNamesArg.setCallback(Cli::printFieldNames);
     // display general file info
-    Argument displayFileInfoArg("display-file-info", 'i', "displays general file information");
+    Argument displayFileInfoArg("info", 'i', "displays general file information");
     displayFileInfoArg.setDenotesOperation(true);
     displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg)));
     displayFileInfoArg.setSubArguments({&filesArg, &verboseArg});
@@ -174,7 +189,7 @@ int main(int argc, char *argv[])
     fieldArg.setValueNames({"field name"});
     fieldArg.setRequiredValueCount(1);
     fieldArg.setImplicit(true);
-    Argument extractFieldArg("extract", 'e', "extracts the specified field from the specified file");
+    Argument extractFieldArg("extract", 'e', "saves the value of the specified field (eg. cover or other binary field) to the specified file or writes it to stdout if no output file has been specified");
     extractFieldArg.setSubArguments({&fieldArg, &fileArg, &outputFileArg, &verboseArg});
     extractFieldArg.setDenotesOperation(true);
     extractFieldArg.setCallback(std::bind(Cli::extractField, std::cref(fieldsArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));

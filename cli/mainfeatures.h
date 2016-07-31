@@ -26,8 +26,10 @@ struct SetTagInfoArgs
     ApplicationUtilities::Argument mergeMultipleSuccessiveTagsArg;
     ApplicationUtilities::Argument id3v2VersionArg;
     ApplicationUtilities::Argument encodingArg;
-    ApplicationUtilities::Argument removeTargetsArg;
-    ApplicationUtilities::Argument attachmentsArg;
+    ApplicationUtilities::Argument removeTargetArg;
+    ApplicationUtilities::Argument addAttachmentArg;
+    ApplicationUtilities::Argument updateAttachmentArg;
+    ApplicationUtilities::Argument removeAttachmentArg;
     ApplicationUtilities::Argument removeExistingAttachmentsArg;
     ApplicationUtilities::Argument minPaddingArg;
     ApplicationUtilities::Argument maxPaddingArg;
@@ -44,9 +46,10 @@ struct SetTagInfoArgs
 };
 
 extern const char *const fieldNames;
-void printFieldNames(const ApplicationUtilities::ArgumentOccurance &occurance);
-void displayFileInfo(const ApplicationUtilities::ArgumentOccurance &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
-void generateFileInfo(const ApplicationUtilities::ArgumentOccurance &, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
+extern const char *const fieldNamesForSet;
+void printFieldNames(const ApplicationUtilities::ArgumentOccurrence &occurrence);
+void displayFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
+void generateFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
 void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
 void extractField(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &verboseArg);

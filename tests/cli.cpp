@@ -31,7 +31,9 @@ class CliTests : public TestFixture
     CPPUNIT_TEST(testMultipleFiles);
     CPPUNIT_TEST(testMultipleValuesPerField);
     CPPUNIT_TEST(testHandlingAttachments);
-    CPPUNIT_TEST(testDisplayingTechnicalInfo);
+    CPPUNIT_TEST(testDisplayingInfo);
+    CPPUNIT_TEST(testExtraction);
+    CPPUNIT_TEST(testReadingAndWritingDocumentTitle);
 #endif
     CPPUNIT_TEST_SUITE_END();
 
@@ -46,7 +48,9 @@ public:
     void testMultipleFiles();
     void testMultipleValuesPerField();
     void testHandlingAttachments();
-    void testDisplayingTechnicalInfo();
+    void testDisplayingInfo();
+    void testExtraction();
+    void testReadingAndWritingDocumentTitle();
 #endif
 
 private:
@@ -69,7 +73,7 @@ void CliTests::testBasicReadingAndWriting()
 {
     string stdout, stderr;
     // get specific field
-    string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
+    const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
     const char *const args1[] = {"tageditor", "get", "title", "-f", mkvFile.data(), nullptr};
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT(stderr.empty());
@@ -115,7 +119,7 @@ void CliTests::testBasicReadingAndWriting()
 void CliTests::testHandlingOfTargets()
 {
     string stdout, stderr;
-    string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
+    const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
     const char *const args1[] = {"tageditor", "get", "-f", mkvFile.data(), nullptr};
 
     // add song title (title field for tag with level 30)
@@ -131,7 +135,7 @@ void CliTests::testHandlingOfTargets()
     CPPUNIT_ASSERT(stdout.find("Genre             The album genre") > albumPos);
 
     // remove tags targeting level 30 and 50 and add new tag targeting level 30 and the audio track
-    const char *const args3[] = {"tageditor", "set", "target-level=30", "target-tracks=3134325680", "title=The audio track", "encoder=likely some AAC encoder", "--remove-targets", "target-level=30", ",", "target-level=50", "-f", mkvFile.data(), nullptr};
+    const char *const args3[] = {"tageditor", "set", "target-level=30", "target-tracks=3134325680", "title=The audio track", "encoder=likely some AAC encoder", "--remove-target", "target-level=30", "--remove-target", "target-level=50", "-f", mkvFile.data(), nullptr};
     CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT((songPos = stdout.find("song")) != string::npos);
@@ -143,7 +147,7 @@ void CliTests::testHandlingOfTargets()
 }
 
 /*!
- * \brief Tests handling of ID3v1 and ID3v2 tags.
+ * \brief Tests handling of ID3v1 and ID3v2 tags and MP3 specific options.
  */
 void CliTests::testHandlingOfId3Tags()
 {
@@ -156,9 +160,9 @@ void CliTests::testHandlingOfId3Tags()
 void CliTests::testMultipleFiles()
 {
     string stdout, stderr;
-    string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
-    string mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
-    string mkvFile3(workingCopyPath("matroska_wave1/test3.mkv"));
+    const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
+    const string mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
+    const string mkvFile3(workingCopyPath("matroska_wave1/test3.mkv"));
 
     // get tags of 3 files at once
     const char *const args1[] = {"tageditor", "get", "-f", mkvFile1.data(), mkvFile2.data(), mkvFile3.data(), nullptr};
@@ -205,7 +209,7 @@ void CliTests::testMultipleFiles()
  */
 void CliTests::testMultipleValuesPerField()
 {
-    // TODO
+    // TODO (feature not implemented yet)
 }
 
 /*!
@@ -213,13 +217,62 @@ void CliTests::testMultipleValuesPerField()
  */
 void CliTests::testHandlingAttachments()
 {
+    string stdout, stderr;
+    const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
+    const string mkvFile2("path=" + testFilePath("matroska_wave1/test2.mkv"));
+
+    // add attachment
+    const char *const args2[] = {"tageditor", "set", "--add-attachment", "name=test2.mkv", "mime=video/x-matroska", "desc=Test attachment", mkvFile2.data(), "-f", mkvFile1.data(), nullptr};
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
+    const char *const args1[] = {"tageditor", "info", "-f", mkvFile1.data(), nullptr};
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    size_t pos1;
+    CPPUNIT_ASSERT((pos1 = stdout.find("Attachments:")) != string::npos);
+    CPPUNIT_ASSERT(stdout.find("Name                          test2.mkv") > pos1);
+    CPPUNIT_ASSERT(stdout.find("MIME-type                     video/x-matroska") > pos1);
+    CPPUNIT_ASSERT(stdout.find("Description                   Test attachment") > pos1);
+    CPPUNIT_ASSERT(stdout.find("Size                          20.16 MiB (21142764 byte)") > pos1);
+
+    // update attachment
+    const char *const args3[] = {"tageditor", "set", "--update-attachment", "name=test2.mkv", "desc=Updated test attachment", "-f", mkvFile1.data(), nullptr};
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    CPPUNIT_ASSERT((pos1 = stdout.find("Attachments:")) != string::npos);
+    CPPUNIT_ASSERT(stdout.find("Name                          test2.mkv") > pos1);
+    CPPUNIT_ASSERT(stdout.find("MIME-type                     video/x-matroska") > pos1);
+    CPPUNIT_ASSERT(stdout.find("Description                   Updated test attachment") > pos1);
+    CPPUNIT_ASSERT(stdout.find("Size                          20.16 MiB (21142764 byte)") > pos1);
+
+    // TODO: extract assigned attachment (feature not implemented yet)
+
+    // remove assigned attachment
+    const char *const args5[] = {"tageditor", "set", "--remove-attachment", "name=test2.mkv", "-f", mkvFile1.data(), nullptr};
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args5, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    CPPUNIT_ASSERT(stdout.find("Attachments:") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Name                          test2.mkv") == string::npos);
+}
+
+/*!
+ * \brief Tests displaying general file info.
+ */
+void CliTests::testDisplayingInfo()
+{
+    // TODO (not very important)
+}
+
+/*!
+ * \brief Tests extraction (used for cover or other binary fields).
+ */
+void CliTests::testExtraction()
+{
     // TODO
 }
 
 /*!
- * \brief Tests displaying technical info.
+ * \brief Tests reading and writing the document title.
  */
-void CliTests::testDisplayingTechnicalInfo()
+void CliTests::testReadingAndWritingDocumentTitle()
 {
     // TODO
 }
