@@ -118,6 +118,9 @@ Here are some Bash examples which illustrate getting and setting tag information
   - The same scheme is used for the track numbers.
   - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
 
+  **Note:** The current version v1.4.0 has a bug so tagging multiple files at once doesn't work as shown above. As a workaround
+  use either the Git version or use title0=... title1=... title2=... to specify the different titles for the files.
+
 * *Sets* title of both specified files and the album of the second specified file:
     ```
     tageditor set title0="Title for both files" album1="Album for 2nd file" \
@@ -184,7 +187,6 @@ To build without GUI, add the following parameters to the CMake call:
 
 ## Bugs
 - Large file information is not shown when using Qt WebEngine.
+- It is recommend you to create backups before editing because I can not test whether the
+  library works with all kind of files. If you force rewriting a backup is always created.
 - underlying library: Matroska files composed of more than one segment aren't tested yet and might not work.
-- underlying library: To add new features I've had to revise a lot of code since the last release. I always test the library with
-  files produced by mkvmerge and ffmpeg and several other file but can't verify that it will work with all
-  files. Hence I recommend to create backups of your files.

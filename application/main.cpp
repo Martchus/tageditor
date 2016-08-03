@@ -147,13 +147,12 @@ int main(int argc, char *argv[])
     // verbose option
     Argument verboseArg("verbose", 'v', "be verbose");
     verboseArg.setCombinable(true);
-    // recursive option
-    Argument recursiveArg("recursive", 'r', "includes subdirectories");
     // input/output file/files
     Argument fileArg("file", 'f', "specifies the path of the file to be opened");
     fileArg.setValueNames({"path"});
     fileArg.setRequiredValueCount(1);
     fileArg.setCombinable(true);
+    fileArg.setRequired(true);
     Argument defaultFileArg(fileArg);
     defaultFileArg.setImplicit(true);
     Argument filesArg("files", 'f', "specifies the path of the file(s) to be opened");
@@ -185,14 +184,17 @@ int main(int argc, char *argv[])
     // set tag info
     Cli::SetTagInfoArgs setTagInfoArgs(filesArg, verboseArg);
     // extract cover
-    Argument fieldArg("fields", 'n', "specifies the field to be extracted");
+    Argument fieldArg("field", 'n', "specifies the field to be extracted");
     fieldArg.setValueNames({"field name"});
     fieldArg.setRequiredValueCount(1);
     fieldArg.setImplicit(true);
-    Argument extractFieldArg("extract", 'e', "saves the value of the specified field (eg. cover or other binary field) to the specified file or writes it to stdout if no output file has been specified");
-    extractFieldArg.setSubArguments({&fieldArg, &fileArg, &outputFileArg, &verboseArg});
+    Argument attachmentArg("attachment", 'a', "specifies the attachment to be extracted");
+    attachmentArg.setValueNames({"id=..."});
+    attachmentArg.setRequiredValueCount(1);
+    Argument extractFieldArg("extract", 'e', "saves the value of the specified field (eg. cover or other binary field) or attachment to the specified file or writes it to stdout if no output file has been specified");
+    extractFieldArg.setSubArguments({&fieldArg, &attachmentArg, &fileArg, &outputFileArg, &verboseArg});
     extractFieldArg.setDenotesOperation(true);
-    extractFieldArg.setCallback(std::bind(Cli::extractField, std::cref(fieldsArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
+    extractFieldArg.setCallback(std::bind(Cli::extractField, std::cref(fieldArg), std::cref(attachmentArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
     // file info
     Argument validateArg("validate", 'c', "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     validateArg.setCombinable(true);

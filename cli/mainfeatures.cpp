@@ -238,12 +238,12 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullpt
 }
 
 #define FIELD_NAMES "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n" \
-                    "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n" \
-                    "recordlabel cover composer rating description"
+    "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n" \
+    "recordlabel cover composer rating description"
 
 #define TAG_MODIFIER "tag=id3v1 tag=id3v2 tag=id3 tag=itunes tag=vorbis tag=matroska tag=all"
 #define TARGET_MODIFIER "target-level target-levelname target-tracks target-tracks\n" \
-                        "target-chapters target-editions target-attachments target-reset"
+    "target-chapters target-editions target-attachments target-reset"
 
 const char *const fieldNames = FIELD_NAMES;
 const char *const fieldNamesForSet = FIELD_NAMES " " TAG_MODIFIER " " TARGET_MODIFIER;
@@ -252,7 +252,7 @@ void printFieldNames(const ArgumentOccurrence &occurrence)
 {
     CMD_UTILS_START_CONSOLE;
     VAR_UNUSED(occurrence)
-    cout << fieldNames;
+            cout << fieldNames;
     cout << "\nTag modifier: " << TAG_MODIFIER;
     cout << "\nTarget modifier: " << TARGET_MODIFIER << endl;
 }
@@ -701,13 +701,17 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         inputFileInfo.setForceFullParse(validateArg.isPresent());
         inputFileInfo.open(true);
         inputFileInfo.parseEverything();
-        cout << "Saving file info of \"" << inputFileArg.values().front() << "\" ..." << endl;
+        (outputFileArg.isPresent() ? cout : cerr) << "Saving file info for \"" << inputFileArg.values().front() << "\" ..." << endl;
         NotificationList origNotify;
-        QFile file(QString::fromLocal8Bit(outputFileArg.values().front()));
-        if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
-            cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
+        if(outputFileArg.isPresent()) {
+            QFile file(QString::fromLocal8Bit(outputFileArg.values().front()));
+            if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
+                cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
+            } else {
+                cerr << "Error: An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << endl;
+            }
         } else {
-            cerr << "Error: An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << endl;
+            cout << HtmlInfo::generateInfo(inputFileInfo, origNotify).data() << endl;
         }
     } catch(const ApplicationUtilities::Failure &) {
         cerr << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
@@ -776,11 +780,12 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
         return;
     }
     MediaFileInfo fileInfo;
-    for(const auto &file : filesArg.values()) {
+    for(const char *file : filesArg.values()) {
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
+            fileInfo.parseContainerFormat();
             fileInfo.parseTracks();
             fileInfo.parseAttachments();
             fileInfo.parseChapters();
@@ -906,69 +911,43 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
     }
     const auto fields = parseFieldDenotations(fieldsArg, true);
     MediaFileInfo fileInfo;
-    for(const auto &file : filesArg.values()) {
+    for(const char *file : filesArg.values()) {
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
+            fileInfo.parseContainerFormat();
             fileInfo.parseTags();
             cout << "Tag information for \"" << file << "\":" << endl;
             const auto tags = fileInfo.tags();
-            if(tags.size()) {
+            if(!tags.empty()) {
                 // iterate through all tags
                 for(const auto *tag : tags) {
                     // determine tag type
-                    TagType tagType = tag->type();
+                    const TagType tagType = tag->type();
                     // write tag name and target, eg. MP4/iTunes tag
                     cout << tag->typeName();
                     if(tagType == TagType::MatroskaTag || !tag->target().isEmpty()) {
-                        cout << " targeting \"" << tag->targetString() << "\"";
+                        cout << " targeting \"" << tag->targetString() << '\"';
                     }
                     cout << endl;
                     // iterate through fields specified by the user
                     if(fields.empty()) {
                         for(auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
-                            const auto &value = tag->value(field);
-                            if(!value.isEmpty()) {
-                                // write field name
+                            const auto &values = tag->values(field);
+                            if(!values.empty()) {
                                 const char *fieldName = KnownFieldModel::fieldName(field);
-                                cout << ' ' << fieldName;
-                                // write padding
-                                for(auto i = strlen(fieldName); i < 18; ++i) {
-                                    cout << ' ';
-                                }
-                                // write value
-                                try {
-                                    const auto textValue = value.toString(TagTextEncoding::Utf8);
-                                    if(textValue.empty()) {
-                                        cout << "can't display here (see --extract)";
-                                    } else {
-                                        cout << textValue;
+                                const auto fieldNameLen = strlen(fieldName);
+                                for(const auto &value : values) {
+                                    // write field name
+                                    cout << ' ' << fieldName;
+                                    // write padding
+                                    for(auto i = fieldNameLen; i < 18; ++i) {
+                                        cout << ' ';
                                     }
-                                } catch(const ConversionException &) {
-                                    cout << "conversion error";
-                                }
-                                cout << endl;
-                            }
-                        }
-                    } else {
-                        for(const auto &fieldDenotation : fields) {
-                            const FieldScope &denotedScope = fieldDenotation.first;
-                            const TagValue &value = tag->value(denotedScope.field);
-                            if(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType | tagType) != TagType::Unspecified) {
-                                // write field name
-                                const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
-                                cout << ' ' << fieldName;
-                                // write padding
-                                for(auto i = strlen(fieldName); i < 18; ++i) {
-                                    cout << ' ';
-                                }
-                                // write value
-                                if(value.isEmpty()) {
-                                    cout << "none";
-                                } else {
+                                    // write value
                                     try {
-                                        const auto textValue = value.toString(TagTextEncoding::Utf8);
+                                        const auto textValue = value->toString(TagTextEncoding::Utf8);
                                         if(textValue.empty()) {
                                             cout << "can't display here (see --extract)";
                                         } else {
@@ -977,8 +956,43 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                                     } catch(const ConversionException &) {
                                         cout << "conversion error";
                                     }
+                                    cout << endl;
                                 }
-                                cout << endl;
+                            }
+
+                        }
+                    } else {
+                        for(const auto &fieldDenotation : fields) {
+                            const FieldScope &denotedScope = fieldDenotation.first;
+                            if(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType | tagType) != TagType::Unspecified) {
+                                const auto &values = tag->values(denotedScope.field);
+                                const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
+                                const auto fieldNameLen = strlen(fieldName);
+                                if(values.empty()) {
+                                    cout << "none";
+                                } else {
+                                    for(const auto &value : values) {
+                                        // write field name
+                                        const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
+                                        cout << ' ' << fieldName;
+                                        // write padding
+                                        for(auto i = fieldNameLen; i < 18; ++i) {
+                                            cout << ' ';
+                                        }
+                                        // write value
+                                        try {
+                                            const auto textValue = value->toString(TagTextEncoding::Utf8);
+                                            if(textValue.empty()) {
+                                                cout << "can't display here (see --extract)";
+                                            } else {
+                                                cout << textValue;
+                                            }
+                                        } catch(const ConversionException &) {
+                                            cout << "conversion error";
+                                        }
+                                        cout << endl;
+                                    }
+                                }
                             }
                         }
                     }
@@ -1068,12 +1082,13 @@ void setTagInfo(const SetTagInfoArgs &args)
     unsigned int fileIndex = 0;
     static const string context("setting tags");
     NotificationList notifications;
-    for(const auto &file : args.filesArg.values()) {
+    for(const char *file : args.filesArg.values()) {
         try {
             // parse tags
             cout << "Setting tag information for \"" << file << "\" ..." << endl;
             notifications.clear();
             fileInfo.setPath(file);
+            fileInfo.parseContainerFormat();
             fileInfo.parseTags();
             fileInfo.parseTracks();
             vector<Tag *> tags;
@@ -1246,67 +1261,135 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
 }
 
-void extractField(const Argument &fieldsArg, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &verboseArg)
+void extractField(const Argument &fieldArg, const Argument &attachmentArg, const Argument &inputFilesArg, const Argument &outputFileArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
-    const auto fields = parseFieldDenotations(fieldsArg, true);
-    if(fields.size() != 1) {
-        cerr << "Error: Excactly one field needs to be specified." << endl;
+
+    // parse specified field and attachment
+    const auto fieldDenotations = parseFieldDenotations(fieldArg, true);
+    AttachmentInfo attachmentInfo;
+    if(attachmentArg.isPresent()) {
+        attachmentInfo.parseDenotation(attachmentArg.values().front());
+    }
+    if(((fieldDenotations.size() != 1) || (!attachmentInfo.hasId && !attachmentInfo.name))
+            && ((fieldDenotations.size() == 1) && (attachmentInfo.hasId || attachmentInfo.name))) {
+        cerr << "Error: Excactly one field or attachment needs to be specified." << endl;
         return;
     }
-    MediaFileInfo inputFileInfo;
-    try {
-        // parse tags
-        inputFileInfo.setPath(inputFileArg.values().front());
-        inputFileInfo.open(true);
-        inputFileInfo.parseTags();
-        (outputFileArg.isPresent() ? cout : cerr) << "Extracting " << fieldsArg.values().front() << " of \"" << inputFileArg.values().front() << "\" ..." << endl;
-        auto tags = inputFileInfo.tags();
-        vector<pair<const TagValue *, string> > values;
-        // iterate through all tags
-        for(const Tag *tag : tags) {
-            for(const auto &fieldDenotation : fields) {
-                const auto &value = tag->value(fieldDenotation.first.field);
-                if(!value.isEmpty()) {
-                    values.emplace_back(&value, joinStrings({tag->typeName(), numberToString(values.size())}, "-"));
-                }
-            }
-        }
-        if(values.empty()) {
-            cerr << "File has no (supported) " << fieldsArg.values().front() << " field." << endl;
-        } else if(outputFileArg.isPresent()) {
-            string outputFilePathWithoutExtension, outputFileExtension;
-            if(values.size() > 1) {
-                outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
-                outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
-            }
-            for(const auto &value : values) {
-                fstream outputFileStream;
-                outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
-                auto path = values.size() > 1 ? joinStrings({outputFilePathWithoutExtension, "-", value.second, outputFileExtension}) : outputFileArg.values().front();
-                try {
-                    outputFileStream.open(path, ios_base::out | ios_base::binary);
-                    outputFileStream.write(value.first->dataPointer(), value.first->dataSize());
-                    outputFileStream.flush();
-                    cout << "Value has been saved to \"" << path << "\"." << endl;
-                } catch(...) {
-                    ::IoUtilities::catchIoFailure();
-                    cerr << "Error: An IO error occured when writing the file \"" << path << "\"." << endl;
-                }
-            }
-        } else {
-            // write data to stdout if no output file has been specified
-            for(const auto &value : values) {
-                cout.write(value.first->dataPointer(), value.first->dataSize());
-            }
-        }
-    } catch(const ApplicationUtilities::Failure &) {
-        cerr << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
-    } catch(...) {
-        ::IoUtilities::catchIoFailure();
-        cerr << "Error: An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
+    if(!inputFilesArg.isPresent() || inputFilesArg.values().empty()) {
+        cerr << "Error: No files have been specified." << endl;
+        return;
     }
-    printNotifications(inputFileInfo, "Parsing notifications:", verboseArg.isPresent());
+
+    MediaFileInfo inputFileInfo;
+    for(const char *file : inputFilesArg.values()) {
+        try {
+            // parse tags
+            inputFileInfo.setPath(file);
+            inputFileInfo.open(true);
+
+            if(!fieldDenotations.empty()) {
+                // extract tag field
+                (outputFileArg.isPresent() ? cout : cerr) << "Extracting field " << fieldArg.values().front() << " of \"" << file << "\" ..." << endl;
+                inputFileInfo.parseContainerFormat();
+                inputFileInfo.parseTags();
+                auto tags = inputFileInfo.tags();
+                vector<pair<const TagValue *, string> > values;
+                // iterate through all tags
+                for(const Tag *tag : tags) {
+                    for(const auto &fieldDenotation : fieldDenotations) {
+                        const auto &value = tag->value(fieldDenotation.first.field);
+                        if(!value.isEmpty()) {
+                            values.emplace_back(&value, joinStrings({tag->typeName(), numberToString(values.size())}, "-", true));
+                        }
+                    }
+                }
+                if(values.empty()) {
+                    cerr << " None of the specified files has a (supported) " << fieldArg.values().front() << " field." << endl;
+                } else if(outputFileArg.isPresent()) {
+                    string outputFilePathWithoutExtension, outputFileExtension;
+                    if(values.size() > 1) {
+                        outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
+                        outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
+                    }
+                    for(const auto &value : values) {
+                        fstream outputFileStream;
+                        outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
+                        auto path = values.size() > 1 ? joinStrings({outputFilePathWithoutExtension, "-", value.second, outputFileExtension}) : outputFileArg.values().front();
+                        try {
+                            outputFileStream.open(path, ios_base::out | ios_base::binary);
+                            outputFileStream.write(value.first->dataPointer(), value.first->dataSize());
+                            outputFileStream.flush();
+                            cout << "Value has been saved to \"" << path << "\"." << endl;
+                        } catch(...) {
+                            ::IoUtilities::catchIoFailure();
+                            cerr << "Error: An IO error occured when writing the file \"" << path << "\"." << endl;
+                        }
+                    }
+                } else {
+                    // write data to stdout if no output file has been specified
+                    for(const auto &value : values) {
+                        cout.write(value.first->dataPointer(), value.first->dataSize());
+                    }
+                }
+            } else {
+                // extract attachment
+                auto &logStream = (outputFileArg.isPresent() ? cout : cerr);
+                logStream << "Extracting attachment with ";
+                if(attachmentInfo.hasId) {
+                    logStream << "ID " << attachmentInfo.id;
+                } else {
+                    logStream << "name \"" << attachmentInfo.name << '\"';
+                }
+                logStream << " of \"" << file << "\" ..." << endl;
+
+                inputFileInfo.parseContainerFormat();
+                inputFileInfo.parseAttachments();
+                vector<pair<const AbstractAttachment *, string> > attachments;
+                // iterate through all attachments
+                for(const AbstractAttachment *attachment : inputFileInfo.attachments()) {
+                    if((attachmentInfo.hasId && attachment->id() == attachmentInfo.id)
+                            || (attachment->name() == attachmentInfo.name)) {
+                        attachments.emplace_back(attachment, joinStrings({attachment->name(), numberToString(attachments.size())}, "-", true));
+                    }
+                }
+                if(attachments.empty()) {
+                    cerr << " None of the specified files has a (supported) attachment with the specified ID/name." << endl;
+                } else if(outputFileArg.isPresent()) {
+                    string outputFilePathWithoutExtension, outputFileExtension;
+                    if(attachments.size() > 1) {
+                        outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
+                        outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
+                    }
+                    for(const auto &attachment : attachments) {
+                        fstream outputFileStream;
+                        outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
+                        auto path = attachments.size() > 1 ? joinStrings({outputFilePathWithoutExtension, "-", attachment.second, outputFileExtension}) : outputFileArg.values().front();
+                        try {
+                            outputFileStream.open(path, ios_base::out | ios_base::binary);
+                            attachment.first->data()->copyTo(outputFileStream);
+                            outputFileStream.flush();
+                            cout << "Value has been saved to \"" << path << "\"." << endl;
+                        } catch(...) {
+                            ::IoUtilities::catchIoFailure();
+                            cerr << "Error: An IO error occured when writing the file \"" << path << "\"." << endl;
+                        }
+                    }
+                } else {
+                    for(const auto &attachment : attachments) {
+                        attachment.first->data()->copyTo(cout);
+                    }
+                }
+            }
+
+        } catch(const ApplicationUtilities::Failure &) {
+            cerr << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+        } catch(...) {
+            ::IoUtilities::catchIoFailure();
+            cerr << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
+        }
+        printNotifications(inputFileInfo, "Parsing notifications:", verboseArg.isPresent());
+    }
 }
 
 }

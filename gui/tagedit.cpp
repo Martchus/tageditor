@@ -130,22 +130,24 @@ bool TagEdit::hasField(KnownField field) const
 QString TagEdit::generateLabel() const
 {
     if(!m_tags.isEmpty()) {
-        TagTarget target = m_tags.at(0)->target();
-        bool differentTargets = false;
+        const TagTarget &target = m_tags.at(0)->target();
+        bool differentTargets = false, haveMatroskaTags = false;
         QStringList tagNames;
-        for(Tag *tag : m_tags) {
+        tagNames.reserve(m_tags.size());
+        for(const Tag *tag : m_tags) {
             tagNames << QString::fromLocal8Bit(tag->typeName());
             if(!differentTargets && !(target == tag->target())) {
                 differentTargets = true;
+            }
+            if(tag->type() == TagType::MatroskaTag) {
+                haveMatroskaTags = true;
             }
         }
         QString res = tagNames.join(QStringLiteral(", "));
         if(differentTargets) {
             res.append(tr(" with different targets"));
-        } else {
-            if(!target.isEmpty()) {
-                res.append(tr(" targeting %1").arg(QString::fromLocal8Bit(m_tags.front()->targetString().c_str())));
-            }
+        } else if(haveMatroskaTags || !target.isEmpty()) {
+            res.append(tr(" targeting %1").arg(QString::fromLocal8Bit(m_tags.front()->targetString().c_str())));
         }
         return res;
     }

@@ -200,6 +200,7 @@ endif()
 # find tagparser
 find_package(tagparser 6.0.0 REQUIRED)
 use_tag_parser()
+list(APPEND TEST_LIBRARIES ${TAG_PARSER_SHARED_LIB})
 
 # add Qt modules which can currently not be detected automatically
 list(APPEND ADDITIONAL_QT_MODULES Concurrent Network)
