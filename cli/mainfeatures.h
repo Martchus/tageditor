@@ -25,6 +25,8 @@ struct SetTagInfoArgs
     ApplicationUtilities::Argument id3v2UsageArg;
     ApplicationUtilities::Argument mergeMultipleSuccessiveTagsArg;
     ApplicationUtilities::Argument id3v2VersionArg;
+    ApplicationUtilities::Argument id3InitOnCreateArg;
+    ApplicationUtilities::Argument id3TransferOnRemovalArg;
     ApplicationUtilities::Argument encodingArg;
     ApplicationUtilities::Argument removeTargetArg;
     ApplicationUtilities::Argument addAttachmentArg;

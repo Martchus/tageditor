@@ -927,6 +927,10 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                     const TagType tagType = tag->type();
                     // write tag name and target, eg. MP4/iTunes tag
                     cout << tag->typeName();
+                    if(tagType == TagType::Id3v2Tag) {
+                        // version only interesting for ID3v2 tags?
+                        cout << " (version " << tag->version() << ')';
+                    }
                     if(tagType == TagType::MatroskaTag || !tag->target().isEmpty()) {
                         cout << " targeting \"" << tag->targetString() << '\"';
                     }
@@ -1024,7 +1028,10 @@ void setTagInfo(const SetTagInfoArgs &args)
             && (!args.addAttachmentArg.isPresent() || args.addAttachmentArg.values().empty())
             && (!args.updateAttachmentArg.isPresent() || args.updateAttachmentArg.values().empty())
             && (!args.removeAttachmentArg.isPresent() || args.removeAttachmentArg.values().empty())
-            && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty())) {
+            && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty())
+            && !args.id3v1UsageArg.isPresent()
+            && !args.id3v2UsageArg.isPresent()
+            && !args.id3v2VersionArg.isPresent()) {
         cerr << "Error: No fields/attachments have been specified." << endl;
         return;
     }
@@ -1103,7 +1110,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                 tags.clear();
             }
             // create new tags according to settings
-            fileInfo.createAppropriateTags(args.treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, args.mergeMultipleSuccessiveTagsArg.isPresent(), !args.id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
+            fileInfo.createAppropriateTags(args.treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, args.id3InitOnCreateArg.isPresent(), args.id3TransferOnRemovalArg.isPresent(), args.mergeMultipleSuccessiveTagsArg.isPresent(), !args.id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
             auto container = fileInfo.container();
             bool docTitleModified = false;
             if(args.docTitleArg.isPresent() && !args.docTitleArg.values().empty()) {
@@ -1348,8 +1355,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                 vector<pair<const AbstractAttachment *, string> > attachments;
                 // iterate through all attachments
                 for(const AbstractAttachment *attachment : inputFileInfo.attachments()) {
-                    if((attachmentInfo.hasId && attachment->id() == attachmentInfo.id)
-                            || (attachment->name() == attachmentInfo.name)) {
+                    if((attachmentInfo.hasId && attachment->id() == attachmentInfo.id) || (attachment->name() == attachmentInfo.name)) {
                         attachments.emplace_back(attachment, joinStrings({attachment->name(), numberToString(attachments.size())}, "-", true));
                     }
                 }

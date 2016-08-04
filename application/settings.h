@@ -65,7 +65,7 @@ bool &autoTagManagement();
 // ID3 tag processing
 Media::TagUsage &id3v1usage();
 Media::TagUsage &id3v2usage();
-uint32 &id3v2versionToBeUsed();
+byte &id3v2versionToBeUsed();
 bool &keepVersionOfExistingId3v2Tag();
 bool &mergeMultipleSuccessiveId3v2Tags();
 

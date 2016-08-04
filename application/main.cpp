@@ -35,6 +35,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     id3v2UsageArg("id3v2-usage", '\0', "specifies the ID3v2 usage (always used by default); only relevant when dealing with MP3 files (or files treated as such)"),
     mergeMultipleSuccessiveTagsArg("merge-successive-tags", '\0', "if present multiple successive ID3v2 tags will be merged"),
     id3v2VersionArg("id3v2-version", '\0', "forces a specific ID3v2 version to be used; only relevant when ID3v2 is used"),
+    id3InitOnCreateArg("id3-init-on-create", '\0', "indicates whether to initialize newly created ID3 tags (according to specified usage) with the values of the already present ID3 tags"),
+    id3TransferOnRemovalArg("id3-transfer-on-removal", '\0', "indicates whether values of removed ID3 tags (according to specified usage) should be transfered to remaining ID3 tags (no values will be overwritten)"),
     encodingArg("encoding", '\0', "specifies the preferred encoding"),
     removeTargetArg("remove-target", '\0', "removes all tags with the specified target"),
     addAttachmentArg("add-attachment", '\0', "adds a new attachment"),
@@ -69,8 +71,11 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     id3v2UsageArg.setCombinable(true);
     mergeMultipleSuccessiveTagsArg.setCombinable(true);
     id3v2VersionArg.setRequiredValueCount(1);
-    id3v2VersionArg.setValueNames({"ID3v2 version"});
+    id3v2VersionArg.setValueNames({"1/2/3/4"});
     id3v2VersionArg.setCombinable(true);
+    id3v2VersionArg.setPreDefinedCompletionValues("1 2 3 4");
+    id3InitOnCreateArg.setCombinable(true);
+    id3TransferOnRemovalArg.setCombinable(true);
     encodingArg.setRequiredValueCount(1);
     encodingArg.setValueNames({"latin1/utf8/utf16le/utf16be"});
     encodingArg.setPreDefinedCompletionValues("latin1 utf8 utf16le utf16be");
@@ -129,7 +134,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     valuesArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     setTagInfoArg.setDenotesOperation(true);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
-    setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg,
+    setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg,
                                          &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg,
                                          &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg, &prefPaddingArg, &tagPosArg,
                                          &indexPosArg, &forceRewriteArg, &verboseArg});
@@ -152,9 +157,9 @@ int main(int argc, char *argv[])
     fileArg.setValueNames({"path"});
     fileArg.setRequiredValueCount(1);
     fileArg.setCombinable(true);
-    fileArg.setRequired(true);
     Argument defaultFileArg(fileArg);
     defaultFileArg.setImplicit(true);
+    fileArg.setRequired(true);
     Argument filesArg("files", 'f', "specifies the path of the file(s) to be opened");
     filesArg.setValueNames({"path 1", "path 2"});
     filesArg.setRequiredValueCount(-1);

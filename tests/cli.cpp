@@ -33,7 +33,7 @@ class CliTests : public TestFixture
 #ifdef PLATFORM_UNIX
     CPPUNIT_TEST(testBasicReadingAndWriting);
     CPPUNIT_TEST(testHandlingOfTargets);
-    CPPUNIT_TEST(testHandlingOfId3Tags);
+    CPPUNIT_TEST(testId3SpecificOptions);
     CPPUNIT_TEST(testMultipleFiles);
     CPPUNIT_TEST(testMultipleValuesPerField);
     CPPUNIT_TEST(testHandlingAttachments);
@@ -50,7 +50,7 @@ public:
 #ifdef PLATFORM_UNIX
     void testBasicReadingAndWriting();
     void testHandlingOfTargets();
-    void testHandlingOfId3Tags();
+    void testId3SpecificOptions();
     void testMultipleFiles();
     void testMultipleValuesPerField();
     void testHandlingAttachments();
@@ -77,12 +77,13 @@ void CliTests::tearDown()
  */
 void CliTests::testBasicReadingAndWriting()
 {
+    cout << "\nBasic reading and writing" << endl;
     string stdout, stderr;
     // get specific field
     const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
     const string mkvFileBackup(mkvFile + ".bak");
     const char *const args1[] = {"tageditor", "get", "title", "-f", mkvFile.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
     // context of the following fields is the album (so "Title" means the title of the album)
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
@@ -93,7 +94,7 @@ void CliTests::testBasicReadingAndWriting()
 
     // get all fields
     const char *const args2[] = {"tageditor", "get", "-f", mkvFile.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Title             Elephant Dream - test 2",
@@ -103,9 +104,9 @@ void CliTests::testBasicReadingAndWriting()
 
     // set some fields, keep other field
     const char *const args3[] = {"tageditor", "set", "title=A new title", "genre=Testfile", "-f", mkvFile.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(stdout.find("Changes have been applied") != string::npos);
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Title             A new title",
@@ -118,8 +119,8 @@ void CliTests::testBasicReadingAndWriting()
 
     // set some fields, discard other
     const char *const args4[] = {"tageditor", "set", "title=Foo", "artist=Bar", "--remove-other-fields", "-f", mkvFile.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args4, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args4);
+    TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Title             Foo",
@@ -139,6 +140,7 @@ void CliTests::testBasicReadingAndWriting()
  */
 void CliTests::testHandlingOfTargets()
 {
+    cout << "\nHandling of targets" << endl;
     string stdout, stderr;
     const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
     const string mkvFileBackup(mkvFile + ".bak");
@@ -146,8 +148,8 @@ void CliTests::testHandlingOfTargets()
 
     // add song title (title field for tag with level 30)
     const char *const args2[] = {"tageditor", "set", "target-level=30", "title=The song title", "genre=The song genre", "target-level=50", "genre=The album genre", "-f", mkvFile.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "song",
                                           "Title             The song title",
@@ -162,8 +164,8 @@ void CliTests::testHandlingOfTargets()
 
     // remove tags targeting level 30 and 50 and add new tag targeting level 30 and the audio track
     const char *const args3[] = {"tageditor", "set", "target-level=30", "target-tracks=3134325680", "title=The audio track", "encoder=likely some AAC encoder", "--remove-target", "target-level=30", "--remove-target", "target-level=50", "-f", mkvFile.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args3);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(containsSubstrings(stdout, {"song"}));
     CPPUNIT_ASSERT(!containsSubstrings(stdout, {"song", "song"}));
     CPPUNIT_ASSERT(stdout.find("album") == string::npos);
@@ -179,11 +181,78 @@ void CliTests::testHandlingOfTargets()
 }
 
 /*!
- * \brief Tests handling of ID3v1 and ID3v2 tags and MP3 specific options.
+ * \brief Tests ID3v1/D3v2/MP3 specific options.
  */
-void CliTests::testHandlingOfId3Tags()
+void CliTests::testId3SpecificOptions()
 {
-    // TODO
+    cout << "\nID3/MP3 specific options" << endl;
+    string stdout, stderr;
+    const string mp3File1(workingCopyPath("mtx-test-data/mp3/id3-tag-and-xing-header.mp3"));
+    const string mp3File1Backup(mp3File1 + ".bak");
+
+    // verify both ID3 tags are detected
+    const char *const args1[] = {"tageditor", "get", "-f", mp3File1.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+    CPPUNIT_ASSERT(stdout.find("ID3v1 tag\n"
+                               " Title             Cohesion\n"
+                               " Album             Double Nickels On The Dime\n"
+                               " Artist            Minutemen\n"
+                               " Genre             Punk Rock\n"
+                               " Year              1984\n"
+                               " Comment           ExactAudioCopy v0.95b4\n"
+                               " Track             4\n"
+                               "ID3v2 tag (version 2.3.0)\n"
+                               " Title             Cohesion\n"
+                               " Album             Double Nickels On The Dime\n"
+                               " Artist            Minutemen\n"
+                               " Genre             Punk Rock\n"
+                               " Year              1984\n"
+                               " Comment           ExactAudioCopy v0.95b4\n"
+                               " Track             4/43\n"
+                               " Duration          00:00:00\n"
+                               " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
+
+    // remove ID3v1 tag, convert ID3v2 tag to version 4
+    const char *const args2[] = {"tageditor", "set", "--id3v1-usage", "never", "--id3v2-version", "4", "-f", mp3File1.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    TESTUTILS_ASSERT_EXEC(args1);
+    CPPUNIT_ASSERT(stdout.find("ID3v1 tag") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("ID3v2 tag (version 2.4.0)\n"
+                               " Title             Cohesion\n"
+                               " Album             Double Nickels On The Dime\n"
+                               " Artist            Minutemen\n"
+                               " Genre             Punk Rock\n"
+                               " Year              1984\n"
+                               " Comment           ExactAudioCopy v0.95b4\n"
+                               " Track             4/43\n"
+                               " Duration          00:00:00\n"
+                               " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
+    remove(mp3File1Backup.data());
+
+    // convert remaining ID3v2 tag to version 2, add an ID3v1 tag again
+    const char *const args3[] = {"tageditor", "set", "--id3v1-usage", "always", "--id3v2-version", "2", "--id3-init-on-create", "-f", mp3File1.data(), nullptr};
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    CPPUNIT_ASSERT(stdout.find("ID3v1 tag\n"
+                               " Title             Cohesion\n"
+                               " Album             Double Nickels On The Dime\n"
+                               " Artist            Minutemen\n"
+                               " Genre             Punk Rock\n"
+                               " Year              1984\n"
+                               " Comment           ExactAudioCopy v0.95b4\n"
+                               " Track             4\n"
+                               "ID3v2 tag (version 2.2.0)\n"
+                               " Title             Cohesion\n"
+                               " Album             Double Nickels On The Dime\n"
+                               " Artist            Minutemen\n"
+                               " Genre             Punk Rock\n"
+                               " Year              1984\n"
+                               " Comment           ExactAudioCopy v0.95b4\n"
+                               " Track             4/43\n"
+                               " Duration          00:00:00\n"
+                               " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
+    remove(mp3File1.data());
+    remove(mp3File1Backup.data());
 }
 
 /*!
@@ -191,6 +260,7 @@ void CliTests::testHandlingOfId3Tags()
  */
 void CliTests::testMultipleFiles()
 {
+    cout << "\nReading and writing multiple files at once" << endl;
     string stdout, stderr;
     const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
     const string mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
@@ -198,7 +268,7 @@ void CliTests::testMultipleFiles()
 
     // get tags of 3 files at once
     const char *const args1[] = {"tageditor", "get", "-f", mkvFile1.data(), mkvFile2.data(), mkvFile3.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Title             Big Buck Bunny - test 1",
                                           "Title             Elephant Dream - test 2",
@@ -209,8 +279,8 @@ void CliTests::testMultipleFiles()
 
     // set title and part number of 3 files at once
     const char *const args2[] = {"tageditor", "set", "target-level=30", "title=test1", "title=test2", "title=test3", "part+=1", "target-level=50", "title=MKV testfiles", "totalparts=3", "-f", mkvFile1.data(), mkvFile2.data(), mkvFile3.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Matroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\n"
                                           " Title             MKV testfiles\n"
@@ -249,12 +319,13 @@ void CliTests::testMultipleFiles()
  */
 void CliTests::testMultipleValuesPerField()
 {
+    cout << "\nMultiple values per field" << endl;
     string stdout, stderr;
     const string mkvFile(workingCopyPath("matroska_wave1/test1.mkv"));
     const char *const args1[] = {"tageditor", "get", "-f", mkvFile.data(), nullptr};
     const char *const args2[] = {"tageditor", "set", "artist=test1", "+artist=test2", "+artist=test3", "-f", mkvFile.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
+    TESTUTILS_ASSERT_EXEC(args1);
     //cout << stdout << endl;
     //cerr << stderr << endl;
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
@@ -273,6 +344,7 @@ void CliTests::testMultipleValuesPerField()
  */
 void CliTests::testHandlingAttachments()
 {
+    cout << "\nAttachments" << endl;
     string stdout, stderr;
     const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
     const string mkvFile1Backup(mkvFile1 + ".bak");
@@ -280,9 +352,9 @@ void CliTests::testHandlingAttachments()
 
     // add attachment
     const char *const args2[] = {"tageditor", "set", "--add-attachment", "name=test2.mkv", "mime=video/x-matroska", "desc=Test attachment", mkvFile2.data(), "-f", mkvFile1.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
     const char *const args1[] = {"tageditor", "info", "-f", mkvFile1.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Attachments:",
                                           "Name                          test2.mkv",
@@ -295,8 +367,8 @@ void CliTests::testHandlingAttachments()
 
     // update attachment
     const char *const args3[] = {"tageditor", "set", "--update-attachment", "name=test2.mkv", "desc=Updated test attachment", "-f", mkvFile1.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args3);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Attachments:",
                                           "Name                          test2.mkv",
@@ -309,7 +381,7 @@ void CliTests::testHandlingAttachments()
 
     // extract assigned attachment again
     const char *const args4[] = {"tageditor", "extract", "--attachment", "name=test2.mkv", "-f", mkvFile1.data(), "-o", "/tmp/extracted.mkv", nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args4, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args4);
     fstream origFile, extFile;
     origFile.exceptions(ios_base::failbit | ios_base::badbit), extFile.exceptions(ios_base::failbit | ios_base::badbit);
     origFile.open(mkvFile2.data() + 5, ios_base::in | ios_base::binary), extFile.open("/tmp/extracted.mkv", ios_base::in | ios_base::binary);
@@ -323,8 +395,8 @@ void CliTests::testHandlingAttachments()
 
     // remove assigned attachment
     const char *const args5[] = {"tageditor", "set", "--remove-attachment", "name=test2.mkv", "-f", mkvFile1.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args5, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args5);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stdout.find("Attachments:") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Name                          test2.mkv") == string::npos);
 
@@ -338,7 +410,65 @@ void CliTests::testHandlingAttachments()
  */
 void CliTests::testDisplayingInfo()
 {
-    // TODO (not very important)
+    cout << "\nDisplaying general file info" << endl;
+    string stdout, stderr;
+
+    // test Matroska file
+    const string mkvFile(testFilePath("matroska_wave1/test2.mkv"));
+    const char *const args1[] = {"tageditor", "info", "-f", mkvFile.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+                                          "  Container format: Matroska\n"
+                                          "    Document type                 matroska\n"
+                                          "    Read version                  1\n"
+                                          "    Version                       1\n"
+                                          "    Document read version         2\n"
+                                          "    Document version              2\n"
+                                          "    Duration                      47 s 509 ms\n",
+                                          "  Tracks:\n"
+                                          "    ID                            1863976627\n"
+                                          "    Type                          Video\n"
+                                          "    Format                        Advanced Video Coding Main Profile\n"
+                                          "    Abbreviation                  H.264\n"
+                                          "    Raw format ID                 V_MPEG4/ISO/AVC\n"
+                                          "    FPS                           24\n",
+                                          "    ID                            3134325680\n"
+                                          "    Type                          Audio\n"
+                                          "    Format                        Advanced Audio Coding Low Complexity Profile\n"
+                                          "    Abbreviation                  MPEG-4 AAC-LC\n"
+                                          "    Raw format ID                 A_AAC\n"
+                                          "    Channel config                2 channels: front-left, front-right\n"
+                                          "    Sampling frequency            48000 Hz"}));
+
+    // test MP4 file with AAC track using SBR and PS extensions
+    const string mp4File(testFilePath("mtx-test-data/aac/he-aacv2-ps.m4a"));
+    const char *const args2[] = {"tageditor", "info", "-f", mp4File.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+                                          "  Container format: MPEG-4 Part 14\n"
+                                          "    Document type                 mp42\n"
+                                          "    Duration                      3 min\n"
+                                          "    Creation time                 2014-12-10 16:22:41\n"
+                                          "    Modification time             2014-12-10 16:22:41\n",
+                                          "  Tracks:\n"
+                                          "    ID                            1\n"
+                                          "    Name                          soun\n"
+                                          "    Type                          Audio\n"
+                                          "    Format                        Advanced Audio Coding Low Complexity Profile\n"
+                                          "    Abbreviation                  MPEG-4 AAC-LC\n"
+                                          "    Extensions                    Spectral Band Replication and Parametric Stereo / HE-AAC v2\n"
+                                          "    Raw format ID                 mp4a\n"
+                                          "    Size                          879.65 KiB (900759 byte)\n"
+                                          "    Duration                      3 min 138 ms\n"
+                                          "    Channel config                1 channel: front-center\n"
+                                          "    Extension channel config      2 channels: front-left, front-right\n"
+                                          "    Bitrate                       40 kbit/s\n"
+                                          "    Bits per sample               16\n"
+                                          "    Sampling frequency            24000 Hz\n"
+                                          "    Extension sampling frequency  48000 Hz\n"
+                                          "    Sample count                  4222\n"
+                                          "    Creation time                 2014-12-10 16:22:41\n"
+                                          "    Modification time             2014-12-10 16:22:41"}));
 }
 
 /*!
@@ -347,12 +477,13 @@ void CliTests::testDisplayingInfo()
  */
 void CliTests::testExtraction()
 {
+    cout << "\nExtraction" << endl;
     string stdout, stderr;
-    const string mp41File(testFilePath("mtx-test-data/alac/othertest-itunes.m4a"));
+    const string mp4File1(testFilePath("mtx-test-data/alac/othertest-itunes.m4a"));
 
     // test extraction of cover
-    const char *const args1[] = {"tageditor", "extract", "cover", "-f", mp41File.data(), "-o", "/tmp/extracted.jpeg", nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    const char *const args1[] = {"tageditor", "extract", "cover", "-f", mp4File1.data(), "-o", "/tmp/extracted.jpeg", nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
     MediaFileInfo extractedInfo("/tmp/extracted.jpeg");
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat();
@@ -363,10 +494,10 @@ void CliTests::testExtraction()
     // test assignment of cover by the way
     const string mp4File2(workingCopyPath("mtx-test-data/aac/he-aacv2-ps.m4a"));
     const char *const args2[] = {"tageditor", "set", "cover=/tmp/extracted.jpeg", "-f", mp4File2.data(), nullptr};
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
     const char *const args3[] = {"tageditor", "extract", "cover", "-f", mp4File2.data(), "-o", "/tmp/extracted.jpeg", nullptr};
     remove("/tmp/extracted.jpeg");
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat();
     CPPUNIT_ASSERT_EQUAL(22771ul, extractedInfo.size());
@@ -381,6 +512,19 @@ void CliTests::testExtraction()
  */
 void CliTests::testReadingAndWritingDocumentTitle()
 {
-    // TODO
+    cout << "\nDocument title" << endl;
+    string stdout, stderr;
+
+    const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
+
+    const char *const args1[] = {"tageditor", "set", "--doc-title", "Foo", "-f", mkvFile.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+
+    const char *const args2[] = {"tageditor", "info", "-f", mkvFile.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(stdout.find("Title                         Foo") != string::npos);
+
+    remove(mkvFile.data());
+    remove((mkvFile + ".bak").data());
 }
 #endif

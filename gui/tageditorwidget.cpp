@@ -852,10 +852,12 @@ void TagEditorWidget::showFile(char result)
                     requiredTargets.emplace_back(containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
                 }
             }
-            if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
+            // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
+            // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
+            if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), false, true, Settings::mergeMultipleSuccessiveId3v2Tags(),
                                                  Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets)) {
                 if(confirmCreationOfId3TagForUnsupportedFile()) {
-                    m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), Settings::mergeMultipleSuccessiveId3v2Tags(),
+                    m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), false, true, Settings::mergeMultipleSuccessiveId3v2Tags(),
                                                      Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets);
                 }
             }

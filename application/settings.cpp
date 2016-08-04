@@ -103,9 +103,9 @@ TagUsage &id3v2usage()
     return v;
 }
 
-uint32 &id3v2versionToBeUsed()
+byte &id3v2versionToBeUsed()
 {
-    static uint32 v = 3;
+    static byte v = 3;
     return v;
 }
 
