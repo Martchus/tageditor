@@ -43,7 +43,7 @@ class FileInfoModel;
 class TagEditorWidget : public QWidget
 {
     Q_OBJECT
-    Q_PROPERTY(QString currentPath READ currentPath)
+    Q_PROPERTY(QString currentPath READ currentPath NOTIFY currentPathChanged)
     Q_PROPERTY(QByteArray fileInfoHtml READ fileInfoHtml)
     Q_PROPERTY(bool fileNameVisible READ isFileNameVisible WRITE setFileNameVisible)
     Q_PROPERTY(bool buttonsVisible READ areButtonsVisible WRITE setButtonVisible)
@@ -79,25 +79,14 @@ public slots:
     void applySettingsFromDialog();
 
 signals:
-    /*!
-     * \brief Emitted when loading the next file has been triggered.
-     */
+    /// \brief Emitted when loading the next file has been triggered.
     void nextFileSelected();
-
-    /*!
-     * \brief Emitted to show a status message.
-     */
+    /// \brief Emitted to show a status message.
     void statusMessage(const QString &message, int timeout = 0);
-
-    /*!
-     * \brief Emmited when the file status (opened/closed) has changed.
-     */
-    void fileStatusChange(bool opened, bool hasTag);
-
-    /*!
-     * \brief Emitted when the current path changed.
-     */
-    void fileSaved(const QString &newPath);
+    /// \brief Emmited when the file status (opened/closed) has changed.
+    void fileStatusChanged(bool opened, bool hasTag);
+    /// \brief Emitted when the current path has changed; always emitted a saving.
+    void currentPathChanged(const QString &newPath);
 
 protected:
     bool event(QEvent *event);
@@ -151,9 +140,7 @@ private:
     Media::MediaFileInfo m_fileInfo;
     std::vector<Media::Tag *> m_tags;
     QByteArray m_fileInfoHtml;
-    /*!
-     * \brief This is the actual direcotry of the opened file which may differ from the directory selected in the tree view of the main window.
-     */
+    /// \brief This is the actual direcotry of the opened file which may differ from the directory selected in the tree view of the main window.
     QString m_currentDir;
     QString m_lastDir;
     QString m_saveFilePath;

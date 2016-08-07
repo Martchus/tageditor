@@ -76,7 +76,7 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
     connect(m_ui->startPushButton, &QPushButton::clicked, this, &DbQueryWidget::startSearch);
     connect(m_ui->applyPushButton, &QPushButton::clicked, this, &DbQueryWidget::applyResults);
-    connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChange, this, &DbQueryWidget::fileStatusChanged);
+    connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &DbQueryWidget::fileStatusChanged);
     connect(m_ui->resultsTreeView, &QTreeView::customContextMenuRequested, this, &DbQueryWidget::showResultsContextMenu);
 }
 

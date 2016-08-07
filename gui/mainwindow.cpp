@@ -74,6 +74,7 @@ MediaFileInfo &MainWindow::fileInfo()
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent, Qt::Window),
     m_ui(new Ui::MainWindow()),
+    m_internalFileSelection(false),
     m_aboutDlg(nullptr),
     m_settingsDlg(nullptr),
     m_dbQueryWidget(nullptr)
@@ -137,9 +138,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->actionAbout, &QAction::triggered, this, &MainWindow::showAboutDlg);
     // tag editor widget
     connect(m_ui->tagEditorWidget, &TagEditorWidget::nextFileSelected, this, static_cast<void(MainWindow::*)(void)>(&MainWindow::selectNextFile));
-    connect(m_ui->tagEditorWidget, &TagEditorWidget::fileStatusChange, this, &MainWindow::handleFileStatusChange);
+    connect(m_ui->tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &MainWindow::handleFileStatusChange);
     connect(m_ui->tagEditorWidget, &TagEditorWidget::statusMessage, m_ui->statusBar, &QStatusBar::showMessage);
-    connect(m_ui->tagEditorWidget, &TagEditorWidget::fileSaved, this, &MainWindow::handleFileSaved);
+    connect(m_ui->tagEditorWidget, &TagEditorWidget::currentPathChanged, this, &MainWindow::handleCurrentPathChanged);
     //  misc
     connect(m_ui->pathLineEdit, &QLineEdit::textEdited, this, &MainWindow::pathEntered);
     connect(m_ui->filesTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::fileSelected);
@@ -209,9 +210,9 @@ bool MainWindow::event(QEvent *event)
  */
 void MainWindow::pathEntered()
 {
-    QString path = m_ui->pathLineEdit->text();
+    const QString path = m_ui->pathLineEdit->text();
     if(!path.isEmpty()) {
-        QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(path));
+        const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(path));
         if(index.isValid()) {
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
             m_ui->pathLineEdit->setProperty("classNames", QStringList());
@@ -224,23 +225,26 @@ void MainWindow::pathEntered()
 
 /*!
  * \brief This private slot is called when the selected file or directory changes.
+ *
  * If a directory is selected the m_ui->pathLineEdit will be updated.
  * If a file is selected it will be opened.
  */
 void MainWindow::fileSelected()
 {
-    QModelIndexList selectedIndexes = m_ui->filesTreeView->selectionModel()->selectedRows();
-    if(selectedIndexes.count() == 1) {
-        QString path(m_fileModel->filePath(m_fileFilterModel->mapToSource(selectedIndexes.at(0))));
-        QFileInfo fileInfo(path);
-        if(fileInfo.isFile()) {
-            startParsing(path);
-            m_ui->pathLineEdit->setText(fileInfo.dir().path());
-        } else if(fileInfo.isDir()) {
-            m_ui->pathLineEdit->setText(path);
+    if(!m_internalFileSelection) {
+        const QModelIndexList selectedIndexes = m_ui->filesTreeView->selectionModel()->selectedRows();
+        if(selectedIndexes.count() == 1) {
+            QString path(m_fileModel->filePath(m_fileFilterModel->mapToSource(selectedIndexes.at(0))));
+            QFileInfo fileInfo(path);
+            if(fileInfo.isFile()) {
+                startParsing(path);
+                m_ui->pathLineEdit->setText(fileInfo.dir().path());
+            } else if(fileInfo.isDir()) {
+                m_ui->pathLineEdit->setText(path);
+            }
+            m_ui->pathLineEdit->setProperty("classNames", QStringList());
+            updateStyle(m_ui->pathLineEdit);
         }
-        m_ui->pathLineEdit->setProperty("classNames", QStringList());
-        updateStyle(m_ui->pathLineEdit);
     }
 }
 
@@ -262,13 +266,18 @@ void MainWindow::handleFileStatusChange(bool opened, bool hasTag)
     setWindowTitle(Dialogs::generateWindowTitle(opened ? DocumentStatus::Saved : DocumentStatus::NoDocument, m_ui->tagEditorWidget->currentPath()));
 }
 
-void MainWindow::handleFileSaved(const QString &currentPath)
+/*!
+ * \brief Handles that the current path has changed by the tag editor widget itself.
+ */
+void MainWindow::handleCurrentPathChanged(const QString &currentPath)
 {
     // ensure the current file is still selected
+    m_internalFileSelection = true;
     const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(currentPath));
     if(index.isValid()) {
         m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
     }
+    m_internalFileSelection = false;
     // ensure this is the active window
     activateWindow();
 }

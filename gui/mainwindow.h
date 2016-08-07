@@ -60,7 +60,7 @@ private slots:
     void showSaveAsDlg();
     void saveFileInformation();
     void handleFileStatusChange(bool opened, bool hasTag);
-    void handleFileSaved(const QString &currentPath);
+    void handleCurrentPathChanged(const QString &currentPath);
 
     // settings
     void showSettingsDlg();
@@ -81,6 +81,7 @@ private:
     // models
     QFileSystemModel *m_fileModel;
     FileFilterProxyModel *m_fileFilterModel;
+    bool m_internalFileSelection;
     // dialogs
     Dialogs::AboutDialog *m_aboutDlg;
     Dialogs::SettingsDialog *m_settingsDlg;

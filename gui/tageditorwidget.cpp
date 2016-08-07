@@ -221,6 +221,7 @@ bool TagEditorWidget::event(QEvent *event)
                     }
                     startParsing(path, true);
 #else
+                    emit currentPathChanged(url.path());
                     startParsing(url.path(), true);
 #endif
                 }
@@ -457,7 +458,7 @@ void TagEditorWidget::updateFileStatusStatus()
         m_infoTreeView->setEnabled(opened);
     }
     // inform the main window about the file status change as well
-    emit fileStatusChange(opened, hasTag);
+    emit fileStatusChanged(opened, hasTag);
 }
 
 /*!
@@ -1150,7 +1151,7 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         m_fileOperationMutex.unlock();
         // let the main window know that the current file has been saved
         // -> the main window will ensure the current file is still selected
-        emit fileSaved(m_currentPath);
+        emit currentPathChanged(m_currentPath);
         // show next file (only if there are critical notifications)
         if(!critical && m_nextFileAfterSaving) {
             emit nextFileSelected();
