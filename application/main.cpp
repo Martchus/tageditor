@@ -54,6 +54,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     indexPosArg("index-pos", '\0', "specifies the preferred index position"),
     forceRewriteArg("force-rewrite", '\0', "forces the file to rewritten from the scratch"),
     valuesArg("values", 'n', "specifies the values to be set"),
+    outputFilesArg("output-files", 'o', "specifies the output files; if present, the files specified with --files will not be modified"),
     setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setCombinable(true);
@@ -132,12 +133,15 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     valuesArg.setImplicit(true);
     valuesArg.setPreDefinedCompletionValues(Cli::fieldNamesForSet);
     valuesArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
+    outputFilesArg.setValueNames({"path 1", "path 2"});
+    outputFilesArg.setRequiredValueCount(-1);
+    outputFilesArg.setCombinable(true);
     setTagInfoArg.setDenotesOperation(true);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg,
                                          &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg,
                                          &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg, &prefPaddingArg, &tagPosArg,
-                                         &indexPosArg, &forceRewriteArg, &verboseArg});
+                                         &indexPosArg, &forceRewriteArg, &verboseArg, &outputFilesArg});
 }
 
 }

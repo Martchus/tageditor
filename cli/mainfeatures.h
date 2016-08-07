@@ -44,6 +44,7 @@ struct SetTagInfoArgs
     ApplicationUtilities::Argument indexPosArg;
     ApplicationUtilities::Argument forceRewriteArg;
     ApplicationUtilities::Argument valuesArg;
+    ApplicationUtilities::Argument outputFilesArg;
     ApplicationUtilities::Argument setTagInfoArg;
 };
 

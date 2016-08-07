@@ -1022,6 +1022,12 @@ void setTagInfo(const SetTagInfoArgs &args)
         cerr << "Error: No files have been specified." << endl;
         return;
     }
+    if(args.outputFilesArg.isPresent() && args.outputFilesArg.values().size() != args.filesArg.values().size()) {
+        cerr << "Error: The number of output files does not match the number of input files." << endl;
+        return;
+    }
+    auto &outputFiles = args.outputFilesArg.isPresent() ? args.outputFilesArg.values() : vector<const char *>();
+    auto currentOutputFile = outputFiles.cbegin(), noMoreOutputFiles = outputFiles.cend();
     auto fields = parseFieldDenotations(args.valuesArg, false);
     if(fields.empty()
             && (!args.removeTargetArg.isPresent() || args.removeTargetArg.values().empty())
@@ -1246,6 +1252,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             if(!tags.empty() || docTitleModified || attachmentsModified) {
                 try {
                     // save parsing notifications because notifications of sub objects like tags, tracks, ... will be gone after applying changes
+                    fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
                     fileInfo.gatherRelatedNotifications(notifications);
                     fileInfo.invalidateNotifications();
                     fileInfo.applyChanges();
@@ -1264,7 +1271,11 @@ void setTagInfo(const SetTagInfoArgs &args)
             cerr << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
         }
         printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
+
         ++fileIndex;
+        if(currentOutputFile != noMoreOutputFiles) {
+            ++currentOutputFile;
+        }
     }
 }
 

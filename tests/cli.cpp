@@ -35,6 +35,7 @@ class CliTests : public TestFixture
     CPPUNIT_TEST(testHandlingOfTargets);
     CPPUNIT_TEST(testId3SpecificOptions);
     CPPUNIT_TEST(testMultipleFiles);
+    CPPUNIT_TEST(testOutputFile);
     CPPUNIT_TEST(testMultipleValuesPerField);
     CPPUNIT_TEST(testHandlingAttachments);
     CPPUNIT_TEST(testDisplayingInfo);
@@ -52,6 +53,7 @@ public:
     void testHandlingOfTargets();
     void testId3SpecificOptions();
     void testMultipleFiles();
+    void testOutputFile();
     void testMultipleValuesPerField();
     void testHandlingAttachments();
     void testDisplayingInfo();
@@ -130,7 +132,6 @@ void CliTests::testBasicReadingAndWriting()
     CPPUNIT_ASSERT(stdout.find("Comment") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Genre") == string::npos);
 
-    // clear working copies if all tests have been
     remove(mkvFile.c_str());
     remove(mkvFileBackup.data());
 }
@@ -175,8 +176,6 @@ void CliTests::testHandlingOfTargets()
                                           "Encoder           likely some AAC encoder"
                                       }));
     remove(mkvFileBackup.data());
-
-    // clear working copies if all tests have been
     remove(mkvFile.c_str());
 }
 
@@ -314,6 +313,40 @@ void CliTests::testMultipleFiles()
 }
 
 /*!
+ * \brief Tests reading and writing multiple files at once with output files are specified.
+ */
+void CliTests::testOutputFile()
+{
+    cout << "\nReading and writing multiple files at once with output files specified" << endl;
+    string stdout, stderr;
+    const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
+    const string mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
+
+    const char *const args1[] = {"tageditor", "set", "target-level=30", "title=test1", "title=test2","-f", mkvFile1.data(), mkvFile2.data(), "-o", "/tmp/test1.mkv", "/tmp/test2.mkv", nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+
+    // original files have not been modified
+    const char *const args2[] = {"tageditor", "get", "-f", mkvFile1.data(), mkvFile2.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(stdout.find("Matroska tag targeting") != string::npos);
+    CPPUNIT_ASSERT(stdout.find("Title             test1") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Title             test2") == string::npos);
+
+    // specified output files contain new titles
+    const char *const args3[] = {"tageditor", "get", "-f", "/tmp/test1.mkv", "/tmp/test2.mkv", nullptr};
+    TESTUTILS_ASSERT_EXEC(args3);
+    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+                                          "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
+                                          " Title             test1\n",
+                                          "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
+                                          " Title             test2\n"
+                                      }));
+
+    remove(mkvFile1.data()), remove(mkvFile2.data());
+    remove("/tmp/test1.mkv"), remove("/tmp/test2.mkv");
+}
+
+/*!
  * \brief Tests tagging multiple values per field.
  * \remarks Fails because feature has not been implemented yet.
  */
@@ -334,7 +367,6 @@ void CliTests::testMultipleValuesPerField()
                                           "Artist            test3"
                                       }));
 
-    // clear working copies if all tests have been
     remove(mkvFile.c_str());
     remove((mkvFile + ".bak").c_str());
 }
@@ -400,7 +432,6 @@ void CliTests::testHandlingAttachments()
     CPPUNIT_ASSERT(stdout.find("Attachments:") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Name                          test2.mkv") == string::npos);
 
-    // clear working copies if all tests have been
     remove(mkvFile1.data());
     remove(mkvFile1Backup.data());
 }
