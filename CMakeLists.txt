@@ -8,6 +8,7 @@ set(META_APP_CATEGORIES "Utility;Audio;Video;")
 set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
 set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska")
+set(META_GUI_OPTIONAL true)
 set(META_VERSION_MAJOR 2)
 set(META_VERSION_MINOR 0)
 set(META_VERSION_PATCH 0)
@@ -190,6 +191,7 @@ set(REQUIRED_ICONS
 # find c++utilities
 find_package(c++utilities 4.0.0 REQUIRED)
 use_cpp_utilities()
+include(BasicConfig)
 
 # find qtutilities
 if(WIDGETS_GUI OR QUICK_GUI)
@@ -206,7 +208,6 @@ list(APPEND TEST_LIBRARIES ${TAG_PARSER_SHARED_LIB})
 list(APPEND ADDITIONAL_QT_MODULES Concurrent Network)
 
 # include modules to apply configuration
-include(BasicConfig)
 if(WIDGETS_GUI OR QUICK_GUI)
     include(QtGuiConfig)
     include(JsProviderConfig)
