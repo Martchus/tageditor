@@ -348,27 +348,34 @@ void CliTests::testOutputFile()
 
 /*!
  * \brief Tests tagging multiple values per field.
- * \remarks Fails because feature has not been implemented yet.
  */
 void CliTests::testMultipleValuesPerField()
 {
     cout << "\nMultiple values per field" << endl;
     string stdout, stderr;
-    const string mkvFile(workingCopyPath("matroska_wave1/test1.mkv"));
-    const char *const args1[] = {"tageditor", "get", "-f", mkvFile.data(), nullptr};
-    const char *const args2[] = {"tageditor", "set", "artist=test1", "+artist=test2", "+artist=test3", "-f", mkvFile.data(), nullptr};
-    TESTUTILS_ASSERT_EXEC(args2);
+    const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
+    const string mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
+    const char *const args1[] = {"tageditor", "set", "artist=test1", "+artist=test2", "+artist=test3", "artist=test4", "-f", mkvFile1.data(), mkvFile2.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
-    //cout << stdout << endl;
-    //cerr << stderr << endl;
+
+    const char *const args2[] = {"tageditor", "get", "-f", mkvFile1.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(containsSubstrings(stdout, {
                                           "Artist            test1",
                                           "Artist            test2",
                                           "Artist            test3"
                                       }));
+    CPPUNIT_ASSERT(stdout.find("Artist            test4") == string::npos); // should be in mkvFile2
 
-    remove(mkvFile.c_str());
-    remove((mkvFile + ".bak").c_str());
+    const char *const args3[] = {"tageditor", "get", "-f", mkvFile2.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args3);
+    CPPUNIT_ASSERT(stdout.find("Artist            test1") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Artist            test2") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Artist            test3") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Artist            test4") != string::npos);
+
+    remove(mkvFile1.c_str()), remove((mkvFile1 + ".bak").c_str());
+    remove(mkvFile2.c_str()), remove((mkvFile2 + ".bak").c_str());
 }
 
 /*!

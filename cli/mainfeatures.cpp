@@ -28,6 +28,7 @@
 #include <cstring>
 #include <algorithm>
 #include <unordered_map>
+#include <vector>
 
 using namespace std;
 using namespace ApplicationUtilities;
@@ -419,6 +420,11 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             } else if(applyTargetConfiguration(scope.tagTarget, fieldDenotationString)) {
                 continue;
             }
+            // check whether field name starts with + indicating an additional value
+            bool additionalValue = *fieldDenotationString == '+';
+            if(additionalValue) {
+                ++fieldDenotationString;
+            }
             // read field name
             const auto equationPos = strchr(fieldDenotationString, '=');
             size_t fieldNameLen = equationPos ? static_cast<size_t>(equationPos - fieldDenotationString) : strlen(fieldDenotationString);
@@ -516,10 +522,13 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                     cerr << "Warning: Specified value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << endl;
                 } else {
                     // file index might have been specified explicitely
-                    // if not (mult == 1) use the index of the last value and increase it by one
+                    // if not (mult == 1) use the index of the last value and increase it by one if the value is not an additional one
                     // if there are no previous values, just use the index 0
-                    fieldValues.emplace_back(FieldValue(type, mult == 1 ? (fieldValues.empty() ? 0 : fieldValues.back().fileIndex + 1) : fileIndex, (equationPos + 1)));
+                    fieldValues.emplace_back(FieldValue(type, mult == 1 ? (fieldValues.empty() ? 0 : fieldValues.back().fileIndex + (additionalValue ? 0 : 1)) : fileIndex, (equationPos + 1)));
                 }
+            }
+            if(additionalValue && readOnly) {
+                cerr << "Warning: Indication of an additional value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << endl;
             }
         }
     }
@@ -963,7 +972,6 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                                     cout << endl;
                                 }
                             }
-
                         }
                     } else {
                         for(const auto &fieldDenotation : fields) {
@@ -973,6 +981,13 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                                 const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
                                 const auto fieldNameLen = strlen(fieldName);
                                 if(values.empty()) {
+                                    // write field name
+                                    const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
+                                    cout << ' ' << fieldName;
+                                    // write padding
+                                    for(auto i = fieldNameLen; i < 18; ++i) {
+                                        cout << ' ';
+                                    }
                                     cout << "none";
                                 } else {
                                     for(const auto &value : values) {
@@ -1155,22 +1170,29 @@ void setTagInfo(const SetTagInfoArgs &args)
                         if((denotedScope.tagType == TagType::Unspecified
                             || (denotedScope.tagType & tagType) != TagType::Unspecified)
                                 && (!targetSupported || denotedScope.tagTarget == tagTarget)) {
-                            // select the value for the current file index
-                            FieldValue *selectedDenotedValue = nullptr;
+                            // select the relevant values for the current file index
+                            vector<FieldValue *> relevantDenotedValues;
+                            unsigned int currentFileIndex = 0;
                             for(FieldValue &denotatedValue : denotedValues) {
                                 if(denotatedValue.fileIndex <= fileIndex) {
-                                    if(!selectedDenotedValue || (denotatedValue.fileIndex > selectedDenotedValue->fileIndex)) {
-                                        selectedDenotedValue = &denotatedValue;
+                                    if(relevantDenotedValues.empty() || (denotatedValue.fileIndex >= currentFileIndex)) {
+                                        if(currentFileIndex != denotatedValue.fileIndex) {
+                                            currentFileIndex = denotatedValue.fileIndex;
+                                            relevantDenotedValues.clear();
+                                        }
+                                        relevantDenotedValues.push_back(&denotatedValue);
                                     }
                                 }
                             }
-                            if(selectedDenotedValue) {
+                            // convert the values to TagValue
+                            vector<TagValue> convertedValues;
+                            for(FieldValue *relevantDenotedValue : relevantDenotedValues) {
                                 // one of the denoted values
-                                if(!selectedDenotedValue->value.empty()) {
-                                    if(selectedDenotedValue->type == DenotationType::File) {
+                                if(!relevantDenotedValue->value.empty()) {
+                                    if(relevantDenotedValue->type == DenotationType::File) {
                                         try {
                                             // assume the file refers to a picture
-                                            MediaFileInfo fileInfo(selectedDenotedValue->value);
+                                            MediaFileInfo fileInfo(relevantDenotedValue->value);
                                             fileInfo.open(true);
                                             fileInfo.parseContainerFormat();
                                             auto buff = make_unique<char []>(fileInfo.size());
@@ -1178,7 +1200,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                             fileInfo.stream().read(buff.get(), fileInfo.size());
                                             TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
                                             value.setMimeType(fileInfo.mimeType());
-                                            tag->setValue(denotedScope.field, move(value));
+                                            convertedValues.emplace_back(move(value));
                                         } catch(const Media::Failure &) {
                                             fileInfo.addNotification(NotificationType::Critical, "Unable to parse specified cover file.", context);
                                         } catch(...) {
@@ -1190,16 +1212,18 @@ void setTagInfo(const SetTagInfoArgs &args)
                                         if(!tag->canEncodingBeUsed(denotedEncoding)) {
                                             usedEncoding = tag->proposedTextEncoding();
                                         }
-                                        tag->setValue(denotedScope.field, TagValue(selectedDenotedValue->value, TagTextEncoding::Utf8, usedEncoding));
-                                        if(selectedDenotedValue->type == DenotationType::Increment && tag == tags.back()) {
-                                            selectedDenotedValue->value = incremented(selectedDenotedValue->value);
+                                        convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
+                                        if(relevantDenotedValue->type == DenotationType::Increment && tag == tags.back()) {
+                                            relevantDenotedValue->value = incremented(relevantDenotedValue->value);
                                         }
                                     }
                                 } else {
                                     // if the denoted value is empty, just assign an empty TagValue to remove the field
-                                    tag->setValue(denotedScope.field, TagValue());
+                                    convertedValues.emplace_back();
                                 }
                             }
+                            // finally set the values
+                            tag->setValues(denotedScope.field, convertedValues);
                         }
                     }
                 }
