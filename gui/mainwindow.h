@@ -60,7 +60,7 @@ private slots:
     void showSaveAsDlg();
     void saveFileInformation();
     void handleFileStatusChange(bool opened, bool hasTag);
-    void handleCurrentPathChanged(const QString &currentPath);
+    void handleCurrentPathChanged(const QString &newPath);
 
     // settings
     void showSettingsDlg();

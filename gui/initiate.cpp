@@ -8,6 +8,7 @@
 
 #include <qtutilities/resources/qtconfigarguments.h>
 #include <qtutilities/resources/resources.h>
+#include <qtutilities/settingsdialog/qtsettings.h>
 
 #include <QApplication>
 
@@ -19,12 +20,13 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
 {
     SET_QT_APPLICATION_INFO;
     QApplication a(argc, argv);
+    Settings::restore();
+    // apply settings specified via command line args after the settings chosen in the GUI to give the CLI options precedence
+    Settings::qtSettings().apply();
+    qtConfigArgs.applySettings(Settings::qtSettings().hasCustomFont());
     // load resources needed by classes of qtutilities
     QtUtilitiesResources::init();
-    // apply settings specified via command line args
-    qtConfigArgs.applySettings();
     LOAD_QT_TRANSLATIONS;
-    Settings::restore();
     int res;
     if(launchRenamingUtility) {
         RenameFilesDialog w;

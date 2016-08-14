@@ -15,6 +15,10 @@ enum class TagUsage;
 enum class ElementPosition;
 }
 
+namespace Dialogs {
+class QtSettings;
+}
+
 namespace Settings {
 
 // general
@@ -110,6 +114,9 @@ QString &coverArtArchiveUrl();
 int &scriptSource();
 QString &externalScript();
 QString &editorScript();
+
+// Qt settings
+Dialogs::QtSettings &qtSettings();
 
 void restore();
 void save();

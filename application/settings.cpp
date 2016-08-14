@@ -6,6 +6,8 @@
 #include <tagparser/tag.h>
 #include <tagparser/backuphelper.h>
 
+#include <qtutilities/settingsdialog/qtsettings.h>
+
 #include <QString>
 #include <QByteArray>
 #include <QApplication>
@@ -38,7 +40,7 @@ MultipleTagHandling &multipleTagHandling()
 }
 bool &hideTagSelectionComboBox()
 {
-    static bool v = true;
+    static bool v = false;
     return v;
 }
 bool &forceFullParse()
@@ -292,6 +294,13 @@ QString &editorScript()
     return v;
 }
 
+// Qt settings
+Dialogs::QtSettings &qtSettings()
+{
+    static Dialogs::QtSettings v;
+    return v;
+}
+
 void restore()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,  QApplication::organizationName(), QApplication::applicationName());
@@ -318,7 +327,7 @@ void restore()
         multipleTagHandling() = MultipleTagHandling::SeparateEditors;
         break;
     }
-    hideTagSelectionComboBox() = settings.value(QStringLiteral("hidetagselectioncombobox"), true).toBool();
+    hideTagSelectionComboBox() = settings.value(QStringLiteral("hidetagselectioncombobox"), false).toBool();
     settings.beginGroup(QStringLiteral("autocorrection"));
     insertTitleFromFilename() = settings.value(QStringLiteral("inserttitlefromfilename"), false).toBool();
     trimWhitespaces() = settings.value(QStringLiteral("trimwhitespaces"), true).toBool();
@@ -441,6 +450,8 @@ void restore()
     externalScript() = settings.value(QStringLiteral("file")).toString();
     editorScript() = settings.value(QStringLiteral("script")).toString();
     settings.endGroup();
+
+    qtSettings().restore(settings);
 }
 
 void save()
@@ -524,6 +535,8 @@ void save()
     settings.setValue(QStringLiteral("file"), Settings::externalScript());
     settings.setValue(QStringLiteral("script"), Settings::editorScript());
     settings.endGroup();
+
+    qtSettings().save(settings);
 }
 
 }

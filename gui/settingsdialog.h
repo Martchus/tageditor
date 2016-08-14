@@ -16,6 +16,7 @@
 
 #include <qtutilities/settingsdialog/settingsdialog.h>
 #include <qtutilities/settingsdialog/optionpage.h>
+#include <qtutilities/settingsdialog/qtsettings.h>
 
 #include <QWidget>
 

@@ -603,12 +603,15 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->assignPages(QList<Dialogs::OptionPage *>() << new FileBrowserGeneralOptionPage);
     categories << category;
 
-    categories <<  Dialogs::qtOptionCategory(this);
+    categories << Settings::qtSettings().category();
 
     categoryModel()->setCategories(categories);
 
     setMinimumSize(800, 450);
     setWindowIcon(QIcon::fromTheme(QStringLiteral("preferences-other"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/preferences-other.png"))));
+
+    // some settings could be applied without restarting the application, good idea?
+    //connect(this, &Dialogs::SettingsDialog::applied, bind(&Dialogs::QtSettings::apply, &Settings::qtSettings()));
 }
 
 SettingsDialog::~SettingsDialog()
