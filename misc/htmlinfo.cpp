@@ -805,9 +805,9 @@ public:
                 m_writer.writeStartElement(QStringLiteral("tr"));
                 m_writer.writeEmptyElement(QStringLiteral("td"));
                 m_writer.writeAttribute(QStringLiteral("class"), qstr(notification.typeName()));
+                m_writer.writeTextElement(QStringLiteral("td"), qstr(notification.context()));
                 m_writer.writeTextElement(QStringLiteral("td"), qstr(notification.message()));
                 m_writer.writeTextElement(QStringLiteral("td"), qstr(notification.creationTime().toString(DateTimeOutputFormat::DateAndTime, false)));
-                m_writer.writeTextElement(QStringLiteral("td"), qstr(notification.context()));
                 m_writer.writeEndElement();
             }
             m_rowMaker.endSubTab();
