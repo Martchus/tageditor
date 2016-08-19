@@ -183,7 +183,6 @@ set(REQUIRED_ICONS
     system-run
     edit-rename
     go-next
-    qtcreator
     expand-menu-hover
     autocorrection
 )
