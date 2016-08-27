@@ -1,5 +1,5 @@
-#ifndef ID3V2OPTIONPAGE_H
-#define ID3V2OPTIONPAGE_H
+#ifndef SETTINGS_DIALOG_H
+#define SETTINGS_DIALOG_H
 
 #include "ui_filebrowsergeneraloptionpage.h"
 #include "ui_editorgeneraloptionpage.h"
@@ -24,10 +24,6 @@ namespace Settings {
 class KnownFieldModel;
 class TargetLevelModel;
 }
-
-DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE(QtAppearanceOptionPage)
-DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE(QtLanguageOptionPage)
-DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE(QtEnvOptionPage)
 
 namespace QtGui {
 
@@ -74,4 +70,4 @@ public:
 
 }
 
-#endif // ID3V2OPTIONPAGE_H
+#endif // SETTINGS_DIALOG_H
