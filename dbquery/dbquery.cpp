@@ -395,10 +395,9 @@ void MusicBrainzResultsModel::parseResults(QNetworkReply *reply, const QByteArra
         m_results.clear();
         m_reader.addData(data);
 
+        // parse XML tree
 #define xmlReader m_reader
 #include <qtutilities/misc/xmlparsermacros.h>
-
-        // parse XML tree
         children {
             iftag("metadata") {
                 children {
@@ -481,7 +480,6 @@ void MusicBrainzResultsModel::parseResults(QNetworkReply *reply, const QByteArra
                 }
             } else_skip
         }
-
 #include <qtutilities/misc/undefxmlparsermacros.h>
 
         // check for parsing errors

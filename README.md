@@ -50,6 +50,10 @@ The GUI should be self-explaining. Just open a file, edit the tags and save the 
 You can set the behaviour of the editor to keep previous values, so you don't have to enter
 information like album name or artist for all files in an album again and again.
 
+#### Screenshots
+##### Main window under Openbox/qt5ct with Breeze theme/icons
+![main window/Openbox/qt5ct/Breeze](/resources/screenshots/mainwindow.png?raw=true)
+
 #### Settings
 Checkout the settings dialog. You can:
 - customize which fields the editor shows and in which order
@@ -163,7 +167,7 @@ Here are some Bash examples which illustrate getting and setting tag information
 The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
 
 ### Building with Qt 5 GUI
-The following Qt 5 modules are requried: core concurrent gui network declarative/script widgets webenginewidgets/webkitwidgets
+The following Qt 5 modules are requried: core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
 
 #### Select Qt modules for JavaScript and WebView
 * If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against Qt QML.
@@ -180,13 +184,13 @@ To build without GUI, add the following parameters to the CMake call:
 ```
 
 ## TODO
-- Support more formats (EXIF, PDF metadata, Theora in Ogg, ...).
-- Allow adding tags to specific streams when dealing with Ogg.
-- Do tests with Matroska files which have multiple segments.
-- Set tag information concurrently if multiple files have been specified (CLI).
+- Support more formats (EXIF, PDF metadata, Theora in Ogg, ...)
+- Allow adding tags to specific streams when dealing with Ogg
+- Do tests with Matroska files which have multiple segments
+- Set tag information concurrently if multiple files have been specified (CLI)
+- Support building in cue-sheet in flac
 
 ## Bugs
-- Large file information is not shown when using Qt WebEngine.
-- It is recommend you to create backups before editing because I can not test whether the
-  library works with all kind of files. If you force rewriting a backup is always created.
+- Large file information is not shown when using Qt WebEngine
+- It is recommend you to create backups before editing because I can not test whether the library works with all kind of files (when forcing rewrite a backup is always created)
 - underlying library: Matroska files composed of more than one segment aren't tested yet and might not work.

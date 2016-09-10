@@ -19,6 +19,7 @@
 #include <QMenu>
 #include <QClipboard>
 #include <QTextStream>
+#include <QFontDatabase>
 
 using namespace Dialogs;
 using namespace RenamingUtility;
@@ -39,9 +40,7 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     setStyleSheet(dialogStyle() + QStringLiteral("QSplitter:handle { background-color: palette(base); }"));
 #endif
     // setup javascript editor and script file selection
-    QFont font(QStringLiteral("Courier"), 10);
-    font.setFixedPitch(true);
-    m_ui->javaScriptPlainTextEdit->setFont(font);
+    m_ui->javaScriptPlainTextEdit->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     m_highlighter = new JavaScriptHighlighter(m_ui->javaScriptPlainTextEdit->document());
     m_ui->externalScriptPage->setBackgroundRole(QPalette::Base);
 
