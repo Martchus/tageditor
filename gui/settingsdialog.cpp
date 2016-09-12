@@ -5,6 +5,19 @@
 #include "../application/knownfieldmodel.h"
 #include "../application/targetlevelmodel.h"
 
+#include "ui_filebrowsergeneraloptionpage.h"
+#include "ui_editorgeneraloptionpage.h"
+#include "ui_editortempoptionpage.h"
+#include "ui_editorfieldsoptionpage.h"
+#include "ui_editorautocorrectionoptionpage.h"
+#include "ui_editordbqueryoptionpage.h"
+#include "ui_infooptionpage.h"
+#include "ui_tagprocessinggeneraloptionpage.h"
+#include "ui_id3v1optionpage.h"
+#include "ui_id3v2optionpage.h"
+#include "ui_tagprocessingtargetsoptionpage.h"
+#include "ui_filelayout.h"
+
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/backuphelper.h>
 
@@ -618,3 +631,16 @@ SettingsDialog::~SettingsDialog()
 {}
 
 }
+
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, FileBrowserGeneralOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorGeneralOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorTempOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorFieldsOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorAutoCorrectionOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorDbQueryOptionsPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, InfoOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, TagProcessingGeneralOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, Id3v1OptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, Id3v2OptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, TagProcessingTargetsOptionPage)
+INSTANTIATE_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, FileLayoutPage)

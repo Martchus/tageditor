@@ -1,19 +1,6 @@
 #ifndef SETTINGS_DIALOG_H
 #define SETTINGS_DIALOG_H
 
-#include "ui_filebrowsergeneraloptionpage.h"
-#include "ui_editorgeneraloptionpage.h"
-#include "ui_editortempoptionpage.h"
-#include "ui_editorfieldsoptionpage.h"
-#include "ui_editorautocorrectionoptionpage.h"
-#include "ui_editordbqueryoptionpage.h"
-#include "ui_infooptionpage.h"
-#include "ui_tagprocessinggeneraloptionpage.h"
-#include "ui_id3v1optionpage.h"
-#include "ui_id3v2optionpage.h"
-#include "ui_tagprocessingtargetsoptionpage.h"
-#include "ui_filelayout.h"
-
 #include <qtutilities/settingsdialog/settingsdialog.h>
 #include <qtutilities/settingsdialog/optionpage.h>
 #include <qtutilities/settingsdialog/qtsettings.h>
@@ -69,5 +56,18 @@ public:
 };
 
 }
+
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, FileBrowserGeneralOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorGeneralOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorTempOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorFieldsOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorAutoCorrectionOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, EditorDbQueryOptionsPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, InfoOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, TagProcessingGeneralOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, Id3v1OptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, Id3v2OptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, TagProcessingTargetsOptionPage)
+DECLARE_EXTERN_UI_FILE_BASED_OPTION_PAGE_NS(QtGui, FileLayoutPage)
 
 #endif // SETTINGS_DIALOG_H
