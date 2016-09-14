@@ -37,8 +37,11 @@ Taking advantage of padding is currently not supported when dealing with Ogg str
 dealing with raw FLAC streams).
 
 ## Download / binary repository
-I currently provide packages for Arch Linux and Windows. For more information checkout my
+I currently provide packages for Arch Linux and Windows. Sources for those packages can be found in a
+separate [repository](https://github.com/Martchus/PKGBUILDs). For binaries checkout my
 [website](http://martchus.no-ip.biz/website/page.php?name=programming).
+
+Gentoo packages are provided by perfect7gentleman. Checkout his [repository](https://github.com/perfect7gentleman/pg_overlay).
 
 ## Usage
 The Tag Editor has a GUI (Qt 5) and a command line interface. For a C++ library
@@ -188,7 +191,7 @@ To build without GUI, add the following parameters to the CMake call:
 - Allow adding tags to specific streams when dealing with Ogg
 - Do tests with Matroska files which have multiple segments
 - Set tag information concurrently if multiple files have been specified (CLI)
-- Support building in cue-sheet in flac
+- Support adding cue-sheet to FLAC files
 
 ## Bugs
 - Large file information is not shown when using Qt WebEngine
