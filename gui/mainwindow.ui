@@ -84,6 +84,7 @@
     </property>
     <addaction name="actionSettings"/>
     <addaction name="actionOpen_MusicBrainz_search"/>
+    <addaction name="lockLayout"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
     <addaction name="separator"/>
@@ -343,13 +344,22 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="document-save-as"/>
+    <iconset theme="document-save-as">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Save (entered tags) as ...</string>
+    <string>Save (entered tags) &amp;as ...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="lockLayout">
+   <property name="icon">
+    <iconset theme="lock"/>
+   </property>
+   <property name="text">
+    <string>Lock layout</string>
    </property>
   </action>
  </widget>

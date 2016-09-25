@@ -102,6 +102,7 @@ KnownFieldModel &autoCorrectionFields();
 QByteArray &mainWindowGeometry();
 QByteArray &mainWindowState();
 QString &mainWindowCurrentFileBrowserDirectory();
+bool &mainWindowLayoutLocked();
 
 // db query
 bool &dbQueryWidgetShown();

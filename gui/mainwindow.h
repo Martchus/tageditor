@@ -36,14 +36,21 @@ class DbQueryWidget;
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+    Q_PROPERTY(QString currentDirectory READ currentDirectory WRITE setCurrentDirectory)
+    Q_PROPERTY(bool layoutLocked READ isLayoutLocked WRITE setLayoutLocked)
     
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     // file browser
-    QString currentDirectory();
+    QString currentDirectory() const;
+    bool isLayoutLocked() const;
+
+public slots:
     void setCurrentDirectory(const QString &path);
+    void setLayoutLocked(bool locked);
+    void toggleLayoutLocked();
     void startParsing(const QString &path);
 
 protected:

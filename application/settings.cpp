@@ -236,6 +236,12 @@ QString &mainWindowCurrentFileBrowserDirectory()
     return v;
 }
 
+bool &mainWindowLayoutLocked()
+{
+    static bool v = false;
+    return v;
+}
+
 // db query
 bool &dbQueryWidgetShown()
 {
@@ -425,9 +431,9 @@ void restore()
         break;
     }
     forceIndexPosition() = settings.value(QStringLiteral("forceindexpos"), true).toBool();
-    minPadding() = settings.value(QStringLiteral("minpad"), 0).toInt();
-    maxPadding() = settings.value(QStringLiteral("maxpad"), 0).toInt();
-    preferredPadding() = settings.value(QStringLiteral("prefpad"), 0).toInt();
+    minPadding() = settings.value(QStringLiteral("minpad"), 0).toUInt();
+    maxPadding() = settings.value(QStringLiteral("maxpad"), 0).toUInt();
+    preferredPadding() = settings.value(QStringLiteral("prefpad"), 0).toUInt();
     settings.endGroup();
     settings.endGroup();
 
@@ -435,6 +441,7 @@ void restore()
     mainWindowGeometry() = settings.value(QStringLiteral("geometry")).toByteArray();
     mainWindowState() = settings.value(QStringLiteral("windowstate")).toByteArray();
     mainWindowCurrentFileBrowserDirectory() = settings.value(QStringLiteral("currentfilebrowserdirectory")).toString();
+    mainWindowLayoutLocked() = settings.value(QStringLiteral("layoutlocked"), mainWindowLayoutLocked()).toBool();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("dbquery"));
@@ -520,6 +527,7 @@ void save()
     settings.setValue(QStringLiteral("geometry"), mainWindowGeometry());
     settings.setValue(QStringLiteral("windowstate"), mainWindowState());
     settings.setValue(QStringLiteral("currentfilebrowserdirectory"), mainWindowCurrentFileBrowserDirectory());
+    settings.setValue(QStringLiteral("layoutlocked"), mainWindowLayoutLocked());
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("dbquery"));

@@ -44,6 +44,7 @@ class TagEditorWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QString currentPath READ currentPath NOTIFY currentPathChanged)
+    Q_PROPERTY(bool tagEditShown READ isTagEditShown)
     Q_PROPERTY(QByteArray fileInfoHtml READ fileInfoHtml)
     Q_PROPERTY(bool fileNameVisible READ isFileNameVisible WRITE setFileNameVisible)
     Q_PROPERTY(bool buttonsVisible READ areButtonsVisible WRITE setButtonVisible)

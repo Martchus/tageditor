@@ -116,10 +116,14 @@ MainWindow::MainWindow(QWidget *parent) :
         m_ui->dbQueryDockWidget->setVisible(false);
     }
 
+    // restore locked
+    setLayoutLocked(Settings::mainWindowLayoutLocked());
+
     // connect signals and slots, install event filter
     //  menu: application
     connect(m_ui->actionSettings, &QAction::triggered, this, &MainWindow::showSettingsDlg);
     connect(m_ui->actionOpen_MusicBrainz_search, &QAction::triggered, this, &MainWindow::showDbQueryWidget);
+    connect(m_ui->lockLayout, &QAction::triggered, this, &MainWindow::toggleLayoutLocked);
     connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     //  menu: file
     connect(m_ui->actionOpen, &QAction::triggered, this, &MainWindow::showOpenFileDlg);
@@ -159,7 +163,7 @@ MainWindow::~MainWindow()
 /*!
  * \brief Returns directory the file browser is currently showning.
  */
-QString MainWindow::currentDirectory()
+QString MainWindow::currentDirectory() const
 {
     return m_ui->pathLineEdit->text();
 }
@@ -171,6 +175,39 @@ QString MainWindow::currentDirectory()
 void MainWindow::setCurrentDirectory(const QString &path)
 {
     m_ui->pathLineEdit->editText(path);
+}
+
+/*!
+ * \brief Returns whether the layout is \a locked.
+ */
+bool MainWindow::isLayoutLocked() const
+{
+    return m_ui->fileSelectionDockWidget->features() == QDockWidget::NoDockWidgetFeatures;
+}
+
+/*!
+ * \brief Sets whether the layout is \a locked.
+ */
+void MainWindow::setLayoutLocked(bool locked)
+{
+    if(locked != isLayoutLocked()) {
+        if(locked) {
+            m_ui->fileSelectionDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+            m_ui->dbQueryDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+            m_ui->lockLayout->setText(tr("Unlock layout"));
+            m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("unlock")));
+        } else {
+            m_ui->fileSelectionDockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+            m_ui->dbQueryDockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+            m_ui->lockLayout->setText(tr("Lock layout"));
+            m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("lock")));
+        }
+    }
+}
+
+void MainWindow::toggleLayoutLocked()
+{
+    setLayoutLocked(!isLayoutLocked());
 }
 
 /*!
@@ -194,6 +231,7 @@ bool MainWindow::event(QEvent *event)
         Settings::mainWindowGeometry() = saveGeometry();
         Settings::mainWindowState() = saveState();
         Settings::mainWindowCurrentFileBrowserDirectory() = currentDirectory();
+        Settings::mainWindowLayoutLocked() = isLayoutLocked();
         Settings::dbQueryWidgetShown() = m_ui->dbQueryDockWidget->isVisible();
         break;
     default:

@@ -185,6 +185,8 @@ set(REQUIRED_ICONS
     go-next
     expand-menu-hover
     autocorrection
+    unlock
+    lock
 )
 
 # find c++utilities
