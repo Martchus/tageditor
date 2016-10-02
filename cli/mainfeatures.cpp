@@ -736,48 +736,41 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
 #endif
 }
 
-void printProperty(const char *propName, const char *value, const char *suffix = nullptr, size_t intention = 4)
+void printProperty(const char *propName, const char *value, const char *suffix = nullptr, Indentation indentation = 4)
 {
     if(*value) {
-        for(; intention; --intention) {
-            cout << ' ';
-        }
-        cout << propName;
-        for(intention = strlen(propName); intention < 30; ++intention) {
-            cout << ' ';
-        }
-        cout << value;
+        std::cout << indentation << propName << Indentation(30 - strlen(propName)) << value;
         if(suffix) {
-            cout << ' ' << suffix;
+            std::cout << ' ' << suffix;
         }
-        cout << endl;
+        std::cout << '\n';
     }
 }
 
-void printProperty(const char *propName, const string &value, const char *suffix = nullptr, size_t intention = 4)
+void printProperty(const char *propName, const string &value, const char *suffix = nullptr, Indentation indentation = 4)
 {
-    printProperty(propName, value.data(), suffix, intention);
+    printProperty(propName, value.data(), suffix, indentation);
 }
 
-void printProperty(const char *propName, TimeSpan timeSpan, const char *suffix = nullptr, size_t intention = 4)
+void printProperty(const char *propName, TimeSpan timeSpan, const char *suffix = nullptr, Indentation indentation = 4)
 {
     if(!timeSpan.isNull()) {
-        printProperty(propName, timeSpan.toString(TimeSpanOutputFormat::WithMeasures), suffix, intention);
+        printProperty(propName, timeSpan.toString(TimeSpanOutputFormat::WithMeasures), suffix, indentation);
     }
 }
 
-void printProperty(const char *propName, DateTime dateTime, const char *suffix = nullptr, size_t intention = 4)
+void printProperty(const char *propName, DateTime dateTime, const char *suffix = nullptr, Indentation indentation = 4)
 {
     if(!dateTime.isNull()) {
-        printProperty(propName, dateTime.toString(), suffix, intention);
+        printProperty(propName, dateTime.toString(), suffix, indentation);
     }
 }
 
 template<typename intType>
-void printProperty(const char *propName, const intType value, const char *suffix = nullptr, bool force = false, size_t intention = 4)
+void printProperty(const char *propName, const intType value, const char *suffix = nullptr, bool force = false, Indentation indentation = 4)
 {
     if(value != 0 || force) {
-        printProperty(propName, numberToString<intType>(value), suffix, intention);
+        printProperty(propName, numberToString<intType>(value), suffix, indentation);
     }
 }
 
