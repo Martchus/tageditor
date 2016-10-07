@@ -125,9 +125,6 @@ Here are some Bash examples which illustrate getting and setting tag information
   - The same scheme is used for the track numbers.
   - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
 
-  **Note:** The current version v1.4.0 has a bug so tagging multiple files at once doesn't work as shown above. As a workaround
-  use either the Git version or use title0=... title1=... title2=... to specify the different titles for the files.
-
 * *Sets* title of both specified files and the album of the second specified file:
     ```
     tageditor set title0="Title for both files" album1="Album for 2nd file" \
