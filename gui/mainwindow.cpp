@@ -110,7 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // dbquery dock widget
     if(Settings::dbQueryWidgetShown()) {
-        showDbQueryWidget();
+        toggleDbQueryWidget();
     } else {
         // ensure the dock widget is invisible
         m_ui->dbQueryDockWidget->setVisible(false);
@@ -122,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // connect signals and slots, install event filter
     //  menu: application
     connect(m_ui->actionSettings, &QAction::triggered, this, &MainWindow::showSettingsDlg);
-    connect(m_ui->actionOpen_MusicBrainz_search, &QAction::triggered, this, &MainWindow::showDbQueryWidget);
+    connect(m_ui->actionOpen_MusicBrainz_search, &QAction::triggered, this, &MainWindow::toggleDbQueryWidget);
     connect(m_ui->lockLayout, &QAction::triggered, this, &MainWindow::toggleLayoutLocked);
     connect(m_ui->actionQuit, &QAction::triggered, this, &MainWindow::close);
     //  menu: file
@@ -337,14 +337,14 @@ void MainWindow::spawnExternalPlayer()
 }
 
 /*!
- * \brief Shows the database query widget.
+ * \brief Toggles visibility of the database query widget.
  */
-void MainWindow::showDbQueryWidget()
+void MainWindow::toggleDbQueryWidget()
 {
     if(!m_dbQueryWidget) {
         m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
     }
-    m_ui->dbQueryDockWidget->setVisible(true);
+    m_ui->dbQueryDockWidget->setVisible(m_ui->dbQueryDockWidget->isHidden());
 }
 
 /*!

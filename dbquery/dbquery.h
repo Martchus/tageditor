@@ -95,7 +95,28 @@ inline bool QueryResultsModel::isFetchingCover() const
     return m_fetchingCover;
 }
 
-QueryResultsModel *queryMusicBrainz(const SongDescription &songDescription);
+class HttpResultsModel : public QueryResultsModel
+{
+    Q_OBJECT
+public:
+    ~HttpResultsModel();
+    void abort();
+
+protected:
+    HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
+    void addReply(QNetworkReply *reply);
+    virtual void parseResults(QNetworkReply *reply, const QByteArray &data) = 0;
+
+private slots:
+    void handleReplyFinished();
+
+protected:
+    QList<QNetworkReply *> m_replies;
+    const SongDescription m_initialDescription;
+};
+
+QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription);
+QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription);
 QNetworkReply *queryCoverArtArchive(const QString &albumId);
 
 }

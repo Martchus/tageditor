@@ -77,7 +77,7 @@ private slots:
     void showAboutDlg();
     void showRenameFilesDlg();
     void spawnExternalPlayer();
-    void showDbQueryWidget();
+    void toggleDbQueryWidget();
 
 private:
     QMutex &fileOperationMutex();

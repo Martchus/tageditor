@@ -156,19 +156,19 @@ void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, con
 
 QSize NotificationLabel::sizeHint() const
 {
-    return minimumSizeHint();
-}
-
-QSize NotificationLabel::minimumSizeHint() const
-{
-    QFontMetrics fm(font());
+    const QFontMetrics fm(fontMetrics());
     QSize size = fm.size(0, m_text);
     if(size.height() < m_minIconSize) {
         size.setHeight(m_minIconSize);
     }
-    int iconSize = size.height() > m_maxIconSize ? m_maxIconSize : size.height();
+    const int iconSize = size.height() > m_maxIconSize ? m_maxIconSize : size.height();
     size.setWidth(iconSize + 5 + size.width());
     return size;
+}
+
+QSize NotificationLabel::minimumSizeHint() const
+{
+    return QSize(m_minIconSize, m_minIconSize);
 }
 
 void NotificationLabel::setText(const QString &text)
@@ -176,10 +176,16 @@ void NotificationLabel::setText(const QString &text)
     m_text = text;
     updateGeometry();
     update(textRect());
+    if(toolTip().isEmpty()) {
+        setToolTip(text);
+    }
 }
 
 void NotificationLabel::clearText()
 {
+    if(toolTip() == m_text) {
+        toolTip().clear();
+    }
     m_text.clear();
     updateGeometry();
     update(textRect());
@@ -187,17 +193,21 @@ void NotificationLabel::clearText()
 
 void NotificationLabel::appendLine(const QString &line)
 {
+    const bool updateTooltip = toolTip().isEmpty() || toolTip() == m_text;
     if(m_text.isEmpty()) {
         m_text = line;
     } else {
-        if(!m_text.startsWith("•")) {
-            m_text.insert(0, "• ");
+        if(!m_text.startsWith(QStringLiteral("•"))) {
+            m_text.insert(0, QStringLiteral("• "));
         }
-        m_text.append("\n• ");
+        m_text.append(QStringLiteral("\n• "));
         m_text.append(line);
     }
     updateGeometry();
     update(textRect());
+    if(updateTooltip) {
+        setToolTip(m_text);
+    }
 }
 
 void NotificationLabel::setNotificationSubject(NotificationSubject value)

@@ -2,20 +2,14 @@
 
 #include "../misc/utility.h"
 #include "../misc/networkaccessmanager.h"
-#include "../application/settings.h"
 
 #include <tagparser/tagvalue.h>
 #include <tagparser/tag.h>
 #include <tagparser/signature.h>
 
 #include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QUrlQuery>
-#include <QStringBuilder>
-#include <QXmlStreamReader>
 #include <QMessageBox>
 
-#include <map>
 #ifdef DEBUG_BUILD
 # include <iostream>
 #endif
@@ -215,40 +209,37 @@ bool QueryResultsModel::fetchCover(const QModelIndex &)
     return false;
 }
 
-class HttpResultsModel : public QueryResultsModel
-{
-    Q_OBJECT
-public:
-    ~HttpResultsModel();
-    void addReply(QNetworkReply *reply);
-    void abort();
-
-protected:
-    HttpResultsModel(QNetworkReply *reply);
-    virtual void parseResults(QNetworkReply *reply, const QByteArray &data) = 0;
-
-private slots:
-    void handleReplyFinished();
-
-protected:
-    QList<QNetworkReply *> m_replies;
-};
-
-HttpResultsModel::HttpResultsModel(QNetworkReply *reply)
+/*!
+ * \brief Constructs a new HttpResultsModel for the specified \a reply.
+ * \remarks The model takes ownership over the specified \a reply.
+ */
+HttpResultsModel::HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply) :
+    m_initialDescription(initialSongDescription)
 {
     addReply(reply);
 }
 
+/*!
+ * \brief Deletes all associated replies.
+ */
 HttpResultsModel::~HttpResultsModel()
 {
     qDeleteAll(m_replies);
 }
 
+/*!
+ * \brief Helper to copy a property from one QObject to another.
+ * \remarks Used to transfer reply properties to new reply in case a second reply is required.
+ */
 void copyProperty(const char *property, const QObject *from, QObject *to)
 {
     to->setProperty(property, from->property(property));
 }
 
+/*!
+ * \brief Evaluates request results.
+ * \remarks Calls parseResults() if the requested data is available. Handles errors/redirections otherwise.
+ */
 void HttpResultsModel::handleReplyFinished()
 {
     auto *reply = static_cast<QNetworkReply *>(sender());
@@ -296,6 +287,10 @@ void HttpResultsModel::handleReplyFinished()
     setResultsAvailable(true);
 }
 
+/*!
+ * \brief Adds a reply.
+ * \remarks Called within c'tor and handleReplyFinished() in case of redirection. Might be called when subclassing to do further requests.
+ */
 void HttpResultsModel::addReply(QNetworkReply *reply)
 {
     m_replies << reply;
@@ -305,6 +300,9 @@ void HttpResultsModel::addReply(QNetworkReply *reply)
     connect(reply, &QNetworkReply::finished, this, &HttpResultsModel::handleReplyFinished);
 }
 
+/*!
+ * \brief Aborts all ongoing requests and causes error "Aborted by user" if requests where ongoing.
+ */
 void HttpResultsModel::abort()
 {
     if(!m_replies.isEmpty()) {
@@ -314,222 +312,6 @@ void HttpResultsModel::abort()
         m_errorList << tr("Aborted by user.");
         setResultsAvailable(true);
     }
-}
-
-
-class MusicBrainzResultsModel : public HttpResultsModel
-{
-    Q_OBJECT
-private:
-    enum What {
-        MusicBrainzMetaData,
-        CoverArt
-    };
-
-public:
-    MusicBrainzResultsModel(QNetworkReply *reply);
-    bool fetchCover(const QModelIndex &index);
-    static QNetworkRequest coverRequest(const QString &albumId);
-
-protected:
-    void parseResults(QNetworkReply *reply, const QByteArray &data);
-
-private:
-    static map<QString, QByteArray> m_coverData;
-    QXmlStreamReader m_reader;
-    What m_what;
-};
-
-map<QString, QByteArray> MusicBrainzResultsModel::m_coverData = map<QString, QByteArray>();
-
-MusicBrainzResultsModel::MusicBrainzResultsModel(QNetworkReply *reply) :
-    HttpResultsModel(reply)
-{}
-
-bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
-{
-    if(!index.parent().isValid() && index.row() < m_results.size()) {
-        SongDescription &desc = m_results[index.row()];
-        if(!desc.cover.isEmpty()) {
-            // cover is already available -> nothing to do
-        } else if(!desc.albumId.isEmpty()) {
-            try {
-                // the item belongs to an album which cover has already been fetched
-                desc.cover = m_coverData.at(desc.albumId);
-            } catch(const out_of_range &) {
-                // request the cover art
-                QNetworkReply *reply = queryCoverArtArchive(desc.albumId);
-                addReply(reply);
-                reply->setProperty("coverArt", true);
-                reply->setProperty("albumId", desc.albumId);
-                reply->setProperty("row", index.row());
-                setFetchingCover(true);
-                return false;
-            }
-        } else {
-            m_errorList << tr("Unable to fetch cover: Album ID is unknown.");
-            emit resultsAvailable();
-        }
-    }
-    return true;
-}
-
-void MusicBrainzResultsModel::parseResults(QNetworkReply *reply, const QByteArray &data)
-{
-    if(reply->property("coverArt").toBool()) {
-        // add cover -> determine album ID and row
-        bool ok;
-        QString albumId = reply->property("albumId").toString();
-        int row = reply->property("row").toInt(&ok);
-        if(!albumId.isEmpty() && ok && row < m_results.size()) {
-            m_coverData[albumId] = data;
-            m_results[row].cover = data;
-            emit coverAvailable(index(row, 0));
-        } else {
-            m_errorList << tr("Cover reply is invalid (internal error).");
-        }
-        setFetchingCover(false);
-    } else {
-        // prepare parsing MusicBrainz meta data
-        beginResetModel();
-        m_results.clear();
-        m_reader.addData(data);
-
-        // parse XML tree
-#define xmlReader m_reader
-#include <qtutilities/misc/xmlparsermacros.h>
-        children {
-            iftag("metadata") {
-                children {
-                    iftag("recording-list") {
-                        children {
-                            iftag("recording") {
-                                SongDescription currentDescription;
-                                children {
-                                    iftag("title") {
-                                        currentDescription.title = text;
-                                    } eliftag("artist-credit") {
-                                        children {
-                                            iftag("name-credit") {
-                                                children {
-                                                    iftag("artist") {
-                                                        children {
-                                                            iftag("name") {
-                                                                currentDescription.artist = text;
-                                                            } else_skip
-                                                        }
-                                                    } else_skip
-                                                }
-                                            } else_skip
-                                        }
-                                    } eliftag("release-list") {
-                                        children {
-                                            iftag("release") {
-                                                if(currentDescription.albumId.isEmpty()) {
-                                                    currentDescription.albumId = attribute("id").toString();
-                                                }
-                                                children {
-                                                    iftag("title") {
-                                                        currentDescription.album = text;
-                                                    } eliftag("date") {
-                                                        currentDescription.year = text;
-                                                    } eliftag("medium-list") {
-                                                        children {
-                                                            iftag("medium") {
-                                                                children {
-                                                                    iftag("position") {
-                                                                        currentDescription.disk = text.toUInt();
-                                                                    } eliftag("track-list") {
-                                                                        currentDescription.totalTracks = attribute("count").toUInt();
-                                                                        children {
-                                                                            iftag("track") {
-                                                                                children {
-                                                                                    iftag("number") {
-                                                                                        currentDescription.track = text.toUInt();
-                                                                                    } else_skip
-                                                                                }
-                                                                            } else_skip
-                                                                        }
-                                                                    } else_skip
-                                                                }
-                                                            } else_skip
-                                                        }
-                                                    } else_skip
-                                                }
-                                            } else_skip
-                                        }
-                                    } eliftag("tag-list") {
-                                        children {
-                                            iftag("tag") {
-                                                children {
-                                                    iftag("name") {
-                                                        if(!currentDescription.genre.isEmpty()) {
-                                                            currentDescription.genre.append(QLatin1Char(' '));
-                                                        }
-                                                        currentDescription.genre.append(text);
-                                                    } else_skip
-                                                }
-                                            } else_skip
-                                        }
-                                    } else_skip
-                                }
-                                m_results << currentDescription;
-                            } else_skip
-                        }
-                    } else_skip
-                }
-            } else_skip
-        }
-#include <qtutilities/misc/undefxmlparsermacros.h>
-
-        // check for parsing errors
-        switch(m_reader.error()) {
-        case QXmlStreamReader::NoError:
-        case QXmlStreamReader::PrematureEndOfDocumentError:
-            break;
-        default:
-            m_errorList << m_reader.errorString();
-        }
-
-        // promote changes
-        endResetModel();
-    }
-}
-
-QueryResultsModel *queryMusicBrainz(const SongDescription &songDescription)
-{
-    static QString defaultMusicBrainzUrl(QStringLiteral("https://musicbrainz.org/ws/2/recording/"));
-
-    // compose parts
-    QStringList parts;
-    parts.reserve(4);
-    if(!songDescription.title.isEmpty()) {
-        parts << QChar('\"') % songDescription.title % QChar('\"');
-    }
-    if(!songDescription.artist.isEmpty()) {
-        parts << QStringLiteral("artist:\"") % songDescription.artist % QChar('\"');
-    }
-    if(!songDescription.album.isEmpty()) {
-        parts << QStringLiteral("release:\"") % songDescription.album % QChar('\"');
-    }
-    if(songDescription.track) {
-        parts << QStringLiteral("number:") + QString::number(songDescription.track);
-    }
-
-    // compose URL
-    QUrl url(Settings::musicBrainzUrl().isEmpty() ? defaultMusicBrainzUrl : (Settings::musicBrainzUrl() + QStringLiteral("/recording/")));
-    QUrlQuery query;
-    query.addQueryItem(QStringLiteral("query"), parts.join(QStringLiteral(" AND ")));
-    url.setQuery(query);
-
-    // make request
-    return new MusicBrainzResultsModel(Utility::networkAccessManager().get(QNetworkRequest(url)));
-}
-
-QNetworkReply *queryCoverArtArchive(const QString &albumId)
-{
-    static QString defaultArchiveUrl(QStringLiteral("https://coverartarchive.org"));
-    return networkAccessManager().get(QNetworkRequest(QUrl((Settings::coverArtArchiveUrl().isEmpty() ? defaultArchiveUrl : Settings::coverArtArchiveUrl()) % QStringLiteral("/release/") % albumId % QStringLiteral("/front"))));
 }
 
 }

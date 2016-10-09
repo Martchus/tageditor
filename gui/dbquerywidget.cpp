@@ -45,7 +45,7 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     setStyleSheet(QStringLiteral("QGroupBox { color: palette(text); background-color: palette(base); }"));
 #endif
 
-    m_ui->notificationLabel->setText(tr("Search hasn't been started."));
+    m_ui->notificationLabel->setText(tr("Search hasn't been started"));
     m_ui->searchGroupBox->installEventFilter(this);
 
     // initialize buttons
@@ -74,7 +74,8 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
 
     // connect signals and slots
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
-    connect(m_ui->startPushButton, &QPushButton::clicked, this, &DbQueryWidget::startSearch);
+    connect(m_ui->searchMusicBrainzPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchMusicBrainz);
+    connect(m_ui->searchLyricsWikiaPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchLyricsWikia);
     connect(m_ui->applyPushButton, &QPushButton::clicked, this, &DbQueryWidget::applyResults);
     connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &DbQueryWidget::fileStatusChanged);
     connect(m_ui->resultsTreeView, &QTreeView::customContextMenuRequested, this, &DbQueryWidget::showResultsContextMenu);
@@ -116,9 +117,9 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
     }
 }
 
-void DbQueryWidget::startSearch()
+void DbQueryWidget::searchMusicBrainz()
 {
-    // check whether enought search terms are supplied
+    // check whether enough search terms are supplied
     if(m_ui->titleLineEdit->text().isEmpty() && m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
         m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied"));
@@ -142,7 +143,38 @@ void DbQueryWidget::startSearch()
     desc.track = m_ui->trackSpinBox->value();
 
     // do actual query
-    m_ui->resultsTreeView->setModel(m_model = queryMusicBrainz(desc));
+    m_ui->resultsTreeView->setModel(m_model = queryMusicBrainz(std::move(desc)));
+    connect(m_model, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
+    connect(m_model, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
+}
+
+void DbQueryWidget::searchLyricsWikia()
+{
+    // check whether enough search terms are supplied
+    if(m_ui->artistLineEdit->text().isEmpty()) {
+        m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
+        m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied"));
+        return;
+    }
+
+    // delete current model
+    m_ui->resultsTreeView->setModel(nullptr);
+    delete m_model;
+
+    // show status
+    m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+    m_ui->notificationLabel->setText(tr("Retrieving meta data ..."));
+    setStatus(false);
+
+    // get song description
+    SongDescription desc;
+    desc.title = m_ui->titleLineEdit->text();
+    desc.album = m_ui->albumLineEdit->text();
+    desc.artist = m_ui->artistLineEdit->text();
+    desc.track = static_cast<unsigned int>(m_ui->trackSpinBox->value());
+
+    // do actual query
+    m_ui->resultsTreeView->setModel(m_model = queryLyricsWikia(std::move(desc)));
     connect(m_model, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
     connect(m_model, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
 }
@@ -197,7 +229,8 @@ void DbQueryWidget::showResults()
 void DbQueryWidget::setStatus(bool aborted)
 {
     m_ui->abortPushButton->setVisible(!aborted);
-    m_ui->startPushButton->setVisible(aborted);
+    m_ui->searchMusicBrainzPushButton->setVisible(aborted);
+    m_ui->searchLyricsWikiaPushButton->setVisible(aborted);
     m_ui->applyPushButton->setVisible(aborted);
 }
 
@@ -271,7 +304,7 @@ void DbQueryWidget::showResultsContextMenu()
         if(!selection.isEmpty()) {
             QMenu contextMenu;
             if(m_ui->applyPushButton->isEnabled()) {
-                contextMenu.addAction(m_ui->applyPushButton->icon(), m_ui->applyPushButton->text(), this, SLOT(applyResults()));
+                contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this, SLOT(applyResults()));
             }
             if(m_model && m_model->areResultsAvailable()) {
                 contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, SLOT(fetchAndShowCoverForSelection()));
@@ -353,7 +386,7 @@ bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)
         case QEvent::KeyRelease:
             switch(static_cast<QKeyEvent *>(event)->key()) {
             case Qt::Key_Return:
-                startSearch();
+                searchMusicBrainz();
                 break;
             default:
                 ;

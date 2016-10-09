@@ -110,6 +110,7 @@ bool &dbQueryOverride();
 KnownFieldModel &dbQueryFields();
 QString &musicBrainzUrl();
 QString &coverArtArchiveUrl();
+QString &lyricsWikiaUrl();
 
 // rename files dialog
 int &scriptSource();

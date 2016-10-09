@@ -59,6 +59,8 @@ set(WIDGETS_HEADER_FILES
     gui/tageditorwidget.h
     gui/fileinfomodel.h
     dbquery/dbquery.h
+    dbquery/musicbrainz.h
+    dbquery/lyricswikia.h
     gui/dbquerywidget.h
     misc/networkaccessmanager.h
     renamingutility/filesystemitem.h
@@ -89,6 +91,8 @@ set(WIDGETS_SRC_FILES
     gui/tageditorwidget.cpp
     gui/fileinfomodel.cpp
     dbquery/dbquery.cpp
+    dbquery/musicbrainz.cpp
+    dbquery/lyricswikia.cpp
     gui/dbquerywidget.cpp
     misc/networkaccessmanager.cpp
     renamingutility/filesystemitem.cpp

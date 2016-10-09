@@ -649,34 +649,34 @@
     <name>QtGui::DbQueryWidget</name>
     <message>
         <location filename="../gui/dbquerywidget.ui" line="14"/>
-        <source>MusicBrainz search</source>
+        <source>MusicBrainz/LyricsWikia search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="53"/>
+        <location filename="../gui/dbquerywidget.ui" line="59"/>
         <source>Search &amp;criteria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="77"/>
+        <location filename="../gui/dbquerywidget.ui" line="83"/>
         <source>Song</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="95"/>
-        <location filename="../gui/dbquerywidget.ui" line="102"/>
-        <location filename="../gui/dbquerywidget.ui" line="118"/>
-        <location filename="../gui/dbquerywidget.ui" line="132"/>
+        <location filename="../gui/dbquerywidget.ui" line="101"/>
+        <location filename="../gui/dbquerywidget.ui" line="108"/>
+        <location filename="../gui/dbquerywidget.ui" line="124"/>
+        <location filename="../gui/dbquerywidget.ui" line="138"/>
         <source>?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="111"/>
+        <location filename="../gui/dbquerywidget.ui" line="117"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="125"/>
+        <location filename="../gui/dbquerywidget.ui" line="131"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -691,28 +691,36 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="280"/>
+        <location filename="../gui/dbquerywidget.ui" line="279"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="287"/>
-        <source>Search</source>
+        <location filename="../gui/dbquerywidget.ui" line="292"/>
+        <source>Search
+MusicBrainz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="301"/>
+        <location filename="../gui/dbquerywidget.ui" line="310"/>
+        <source>Search
+LyricWikia</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.ui" line="331"/>
         <source>Inserts the selected result into the current tag (doesn&apos;t save anything)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="304"/>
-        <source>Apply results</source>
+        <location filename="../gui/dbquerywidget.ui" line="334"/>
+        <source>Use selected
+row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/dbquerywidget.cpp" line="48"/>
-        <source>Search hasn&apos;t been started.</source>
+        <source>Search hasn&apos;t been started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -726,27 +734,29 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="124"/>
+        <location filename="../gui/dbquerywidget.cpp" line="125"/>
+        <location filename="../gui/dbquerywidget.cpp" line="156"/>
         <source>Insufficient search criteria supplied</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="134"/>
+        <location filename="../gui/dbquerywidget.cpp" line="135"/>
+        <location filename="../gui/dbquerywidget.cpp" line="166"/>
         <source>Retrieving meta data ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="164"/>
+        <location filename="../gui/dbquerywidget.cpp" line="196"/>
         <source>Aborted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="176"/>
+        <location filename="../gui/dbquerywidget.cpp" line="208"/>
         <source>No results available</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/dbquerywidget.cpp" line="178"/>
+        <location filename="../gui/dbquerywidget.cpp" line="210"/>
         <source>%1 result(s) available</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -754,22 +764,27 @@
         </translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="240"/>
+        <location filename="../gui/dbquerywidget.cpp" line="273"/>
         <source>Retrieving cover art to be applied ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="277"/>
+        <location filename="../gui/dbquerywidget.cpp" line="307"/>
+        <source>Use selected row</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="310"/>
         <source>Show cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="306"/>
+        <location filename="../gui/dbquerywidget.cpp" line="339"/>
         <source>Retrieving cover art ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="320"/>
+        <location filename="../gui/dbquerywidget.cpp" line="353"/>
         <source>Cover - %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -953,7 +968,7 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="137"/>
+        <location filename="../gui/settingsdialog.cpp" line="150"/>
         <source>To avoid unnecessary copying this directory should be on the same partition as the files you want to edit.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1550,12 +1565,12 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="499"/>
+        <location filename="../gui/settingsdialog.cpp" line="512"/>
         <source>Minimum padding must be less or equal than maximum padding.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="564"/>
+        <location filename="../gui/settingsdialog.cpp" line="577"/>
         <source>These options might be ignored if not supported by either the format or the implementation.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1563,22 +1578,22 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::HttpResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="264"/>
+        <location filename="../dbquery/dbquery.cpp" line="255"/>
         <source>&lt;p&gt;Do you want to redirect form &lt;i&gt;%1&lt;/i&gt; to &lt;i&gt;%2&lt;/i&gt;?&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="266"/>
+        <location filename="../dbquery/dbquery.cpp" line="257"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="277"/>
+        <location filename="../dbquery/dbquery.cpp" line="268"/>
         <source>Redirection to: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="314"/>
+        <location filename="../dbquery/dbquery.cpp" line="312"/>
         <source>Aborted by user.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1731,112 +1746,112 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="104"/>
-        <source>F&amp;ile selection</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/mainwindow.ui" line="154"/>
-        <source>&amp;MusicBrains search (beta)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/mainwindow.ui" line="170"/>
+        <location filename="../gui/mainwindow.ui" line="171"/>
         <source>Save &amp;entered tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="185"/>
+        <location filename="../gui/mainwindow.ui" line="186"/>
         <source>&amp;Delete all tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="188"/>
+        <location filename="../gui/mainwindow.ui" line="189"/>
         <source>Ctrl+D</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="200"/>
+        <location filename="../gui/mainwindow.ui" line="201"/>
         <source>&amp;Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="212"/>
+        <location filename="../gui/mainwindow.ui" line="213"/>
         <source>&amp;Select next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="224"/>
+        <location filename="../gui/mainwindow.ui" line="225"/>
         <source>&amp;Rename files using tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="236"/>
+        <location filename="../gui/mainwindow.ui" line="237"/>
         <source>&amp;Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="251"/>
+        <location filename="../gui/mainwindow.ui" line="252"/>
         <source>&amp;Save file information as HTML document</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="254"/>
+        <location filename="../gui/mainwindow.ui" line="255"/>
         <source>Ctrl+H</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="263"/>
+        <location filename="../gui/mainwindow.ui" line="264"/>
         <source>Select &amp;next file and save current</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="266"/>
+        <location filename="../gui/mainwindow.ui" line="267"/>
         <source>F3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="275"/>
+        <location filename="../gui/mainwindow.ui" line="276"/>
         <source>&amp;About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="284"/>
+        <location filename="../gui/mainwindow.ui" line="285"/>
         <source>&amp;Quit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="293"/>
+        <location filename="../gui/mainwindow.ui" line="294"/>
         <source>&amp;Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="323"/>
+        <location filename="../gui/mainwindow.ui" line="324"/>
         <source>&amp;Play (external player)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="326"/>
+        <location filename="../gui/mainwindow.ui" line="327"/>
         <source>Ctrl+E</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="335"/>
-        <source>&amp;Open MusicBrainz search</source>
+        <location filename="../gui/mainwindow.ui" line="363"/>
+        <source>&amp;Lock layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="338"/>
+        <location filename="../gui/mainwindow.ui" line="339"/>
         <source>F10</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="349"/>
-        <source>Save (entered tags) as ...</source>
+        <location filename="../gui/mainwindow.ui" line="336"/>
+        <source>&amp;Toggle MusicBrainz/LyricsWikia search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="352"/>
+        <location filename="../gui/mainwindow.ui" line="351"/>
+        <source>Save (entered tags) &amp;as ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="202"/>
+        <source>Lock layout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="354"/>
         <source>Ctrl+Shift+S</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1846,47 +1861,57 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="173"/>
+        <location filename="../gui/mainwindow.ui" line="174"/>
         <source>Ctrl+S</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="239"/>
+        <location filename="../gui/mainwindow.ui" line="240"/>
         <source>Ctrl+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="296"/>
+        <location filename="../gui/mainwindow.ui" line="297"/>
         <source>F8</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="203"/>
+        <location filename="../gui/mainwindow.ui" line="204"/>
         <source>Ctrl+Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="142"/>
+        <location filename="../gui/mainwindow.ui" line="105"/>
+        <source>File sele&amp;ction</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="143"/>
         <source>Select next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="215"/>
+        <location filename="../gui/mainwindow.ui" line="155"/>
+        <source>&amp;MusicBrains/LyricsWikia search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.ui" line="216"/>
         <source>F6</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="227"/>
+        <location filename="../gui/mainwindow.ui" line="228"/>
         <source>F2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="308"/>
+        <location filename="../gui/mainwindow.ui" line="309"/>
         <source>&amp;Reload (reverts all changes!)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.ui" line="311"/>
+        <location filename="../gui/mainwindow.ui" line="312"/>
         <source>F5</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1897,58 +1922,63 @@ another position would prevent rewriting the entire file</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="297"/>
+        <location filename="../gui/mainwindow.cpp" line="335"/>
         <source>No file opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="318"/>
+        <location filename="../gui/mainwindow.cpp" line="356"/>
         <source>A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="435"/>
+        <location filename="../gui/mainwindow.cpp" line="473"/>
         <source>Unable to show the next file because it can&apos;t be found anymore.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="445"/>
+        <location filename="../gui/mainwindow.cpp" line="483"/>
         <source>Open file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="456"/>
+        <location filename="../gui/mainwindow.cpp" line="494"/>
         <source>Save changes as - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="478"/>
+        <location filename="../gui/mainwindow.cpp" line="516"/>
         <source>Save file information - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="497"/>
+        <location filename="../gui/mainwindow.cpp" line="535"/>
         <source>No file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="500"/>
+        <location filename="../gui/mainwindow.cpp" line="538"/>
         <source>Unable to save file information because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="487"/>
+        <location filename="../gui/mainwindow.cpp" line="525"/>
         <source>Unable to write to file.
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="490"/>
+        <location filename="../gui/mainwindow.cpp" line="197"/>
+        <source>Unlock layout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="528"/>
         <source>Unable to open file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="494"/>
+        <location filename="../gui/mainwindow.cpp" line="532"/>
         <source>No file information available.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1956,12 +1986,12 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::MusicBrainzResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="370"/>
+        <location filename="../dbquery/musicbrainz.cpp" line="44"/>
         <source>Unable to fetch cover: Album ID is unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="389"/>
+        <location filename="../dbquery/musicbrainz.cpp" line="63"/>
         <source>Cover reply is invalid (internal error).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2285,42 +2315,42 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::QueryResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="154"/>
+        <location filename="../dbquery/dbquery.cpp" line="148"/>
         <source>Song title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="156"/>
+        <location filename="../dbquery/dbquery.cpp" line="150"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="158"/>
+        <location filename="../dbquery/dbquery.cpp" line="152"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="160"/>
+        <location filename="../dbquery/dbquery.cpp" line="154"/>
         <source>Year</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="162"/>
+        <location filename="../dbquery/dbquery.cpp" line="156"/>
         <source>Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="164"/>
+        <location filename="../dbquery/dbquery.cpp" line="158"/>
         <source>Total tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="166"/>
+        <location filename="../dbquery/dbquery.cpp" line="160"/>
         <source>Genre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="213"/>
+        <location filename="../dbquery/dbquery.cpp" line="207"/>
         <source>Fetching the cover is not implemented for the selected provider.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2571,17 +2601,17 @@ Error in line %1: %3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="585"/>
+        <location filename="../gui/settingsdialog.cpp" line="598"/>
         <source>Tag processing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="593"/>
+        <location filename="../gui/settingsdialog.cpp" line="606"/>
         <source>Editor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="601"/>
+        <location filename="../gui/settingsdialog.cpp" line="614"/>
         <source>File browser</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2613,12 +2643,12 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="67"/>
+        <location filename="../gui/tageditorwidget.ui" line="74"/>
         <source>Document title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="95"/>
+        <location filename="../gui/tageditorwidget.ui" line="102"/>
         <source>Let you choose whether the values of the
 previously opened file should be cleared when
 opening the next file.
@@ -2627,12 +2657,12 @@ tagging multiple files of the same album.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="102"/>
+        <location filename="../gui/tageditorwidget.ui" line="109"/>
         <source>Keep previous values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="115"/>
+        <location filename="../gui/tageditorwidget.ui" line="122"/>
         <source>Let you enable or disable the automatic
 creation or removal of tags (according to
 the settings) when loading a file.
@@ -2641,99 +2671,99 @@ You can also create or remove tags manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="122"/>
+        <location filename="../gui/tageditorwidget.ui" line="129"/>
         <source>Tag management</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="135"/>
+        <location filename="../gui/tageditorwidget.ui" line="142"/>
         <source>Restores the original values read from
 the file reverting all unsaved changings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="139"/>
+        <location filename="../gui/tageditorwidget.ui" line="146"/>
         <source>Restore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="162"/>
+        <location filename="../gui/tageditorwidget.ui" line="169"/>
         <source>Clears all values.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="165"/>
+        <location filename="../gui/tageditorwidget.ui" line="172"/>
         <source>Clear</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="209"/>
+        <location filename="../gui/tageditorwidget.ui" line="223"/>
         <source>Aborts the saving process. The tageditor will try to restore the original file from the backup.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="212"/>
+        <location filename="../gui/tageditorwidget.ui" line="226"/>
         <location filename="../gui/tageditorwidget.cpp" line="1193"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="243"/>
+        <location filename="../gui/tageditorwidget.ui" line="257"/>
         <source>Save</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="246"/>
+        <location filename="../gui/tageditorwidget.ui" line="260"/>
         <source>all entered values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="253"/>
+        <location filename="../gui/tageditorwidget.ui" line="267"/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="256"/>
+        <location filename="../gui/tageditorwidget.ui" line="270"/>
         <source>all tags from the file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="263"/>
+        <location filename="../gui/tageditorwidget.ui" line="277"/>
         <source>Open next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="266"/>
+        <location filename="../gui/tageditorwidget.ui" line="280"/>
         <source>and save current before</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="273"/>
+        <location filename="../gui/tageditorwidget.ui" line="287"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="276"/>
+        <location filename="../gui/tageditorwidget.ui" line="290"/>
         <source>the file and discard changings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="289"/>
+        <location filename="../gui/tageditorwidget.ui" line="303"/>
         <source>No, disable this feature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="297"/>
+        <location filename="../gui/tageditorwidget.ui" line="311"/>
         <source>Yes, but only if both files are in the same directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="305"/>
+        <location filename="../gui/tageditorwidget.ui" line="319"/>
         <source>Yes, regardless where the files are stored</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.ui" line="317"/>
+        <location filename="../gui/tageditorwidget.ui" line="331"/>
         <source>Manage tags automatically when loading file</source>
         <translation type="unfinished"></translation>
     </message>

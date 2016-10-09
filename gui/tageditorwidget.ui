@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>634</width>
+    <width>702</width>
     <height>203</height>
    </rect>
   </property>
@@ -34,7 +34,14 @@
     </widget>
    </item>
    <item>
-    <widget class="NotificationLabel" name="parsingNotificationWidget" native="true"/>
+    <widget class="NotificationLabel" name="parsingNotificationWidget" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QSplitter" name="tagSplitter">
@@ -195,7 +202,14 @@ the file reverting all unsaved changings.</string>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="NotificationLabel" name="makingNotificationWidget" native="true"/>
+      <widget class="NotificationLabel" name="makingNotificationWidget" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="abortButton">

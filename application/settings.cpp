@@ -281,6 +281,12 @@ QString &coverArtArchiveUrl()
     return v;
 }
 
+QString &lyricsWikiaUrl()
+{
+    static QString v;
+    return v;
+}
+
 // renaming files dialog
 int &scriptSource()
 {

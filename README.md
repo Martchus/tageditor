@@ -74,8 +74,9 @@ There is also a tool to rename files using the tag information stored in the fil
 by a small JavaScript which can be customized. An example script is provided. Before any actual changes are made,
 you will see a preview with the generated file names.
 
-#### MusicBrainz search
-The tag editor also features a MusicBrainz and Cover Art Archive search which can be opened with *F10*. However, this feature is still experimental.
+#### MusicBrainz, Cover Art Archive and LyricaWiki search
+The tag editor also features a MusicBrainz, Cover Art Archive and LyricaWiki search which can be opened with *F10*.
+However, this feature is still experimental.
 
 ### CLI
 #### Usage
@@ -194,3 +195,4 @@ To build without GUI, add the following parameters to the CMake call:
 - Large file information is not shown when using Qt WebEngine
 - It is recommend you to create backups before editing because I can not test whether the library works with all kind of files (when forcing rewrite a backup is always created)
 - underlying library: Matroska files composed of more than one segment aren't tested yet and might not work.
+- Also note the issue tracker on GitHub

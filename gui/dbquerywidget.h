@@ -34,7 +34,8 @@ public:
     void insertSearchTermsFromTagEdit(TagEdit *tagEdit);
 
 public slots:
-    void startSearch();
+    void searchMusicBrainz();
+    void searchLyricsWikia();
     void abortSearch();
     void applyResults();
     void insertSearchTermsFromActiveTagEdit();

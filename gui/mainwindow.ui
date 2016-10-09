@@ -102,12 +102,12 @@
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>F&amp;ile selection</string>
+    <string>File sele&amp;ction</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents">
+   <widget class="QWidget" name="fileSelectionDockWidgetContents">
     <layout class="QVBoxLayout" name="verticalLayout">
      <property name="spacing">
       <number>2</number>
@@ -152,12 +152,12 @@
     <bool>false</bool>
    </property>
    <property name="windowTitle">
-    <string>&amp;MusicBrains search (beta)</string>
+    <string>&amp;MusicBrains/LyricsWikia search</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2"/>
+   <widget class="QWidget" name="dbQueryDockWidgetContents"/>
   </widget>
   <action name="actionSave">
    <property name="enabled">
@@ -333,7 +333,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Open MusicBrainz search</string>
+    <string>&amp;Toggle MusicBrainz/LyricsWikia search</string>
    </property>
    <property name="shortcut">
     <string>F10</string>
@@ -356,10 +356,11 @@
   </action>
   <action name="lockLayout">
    <property name="icon">
-    <iconset theme="lock"/>
+    <iconset theme="lock">
+     <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>Lock layout</string>
+    <string>&amp;Lock layout</string>
    </property>
   </action>
  </widget>
