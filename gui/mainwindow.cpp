@@ -110,10 +110,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // dbquery dock widget
     if(Settings::dbQueryWidgetShown()) {
-        toggleDbQueryWidget();
-    } else {
-        // ensure the dock widget is invisible
-        m_ui->dbQueryDockWidget->setVisible(false);
+        m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
     }
 
     // restore locked

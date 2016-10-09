@@ -22,6 +22,7 @@ class DbQueryWidget;
 class QueryResultsModel;
 class TagEditorWidget;
 class TagEdit;
+struct SongDescription;
 
 class DbQueryWidget : public QWidget
 {
@@ -32,6 +33,7 @@ public:
     ~DbQueryWidget();
 
     void insertSearchTermsFromTagEdit(TagEdit *tagEdit);
+    SongDescription currentSongDescription() const;
 
 public slots:
     void searchMusicBrainz();
@@ -47,8 +49,11 @@ private slots:
     void fileStatusChanged(bool opened, bool hasTags);
     void showResultsContextMenu();
     void fetchAndShowCoverForSelection();
+    void fetchAndShowLyricsForSelection();
     void showCover(const QByteArray &data);
     void showCoverFromIndex(const QModelIndex &index);
+    void showLyrics(const QString &data);
+    void showLyricsFromIndex(const QModelIndex &index);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -57,7 +62,7 @@ private:
     std::unique_ptr<Ui::DbQueryWidget> m_ui;
     TagEditorWidget *m_tagEditorWidget;
     QueryResultsModel *m_model;
-    int m_coverIndex;
+    int m_coverIndex, m_lyricsIndex;
     QMenu *m_menu;
     QAction *m_insertPresentDataAction;
 };

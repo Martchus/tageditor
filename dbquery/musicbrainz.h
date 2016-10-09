@@ -3,8 +3,6 @@
 
 #include "./dbquery.h"
 
-#include <QXmlStreamReader>
-
 #include <map>
 
 QT_FORWARD_DECLARE_CLASS(QNetworkRequest)
@@ -23,14 +21,16 @@ private:
 public:
     MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
     bool fetchCover(const QModelIndex &index);
-    static QNetworkRequest coverRequest(const QString &albumId);
 
 protected:
-    void parseResults(QNetworkReply *reply, const QByteArray &data);
+    void parseInitialResults(const QByteArray &data);
+
+private:
+    void handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row);
+    void parseCoverResults(const QString &albumId, int row, const QByteArray &data);
 
 private:
     static std::map<QString, QByteArray> m_coverData;
-    QXmlStreamReader m_reader;
     What m_what;
 };
 

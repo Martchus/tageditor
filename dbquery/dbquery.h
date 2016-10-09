@@ -5,6 +5,11 @@
 
 #include <QAbstractTableModel>
 
+#ifdef DEBUG_BUILD
+# include <QNetworkReply>
+# include <iostream>
+#endif
+
 QT_FORWARD_DECLARE_CLASS(QNetworkReply)
 
 namespace Media {
@@ -28,6 +33,7 @@ struct SongDescription
     unsigned int totalTracks;
     unsigned int disk;
     QByteArray cover;
+    QString lyrics;
 };
 
 class QueryResultsModel : public QAbstractTableModel
@@ -58,11 +64,14 @@ public:
     int columnCount(const QModelIndex &parent) const;
     const QByteArray *cover(const QModelIndex &index) const;
     virtual bool fetchCover(const QModelIndex &index);
+    const QString *lyrics(const QModelIndex &index) const;
+    virtual bool fetchLyrics(const QModelIndex &index);
     virtual void abort();
 
 signals:
     void resultsAvailable();
     void coverAvailable(const QModelIndex &index);
+    void lyricsAvailable(const QModelIndex &index);
 
 protected:
     QueryResultsModel(QObject *parent = nullptr);
@@ -104,16 +113,40 @@ public:
 
 protected:
     HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
-    void addReply(QNetworkReply *reply);
-    virtual void parseResults(QNetworkReply *reply, const QByteArray &data) = 0;
+    template<class Object, class Function> void addReply(QNetworkReply *reply, Object object, Function handler);
+    template<class Function> void addReply(QNetworkReply *reply, Function handler);
+    virtual void parseInitialResults(const QByteArray &data) = 0;
+    QNetworkReply *evaluateReplyResults(QNetworkReply *reply, QByteArray &data, bool alwaysFollowRedirection = false);
 
 private slots:
-    void handleReplyFinished();
+    void handleInitialReplyFinished();
 
 protected:
     QList<QNetworkReply *> m_replies;
     const SongDescription m_initialDescription;
 };
+
+template<class Object, class Function>
+inline void HttpResultsModel::addReply(QNetworkReply *reply, Object object, Function handler)
+{
+    (m_replies << reply), connect(reply, &QNetworkReply::finished, object, handler);
+#ifdef DEBUG_BUILD
+    std::cerr << "HTTP query: " << reply->url().toString().toLocal8Bit().data() << std::endl;
+#endif
+}
+
+/*!
+ * \brief Adds a reply.
+ * \remarks Called within c'tor and handleReplyFinished() in case of redirection. Might be called when subclassing to do further requests.
+ */
+template<class Function>
+inline void HttpResultsModel::addReply(QNetworkReply *reply, Function handler)
+{
+    (m_replies << reply), connect(reply, &QNetworkReply::finished, handler);
+#ifdef DEBUG_BUILD
+    std::cerr << "HTTP query: " << reply->url().toString().toLocal8Bit().data() << std::endl;
+#endif
+}
 
 QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription);
 QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription);

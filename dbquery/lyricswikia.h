@@ -3,7 +3,7 @@
 
 #include "./dbquery.h"
 
-#include <QXmlStreamReader>
+#include <map>
 
 namespace QtGui {
 
@@ -13,12 +13,17 @@ class LyricsWikiaResultsModel : public HttpResultsModel
 
 public:
     LyricsWikiaResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
+    bool fetchLyrics(const QModelIndex &index);
 
 protected:
-    void parseResults(QNetworkReply *reply, const QByteArray &data);
+    void parseInitialResults(const QByteArray &data);
 
 private:
-    QXmlStreamReader m_reader;
+    QNetworkReply *requestSongDetails(const SongDescription &songDescription);
+    void handleSongDetailsFinished(QNetworkReply *reply, int row);
+    void parseSongDetails(int row, const QByteArray &data);
+    void handleLyricsReplyFinished(QNetworkReply *reply, int row);
+    void parseLyricsResults(int row, const QByteArray &data);
 
 };
 

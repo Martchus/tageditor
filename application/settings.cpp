@@ -265,7 +265,8 @@ KnownFieldModel &dbQueryFields()
                              << KnownFieldModel::mkItem(KnownField::Album)
                              << KnownFieldModel::mkItem(KnownField::Year)
                              << KnownFieldModel::mkItem(KnownField::Genre)
-                             << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked));
+                             << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
+                             << KnownFieldModel::mkItem(KnownField::Lyrics, Qt::Unchecked));
     return v;
 }
 

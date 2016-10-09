@@ -20,6 +20,7 @@
 #include <QDialog>
 #include <QGraphicsView>
 #include <QGraphicsItem>
+#include <QTextBrowser>
 
 using namespace ConversionUtilities;
 using namespace Dialogs;
@@ -36,6 +37,7 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     m_tagEditorWidget(tagEditorWidget),
     m_model(nullptr),
     m_coverIndex(-1),
+    m_lyricsIndex(-1),
     m_menu(new QMenu(parent))
 {
     m_ui->setupUi(this);
@@ -117,12 +119,22 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
     }
 }
 
+SongDescription DbQueryWidget::currentSongDescription() const
+{
+    SongDescription desc;
+    desc.title = m_ui->titleLineEdit->text();
+    desc.album = m_ui->albumLineEdit->text();
+    desc.artist = m_ui->artistLineEdit->text();
+    desc.track = static_cast<unsigned int>(m_ui->trackSpinBox->value());
+    return desc;
+}
+
 void DbQueryWidget::searchMusicBrainz()
 {
     // check whether enough search terms are supplied
     if(m_ui->titleLineEdit->text().isEmpty() && m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
-        m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied"));
+        m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied - at least title, album or artist must be specified"));
         return;
     }
 
@@ -132,18 +144,11 @@ void DbQueryWidget::searchMusicBrainz()
 
     // show status
     m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-    m_ui->notificationLabel->setText(tr("Retrieving meta data ..."));
+    m_ui->notificationLabel->setText(tr("Retrieving meta data from MusicBrainz ..."));
     setStatus(false);
 
-    // get song description
-    SongDescription desc;
-    desc.title = m_ui->titleLineEdit->text();
-    desc.album = m_ui->albumLineEdit->text();
-    desc.artist = m_ui->artistLineEdit->text();
-    desc.track = m_ui->trackSpinBox->value();
-
     // do actual query
-    m_ui->resultsTreeView->setModel(m_model = queryMusicBrainz(std::move(desc)));
+    m_ui->resultsTreeView->setModel(m_model = queryMusicBrainz(currentSongDescription()));
     connect(m_model, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
     connect(m_model, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
 }
@@ -153,7 +158,7 @@ void DbQueryWidget::searchLyricsWikia()
     // check whether enough search terms are supplied
     if(m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
-        m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied"));
+        m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied - artist is mandatory"));
         return;
     }
 
@@ -163,20 +168,13 @@ void DbQueryWidget::searchLyricsWikia()
 
     // show status
     m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-    m_ui->notificationLabel->setText(tr("Retrieving meta data ..."));
+    m_ui->notificationLabel->setText(tr("Retrieving meta data from LyricsWikia ..."));
     setStatus(false);
 
-    // get song description
-    SongDescription desc;
-    desc.title = m_ui->titleLineEdit->text();
-    desc.album = m_ui->albumLineEdit->text();
-    desc.artist = m_ui->artistLineEdit->text();
-    desc.track = static_cast<unsigned int>(m_ui->trackSpinBox->value());
-
     // do actual query
-    m_ui->resultsTreeView->setModel(m_model = queryLyricsWikia(std::move(desc)));
+    m_ui->resultsTreeView->setModel(m_model = queryLyricsWikia(currentSongDescription()));
     connect(m_model, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
-    connect(m_model, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
+    connect(m_model, &QueryResultsModel::lyricsAvailable, this, &DbQueryWidget::showLyricsFromIndex);
 }
 
 void DbQueryWidget::abortSearch()
@@ -261,27 +259,56 @@ void DbQueryWidget::applyResults()
                             int row = selection.front().row();
                             TagValue value = m_model->fieldValue(row, field);
 
-                            if(value.isEmpty() && field == KnownField::Cover) {
-                                // cover value is empty -> cover still needs to be fetched
-                                if(m_model->fetchCover(selection.front())) {
-                                    // cover is available now
-                                    tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
-                                } else {
-                                    // cover is fetched asynchronously
-                                    // -> show status
-                                    m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                                    m_ui->notificationLabel->setText(tr("Retrieving cover art to be applied ..."));
-                                    setStatus(false);
-                                    // -> apply cover when available
-                                    connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
-                                        if(row == index.row()) {
-                                            if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-                                                tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                            if(value.isEmpty()) {
+                                // cover and lyrics might be fetched belated
+                                switch(field) {
+                                case KnownField::Cover:
+                                    if(m_model->fetchCover(selection.front())) {
+                                        // cover is available now
+                                        tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                                    } else {
+                                        // cover is fetched asynchronously
+                                        // -> show status
+                                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                                        m_ui->notificationLabel->appendLine(tr("Retrieving cover art to be applied ..."));
+                                        setStatus(false);
+                                        // -> apply cover when available
+                                        connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
+                                            if(row == index.row()) {
+                                                if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                                                    tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                                                }
                                             }
-                                        }
-                                    });
+                                        });
+                                    }
+                                    break;
+
+                                case KnownField::Lyrics:
+                                    if(m_model->fetchLyrics(selection.front())) {
+                                        // lyrics are available now
+                                        tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
+                                    } else {
+                                        // lyrics are fetched asynchronously
+                                        // -> show status
+                                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                                        m_ui->notificationLabel->appendLine(tr("Retrieving lyrics to be applied ..."));
+                                        setStatus(false);
+                                        // -> apply cover when available
+                                        connect(m_model, &QueryResultsModel::lyricsAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
+                                            if(row == index.row()) {
+                                                if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                                                    tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
+                                                }
+                                            }
+                                        });
+                                    }
+                                    break;
+
+                                default:
+                                    ;
                                 }
                             } else {
+                                // any other fields are just set
                                 tagEdit->setValue(field, value, previousValueHandling);
                             }
                         }
@@ -308,6 +335,7 @@ void DbQueryWidget::showResultsContextMenu()
             }
             if(m_model && m_model->areResultsAvailable()) {
                 contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, SLOT(fetchAndShowCoverForSelection()));
+                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, SLOT(fetchAndShowLyricsForSelection()));
             }
             contextMenu.exec(QCursor::pos());
         }
@@ -328,7 +356,7 @@ void DbQueryWidget::fetchAndShowCoverForSelection()
                         if(const QByteArray *cover = m_model->cover(selectedIndex)) {
                             showCover(*cover);
                         } else {
-                            // cover couldn't be fetched
+                            // cover couldn't be fetched, error tracks via resultsAvailable() signal so nothing to do
                         }
                     } else {
                         // cover is fetched asynchronously
@@ -345,9 +373,39 @@ void DbQueryWidget::fetchAndShowCoverForSelection()
     }
 }
 
+void DbQueryWidget::fetchAndShowLyricsForSelection()
+{
+    if(m_model) {
+        if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
+            const QModelIndexList selection = selectionModel->selection().indexes();
+            if(!selection.isEmpty()) {
+                const QModelIndex &selectedIndex = selection.at(0);
+                if(const QString *lyrics = m_model->lyrics(selectedIndex)) {
+                    showLyrics(*lyrics);
+                } else {
+                    if(m_model->fetchLyrics(selectedIndex)) {
+                        if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+                            showLyrics(*cover);
+                        } else {
+                            // lyrics couldn't be fetched, error tracks via resultsAvailable() signal so nothing to do
+                        }
+                    } else {
+                        // lyrics are fetched asynchronously
+                        // -> memorize index to be shown
+                        m_lyricsIndex = selectedIndex.row();
+                        // -> show status
+                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                        m_ui->notificationLabel->setText(tr("Retrieving lyrics ..."));
+                        setStatus(false);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void DbQueryWidget::showCover(const QByteArray &data)
 {
-    // show cover
     QDialog dlg;
     dlg.setWindowFlags(Qt::Tool);
     dlg.setWindowTitle(tr("Cover - %1").arg(QApplication::applicationName()));
@@ -368,6 +426,29 @@ void DbQueryWidget::showCoverFromIndex(const QModelIndex &index)
     if(m_coverIndex == index.row()) {
         m_coverIndex = -1;
         showCover(*m_model->cover(index));
+    }
+}
+
+void DbQueryWidget::showLyrics(const QString &data)
+{
+    QDialog dlg;
+    dlg.setWindowFlags(Qt::Tool);
+    dlg.setWindowTitle(tr("Lyrics - %1").arg(QApplication::applicationName()));
+    QBoxLayout layout(QBoxLayout::Up);
+    layout.setMargin(0);
+    QTextBrowser textBrowser;
+    layout.addWidget(&textBrowser);
+    textBrowser.setText(data);
+    dlg.setLayout(&layout);
+    dlg.resize(400, 400);
+    dlg.exec();
+}
+
+void DbQueryWidget::showLyricsFromIndex(const QModelIndex &index)
+{
+    if(m_lyricsIndex == index.row()) {
+        m_lyricsIndex = -1;
+        showLyrics(*m_model->lyrics(index));
     }
 }
 

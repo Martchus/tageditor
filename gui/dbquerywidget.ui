@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QtGui::DbQueryWidget</class>
  <widget class="QWidget" name="QtGui::DbQueryWidget">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>731</width>
-    <height>619</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>MusicBrainz/LyricsWikia search</string>
   </property>
@@ -218,7 +210,7 @@
           <item>
            <widget class="QCheckBox" name="overrideCheckBox">
             <property name="text">
-             <string>override existing values</string>
+             <string>Override existing values</string>
             </property>
             <property name="checked">
              <bool>true</bool>

@@ -173,18 +173,19 @@ QSize NotificationLabel::minimumSizeHint() const
 
 void NotificationLabel::setText(const QString &text)
 {
+    const bool updateTooltip = toolTip().isEmpty() || toolTip() == m_text;
     m_text = text;
     updateGeometry();
     update(textRect());
-    if(toolTip().isEmpty()) {
-        setToolTip(text);
+    if(updateTooltip) {
+        setToolTip(m_text);
     }
 }
 
 void NotificationLabel::clearText()
 {
     if(toolTip() == m_text) {
-        toolTip().clear();
+        setToolTip(QString());
     }
     m_text.clear();
     updateGeometry();

@@ -78,6 +78,8 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
                 return tagValue;
             }
             break;
+        case KnownField::Lyrics:
+            returnValue(lyrics);
         default:
             ;
         }
@@ -195,18 +197,51 @@ const QByteArray *QueryResultsModel::cover(const QModelIndex &index) const
 
 /*!
  * \brief Fetches the cover the specified \a index.
- * \returns True if the cover is immidiately available; false is the cover is fetched asynchronously.
+ * \returns
+ *  - true if the cover is immidiately available or an error occurs immidiately
+ *  - and false if the cover will be fetched asynchronously.
  *
  * If the cover is fetched asynchronously the coverAvailable() signal is emitted, when the cover
- * is available.
+ * becomes available.
  *
  * The resultsAvailable() signal is emitted if errors have been added to errorList().
  */
-bool QueryResultsModel::fetchCover(const QModelIndex &)
+bool QueryResultsModel::fetchCover(const QModelIndex &index)
 {
-    m_errorList << tr("Fetching the cover is not implemented for the selected provider.");
+    Q_UNUSED(index)
+    m_errorList << tr("Fetching cover is not implemented for this provider");
     emit resultsAvailable();
-    return false;
+    return true;
+}
+
+const QString *QueryResultsModel::lyrics(const QModelIndex &index) const
+{
+    if(!index.parent().isValid() && index.row() < m_results.size()) {
+        const QString &lyrics = m_results.at(index.row()).lyrics;
+        if(!lyrics.isEmpty()) {
+            return &lyrics;
+        }
+    }
+    return nullptr;
+}
+
+/*!
+ * \brief Fetches the lyrics the specified \a index.
+ * \returns
+ *  - true if the lyrics are immidiately available or an error occurs immidiately
+ *  - and false if the lyrics will be fetched asynchronously.
+ *
+ * If the lyrics are fetched asynchronously the lyricsAvailable() signal is emitted, when the lyrics
+ * become available.
+ *
+ * The resultsAvailable() signal is emitted if errors have been added to errorList().
+ */
+bool QueryResultsModel::fetchLyrics(const QModelIndex &index)
+{
+    Q_UNUSED(index)
+    m_errorList << tr("Fetching lyrics is not implemented for this provider");
+    emit resultsAvailable();
+    return true;
 }
 
 /*!
@@ -216,7 +251,7 @@ bool QueryResultsModel::fetchCover(const QModelIndex &)
 HttpResultsModel::HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply) :
     m_initialDescription(initialSongDescription)
 {
-    addReply(reply);
+    addReply(reply, this, &HttpResultsModel::handleInitialReplyFinished);
 }
 
 /*!
@@ -228,76 +263,60 @@ HttpResultsModel::~HttpResultsModel()
 }
 
 /*!
- * \brief Helper to copy a property from one QObject to another.
- * \remarks Used to transfer reply properties to new reply in case a second reply is required.
- */
-void copyProperty(const char *property, const QObject *from, QObject *to)
-{
-    to->setProperty(property, from->property(property));
-}
-
-/*!
  * \brief Evaluates request results.
  * \remarks Calls parseResults() if the requested data is available. Handles errors/redirections otherwise.
  */
-void HttpResultsModel::handleReplyFinished()
+void HttpResultsModel::handleInitialReplyFinished()
 {
     auto *reply = static_cast<QNetworkReply *>(sender());
+    QByteArray data;
+    if(auto *newReply = evaluateReplyResults(reply, data, false)) {
+        addReply(newReply, this, &HttpResultsModel::handleInitialReplyFinished);
+    } else {
+        if(!data.isEmpty()) {
+            parseInitialResults(data);
+        }
+        setResultsAvailable(true); // update status, emit resultsAvailable()
+    }
+}
+
+QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByteArray &data, bool alwaysFollowRedirection)
+{
+    // delete reply (later)
+    reply->deleteLater();
+    m_replies.removeAll(reply);
+
     if(reply->error() == QNetworkReply::NoError) {
         QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
         if(!redirectionTarget.isNull()) {
             // there's a redirection available
             // -> resolve new URL
             const QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
-            // -> always follow when retrieving cover art, otherwise ask user
-            bool follow = reply->property("coverArt").toBool();
-            if(!follow) {
+            // -> ask user whether to follow redirection unless alwaysFollowRedirection is true
+            if(!alwaysFollowRedirection) {
                 const QString message = tr("<p>Do you want to redirect form <i>%1</i> to <i>%2</i>?</p>").arg(
                             reply->url().toString(), newUrl.toString());
-                follow = QMessageBox::question(nullptr, tr("Search"), message, QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
+                alwaysFollowRedirection = QMessageBox::question(nullptr, tr("Search"), message, QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
             }
-            if(follow) {
-                QNetworkReply *newReply = networkAccessManager().get(QNetworkRequest(newUrl));
-                // retain possible assigned dynamic properties (TODO: implement it in a better way)
-                copyProperty("coverArt", reply, newReply);
-                copyProperty("albumId", reply, newReply);
-                copyProperty("row", reply, newReply);
-                addReply(newReply);
-                return;
+            if(alwaysFollowRedirection) {
+                return networkAccessManager().get(QNetworkRequest(newUrl));
             } else {
                 m_errorList << tr("Redirection to: ") + newUrl.toString();
+                return nullptr;
             }
         } else {
-            QByteArray data = reply->readAll();
+            if((data = reply->readAll()).isEmpty()) {
+                m_errorList << tr("Server replied no data.");
+            }
 #ifdef DEBUG_BUILD
-            std::cerr << "Results from HTTP query:" << std::endl;
-            std::cerr << data.data() << std::endl;
+            cerr << "Results from HTTP query:" << endl;
+            cerr << data.data() << endl;
 #endif
-            parseResults(reply, data);
         }
     } else {
         m_errorList << reply->errorString();
     }
-
-    // delete reply
-    reply->deleteLater();
-    m_replies.removeAll(reply);
-
-    // update status, emit resultsAvailable()
-    setResultsAvailable(true);
-}
-
-/*!
- * \brief Adds a reply.
- * \remarks Called within c'tor and handleReplyFinished() in case of redirection. Might be called when subclassing to do further requests.
- */
-void HttpResultsModel::addReply(QNetworkReply *reply)
-{
-    m_replies << reply;
-#ifdef DEBUG_BUILD
-    std::cerr << "HTTP query: " << reply->url().toString().toLocal8Bit().data() << std::endl;
-#endif
-    connect(reply, &QNetworkReply::finished, this, &HttpResultsModel::handleReplyFinished);
+    return nullptr;
 }
 
 /*!

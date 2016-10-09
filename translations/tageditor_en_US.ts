@@ -648,44 +648,52 @@
 <context>
     <name>QtGui::DbQueryWidget</name>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="48"/>
+        <location filename="../gui/dbquerywidget.cpp" line="50"/>
         <source>Search hasn&apos;t been started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="66"/>
+        <location filename="../gui/dbquerywidget.cpp" line="68"/>
         <source>Insert present data</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="70"/>
+        <location filename="../gui/dbquerywidget.cpp" line="72"/>
         <source>Clear search criteria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="125"/>
-        <location filename="../gui/dbquerywidget.cpp" line="156"/>
-        <source>Insufficient search criteria supplied</source>
+        <location filename="../gui/dbquerywidget.cpp" line="137"/>
+        <source>Insufficient search criteria supplied - at least title, album or artist must be specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="135"/>
-        <location filename="../gui/dbquerywidget.cpp" line="166"/>
-        <source>Retrieving meta data ...</source>
+        <location filename="../gui/dbquerywidget.cpp" line="147"/>
+        <source>Retrieving meta data from MusicBrainz ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="196"/>
+        <location filename="../gui/dbquerywidget.cpp" line="161"/>
+        <source>Insufficient search criteria supplied - artist is mandatory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="171"/>
+        <source>Retrieving meta data from LyricsWikia ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="194"/>
         <source>Aborted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="208"/>
+        <location filename="../gui/dbquerywidget.cpp" line="206"/>
         <source>No results available</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/dbquerywidget.cpp" line="210"/>
+        <location filename="../gui/dbquerywidget.cpp" line="208"/>
         <source>%1 result(s) available</source>
         <translation type="unfinished">
             <numerusform>%1 result available</numerusform>
@@ -698,23 +706,43 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="307"/>
+        <location filename="../gui/dbquerywidget.cpp" line="294"/>
+        <source>Retrieving lyrics to be applied ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="334"/>
         <source>Use selected row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="310"/>
+        <location filename="../gui/dbquerywidget.cpp" line="337"/>
         <source>Show cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="339"/>
+        <location filename="../gui/dbquerywidget.cpp" line="338"/>
+        <source>Show lyrics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="367"/>
         <source>Retrieving cover art ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="353"/>
+        <location filename="../gui/dbquerywidget.cpp" line="398"/>
+        <source>Retrieving lyrics ...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="411"/>
         <source>Cover - %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.cpp" line="436"/>
+        <source>Lyrics - %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1578,22 +1606,27 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::HttpResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="255"/>
+        <location filename="../dbquery/dbquery.cpp" line="297"/>
         <source>&lt;p&gt;Do you want to redirect form &lt;i&gt;%1&lt;/i&gt; to &lt;i&gt;%2&lt;/i&gt;?&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="257"/>
+        <location filename="../dbquery/dbquery.cpp" line="299"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="268"/>
+        <location filename="../dbquery/dbquery.cpp" line="304"/>
         <source>Redirection to: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="312"/>
+        <location filename="../dbquery/dbquery.cpp" line="309"/>
+        <source>Server replied no data.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dbquery/dbquery.cpp" line="331"/>
         <source>Aborted by user.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1721,6 +1754,39 @@ another position would prevent rewriting the entire file</source>
         <source></source>
         <comment>Necessary for lupdate.</comment>
         <translation></translation>
+    </message>
+</context>
+<context>
+    <name>QtGui::LyricsWikiaResultsModel</name>
+    <message>
+        <location filename="../dbquery/lyricswikia.cpp" line="37"/>
+        <source>Unable to fetch lyrics: Artist or title is unknown.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dbquery/lyricswikia.cpp" line="151"/>
+        <source>Internal error: context for song details reply invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dbquery/lyricswikia.cpp" line="191"/>
+        <source>Unable to parse song details: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dbquery/lyricswikia.cpp" line="200"/>
+        <source>Song details requested for %1/%2 do not contain URL for Wiki page</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dbquery/lyricswikia.cpp" line="228"/>
+        <source>Internal error: context for LyricsWikia page reply invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dbquery/lyricswikia.cpp" line="238"/>
+        <source>Song details requested for %1/%2 do not contain lyrics</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1912,7 +1978,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="202"/>
+        <location filename="../gui/mainwindow.cpp" line="199"/>
         <source>Lock layout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1922,63 +1988,63 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="197"/>
+        <location filename="../gui/mainwindow.cpp" line="194"/>
         <source>Unlock layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="335"/>
+        <location filename="../gui/mainwindow.cpp" line="332"/>
         <source>No file opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="356"/>
+        <location filename="../gui/mainwindow.cpp" line="353"/>
         <source>A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="473"/>
+        <location filename="../gui/mainwindow.cpp" line="470"/>
         <source>Unable to show the next file because it can&apos;t be found anymore.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="483"/>
+        <location filename="../gui/mainwindow.cpp" line="480"/>
         <source>Open file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="494"/>
+        <location filename="../gui/mainwindow.cpp" line="491"/>
         <source>Save changes as - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="516"/>
+        <location filename="../gui/mainwindow.cpp" line="513"/>
         <source>Save file information - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="525"/>
+        <location filename="../gui/mainwindow.cpp" line="522"/>
         <source>Unable to write to file.
 %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="528"/>
+        <location filename="../gui/mainwindow.cpp" line="525"/>
         <source>Unable to open file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="532"/>
+        <location filename="../gui/mainwindow.cpp" line="529"/>
         <source>No file information available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="535"/>
+        <location filename="../gui/mainwindow.cpp" line="532"/>
         <source>No file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="538"/>
+        <location filename="../gui/mainwindow.cpp" line="535"/>
         <source>Unable to save file information because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1986,13 +2052,13 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::MusicBrainzResultsModel</name>
     <message>
-        <location filename="../dbquery/musicbrainz.cpp" line="44"/>
-        <source>Unable to fetch cover: Album ID is unknown.</source>
+        <location filename="../dbquery/musicbrainz.cpp" line="45"/>
+        <source>Unable to fetch cover: Album ID unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/musicbrainz.cpp" line="63"/>
-        <source>Cover reply is invalid (internal error).</source>
+        <location filename="../dbquery/musicbrainz.cpp" line="182"/>
+        <source>Internal error: context for cover reply invalid</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2315,43 +2381,48 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::QueryResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="148"/>
+        <location filename="../dbquery/dbquery.cpp" line="150"/>
         <source>Song title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="150"/>
+        <location filename="../dbquery/dbquery.cpp" line="152"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="152"/>
+        <location filename="../dbquery/dbquery.cpp" line="154"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="154"/>
+        <location filename="../dbquery/dbquery.cpp" line="156"/>
         <source>Year</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="156"/>
+        <location filename="../dbquery/dbquery.cpp" line="158"/>
         <source>Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="158"/>
+        <location filename="../dbquery/dbquery.cpp" line="160"/>
         <source>Total tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="160"/>
+        <location filename="../dbquery/dbquery.cpp" line="162"/>
         <source>Genre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="207"/>
-        <source>Fetching the cover is not implemented for the selected provider.</source>
+        <location filename="../dbquery/dbquery.cpp" line="212"/>
+        <source>Fetching cover is not implemented for this provider</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../dbquery/dbquery.cpp" line="242"/>
+        <source>Fetching lyrics is not implemented for this provider</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
