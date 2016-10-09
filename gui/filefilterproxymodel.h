@@ -9,6 +9,8 @@ namespace QtGui {
 class FileFilterProxyModel : public QSortFilterProxyModel
 {
     Q_OBJECT
+    Q_PROPERTY(bool filterEnabled READ isFilterEnabled WRITE setFilterEnabled)
+    Q_PROPERTY(QStringList extensionsToBeFiltered READ extensionsToBeFiltered WRITE setExtensionsToBeFiltered)
 
 public:
     FileFilterProxyModel(QObject *parent = nullptr);
@@ -20,7 +22,8 @@ public:
     bool isFileAccepted(const QString &path) const;
 
 protected:
-    virtual bool filterAcceptsRow(int source_row, const QModelIndex& sourceParent) const;
+    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 
 private:
     bool m_filterEnabled;

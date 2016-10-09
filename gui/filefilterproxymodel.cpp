@@ -8,6 +8,7 @@ FileFilterProxyModel::FileFilterProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent),
     m_filterEnabled(true)
 {
+    setDynamicSortFilter(false);
 }
 
 bool FileFilterProxyModel::isFilterEnabled() const
@@ -41,13 +42,19 @@ bool FileFilterProxyModel::isFileAccepted(const QString &path) const
 
 bool FileFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    if(!m_filterEnabled)
+    if(!m_filterEnabled) {
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
-    QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
+    }
+    const QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
     QFileSystemModel *fileModel = qobject_cast<QFileSystemModel *>(sourceModel());
     return fileModel
             ? (!m_extensionsToBeFiltered.contains(fileModel->fileInfo(index0).suffix()))
             : QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+}
+
+void FileFilterProxyModel::sort(int column, Qt::SortOrder order)
+{
+    sourceModel()->sort(column, order);
 }
 
 }
