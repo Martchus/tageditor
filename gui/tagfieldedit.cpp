@@ -193,12 +193,12 @@ bool TagFieldEdit::canApply(KnownField field) const
     for(Tag *tag : tags()) {
         switch(tag->type()) {
         case TagType::Id3v1Tag:
-            if(Settings::id3v1usage() == TagUsage::Never) {
+            if(Settings::values().tagPocessing.id3.v1Usage == TagUsage::Never) {
                 continue;
             }
             break;
         case TagType::Id3v2Tag:
-            if(Settings::id3v2usage() == TagUsage::Never) {
+            if(Settings::values().tagPocessing.id3.v2Usage == TagUsage::Never) {
                 continue;
             }
             break;
@@ -851,20 +851,21 @@ void TagFieldEdit::showRestoreButton()
  */
 void TagFieldEdit::applyAutoCorrection(QString &textValue)
 {
-    auto &fields = Settings::autoCorrectionFields().items();
+    const auto &settings = Settings::values().editor.autoCompletition;
+    auto &fields = settings.fields.items();
     auto i = find_if(fields.constBegin(), fields.constEnd(), [this] (const ChecklistItem &item) {
         bool ok;
         return (item.id().toInt(&ok) == static_cast<int>(this->field())) && ok;
     });
     // if current field is in the list of auto correction fields and auto correction should be applied
     if(i != fields.constEnd() && i->isChecked()) {
-        if(Settings::trimWhitespaces()) {
+        if(settings.trimWhitespaces) {
             textValue = textValue.trimmed();
         }
-        if(Settings::fixUmlauts()) {
+        if(settings.fixUmlauts) {
             textValue = Utility::fixUmlauts(textValue);
         }
-        if(Settings::formatNames()) {
+        if(settings.formatNames) {
             textValue = Utility::formatName(textValue);
         }
     }
@@ -943,7 +944,7 @@ void TagFieldEdit::apply()
                 m_pictureSelection->apply();
             }
         } else {
-            TagTextEncoding encoding = Settings::preferredEncoding();
+            TagTextEncoding encoding = Settings::values().tagPocessing.preferredEncoding;
             if(!tag->canEncodingBeUsed(encoding)) {
                 encoding = tag->proposedTextEncoding();
             }

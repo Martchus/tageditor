@@ -55,7 +55,7 @@ PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWi
     m_currentTypeIndex(0)
 {
     m_ui->setupUi(this);
-    m_ui->coverButtonsWidget->setHidden(Settings::hideCoverButtons());
+    m_ui->coverButtonsWidget->setHidden(Settings::values().editor.hideCoverButtons);
     connect(m_ui->addButton, &QPushButton::clicked, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
     connect(m_ui->removeButton, &QPushButton::clicked, this, &PicturePreviewSelection::removeSelected);
     connect(m_ui->extractButton, &QPushButton::clicked, this, &PicturePreviewSelection::extractSelected);
@@ -549,7 +549,8 @@ void PicturePreviewSelection::updateDescription(int lastIndex, int newIndex)
 {
     TagTextEncoding enc;
     if(m_tag) {
-        enc = m_tag->canEncodingBeUsed(Settings::preferredEncoding()) ? Settings::preferredEncoding() : m_tag->proposedTextEncoding();
+        TagTextEncoding preferredEncoding = Settings::values().tagPocessing.preferredEncoding;
+        enc = m_tag->canEncodingBeUsed(preferredEncoding) ? preferredEncoding : m_tag->proposedTextEncoding();
     } else {
         enc = m_values[lastIndex].descriptionEncoding();
     }

@@ -19,6 +19,12 @@ namespace QtGui {
 
 static const QString defaultLyricsWikiaUrl(QStringLiteral("https://lyrics.wikia.com"));
 
+QUrl lyricsWikiaApiUrl()
+{
+    const QString &lyricsWikiaUrl = Settings::values().dbQuery.lyricsWikiaUrl;
+    return QUrl((lyricsWikiaUrl.isEmpty() ? defaultLyricsWikiaUrl : lyricsWikiaUrl) + QStringLiteral("/api.php"));
+}
+
 LyricsWikiaResultsModel::LyricsWikiaResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply) :
     HttpResultsModel(move(initialSongDescription), reply)
 {}
@@ -117,7 +123,6 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
 QNetworkReply *LyricsWikiaResultsModel::requestSongDetails(const SongDescription &songDescription)
 {
     // compose URL
-    QUrl url((Settings::lyricsWikiaUrl().isEmpty() ? defaultLyricsWikiaUrl : Settings::lyricsWikiaUrl()) + QStringLiteral("/api.php"));
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("func"), QStringLiteral("getSong"));
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("lyrics"));
@@ -129,6 +134,7 @@ QNetworkReply *LyricsWikiaResultsModel::requestSongDetails(const SongDescription
         // specifying album seems to have no effect but also don't hurt
         query.addQueryItem(QStringLiteral("album"), songDescription.album);
     }
+    QUrl url(lyricsWikiaApiUrl());
     url.setQuery(query);
 
     return Utility::networkAccessManager().get(QNetworkRequest(url));
@@ -202,7 +208,7 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
         return;
     }
     // do not use parsed URL directly to avoid unintended requests
-    QUrl requestUrl(Settings::lyricsWikiaUrl().isEmpty() ? defaultLyricsWikiaUrl : Settings::lyricsWikiaUrl());
+    QUrl requestUrl(lyricsWikiaApiUrl());
     requestUrl.setPath(parsedUrl.path());
     auto *reply = Utility::networkAccessManager().get(QNetworkRequest(parsedUrl));
     addReply(reply, bind(&LyricsWikiaResultsModel::handleLyricsReplyFinished, this, reply, row));
@@ -250,12 +256,12 @@ void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data
 QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription)
 {
     // compose URL
-    QUrl url((Settings::lyricsWikiaUrl().isEmpty() ? defaultLyricsWikiaUrl : Settings::lyricsWikiaUrl()) + QStringLiteral("/api.php"));
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("func"), QStringLiteral("getArtist"));
     query.addQueryItem(QStringLiteral("fmt"), QStringLiteral("xml"));
     query.addQueryItem(QStringLiteral("fixXML"), QString());
     query.addQueryItem(QStringLiteral("artist"), songDescription.artist);
+    QUrl url(lyricsWikiaApiUrl());
     url.setQuery(query);
 
     // NOTE: Only getArtist seems to work, so artist must be specified and filtering must

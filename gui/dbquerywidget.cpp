@@ -22,6 +22,10 @@
 #include <QGraphicsItem>
 #include <QTextBrowser>
 
+#include <functional>
+
+using namespace std;
+using namespace std::placeholders;
 using namespace ConversionUtilities;
 using namespace Dialogs;
 using namespace Models;
@@ -56,13 +60,13 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     m_ui->applyPushButton->setIcon(style()->standardIcon(QStyle::SP_DialogApplyButton, nullptr, m_ui->applyPushButton));
 
     // initialize fields model
-    m_ui->fieldsListView->setModel(&Settings::dbQueryFields());
+    m_ui->fieldsListView->setModel(&values().dbQuery.fields);
 
     // initialize search terms form
     insertSearchTermsFromTagEdit(m_tagEditorWidget->activeTagEdit());
 
     // restore settings
-    m_ui->overrideCheckBox->setChecked(Settings::dbQueryOverride());
+    m_ui->overrideCheckBox->setChecked(values().dbQuery.override);
 
     // setup menu
     m_insertPresentDataAction = m_menu->addAction(tr("Insert present data"));
@@ -78,14 +82,14 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
     connect(m_ui->searchMusicBrainzPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchMusicBrainz);
     connect(m_ui->searchLyricsWikiaPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchLyricsWikia);
-    connect(m_ui->applyPushButton, &QPushButton::clicked, this, &DbQueryWidget::applyResults);
+    connect(m_ui->applyPushButton, &QPushButton::clicked, this, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
     connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &DbQueryWidget::fileStatusChanged);
     connect(m_ui->resultsTreeView, &QTreeView::customContextMenuRequested, this, &DbQueryWidget::showResultsContextMenu);
 }
 
 DbQueryWidget::~DbQueryWidget()
 {
-    Settings::dbQueryOverride() = m_ui->overrideCheckBox->isChecked();
+    values().dbQuery.override = m_ui->overrideCheckBox->isChecked();
 }
 
 void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
@@ -239,80 +243,156 @@ void DbQueryWidget::fileStatusChanged(bool, bool hasTags)
     m_insertPresentDataAction->setEnabled(hasTags);
 }
 
-void DbQueryWidget::applyResults()
+/*!
+ * \brief Applies the selected results for the selected fields to the active tag edit.
+ * \sa applyResults()
+ */
+void DbQueryWidget::applySelectedResults()
 {
     // check whether model, tag edit and current selection exist
+    if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+        if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
+            const QModelIndexList selection = selectionModel->selection().indexes();
+            if(!selection.isEmpty()) {
+                applyResults(tagEdit, selection.front());
+            }
+        }
+    }
+}
+
+/*!
+ * \brief Completes all present tag edits with the best matching result row.
+ * \remarks
+ * - Does nothing if no result row matches.
+ * - Only the selected fields are applied.
+ * \sa applyResults()
+ */
+void DbQueryWidget::applyMatchingResults()
+{
+    m_tagEditorWidget->foreachTagEdit(bind(static_cast<void(DbQueryWidget::*)(TagEdit *)>(&DbQueryWidget::applyMatchingResults), this, _1));
+}
+
+/*!
+ * \brief Completes the specified \a tagEdit with the best matching result row.
+ * \remarks
+ * - Does nothing if no result row matches.
+ * - Only the selected fields are applied.
+ * \sa applyResults()
+ */
+void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
+{
+    // determine already present title, album and artist
+    const TagValue givenTitle = tagEdit->value(KnownField::Title);
+    const TagValue givenAlbum = tagEdit->value(KnownField::Album);
+    const TagValue givenArtist = tagEdit->value(KnownField::Artist);
+
+    // also determine already present track number (which is a little bit more complex -> TODO: improve backend API)
+    int givenTrack;
+    try {
+        givenTrack = tagEdit->value(KnownField::TrackPosition).toPositionInSet().position();
+    } catch (const ConversionException &) {
+    }
+    if(!givenTrack) {
+        for(const Tag *tag : tagEdit->tags()) {
+            if(!tag->supportsTarget() || tag->targetLevel() == TagTargetLevel::Track) {
+                try {
+                    givenTrack = tagEdit->value(KnownField::PartNumber).toInteger();
+                } catch (const ConversionException &) {
+                }
+                break;
+            }
+        }
+    }
+
+    // find row matching already present data
+    for(int row = 0, rowCount = m_model->rowCount(); row != rowCount; ++row) {
+        if((!givenTitle.isEmpty() && givenTitle != m_model->fieldValue(row, KnownField::Title))
+                || (!givenAlbum.isEmpty() && givenAlbum != m_model->fieldValue(row, KnownField::Album))
+                || (!givenArtist.isEmpty() && givenArtist != m_model->fieldValue(row, KnownField::Artist))
+                || (givenTrack && m_model->data(m_model->index(row, QueryResultsModel::TitleCol)).toInt())) {
+            continue;
+        }
+
+        // apply results for matching row
+        applyResults(tagEdit, m_model->index(row, 0));
+
+        // just take the first matching row for now
+        break;
+    }
+}
+
+/*!
+ * \brief Applies the results at the specified \a resultIndex for the selected fields to the specified \a tagEdit.
+ * \remarks
+ * - Returns instantly. If cover/lyrics need to be retrieved, this is done asynchronously.
+ * - Does nothing if no results are available.
+ */
+void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultIndex)
+{
     if(m_model) {
-        if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-            if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
-                const QModelIndexList selection = selectionModel->selection().indexes();
-                if(!selection.isEmpty()) {
-                    // determine previous value handling
-                    PreviousValueHandling previousValueHandling = m_ui->overrideCheckBox->isChecked()
-                            ? PreviousValueHandling::Update : PreviousValueHandling::Keep;
+        // determine previous value handling
+        PreviousValueHandling previousValueHandling = m_ui->overrideCheckBox->isChecked()
+                ? PreviousValueHandling::Update : PreviousValueHandling::Keep;
 
-                    // loop through all fields
-                    for(const ChecklistItem &item : Settings::dbQueryFields().items()) {
-                        if(item.isChecked()) {
-                            // field should be used
-                            const auto field = static_cast<KnownField>(item.id().toInt());
-                            int row = selection.front().row();
-                            TagValue value = m_model->fieldValue(row, field);
+        // loop through all fields
+        for(const ChecklistItem &item : values().dbQuery.fields.items()) {
+            if(item.isChecked()) {
+                // field should be used
+                const auto field = static_cast<KnownField>(item.id().toInt());
+                int row = resultIndex.row();
+                TagValue value = m_model->fieldValue(row, field);
 
-                            if(value.isEmpty()) {
-                                // cover and lyrics might be fetched belated
-                                switch(field) {
-                                case KnownField::Cover:
-                                    if(m_model->fetchCover(selection.front())) {
-                                        // cover is available now
+                if(value.isEmpty()) {
+                    // cover and lyrics might be fetched belated
+                    switch(field) {
+                    case KnownField::Cover:
+                        if(m_model->fetchCover(resultIndex)) {
+                            // cover is available now
+                            tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                        } else {
+                            // cover is fetched asynchronously
+                            // -> show status
+                            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                            m_ui->notificationLabel->appendLine(tr("Retrieving cover art to be applied ..."));
+                            setStatus(false);
+                            // -> apply cover when available
+                            connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
+                                if(row == index.row()) {
+                                    if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
                                         tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
-                                    } else {
-                                        // cover is fetched asynchronously
-                                        // -> show status
-                                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                                        m_ui->notificationLabel->appendLine(tr("Retrieving cover art to be applied ..."));
-                                        setStatus(false);
-                                        // -> apply cover when available
-                                        connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
-                                            if(row == index.row()) {
-                                                if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-                                                    tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
-                                                }
-                                            }
-                                        });
                                     }
-                                    break;
-
-                                case KnownField::Lyrics:
-                                    if(m_model->fetchLyrics(selection.front())) {
-                                        // lyrics are available now
-                                        tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
-                                    } else {
-                                        // lyrics are fetched asynchronously
-                                        // -> show status
-                                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                                        m_ui->notificationLabel->appendLine(tr("Retrieving lyrics to be applied ..."));
-                                        setStatus(false);
-                                        // -> apply cover when available
-                                        connect(m_model, &QueryResultsModel::lyricsAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
-                                            if(row == index.row()) {
-                                                if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-                                                    tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
-                                                }
-                                            }
-                                        });
-                                    }
-                                    break;
-
-                                default:
-                                    ;
                                 }
-                            } else {
-                                // any other fields are just set
-                                tagEdit->setValue(field, value, previousValueHandling);
-                            }
+                            });
                         }
+                        break;
+
+                    case KnownField::Lyrics:
+                        if(m_model->fetchLyrics(resultIndex)) {
+                            // lyrics are available now
+                            tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
+                        } else {
+                            // lyrics are fetched asynchronously
+                            // -> show status
+                            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                            m_ui->notificationLabel->appendLine(tr("Retrieving lyrics to be applied ..."));
+                            setStatus(false);
+                            // -> apply cover when available
+                            connect(m_model, &QueryResultsModel::lyricsAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
+                                if(row == index.row()) {
+                                    if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                                        tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
+                                    }
+                                }
+                            });
+                        }
+                        break;
+
+                    default:
+                        ;
                     }
+                } else {
+                    // any other fields are just set
+                    tagEdit->setValue(field, value, previousValueHandling);
                 }
             }
         }

@@ -57,11 +57,11 @@ public:
     bool isFetchingCover() const;
     Media::TagValue fieldValue(int row, Media::KnownField knownField) const;
 
-    QVariant data(const QModelIndex &index, int role) const;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    int rowCount(const QModelIndex &parent) const;
-    int columnCount(const QModelIndex &parent) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const;
     const QByteArray *cover(const QModelIndex &index) const;
     virtual bool fetchCover(const QModelIndex &index);
     const QString *lyrics(const QModelIndex &index) const;

@@ -116,7 +116,7 @@ TagEditorWidget::TagEditorWidget(QWidget *parent) :
     // setup m_tagOptionsMenu, m_addTagMenu, m_removeTagMenu, m_changeTargetMenu
     m_tagOptionsMenu = new QMenu(this);
     m_tagOptionsMenu->addAction(m_ui->actionManage_tags_automatically_when_loading_file);
-    connect(m_ui->actionManage_tags_automatically_when_loading_file, &QAction::triggered, [] (bool checked) { Settings::autoTagManagement() = checked; });
+    connect(m_ui->actionManage_tags_automatically_when_loading_file, &QAction::triggered, [] (bool checked) { Settings::values().tagPocessing.autoTagManagement = checked; });
     m_tagOptionsMenu->addSeparator();
     m_addTagMenu = new QMenu(tr("Add tag"), m_tagOptionsMenu);
     m_addTagMenu->setEnabled(false);
@@ -284,7 +284,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
     // determine to previous value handling according to the settings if auto is specified
     switch(previousValueHandling) {
     case PreviousValueHandling::Auto:
-        switch(Settings::adoptFields()) {
+        switch(Settings::values().editor.adoptFields) {
         case Settings::AdoptFields::WithinDirectory:
             if(m_lastDir != m_currentDir) {
                 previousValueHandling = PreviousValueHandling::Clear;
@@ -333,7 +333,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
             }
         }
         // create a singe editor per target or seperate editors for each tag depending on the settings
-        switch(Settings::multipleTagHandling()) {
+        switch(Settings::values().editor.multipleTagHandling) {
         case Settings::MultipleTagHandling::SingleEditorPerTarget:
             // iterate through all targets in both cases
             for(int targetIndex = 0, targetCount = targets.size(); targetIndex < targetCount; ++targetIndex) {
@@ -411,7 +411,7 @@ void TagEditorWidget::updateTagSelectionComboBox()
             m_ui->tagSelectionComboBox->addItem(label);
         }
         // set visibility
-        m_ui->tagSelectionComboBox->setHidden(Settings::hideTagSelectionComboBox() && m_ui->tagSelectionComboBox->count() <= 1 && !haveTargetInfo);
+        m_ui->tagSelectionComboBox->setHidden(Settings::values().editor.hideTagSelectionComboBox && m_ui->tagSelectionComboBox->count() <= 1 && !haveTargetInfo);
         // restore selected index
         if(previouslySelectedEditIndex >= 0 && previouslySelectedEditIndex < m_ui->tagSelectionComboBox->count()) {
             m_ui->tagSelectionComboBox->setCurrentIndex(previouslySelectedEditIndex);
@@ -564,7 +564,7 @@ void TagEditorWidget::updateTagManagementMenu()
  */
 void TagEditorWidget::insertTitleFromFilename()
 {
-    if(!m_tags.empty() && Settings::insertTitleFromFilename()) {
+    if(!m_tags.empty() && Settings::values().editor.autoCompletition.insertTitleFromFilename) {
         QString title;
         int trackNum;
         parseFileName(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()), title, trackNum);
@@ -583,7 +583,7 @@ void TagEditorWidget::insertTitleFromFilename()
 void TagEditorWidget::initInfoView()
 {
 #ifndef TAGEDITOR_NO_WEBVIEW
-    if(!Settings::noWebView() && !m_infoWebView) {
+    if(!Settings::values().editor.noWebView && !m_infoWebView) {
         if(m_infoTreeView) {
            m_infoTreeView->deleteLater();
            m_infoTreeView = nullptr;
@@ -597,7 +597,7 @@ void TagEditorWidget::initInfoView()
         m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &TagEditorWidget::showInfoWebViewContextMenu);
         m_ui->tagSplitter->addWidget(m_infoWebView);
-    } else if(Settings::noWebView() && !m_infoTreeView) {
+    } else if(Settings::values().editor.noWebView && !m_infoTreeView) {
         if(m_infoWebView) {
             m_infoWebView->deleteLater();
             m_infoWebView = nullptr;
@@ -761,7 +761,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                     // try to open read-only if opening with write access failed
                     m_fileInfo.reopen(true);
                 }
-                m_fileInfo.setForceFullParse(Settings::forceFullParse());
+                m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
                 m_fileInfo.parseEverything();
                 result = ParsingSuccessful;
             } catch(const Failure &) {
@@ -845,21 +845,22 @@ void TagEditorWidget::showFile(char result)
         }
 
         // create appropriate tags according to file type and user preferences when automatic tag management is enabled
-        if(Settings::autoTagManagement()) {
+        const auto &settings = Settings::values().tagPocessing;
+        if(settings.autoTagManagement) {
             vector<TagTarget> requiredTargets;
             requiredTargets.reserve(2);
-            for(const ChecklistItem &targetItem : Settings::defaultTargetsModel().items()) {
+            for(const ChecklistItem &targetItem : Settings::values().editor.defaultTargets.items()) {
                 if(targetItem.isChecked()) {
                     requiredTargets.emplace_back(containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
                 }
             }
             // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
             // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
-            if(!m_fileInfo.createAppropriateTags(false, Settings::id3v1usage(), Settings::id3v2usage(), false, true, Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                                 Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets)) {
+            if(!m_fileInfo.createAppropriateTags(false, settings.id3.v1Usage, settings.id3.v2Usage, false, true, settings.id3.mergeMultipleSuccessiveId3v2Tags,
+                                                 settings.id3.keepVersionOfExistingId3v2Tag, settings.id3.v2Version, requiredTargets)) {
                 if(confirmCreationOfId3TagForUnsupportedFile()) {
-                    m_fileInfo.createAppropriateTags(true, Settings::id3v1usage(), Settings::id3v2usage(), false, true, Settings::mergeMultipleSuccessiveId3v2Tags(),
-                                                     Settings::keepVersionOfExistingId3v2Tag(), Settings::id3v2versionToBeUsed(), requiredTargets);
+                    m_fileInfo.createAppropriateTags(true, settings.id3.v1Usage, settings.id3.v2Usage, false, true, settings.id3.mergeMultipleSuccessiveId3v2Tags,
+                                                                     settings.id3.keepVersionOfExistingId3v2Tag, settings.id3.v2Version, requiredTargets);
                 }
             }
             // tags might have been adjusted -> reload tags
@@ -981,7 +982,7 @@ bool TagEditorWidget::deleteAllTagsAndSave()
     {
         TryLocker<> locker(m_fileOperationMutex);
         if(locker) {
-            if(Settings::askBeforeDeleting()) {
+            if(Settings::values().editor.askBeforeDeleting) {
                 QMessageBox msgBox(this);
                 msgBox.setText(tr("Do you really want to delete all tags from the file?"));
                 msgBox.setIcon(QMessageBox::Warning);
@@ -995,7 +996,7 @@ bool TagEditorWidget::deleteAllTagsAndSave()
                 int res = msgBox.exec();
 #if QT_VERSION >= 0x050200
                 if(checkBox->isChecked()) {
-                    Settings::askBeforeDeleting() = false;
+                    Settings::values().editor.askBeforeDeleting = false;
                 }
 #endif
                 if(res != QMessageBox::Yes) {
@@ -1056,14 +1057,15 @@ bool TagEditorWidget::startSaving()
         // remove current path from file watcher
         m_fileWatcher->removePath(m_currentPath);
         // use current configuration
-        m_fileInfo.setForceRewrite(Settings::forceRewrite());
-        m_fileInfo.setTagPosition(Settings::preferredTagPosition());
-        m_fileInfo.setForceTagPosition(Settings::forceTagPosition());
-        m_fileInfo.setIndexPosition(Settings::preferredIndexPosition());
-        m_fileInfo.setForceIndexPosition(Settings::forceIndexPosition());
-        m_fileInfo.setMinPadding(Settings::minPadding());
-        m_fileInfo.setMaxPadding(Settings::maxPadding());
-        m_fileInfo.setPreferredPadding(Settings::preferredPadding());
+        const auto &settings = Settings::values().tagPocessing.fileLayout;
+        m_fileInfo.setForceRewrite(settings.forceRewrite);
+        m_fileInfo.setTagPosition(settings.preferredTagPosition);
+        m_fileInfo.setForceTagPosition(settings.forceTagPosition);
+        m_fileInfo.setIndexPosition(settings.preferredIndexPosition);
+        m_fileInfo.setForceIndexPosition(settings.forceIndexPosition);
+        m_fileInfo.setMinPadding(settings.minPadding);
+        m_fileInfo.setMaxPadding(settings.maxPadding);
+        m_fileInfo.setPreferredPadding(settings.preferredPadding);
         // define functions to show the saving progress and to actually applying the changes
         auto showProgress = [this] (StatusProvider &sender) -> void {
             QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, static_cast<int>(sender.currentPercentage() * 100.0)));
@@ -1233,19 +1235,20 @@ void TagEditorWidget::closeFile()
  */
 void TagEditorWidget::handleReturnPressed()
 {
-    if(Settings::saveAndShowNextOnEnter() && m_fileInfo.isOpen()) {
+    if(Settings::values().editor.saveAndShowNextOnEnter && m_fileInfo.isOpen()) {
         saveAndShowNextFile();
     }
 }
 
 void TagEditorWidget::handleKeepPreviousValuesActionTriggered(QAction *action)
 {
+    auto &settings = Settings::values().editor;
     if(action == m_ui->actionKeep_previous_values_never) {
-        Settings::adoptFields() = Settings::AdoptFields::Never;
+        settings.adoptFields = Settings::AdoptFields::Never;
     } else if(action == m_ui->actionKeep_previous_values_within_same_dir) {
-        Settings::adoptFields() = Settings::AdoptFields::WithinDirectory;
+        settings.adoptFields = Settings::AdoptFields::WithinDirectory;
     } else if(action == m_ui->actionKeep_previous_values_always) {
-        Settings::adoptFields() = Settings::AdoptFields::Always;
+        settings.adoptFields = Settings::AdoptFields::Always;
     }
 }
 
@@ -1255,7 +1258,8 @@ void TagEditorWidget::handleKeepPreviousValuesActionTriggered(QAction *action)
  */
 void TagEditorWidget::applySettingsFromDialog()
 {
-    switch(Settings::adoptFields()) {
+    const auto &settings = Settings::values();
+    switch(settings.editor.adoptFields) {
     case Settings::AdoptFields::Never:
         m_ui->actionKeep_previous_values_never->setChecked(true);
         break;
@@ -1266,8 +1270,8 @@ void TagEditorWidget::applySettingsFromDialog()
         m_ui->actionKeep_previous_values_always->setChecked(true);
         break;
     }
-    m_ui->actionManage_tags_automatically_when_loading_file->setChecked(Settings::autoTagManagement());
-    foreachTagEdit(bind(&TagEdit::setCoverButtonsHidden, _1, Settings::hideCoverButtons()));
+    m_ui->actionManage_tags_automatically_when_loading_file->setChecked(settings.tagPocessing.autoTagManagement);
+    foreachTagEdit(bind(&TagEdit::setCoverButtonsHidden, _1, settings.editor.hideCoverButtons));
     // ensure info view is displayed/not displayed according to settings
     initInfoView();
     updateInfoView();

@@ -34,12 +34,15 @@ public:
 
     void insertSearchTermsFromTagEdit(TagEdit *tagEdit);
     SongDescription currentSongDescription() const;
+    void applyResults(TagEdit *tagEdit, const QModelIndex &resultIndex);
 
 public slots:
     void searchMusicBrainz();
     void searchLyricsWikia();
     void abortSearch();
-    void applyResults();
+    void applySelectedResults();
+    void applyMatchingResults();
+    void applyMatchingResults(TagEdit *tagEdit);
     void insertSearchTermsFromActiveTagEdit();
     void clearSearchCriteria();
 

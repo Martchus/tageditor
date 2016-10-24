@@ -1,27 +1,22 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include "./targetlevelmodel.h"
+#include "./knownfieldmodel.h"
+
 #include <c++utilities/conversion/types.h>
 
 #include <tagparser/tagvalue.h>
+#include <tagparser/tag.h>
+#include <tagparser/mediafileinfo.h>
 
-#include <QtGlobal>
+#include <qtutilities/settingsdialog/qtsettings.h>
 
-QT_FORWARD_DECLARE_CLASS(QByteArray)
-QT_FORWARD_DECLARE_CLASS(QString)
-
-namespace Media {
-enum class TagUsage;
-enum class ElementPosition;
-}
-
-namespace Dialogs {
-class QtSettings;
-}
+#include <QString>
+#include <QByteArray>
 
 namespace Settings {
 
-// general
 enum class ActionEnabled
 {
     Ask,
@@ -29,97 +24,127 @@ enum class ActionEnabled
     No
 };
 
-// editor
 enum class AdoptFields
 {
     Never,
     WithinDirectory,
     Always
 };
-AdoptFields &adoptFields();
-bool &saveAndShowNextOnEnter();
-bool &askBeforeDeleting();
+
 enum class MultipleTagHandling
 {
     SingleEditorPerTarget,
     SeparateEditors
 };
-MultipleTagHandling &multipleTagHandling();
-bool &hideTagSelectionComboBox();
-bool &forceFullParse();
+
+struct AutoCompletition
+{
+    AutoCompletition();
+    bool insertTitleFromFilename = false;
+    bool trimWhitespaces = true;
+    bool formatNames = false;
+    bool fixUmlauts = false;
+    KnownFieldModel fields;
+};
+
+struct Editor
+{
+    Editor();
+    AdoptFields adoptFields = AdoptFields::Never;
+    bool saveAndShowNextOnEnter = false;
+    bool askBeforeDeleting = true;
+    MultipleTagHandling multipleTagHandling = MultipleTagHandling::SingleEditorPerTarget;
+    bool hideTagSelectionComboBox = false;
+    bool forceFullParse = false;
 #ifndef TAGEDITOR_NO_WEBVIEW
-bool &noWebView();
+    bool noWebView = false;
 #endif
-bool &hideCoverButtons();
+    bool hideCoverButtons = false;
+    AutoCompletition autoCompletition;
+    KnownFieldModel fields;
+    TargetLevelModel defaultTargets;
+};
 
-// file browser
-bool &hideBackupFiles();
-bool &fileBrowserReadOnly();
-
-// general tag processing
-Media::TagTextEncoding &preferredEncoding();
 enum class UnsupportedFieldHandling
 {
     Ignore,
     Discard
 };
-UnsupportedFieldHandling &unsupportedFieldHandling();
-bool &autoTagManagement();
 
-// ID3 tag processing
-Media::TagUsage &id3v1usage();
-Media::TagUsage &id3v2usage();
-byte &id3v2versionToBeUsed();
-bool &keepVersionOfExistingId3v2Tag();
-bool &mergeMultipleSuccessiveId3v2Tags();
+struct FileBrowser
+{
+    bool hideBackupFiles = true;
+    bool readOnly = true;
+};
 
-// file layout
-bool &forceRewrite();
-Media::ElementPosition &preferredTagPosition();
-bool &forceTagPosition();
-Media::ElementPosition &preferredIndexPosition();
-bool &forceIndexPosition();
-size_t &minPadding();
-size_t &maxPadding();
-size_t &preferredPadding();
+struct Id3Processing
+{
+    Media::TagUsage v1Usage = Media::TagUsage::Always;
+    Media::TagUsage v2Usage = Media::TagUsage::Always;
+    byte v2Version = 3;
+    bool keepVersionOfExistingId3v2Tag = true;
+    bool mergeMultipleSuccessiveId3v2Tags = true;
+};
 
-// targets
-class TargetLevelModel;
-TargetLevelModel &defaultTargetsModel();
+struct FileLayout
+{
+    bool forceRewrite = true;
+    Media::ElementPosition preferredTagPosition = Media::ElementPosition::BeforeData;
+    bool forceTagPosition = true;
+    Media::ElementPosition preferredIndexPosition = Media::ElementPosition::BeforeData;
+    bool forceIndexPosition = true;
+    std::size_t minPadding = 0;
+    std::size_t maxPadding = 0;
+    std::size_t preferredPadding = 0;
+};
 
-// fields
-class KnownFieldModel;
-KnownFieldModel &selectedFieldsModel();
+struct TagProcessing
+{
+    Media::TagTextEncoding preferredEncoding = Media::TagTextEncoding::Utf8;
+    UnsupportedFieldHandling unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
+    bool autoTagManagement = true;
+    Id3Processing id3;
+    FileLayout fileLayout;
+};
 
-// auto correction/completition
-bool &insertTitleFromFilename();
-bool &trimWhitespaces();
-bool &formatNames();
-bool &fixUmlauts();
-KnownFieldModel &autoCorrectionFields();
+struct MainWindow
+{
+    QByteArray geometry;
+    QByteArray state;
+    QString currentFileBrowserDirectory;
+    bool layoutLocked = false;
+};
 
-// main window
-QByteArray &mainWindowGeometry();
-QByteArray &mainWindowState();
-QString &mainWindowCurrentFileBrowserDirectory();
-bool &mainWindowLayoutLocked();
+struct DbQuery
+{
+    DbQuery();
+    bool widgetShown = false;
+    bool override = false;
+    KnownFieldModel fields;
+    QString musicBrainzUrl;
+    QString coverArtArchiveUrl;
+    QString lyricsWikiaUrl;
+};
 
-// db query
-bool &dbQueryWidgetShown();
-bool &dbQueryOverride();
-KnownFieldModel &dbQueryFields();
-QString &musicBrainzUrl();
-QString &coverArtArchiveUrl();
-QString &lyricsWikiaUrl();
+struct RenamingUtility
+{
+    int scriptSource = 0;
+    QString externalScript;
+    QString editorScript;
+};
 
-// rename files dialog
-int &scriptSource();
-QString &externalScript();
-QString &editorScript();
+struct Settings
+{
+    Editor editor;
+    FileBrowser fileBrowser;
+    TagProcessing tagPocessing;
+    MainWindow mainWindow;
+    DbQuery dbQuery;
+    RenamingUtility renamingUtility;
+    Dialogs::QtSettings qt;
+};
 
-// Qt settings
-Dialogs::QtSettings &qtSettings();
-
+Settings &values();
 void restore();
 void save();
 

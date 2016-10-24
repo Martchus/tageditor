@@ -66,12 +66,13 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     m_ui->abortClosePushButton->setIcon(style()->standardIcon(QStyle::SP_DialogCancelButton, nullptr, m_ui->abortClosePushButton));
 
     // restore settings
-    if(Settings::scriptSource() < m_ui->sourceFileStackedWidget->count()) {
-        m_ui->sourceFileStackedWidget->setCurrentIndex(Settings::scriptSource());
+    const auto &settings = Settings::values().renamingUtility;
+    if(Settings::values().renamingUtility.scriptSource < m_ui->sourceFileStackedWidget->count()) {
+        m_ui->sourceFileStackedWidget->setCurrentIndex(settings.scriptSource);
     }
-    m_ui->scriptFilePathLineEdit->setText(Settings::externalScript());
-    if(!Settings::editorScript().isEmpty()) {
-        m_ui->javaScriptPlainTextEdit->setPlainText(Settings::editorScript());
+    m_ui->scriptFilePathLineEdit->setText(settings.externalScript);
+    if(!Settings::values().renamingUtility.editorScript.isEmpty()) {
+        m_ui->javaScriptPlainTextEdit->setPlainText(settings.editorScript);
         m_scriptModified = true;
     } else {
         pasteDefaultExampleScript();
@@ -108,15 +109,16 @@ void RenameFilesDialog::setDirectory(const QString &directory)
 
 bool RenameFilesDialog::event(QEvent *event)
 {
+    auto &settings = Settings::values().renamingUtility;
     switch(event->type()) {
     case QEvent::Close:
         // save settings
-        Settings::scriptSource() = m_ui->sourceFileStackedWidget->currentIndex();
-        Settings::externalScript() = m_ui->scriptFilePathLineEdit->text();
+        settings.scriptSource = m_ui->sourceFileStackedWidget->currentIndex();
+        settings.externalScript = m_ui->scriptFilePathLineEdit->text();
         if(m_scriptModified) {
-            Settings::editorScript() = m_ui->javaScriptPlainTextEdit->toPlainText();
+            settings.editorScript = m_ui->javaScriptPlainTextEdit->toPlainText();
         } else {
-            Settings::editorScript().clear();
+            settings.editorScript.clear();
         }
         break;
     default:

@@ -46,18 +46,20 @@ FileBrowserGeneralOptionPage::~FileBrowserGeneralOptionPage()
 
 bool FileBrowserGeneralOptionPage::apply()
 {
+    auto &settings = values().fileBrowser;
     if(hasBeenShown()) {
-        hideBackupFiles() = ui()->hideBackupFilesCheckBox->isChecked();
-        fileBrowserReadOnly() = ui()->readOnlyCheckBox->isChecked();
+        settings.hideBackupFiles = ui()->hideBackupFilesCheckBox->isChecked();
+        settings.readOnly = ui()->readOnlyCheckBox->isChecked();
     }
     return true;
 }
 
 void FileBrowserGeneralOptionPage::reset()
 {
+    const auto &settings = values().fileBrowser;
     if(hasBeenShown()) {
-        ui()->hideBackupFilesCheckBox->setChecked(hideBackupFiles());
-        ui()->readOnlyCheckBox->setChecked(fileBrowserReadOnly());
+        ui()->hideBackupFilesCheckBox->setChecked(settings.hideBackupFiles);
+        ui()->readOnlyCheckBox->setChecked(settings.readOnly);
     }
 }
 
@@ -72,22 +74,23 @@ EditorGeneralOptionPage::~EditorGeneralOptionPage()
 bool EditorGeneralOptionPage::apply()
 {
     if(hasBeenShown()) {
+        auto &settings = values().editor;
         if(ui()->disableAdoptRadioButton->isChecked()) {
-            adoptFields() = AdoptFields::Never;
+            settings.adoptFields = AdoptFields::Never;
         } else if(ui()->enableWithinDirRadioButton->isChecked()) {
-            adoptFields() = AdoptFields::WithinDirectory;
+            settings.adoptFields = AdoptFields::WithinDirectory;
         } else if(ui()->enableForAllRadioButton->isChecked()) {
-            adoptFields() = AdoptFields::Always;
+            settings.adoptFields = AdoptFields::Always;
         }
         if(ui()->multipleTagsOneEditorRadioButton->isChecked()) {
-            multipleTagHandling() = MultipleTagHandling::SingleEditorPerTarget;
+            settings.multipleTagHandling = MultipleTagHandling::SingleEditorPerTarget;
         } else if(ui()->multipleTagsSeparateEditorsRadioButton->isChecked()) {
-            multipleTagHandling() = MultipleTagHandling::SeparateEditors;
+            settings.multipleTagHandling = MultipleTagHandling::SeparateEditors;
         }
-        saveAndShowNextOnEnter() = ui()->nextWhenPressingEnterCheckBox->isChecked();
-        askBeforeDeleting() = ui()->askBeforeDeletingCheckBox->isChecked();
-        hideTagSelectionComboBox() = ui()->hideTagSelectionComboBoxCheckBox->isChecked();
-        hideCoverButtons() = ui()->hideCoverButtonsCheckBox->isChecked();
+        settings.saveAndShowNextOnEnter = ui()->nextWhenPressingEnterCheckBox->isChecked();
+        settings.askBeforeDeleting = ui()->askBeforeDeletingCheckBox->isChecked();
+        settings.hideTagSelectionComboBox = ui()->hideTagSelectionComboBoxCheckBox->isChecked();
+        settings.hideCoverButtons = ui()->hideCoverButtonsCheckBox->isChecked();
     }
     return true;
 }
@@ -95,7 +98,8 @@ bool EditorGeneralOptionPage::apply()
 void EditorGeneralOptionPage::reset()
 {
     if(hasBeenShown()) {
-        switch(adoptFields()) {
+        const auto &settings = values().editor;
+        switch(settings.adoptFields) {
         case AdoptFields::Never:
             ui()->disableAdoptRadioButton->setChecked(true);
             break;
@@ -106,7 +110,7 @@ void EditorGeneralOptionPage::reset()
             ui()->enableForAllRadioButton->setChecked(true);
             break;
         }
-        switch(multipleTagHandling()) {
+        switch(settings.multipleTagHandling) {
         case MultipleTagHandling::SingleEditorPerTarget:
             ui()->multipleTagsOneEditorRadioButton->setChecked(true);
             break;
@@ -114,10 +118,10 @@ void EditorGeneralOptionPage::reset()
             ui()->multipleTagsSeparateEditorsRadioButton->setChecked(true);
             break;
         }
-        ui()->nextWhenPressingEnterCheckBox->setChecked(saveAndShowNextOnEnter());
-        ui()->askBeforeDeletingCheckBox->setChecked(askBeforeDeleting());
-        ui()->hideTagSelectionComboBoxCheckBox->setChecked(hideTagSelectionComboBox());
-        ui()->hideCoverButtonsCheckBox->setChecked(hideCoverButtons());
+        ui()->nextWhenPressingEnterCheckBox->setChecked(settings.saveAndShowNextOnEnter);
+        ui()->askBeforeDeletingCheckBox->setChecked(settings.askBeforeDeleting);
+        ui()->hideTagSelectionComboBoxCheckBox->setChecked(settings.hideTagSelectionComboBox);
+        ui()->hideCoverButtonsCheckBox->setChecked(settings.hideCoverButtons);
     }
 }
 
@@ -164,7 +168,7 @@ EditorFieldsOptionPage::~EditorFieldsOptionPage()
 bool EditorFieldsOptionPage::apply()
 {
     if(hasBeenShown() && m_model) {
-        Settings::selectedFieldsModel().setItems(m_model->items());
+        values().editor.fields.setItems(m_model->items());
     }
     return true;
 }
@@ -172,7 +176,7 @@ bool EditorFieldsOptionPage::apply()
 void EditorFieldsOptionPage::reset()
 {
     if(hasBeenShown() && m_model) {
-        m_model->setItems(Settings::selectedFieldsModel().items());
+        m_model->setItems(values().editor.fields.items());
     }
 }
 
@@ -198,12 +202,13 @@ EditorAutoCorrectionOptionPage::~EditorAutoCorrectionOptionPage()
 bool EditorAutoCorrectionOptionPage::apply()
 {
     if(hasBeenShown()) {
-        Settings::insertTitleFromFilename() = ui()->insertTitleFromFilenameCheckBox->isChecked();
-        Settings::trimWhitespaces() = ui()->trimWhitespacesCheckBox->isChecked();
-        Settings::formatNames() = ui()->formatNamesCheckBox->isChecked();
-        Settings::fixUmlauts() = ui()->fixUmlautsCheckBox->isChecked();
+        auto &settings = values().editor.autoCompletition;
+        settings.insertTitleFromFilename = ui()->insertTitleFromFilenameCheckBox->isChecked();
+        settings.trimWhitespaces = ui()->trimWhitespacesCheckBox->isChecked();
+        settings.formatNames = ui()->formatNamesCheckBox->isChecked();
+        settings.fixUmlauts = ui()->fixUmlautsCheckBox->isChecked();
         if(m_model) {
-            Settings::autoCorrectionFields().setItems(m_model->items());
+            settings.fields.setItems(m_model->items());
         }
     }
     return true;
@@ -212,12 +217,13 @@ bool EditorAutoCorrectionOptionPage::apply()
 void EditorAutoCorrectionOptionPage::reset()
 {
     if(hasBeenShown()) {
-        ui()->insertTitleFromFilenameCheckBox->setChecked(Settings::insertTitleFromFilename());
-        ui()->trimWhitespacesCheckBox->setChecked(Settings::trimWhitespaces());
-        ui()->formatNamesCheckBox->setChecked(Settings::formatNames());
-        ui()->fixUmlautsCheckBox->setChecked(Settings::fixUmlauts());
+        const auto &settings = values().editor.autoCompletition;
+        ui()->insertTitleFromFilenameCheckBox->setChecked(settings.insertTitleFromFilename);
+        ui()->trimWhitespacesCheckBox->setChecked(settings.trimWhitespaces);
+        ui()->formatNamesCheckBox->setChecked(settings.formatNames);
+        ui()->fixUmlautsCheckBox->setChecked(settings.fixUmlauts);
         if(m_model) {
-            m_model->setItems(Settings::autoCorrectionFields().items());
+            m_model->setItems(settings.fields.items());
         }
     }
 }
@@ -243,8 +249,9 @@ EditorDbQueryOptionsPage::~EditorDbQueryOptionsPage()
 bool EditorDbQueryOptionsPage::apply()
 {
     if(hasBeenShown()) {
-        Settings::musicBrainzUrl() = ui()->musicBrainzUrlLineEdit->text();
-        Settings::coverArtArchiveUrl() = ui()->coverArtArchiveUrlLineEdit->text();
+        auto &settings = values().dbQuery;
+        settings.musicBrainzUrl = ui()->musicBrainzUrlLineEdit->text();
+        settings.coverArtArchiveUrl = ui()->coverArtArchiveUrlLineEdit->text();
     }
     return true;
 }
@@ -252,8 +259,9 @@ bool EditorDbQueryOptionsPage::apply()
 void EditorDbQueryOptionsPage::reset()
 {
     if(hasBeenShown()) {
-        ui()->musicBrainzUrlLineEdit->setText(Settings::musicBrainzUrl());
-        ui()->coverArtArchiveUrlLineEdit->setText(Settings::coverArtArchiveUrl());
+        const auto &settings = values().dbQuery;
+        ui()->musicBrainzUrlLineEdit->setText(settings.musicBrainzUrl);
+        ui()->coverArtArchiveUrlLineEdit->setText(settings.coverArtArchiveUrl);
     }
 }
 
@@ -268,9 +276,10 @@ InfoOptionPage::~InfoOptionPage()
 bool InfoOptionPage::apply()
 {
     if(hasBeenShown()) {
-        Settings::forceFullParse() = ui()->forceFullParseCheckBox->isChecked();
+        auto &settings = values().editor;
+        settings.forceFullParse = ui()->forceFullParseCheckBox->isChecked();
 #ifndef TAGEDITOR_NO_WEBVIEW
-        Settings::noWebView() = ui()->noWebViewCheckBox->isChecked();
+        settings.noWebView = ui()->noWebViewCheckBox->isChecked();
 #endif
     }
     return true;
@@ -279,12 +288,13 @@ bool InfoOptionPage::apply()
 void InfoOptionPage::reset()
 {
     if(hasBeenShown()) {
-        ui()->forceFullParseCheckBox->setChecked(Settings::forceFullParse());
+        const auto &settings = values().editor;
+        ui()->forceFullParseCheckBox->setChecked(settings.forceFullParse);
 #ifdef TAGEDITOR_NO_WEBVIEW
         ui()->noWebViewCheckBox->setChecked(true);
         ui()->noWebViewCheckBox->setEnabled(false);
 #else
-        ui()->noWebViewCheckBox->setChecked(Settings::noWebView());
+        ui()->noWebViewCheckBox->setChecked(settings.noWebView);
 #endif
     }
 }
@@ -300,24 +310,25 @@ TagProcessingGeneralOptionPage::~TagProcessingGeneralOptionPage()
 bool TagProcessingGeneralOptionPage::apply()
 {
     if(hasBeenShown()) {
+        auto &settings = values().tagPocessing;
         if(ui()->latin1RadioButton->isChecked()) {
-            preferredEncoding() = TagTextEncoding::Latin1;
+            settings.preferredEncoding = TagTextEncoding::Latin1;
         } else if(ui()->utf8RadioButton->isChecked()) {
-            preferredEncoding() = TagTextEncoding::Utf8;
+            settings.preferredEncoding = TagTextEncoding::Utf8;
         } else if(ui()->utf16leRadioButton->isChecked()) {
-            preferredEncoding() = TagTextEncoding::Utf16LittleEndian;
+            settings.preferredEncoding = TagTextEncoding::Utf16LittleEndian;
         } else if(ui()->utf16beRadioButton->isChecked()) {
-            preferredEncoding() = TagTextEncoding::Utf16BigEndian;
+            settings.preferredEncoding = TagTextEncoding::Utf16BigEndian;
         } else if(ui()->autoRadioButton->isChecked()) {
-            preferredEncoding() = TagTextEncoding::Unspecified;
+            settings.preferredEncoding = TagTextEncoding::Unspecified;
         }
 
         if(ui()->ignoreUnsupportedRadioButton->isChecked()) {
-            unsupportedFieldHandling() = UnsupportedFieldHandling::Ignore;
+            settings.unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
         } else if(ui()->discardUnsupportedRadioButton->isChecked()) {
-            unsupportedFieldHandling() = UnsupportedFieldHandling::Discard;
+            settings.unsupportedFieldHandling = UnsupportedFieldHandling::Discard;
         }
-        autoTagManagement() = ui()->autoTagManagementCheckBox->isChecked();
+        settings.autoTagManagement = ui()->autoTagManagementCheckBox->isChecked();
     }
     return true;
 }
@@ -325,7 +336,8 @@ bool TagProcessingGeneralOptionPage::apply()
 void TagProcessingGeneralOptionPage::reset()
 {
     if(hasBeenShown()) {
-        switch(preferredEncoding()) {
+        const auto &settings = values().tagPocessing;
+        switch(settings.preferredEncoding) {
         case TagTextEncoding::Latin1:
             ui()->latin1RadioButton->setChecked(true);
             break;
@@ -342,7 +354,7 @@ void TagProcessingGeneralOptionPage::reset()
             ui()->autoRadioButton->setChecked(true);
             break;
         }
-        switch(unsupportedFieldHandling()) {
+        switch(settings.unsupportedFieldHandling) {
         case UnsupportedFieldHandling::Ignore:
             ui()->ignoreUnsupportedRadioButton->setChecked(true);
             break;
@@ -350,7 +362,7 @@ void TagProcessingGeneralOptionPage::reset()
             ui()->discardUnsupportedRadioButton->setChecked(true);
             break;
         }
-        ui()->autoTagManagementCheckBox->setChecked(autoTagManagement());
+        ui()->autoTagManagementCheckBox->setChecked(settings.autoTagManagement);
     }
 }
 
@@ -365,12 +377,13 @@ Id3v1OptionPage::~Id3v1OptionPage()
 bool Id3v1OptionPage::apply()
 {
     if(hasBeenShown()) {
+        auto &settings = values().tagPocessing.id3;
         if(ui()->alwaysCreateRadioButton->isChecked()) {
-            id3v1usage() = TagUsage::Always;
+            settings.v1Usage = TagUsage::Always;
         } else if(ui()->keepExistingRadioButton->isChecked()) {
-            id3v1usage() = TagUsage::KeepExisting;
+            settings.v1Usage = TagUsage::KeepExisting;
         } else if(ui()->removeExistingRadioButton->isChecked()) {
-            id3v1usage() = TagUsage::Never;
+            settings.v1Usage = TagUsage::Never;
         }
     }
     return true;
@@ -379,7 +392,8 @@ bool Id3v1OptionPage::apply()
 void Id3v1OptionPage::reset()
 {
     if(hasBeenShown()) {
-        switch(id3v1usage()) {
+        const auto &settings = values().tagPocessing.id3;
+        switch(settings.v1Usage) {
         case TagUsage::Always:
             ui()->alwaysCreateRadioButton->setChecked(true);
             break;
@@ -404,22 +418,23 @@ Id3v2OptionPage::~Id3v2OptionPage()
 bool Id3v2OptionPage::apply()
 {
     if(hasBeenShown()) {
+        auto &settings = values().tagPocessing.id3;
         if(ui()->alwaysCreateRadioButton->isChecked()) {
-            id3v2usage() = TagUsage::Always;
+            settings.v2Usage = TagUsage::Always;
         } else if(ui()->keepExistingRadioButton->isChecked()) {
-            id3v2usage() = TagUsage::KeepExisting;
+            settings.v2Usage = TagUsage::KeepExisting;
         } else if(ui()->removeExistingRadioButton->isChecked()) {
-            id3v2usage() = TagUsage::Never;
+            settings.v2Usage = TagUsage::Never;
         }
         if(ui()->version230radioButton->isChecked()) {
-            id3v2versionToBeUsed() = 3;
+            settings.v2Version = 3;
         } else if(ui()->version240radioButton->isChecked()) {
-            id3v2versionToBeUsed() = 4;
+            settings.v2Version = 4;
         } else if(ui()->version220radioButton->isChecked()) {
-            id3v2versionToBeUsed() = 2;
+            settings.v2Version = 2;
         }
-        keepVersionOfExistingId3v2Tag() = ui()->keepExistingVersionCheckBox->isChecked();
-        mergeMultipleSuccessiveId3v2Tags() = ui()->mergeRadioButton->isChecked();
+        settings.keepVersionOfExistingId3v2Tag = ui()->keepExistingVersionCheckBox->isChecked();
+        settings.mergeMultipleSuccessiveId3v2Tags = ui()->mergeRadioButton->isChecked();
     }
     return true;
 }
@@ -427,7 +442,8 @@ bool Id3v2OptionPage::apply()
 void Id3v2OptionPage::reset()
 {
     if(hasBeenShown()) {
-        switch(id3v2usage()) {
+        const auto &settings = values().tagPocessing.id3;
+        switch(settings.v2Usage) {
         case TagUsage::Always:
             ui()->alwaysCreateRadioButton->setChecked(true);
             break;
@@ -438,7 +454,7 @@ void Id3v2OptionPage::reset()
             ui()->removeExistingRadioButton->setChecked(true);
             break;
         }
-        switch(id3v2versionToBeUsed()) {
+        switch(settings.v2Version) {
         case 3:
             ui()->version230radioButton->setChecked(true);
             break;
@@ -449,8 +465,8 @@ void Id3v2OptionPage::reset()
             ui()->version220radioButton->setChecked(true);
             break;
         }
-        ui()->keepExistingVersionCheckBox->setChecked(keepVersionOfExistingId3v2Tag());
-        if(mergeMultipleSuccessiveId3v2Tags()) {
+        ui()->keepExistingVersionCheckBox->setChecked(settings.keepVersionOfExistingId3v2Tag);
+        if(settings.mergeMultipleSuccessiveId3v2Tags) {
             ui()->mergeRadioButton->setChecked(true);
         } else {
             ui()->keepSeparateRadioButton->setChecked(true);
@@ -470,7 +486,7 @@ TagProcessingTargetsOptionPage::~TagProcessingTargetsOptionPage()
 bool TagProcessingTargetsOptionPage::apply()
 {
     if(hasBeenShown() && m_model) {
-        Settings::defaultTargetsModel().setItems(m_model->items());
+        values().editor.defaultTargets.setItems(m_model->items());
     }
     return true;
 }
@@ -478,7 +494,7 @@ bool TagProcessingTargetsOptionPage::apply()
 void TagProcessingTargetsOptionPage::reset()
 {
     if(hasBeenShown() && m_model) {
-        m_model->setItems(Settings::defaultTargetsModel().items());
+        m_model->setItems(values().editor.defaultTargets.items());
     }
 }
 
@@ -507,31 +523,32 @@ bool FileLayoutPage::apply()
     bool ok = true;
 
     if(hasBeenShown()) {
-        Settings::forceRewrite() = ui()->forceRewriteCheckBox->isChecked();
+        auto &settings = values().tagPocessing.fileLayout;
+        settings.forceRewrite = ui()->forceRewriteCheckBox->isChecked();
         if(ui()->minPaddingSpinBox->value() > ui()->maxPaddingSpinBox->value()) {
             errors() << QCoreApplication::translate("QtGui::FileLayoutPage", "Minimum padding must be less or equal than maximum padding.");
             ok = false;
         } else {
-            Settings::maxPadding() = static_cast<size_t>(ui()->maxPaddingSpinBox->value());
-            Settings::minPadding() = static_cast<size_t>(ui()->minPaddingSpinBox->value());
+            settings.maxPadding = static_cast<size_t>(ui()->maxPaddingSpinBox->value());
+            settings.minPadding = static_cast<size_t>(ui()->minPaddingSpinBox->value());
         }
-        Settings::preferredPadding() = static_cast<size_t>(ui()->preferredPaddingSpinBox->value());
+        settings.preferredPadding = static_cast<size_t>(ui()->preferredPaddingSpinBox->value());
         if(ui()->tagPosBeforeDataRadioButton->isChecked()) {
-            preferredTagPosition() = ElementPosition::BeforeData;
+            settings.preferredTagPosition = ElementPosition::BeforeData;
         } else if(ui()->tagPosAfterDataRadioButton->isChecked()) {
-            preferredTagPosition() = ElementPosition::AfterData;
+            settings.preferredTagPosition = ElementPosition::AfterData;
         } else if(ui()->tagPosKeepRadioButton->isChecked()) {
-            preferredTagPosition() = ElementPosition::Keep;
+            settings.preferredTagPosition = ElementPosition::Keep;
         }
-        forceTagPosition() = ui()->tagPosForceCheckBox->isChecked();
+        settings.forceTagPosition = ui()->tagPosForceCheckBox->isChecked();
         if(ui()->indexPosBeforeDataRadioButton->isChecked()) {
-            preferredIndexPosition() = ElementPosition::BeforeData;
+            settings.preferredIndexPosition = ElementPosition::BeforeData;
         } else if(ui()->indexPosAfterDataRadioButton->isChecked()) {
-            preferredIndexPosition() = ElementPosition::AfterData;
+            settings.preferredIndexPosition = ElementPosition::AfterData;
         } else if(ui()->indexPosKeepRadioButton->isChecked()) {
-            preferredIndexPosition() = ElementPosition::Keep;
+            settings.preferredIndexPosition = ElementPosition::Keep;
         }
-        forceIndexPosition() = ui()->indexPosForceCheckBox->isChecked();
+        settings.forceIndexPosition = ui()->indexPosForceCheckBox->isChecked();
     }
     return ok;
 }
@@ -539,11 +556,12 @@ bool FileLayoutPage::apply()
 void FileLayoutPage::reset()
 {
     if(hasBeenShown()) {
-        ui()->forceRewriteCheckBox->setChecked(Settings::forceRewrite());
-        ui()->maxPaddingSpinBox->setValue(static_cast<int>(Settings::maxPadding()));
-        ui()->minPaddingSpinBox->setValue(static_cast<int>(Settings::minPadding()));
-        ui()->preferredPaddingSpinBox->setValue(static_cast<int>(Settings::preferredPadding()));
-        switch(preferredTagPosition()) {
+        const auto &settings = values().tagPocessing.fileLayout;
+        ui()->forceRewriteCheckBox->setChecked(settings.forceRewrite);
+        ui()->maxPaddingSpinBox->setValue(static_cast<int>(settings.maxPadding));
+        ui()->minPaddingSpinBox->setValue(static_cast<int>(settings.minPadding));
+        ui()->preferredPaddingSpinBox->setValue(static_cast<int>(settings.preferredPadding));
+        switch(settings.preferredTagPosition) {
         case ElementPosition::BeforeData:
             ui()->tagPosBeforeDataRadioButton->setChecked(true);
             break;
@@ -554,8 +572,8 @@ void FileLayoutPage::reset()
             ui()->tagPosKeepRadioButton->setChecked(true);
             break;
         }
-        ui()->tagPosForceCheckBox->setChecked(forceTagPosition());
-        switch(preferredIndexPosition()) {
+        ui()->tagPosForceCheckBox->setChecked(settings.forceTagPosition);
+        switch(settings.preferredIndexPosition) {
         case ElementPosition::BeforeData:
             ui()->indexPosBeforeDataRadioButton->setChecked(true);
             break;
@@ -566,7 +584,7 @@ void FileLayoutPage::reset()
             ui()->indexPosKeepRadioButton->setChecked(true);
             break;
         }
-        ui()->indexPosForceCheckBox->setChecked(forceIndexPosition());
+        ui()->indexPosForceCheckBox->setChecked(settings.forceIndexPosition);
     }
 }
 
@@ -616,7 +634,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     category->assignPages(QList<Dialogs::OptionPage *>() << new FileBrowserGeneralOptionPage);
     categories << category;
 
-    categories << Settings::qtSettings().category();
+    categories << values().qt.category();
 
     categoryModel()->setCategories(categories);
 

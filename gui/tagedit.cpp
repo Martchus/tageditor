@@ -179,7 +179,7 @@ void TagEdit::restore()
  */
 void TagEdit::apply()
 {
-    switch(Settings::unsupportedFieldHandling()) {
+    switch(Settings::values().tagPocessing.unsupportedFieldHandling) {
     case Settings::UnsupportedFieldHandling::Discard:
         // remove all old fields of all tags to discard
         // all unsupported values
@@ -241,7 +241,7 @@ void TagEdit::setupUi()
         // setup editing controls
         TagFieldEdit *edit = nullptr;
         int rowOverall = 0, rowLeft = 0, rowRight = 0;
-        for(const auto &item : Settings::selectedFieldsModel().items()) {
+        for(const auto &item : Settings::values().editor.fields.items()) {
             KnownField field = static_cast<KnownField>(item.id().toInt());
             if(item.isChecked() && hasField(field)) {
                 // the field is not disabled and the field is supported by at least one of the assigned tags

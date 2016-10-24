@@ -23,8 +23,8 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     QApplication a(argc, argv);
     Settings::restore();
     // apply settings specified via command line args after the settings chosen in the GUI to give the CLI options precedence
-    Settings::qtSettings().apply();
-    qtConfigArgs.applySettings(Settings::qtSettings().hasCustomFont());
+    Settings::values().qt.apply();
+    qtConfigArgs.applySettings(Settings::values().qt.hasCustomFont());
     // load resources needed by classes of qtutilities
     QtUtilitiesResources::init();
     LOAD_QT_TRANSLATIONS;

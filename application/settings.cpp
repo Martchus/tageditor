@@ -8,8 +8,6 @@
 
 #include <qtutilities/settingsdialog/qtsettings.h>
 
-#include <QString>
-#include <QByteArray>
 #include <QApplication>
 #include <QSettings>
 
@@ -17,541 +15,272 @@ using namespace Media;
 
 namespace Settings {
 
-// editor
-AdoptFields &adoptFields()
-{
-    static AdoptFields v = AdoptFields::Never;
-    return v;
-}
-bool &saveAndShowNextOnEnter()
-{
-    static bool v = false;
-    return v;
-}
-bool &askBeforeDeleting()
-{
-    static bool v = true;
-    return v;
-}
-MultipleTagHandling &multipleTagHandling()
-{
-    static MultipleTagHandling v = MultipleTagHandling::SingleEditorPerTarget;
-    return v;
-}
-bool &hideTagSelectionComboBox()
-{
-    static bool v = false;
-    return v;
-}
-bool &forceFullParse()
-{
-    static bool v = false;
-    return v;
-}
-#ifndef TAGEDITOR_NO_WEBVIEW
-bool &noWebView()
-{
-    static bool v = false;
-    return v;
-}
-#endif
-bool &hideCoverButtons()
-{
-    static bool v = false;
-    return v;
-}
+AutoCompletition::AutoCompletition() :
+    fields(nullptr, KnownFieldModel::DefaultSelection::None)
+{}
 
-// file browser
-bool &hideBackupFiles()
-{
-    static bool v = true;
-    return v;
-}
-bool &fileBrowserReadOnly()
-{
-    static bool v = true;
-    return v;
-}
+Editor::Editor() :
+    fields(nullptr, KnownFieldModel::DefaultSelection::CommonFields),
+    defaultTargets(nullptr, TargetLevelModel::DefaultSelection::MostUsefulTargets)
+{}
 
-// general tag processing
-Media::TagTextEncoding &preferredEncoding()
-{
-    static Media::TagTextEncoding v = Media::TagTextEncoding::Utf8;
-    return v;
-}
+DbQuery::DbQuery() :
+    fields(QList<Models::ChecklistItem>()
+           << KnownFieldModel::mkItem(KnownField::Title)
+           << KnownFieldModel::mkItem(KnownField::TrackPosition)
+           << KnownFieldModel::mkItem(KnownField::DiskPosition)
+           << KnownFieldModel::mkItem(KnownField::Album)
+           << KnownFieldModel::mkItem(KnownField::Album)
+           << KnownFieldModel::mkItem(KnownField::Year)
+           << KnownFieldModel::mkItem(KnownField::Genre)
+           << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
+           << KnownFieldModel::mkItem(KnownField::Lyrics, Qt::Unchecked))
+{}
 
-UnsupportedFieldHandling &unsupportedFieldHandling()
+Settings &values()
 {
-    static UnsupportedFieldHandling v = UnsupportedFieldHandling::Ignore;
-    return v;
-}
-
-bool &autoTagManagement()
-{
-    static bool v = true;
-    return v;
-}
-
-// ID3 tag processing
-TagUsage &id3v1usage()
-{
-    static TagUsage v = TagUsage::Always;
-    return v;
-}
-
-TagUsage &id3v2usage()
-{
-    static TagUsage v = TagUsage::Always;
-    return v;
-}
-
-byte &id3v2versionToBeUsed()
-{
-    static byte v = 3;
-    return v;
-}
-
-bool &keepVersionOfExistingId3v2Tag()
-{
-    static bool v = true;
-    return v;
-}
-
-bool &mergeMultipleSuccessiveId3v2Tags()
-{
-    static bool v = true;
-    return v;
-}
-
-// file layout
-bool &forceRewrite()
-{
-    static bool v = true;
-    return v;
-}
-
-ElementPosition &preferredTagPosition()
-{
-    static ElementPosition v = ElementPosition::BeforeData;
-    return v;
-}
-
-bool &forceTagPosition()
-{
-    static bool v = true;
-    return v;
-}
-
-ElementPosition &preferredIndexPosition()
-{
-    static ElementPosition v = ElementPosition::BeforeData;
-    return v;
-}
-
-bool &forceIndexPosition()
-{
-    static bool v = true;
-    return v;
-}
-
-size_t &minPadding()
-{
-    static size_t v = 0;
-    return v;
-}
-
-size_t &maxPadding()
-{
-    static size_t v = 0;
-    return v;
-}
-
-size_t &preferredPadding()
-{
-    static size_t v = 0;
-    return v;
-}
-
-// targets
-TargetLevelModel &defaultTargetsModel()
-{
-    static TargetLevelModel model(nullptr, TargetLevelModel::DefaultSelection::MostUsefulTargets);
-    return model;
-}
-
-// fields
-KnownFieldModel &selectedFieldsModel()
-{
-    static KnownFieldModel model(nullptr, KnownFieldModel::DefaultSelection::CommonFields);
-    return model;
-}
-
-// auto correction/completition
-bool &insertTitleFromFilename()
-{
-    static bool v = false;
-    return v;
-}
-
-bool &trimWhitespaces()
-{
-    static bool v = true;
-    return v;
-}
-
-bool &formatNames()
-{
-    static bool v = false;
-    return v;
-}
-
-bool &fixUmlauts()
-{
-    static bool v = false;
-    return v;
-}
-
-KnownFieldModel &autoCorrectionFields()
-{
-    static KnownFieldModel model(nullptr, KnownFieldModel::DefaultSelection::None);
-    return model;
-}
-
-// main window
-QByteArray &mainWindowGeometry()
-{
-    static QByteArray v;
-    return v;
-}
-
-QByteArray &mainWindowState()
-{
-    static QByteArray v;
-    return v;
-}
-
-QString &mainWindowCurrentFileBrowserDirectory()
-{
-    static QString v;
-    return v;
-}
-
-bool &mainWindowLayoutLocked()
-{
-    static bool v = false;
-    return v;
-}
-
-// db query
-bool &dbQueryWidgetShown()
-{
-    static bool v = false;
-    return v;
-}
-
-bool &dbQueryOverride()
-{
-    static bool v = false;
-    return v;
-}
-
-KnownFieldModel &dbQueryFields()
-{
-    static KnownFieldModel v(QList<Models::ChecklistItem>()
-                             << KnownFieldModel::mkItem(KnownField::Title)
-                             << KnownFieldModel::mkItem(KnownField::TrackPosition)
-                             << KnownFieldModel::mkItem(KnownField::DiskPosition)
-                             << KnownFieldModel::mkItem(KnownField::Album)
-                             << KnownFieldModel::mkItem(KnownField::Album)
-                             << KnownFieldModel::mkItem(KnownField::Year)
-                             << KnownFieldModel::mkItem(KnownField::Genre)
-                             << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
-                             << KnownFieldModel::mkItem(KnownField::Lyrics, Qt::Unchecked));
-    return v;
-}
-
-QString &musicBrainzUrl()
-{
-    static QString v;
-    return v;
-}
-
-QString &coverArtArchiveUrl()
-{
-    static QString v;
-    return v;
-}
-
-QString &lyricsWikiaUrl()
-{
-    static QString v;
-    return v;
-}
-
-// renaming files dialog
-int &scriptSource()
-{
-    static int v = 0;
-    return v;
-}
-
-QString &externalScript()
-{
-    static QString v;
-    return v;
-}
-
-QString &editorScript()
-{
-    static QString v;
-    return v;
-}
-
-// Qt settings
-Dialogs::QtSettings &qtSettings()
-{
-    static Dialogs::QtSettings v;
-    return v;
+    static Settings settings;
+    return settings;
 }
 
 void restore()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,  QApplication::organizationName(), QApplication::applicationName());
+    Settings &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
     switch(settings.value(QStringLiteral("adoptfields"), 0).toInt()) {
     case 1:
-        adoptFields() = AdoptFields::WithinDirectory;
+        v.editor.adoptFields = AdoptFields::WithinDirectory;
         break;
     case 2:
-        adoptFields() = AdoptFields::Always;
+        v.editor.adoptFields = AdoptFields::Always;
         break;
     default:
-        adoptFields() = AdoptFields::Never;
+        v.editor.adoptFields = AdoptFields::Never;
         break;
     };
-    saveAndShowNextOnEnter() = settings.value(QStringLiteral("saveandshownextonenter"), false).toBool();
-    askBeforeDeleting() = settings.value(QStringLiteral("askbeforedeleting"), true).toBool();
+    v.editor.saveAndShowNextOnEnter = settings.value(QStringLiteral("saveandshownextonenter"), false).toBool();
+    v.editor.askBeforeDeleting = settings.value(QStringLiteral("askbeforedeleting"), true).toBool();
     switch(settings.value(QStringLiteral("multipletaghandling"), 0).toInt()) {
     case 0:
-        multipleTagHandling() = MultipleTagHandling::SingleEditorPerTarget;
+        v.editor.multipleTagHandling = MultipleTagHandling::SingleEditorPerTarget;
         break;
     case 1:
-        multipleTagHandling() = MultipleTagHandling::SeparateEditors;
+        v.editor.multipleTagHandling = MultipleTagHandling::SeparateEditors;
         break;
     }
-    hideTagSelectionComboBox() = settings.value(QStringLiteral("hidetagselectioncombobox"), false).toBool();
+    v.editor.hideTagSelectionComboBox = settings.value(QStringLiteral("hidetagselectioncombobox"), false).toBool();
     settings.beginGroup(QStringLiteral("autocorrection"));
-    insertTitleFromFilename() = settings.value(QStringLiteral("inserttitlefromfilename"), false).toBool();
-    trimWhitespaces() = settings.value(QStringLiteral("trimwhitespaces"), true).toBool();
-    formatNames() = settings.value(QStringLiteral("formatnames"), false).toBool();
-    fixUmlauts() = settings.value(QStringLiteral("fixumlauts"), false).toBool();
+    v.editor.autoCompletition.insertTitleFromFilename = settings.value(QStringLiteral("inserttitlefromfilename"), false).toBool();
+    v.editor.autoCompletition.trimWhitespaces = settings.value(QStringLiteral("trimwhitespaces"), true).toBool();
+    v.editor.autoCompletition.formatNames = settings.value(QStringLiteral("formatnames"), false).toBool();
+    v.editor.autoCompletition.fixUmlauts = settings.value(QStringLiteral("fixumlauts"), false).toBool();
     settings.endGroup();
     BackupHelper::backupDirectory() = settings.value(QStringLiteral("tempdir")).toString().toStdString();
-    Settings::hideCoverButtons() = settings.value(QStringLiteral("hidecoverbtn"), false).toBool();
+    v.editor.hideCoverButtons = settings.value(QStringLiteral("hidecoverbtn"), false).toBool();
     settings.endGroup();
 
-    selectedFieldsModel().restore(settings, QStringLiteral("selectedfields"));
-
-    autoCorrectionFields().restore(settings, QStringLiteral("autocorrectionfields"));
+    v.editor.fields.restore(settings, QStringLiteral("selectedfields"));
+    v.editor.autoCompletition.fields.restore(settings, QStringLiteral("autocorrectionfields"));
 
     settings.beginGroup(QStringLiteral("info"));
-    Settings::forceFullParse() = settings.value(QStringLiteral("forcefullparse"), false).toBool();
+    v.editor.forceFullParse = settings.value(QStringLiteral("forcefullparse"), false).toBool();
 #ifndef TAGEDITOR_NO_WEBVIEW
-    Settings::noWebView() = settings.value(QStringLiteral("nowebview"), false).toBool();
+    v.editor.noWebView = settings.value(QStringLiteral("nowebview"), false).toBool();
 #endif
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("filebrowser"));
-    hideBackupFiles() = settings.value(QStringLiteral("hidebackupfiles"), true).toBool();
-    fileBrowserReadOnly() = settings.value(QStringLiteral("readonly"), true).toBool();
+    v.fileBrowser.hideBackupFiles = settings.value(QStringLiteral("hidebackupfiles"), true).toBool();
+    v.fileBrowser.readOnly = settings.value(QStringLiteral("readonly"), true).toBool();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("tagprocessing"));
     switch(settings.value(QStringLiteral("preferredencoding"), 1).toInt()) {
     case 0:
-        preferredEncoding() = Media::TagTextEncoding::Latin1;
+        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Latin1;
         break;
     case 2:
-        preferredEncoding() = Media::TagTextEncoding::Utf16BigEndian;
+        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Utf16BigEndian;
         break;
     case 3:
-        preferredEncoding() = Media::TagTextEncoding::Utf16LittleEndian;
+        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Utf16LittleEndian;
         break;
     default:
-        preferredEncoding() = Media::TagTextEncoding::Utf8;
+        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Utf8;
     };
     switch(settings.value(QStringLiteral("unsupportedfieldhandling"), 0).toInt()) {
     case 1:
-        unsupportedFieldHandling() = UnsupportedFieldHandling::Discard;
+        v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Discard;
         break;
     default:
-        unsupportedFieldHandling() = UnsupportedFieldHandling::Ignore;
+        v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     };
-    autoTagManagement() = settings.value(QStringLiteral("autotagmanagement"), true).toBool();
+    v.tagPocessing.autoTagManagement = settings.value(QStringLiteral("autotagmanagement"), true).toBool();
     settings.beginGroup(QStringLiteral("id3v1"));
     switch(settings.value(QStringLiteral("usage"), 0).toInt()) {
     case 1:
-        id3v1usage() = TagUsage::KeepExisting;
+        v.tagPocessing.id3.v1Usage = TagUsage::KeepExisting;
         break;
     case 2:
-        id3v1usage() = TagUsage::Never;
+        v.tagPocessing.id3.v1Usage = TagUsage::Never;
         break;
     default:
-        id3v1usage() = TagUsage::Always;
+        v.tagPocessing.id3.v1Usage = TagUsage::Always;
         break;
     };
     settings.endGroup();
     settings.beginGroup(QStringLiteral("id3v2"));
     switch(settings.value(QStringLiteral("usage"), 0).toInt()) {
     case 1:
-        id3v2usage() = TagUsage::KeepExisting;
+        v.tagPocessing.id3.v2Usage = TagUsage::KeepExisting;
         break;
     case 2:
-        id3v2usage() = TagUsage::Never;
+        v.tagPocessing.id3.v2Usage = TagUsage::Never;
         break;
     default:
-        id3v2usage() = TagUsage::Always;
+        v.tagPocessing.id3.v2Usage = TagUsage::Always;
     };
-    id3v2versionToBeUsed() = settings.value(QStringLiteral("versiontobeused"), 3).toUInt();
-    keepVersionOfExistingId3v2Tag() = settings.value(QStringLiteral("keepversionofexistingtag"), true).toBool();
-    mergeMultipleSuccessiveId3v2Tags() = settings.value(QStringLiteral("mergemultiplesuccessivetags"), true).toBool();
+    v.tagPocessing.id3.v2Version = settings.value(QStringLiteral("versiontobeused"), 3).toUInt();
+    v.tagPocessing.id3.keepVersionOfExistingId3v2Tag = settings.value(QStringLiteral("keepversionofexistingtag"), true).toBool();
+    v.tagPocessing.id3.mergeMultipleSuccessiveId3v2Tags = settings.value(QStringLiteral("mergemultiplesuccessivetags"), true).toBool();
     settings.endGroup();
-    defaultTargetsModel().restore(settings, QStringLiteral("targets"));
+    v.editor.defaultTargets.restore(settings, QStringLiteral("targets"));
     settings.beginGroup(QStringLiteral("filelayout"));
-    forceRewrite() = settings.value(QStringLiteral("forcerewrite"), true).toBool();
+    v.tagPocessing.fileLayout.forceRewrite = settings.value(QStringLiteral("forcerewrite"), true).toBool();
     switch(settings.value(QStringLiteral("tagpos")).toInt()) {
     case 0:
-        preferredTagPosition() = ElementPosition::BeforeData;
+        v.tagPocessing.fileLayout.preferredTagPosition = ElementPosition::BeforeData;
         break;
     case 1:
-        preferredTagPosition() = ElementPosition::AfterData;
+        v.tagPocessing.fileLayout.preferredTagPosition = ElementPosition::AfterData;
         break;
     }
-    forceTagPosition() = settings.value(QStringLiteral("forcetagpos"), true).toBool();
+    v.tagPocessing.fileLayout.forceTagPosition = settings.value(QStringLiteral("forcetagpos"), true).toBool();
     switch(settings.value(QStringLiteral("indexpos")).toInt()) {
     case 0:
-        preferredIndexPosition() = ElementPosition::BeforeData;
+        v.tagPocessing.fileLayout.preferredIndexPosition = ElementPosition::BeforeData;
         break;
     case 1:
-        preferredIndexPosition() = ElementPosition::AfterData;
+        v.tagPocessing.fileLayout.preferredIndexPosition = ElementPosition::AfterData;
         break;
     }
-    forceIndexPosition() = settings.value(QStringLiteral("forceindexpos"), true).toBool();
-    minPadding() = settings.value(QStringLiteral("minpad"), 0).toUInt();
-    maxPadding() = settings.value(QStringLiteral("maxpad"), 0).toUInt();
-    preferredPadding() = settings.value(QStringLiteral("prefpad"), 0).toUInt();
+    v.tagPocessing.fileLayout.forceIndexPosition = settings.value(QStringLiteral("forceindexpos"), true).toBool();
+    v.tagPocessing.fileLayout.minPadding = settings.value(QStringLiteral("minpad"), 0).toUInt();
+    v.tagPocessing.fileLayout.maxPadding = settings.value(QStringLiteral("maxpad"), 0).toUInt();
+    v.tagPocessing.fileLayout.preferredPadding = settings.value(QStringLiteral("prefpad"), 0).toUInt();
     settings.endGroup();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("mainwindow"));
-    mainWindowGeometry() = settings.value(QStringLiteral("geometry")).toByteArray();
-    mainWindowState() = settings.value(QStringLiteral("windowstate")).toByteArray();
-    mainWindowCurrentFileBrowserDirectory() = settings.value(QStringLiteral("currentfilebrowserdirectory")).toString();
-    mainWindowLayoutLocked() = settings.value(QStringLiteral("layoutlocked"), mainWindowLayoutLocked()).toBool();
+    v.mainWindow.geometry = settings.value(QStringLiteral("geometry")).toByteArray();
+    v.mainWindow.state = settings.value(QStringLiteral("windowstate")).toByteArray();
+    v.mainWindow.currentFileBrowserDirectory = settings.value(QStringLiteral("currentfilebrowserdirectory")).toString();
+    v.mainWindow.layoutLocked = settings.value(QStringLiteral("layoutlocked"), v.mainWindow.layoutLocked).toBool();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("dbquery"));
-    dbQueryWidgetShown() = settings.value(QStringLiteral("visible"), false).toBool();
-    dbQueryOverride() = settings.value(QStringLiteral("override"), true).toBool();
-    dbQueryFields().restore(settings, QStringLiteral("fields"));
-    musicBrainzUrl() = settings.value(QStringLiteral("musicbrainzurl")).toString();
-    coverArtArchiveUrl() = settings.value(QStringLiteral("coverartarchiveurl")).toString();
+    v.dbQuery.widgetShown = settings.value(QStringLiteral("visible"), false).toBool();
+    v.dbQuery.override = settings.value(QStringLiteral("override"), true).toBool();
+    v.dbQuery.fields.restore(settings, QStringLiteral("fields"));
+    v.dbQuery.musicBrainzUrl = settings.value(QStringLiteral("musicbrainzurl")).toString();
+    v.dbQuery.coverArtArchiveUrl = settings.value(QStringLiteral("coverartarchiveurl")).toString();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));
-    scriptSource() = settings.value(QStringLiteral("src")).toInt();
-    externalScript() = settings.value(QStringLiteral("file")).toString();
-    editorScript() = settings.value(QStringLiteral("script")).toString();
+    v.renamingUtility.scriptSource = settings.value(QStringLiteral("src")).toInt();
+    v.renamingUtility.externalScript = settings.value(QStringLiteral("file")).toString();
+    v.renamingUtility.editorScript = settings.value(QStringLiteral("script")).toString();
     settings.endGroup();
 
-    qtSettings().restore(settings);
+    v.qt.restore(settings);
 }
 
 void save()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,  QApplication::organizationName(), QApplication::applicationName());
+    const Settings &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
-    settings.setValue(QStringLiteral("adoptfields"), static_cast<int>(adoptFields()));
-    settings.setValue(QStringLiteral("saveandshownextonenter"), saveAndShowNextOnEnter());
-    settings.setValue(QStringLiteral("askbeforedeleting"), askBeforeDeleting());
-    settings.setValue(QStringLiteral("multipletaghandling"), static_cast<int>(multipleTagHandling()));
-    settings.setValue(QStringLiteral("hidetagselectioncombobox"), hideTagSelectionComboBox());
+    settings.setValue(QStringLiteral("adoptfields"), static_cast<int>(v.editor.adoptFields));
+    settings.setValue(QStringLiteral("saveandshownextonenter"), v.editor.saveAndShowNextOnEnter);
+    settings.setValue(QStringLiteral("askbeforedeleting"), v.editor.askBeforeDeleting);
+    settings.setValue(QStringLiteral("multipletaghandling"), static_cast<int>(v.editor.multipleTagHandling));
+    settings.setValue(QStringLiteral("hidetagselectioncombobox"), v.editor.hideTagSelectionComboBox);
     settings.beginGroup(QStringLiteral("autocorrection"));
-    settings.setValue(QStringLiteral("inserttitlefromfilename"), Settings::insertTitleFromFilename());
-    settings.setValue(QStringLiteral("trimwhitespaces"), Settings::trimWhitespaces());
-    settings.setValue(QStringLiteral("formatnames"), Settings::formatNames());
-    settings.setValue(QStringLiteral("fixumlauts"), Settings::fixUmlauts());
+    settings.setValue(QStringLiteral("inserttitlefromfilename"), v.editor.autoCompletition.insertTitleFromFilename);
+    settings.setValue(QStringLiteral("trimwhitespaces"), v.editor.autoCompletition.trimWhitespaces);
+    settings.setValue(QStringLiteral("formatnames"), v.editor.autoCompletition.formatNames);
+    settings.setValue(QStringLiteral("fixumlauts"), v.editor.autoCompletition.fixUmlauts);
     settings.endGroup();
     settings.setValue(QStringLiteral("tempdir"), QString::fromStdString(BackupHelper::backupDirectory()));
-    settings.setValue(QStringLiteral("hidecoverbtn"), Settings::hideCoverButtons());
+    settings.setValue(QStringLiteral("hidecoverbtn"), v.editor.hideCoverButtons);
     settings.endGroup();
 
-    selectedFieldsModel().save(settings, QStringLiteral("selectedfields"));
-
-    autoCorrectionFields().save(settings, QStringLiteral("autocorrectionfields"));
+    v.editor.fields.save(settings, QStringLiteral("selectedfields"));
+    v.editor.autoCompletition.fields.save(settings, QStringLiteral("autocorrectionfields"));
 
     settings.beginGroup(QStringLiteral("info"));
-    settings.setValue(QStringLiteral("forcefullparse"), Settings::forceFullParse());
+    settings.setValue(QStringLiteral("forcefullparse"), v.editor.forceFullParse);
 #ifndef TAGEDITOR_NO_WEBVIEW
-    settings.setValue(QStringLiteral("nowebview"), Settings::noWebView());
+    settings.setValue(QStringLiteral("nowebview"), v.editor.noWebView);
 #endif
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("filebrowser"));
-    settings.setValue(QStringLiteral("hidebackupfiles"), hideBackupFiles());
-    settings.setValue(QStringLiteral("readonly"), fileBrowserReadOnly());
+    settings.setValue(QStringLiteral("hidebackupfiles"), v.fileBrowser.hideBackupFiles);
+    settings.setValue(QStringLiteral("readonly"), v.fileBrowser.readOnly);
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("tagprocessing"));
-    settings.setValue(QStringLiteral("preferredencoding"), static_cast<int>(preferredEncoding()));
-    settings.setValue(QStringLiteral("unsupportedfieldhandling"), static_cast<int>(unsupportedFieldHandling()));
-    settings.setValue(QStringLiteral("autotagmanagement"), autoTagManagement());
+    settings.setValue(QStringLiteral("preferredencoding"), static_cast<int>(v.tagPocessing.preferredEncoding));
+    settings.setValue(QStringLiteral("unsupportedfieldhandling"), static_cast<int>(v.tagPocessing.unsupportedFieldHandling));
+    settings.setValue(QStringLiteral("autotagmanagement"), v.tagPocessing.autoTagManagement);
     settings.beginGroup(QStringLiteral("id3v1"));
-    settings.setValue(QStringLiteral("usage"), static_cast<int>(id3v1usage()));
+    settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.id3.v1Usage));
     settings.endGroup();
     settings.beginGroup(QStringLiteral("id3v2"));
-    settings.setValue(QStringLiteral("usage"), static_cast<int>(id3v2usage()));
-    settings.setValue(QStringLiteral("versiontobeused"), id3v2versionToBeUsed());
-    settings.setValue(QStringLiteral("keepversionofexistingtag"), keepVersionOfExistingId3v2Tag());
-    settings.setValue(QStringLiteral("mergemultiplesuccessivetags"), mergeMultipleSuccessiveId3v2Tags());
+    settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.id3.v2Usage));
+    settings.setValue(QStringLiteral("versiontobeused"), v.tagPocessing.id3.v2Version);
+    settings.setValue(QStringLiteral("keepversionofexistingtag"), v.tagPocessing.id3.keepVersionOfExistingId3v2Tag);
+    settings.setValue(QStringLiteral("mergemultiplesuccessivetags"), v.tagPocessing.id3.mergeMultipleSuccessiveId3v2Tags);
     settings.endGroup();
-    defaultTargetsModel().save(settings, QStringLiteral("targets"));
+    v.editor.defaultTargets.save(settings, QStringLiteral("targets"));
     settings.beginGroup(QStringLiteral("filelayout"));
-    settings.setValue(QStringLiteral("forcerewrite"), forceRewrite());
-    settings.setValue(QStringLiteral("tagpos"), static_cast<int>(preferredTagPosition()));
-    settings.setValue(QStringLiteral("forcetagpos"), forceTagPosition());
-    settings.setValue(QStringLiteral("indexpos"), static_cast<int>(preferredIndexPosition()));
-    settings.setValue(QStringLiteral("forceindexpos"), forceIndexPosition());
-    settings.setValue(QStringLiteral("minpad"), QVariant::fromValue(minPadding()));
-    settings.setValue(QStringLiteral("maxpad"), QVariant::fromValue(maxPadding()));
-    settings.setValue(QStringLiteral("prefpad"), QVariant::fromValue(preferredPadding()));
+    settings.setValue(QStringLiteral("forcerewrite"), v.tagPocessing.fileLayout.forceRewrite);
+    settings.setValue(QStringLiteral("tagpos"), static_cast<int>(v.tagPocessing.fileLayout.preferredTagPosition));
+    settings.setValue(QStringLiteral("forcetagpos"), v.tagPocessing.fileLayout.forceTagPosition);
+    settings.setValue(QStringLiteral("indexpos"), static_cast<int>(v.tagPocessing.fileLayout.preferredIndexPosition));
+    settings.setValue(QStringLiteral("forceindexpos"), v.tagPocessing.fileLayout.forceIndexPosition);
+    settings.setValue(QStringLiteral("minpad"), QVariant::fromValue(v.tagPocessing.fileLayout.minPadding));
+    settings.setValue(QStringLiteral("maxpad"), QVariant::fromValue(v.tagPocessing.fileLayout.maxPadding));
+    settings.setValue(QStringLiteral("prefpad"), QVariant::fromValue(v.tagPocessing.fileLayout.preferredPadding));
     settings.endGroup();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("mainwindow"));
-    settings.setValue(QStringLiteral("geometry"), mainWindowGeometry());
-    settings.setValue(QStringLiteral("windowstate"), mainWindowState());
-    settings.setValue(QStringLiteral("currentfilebrowserdirectory"), mainWindowCurrentFileBrowserDirectory());
-    settings.setValue(QStringLiteral("layoutlocked"), mainWindowLayoutLocked());
+    settings.setValue(QStringLiteral("geometry"), v.mainWindow.geometry);
+    settings.setValue(QStringLiteral("windowstate"), v.mainWindow.state);
+    settings.setValue(QStringLiteral("currentfilebrowserdirectory"), v.mainWindow.currentFileBrowserDirectory);
+    settings.setValue(QStringLiteral("layoutlocked"), v.mainWindow.layoutLocked);
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("dbquery"));
-    settings.setValue(QStringLiteral("visible"), dbQueryWidgetShown());
-    settings.setValue(QStringLiteral("override"), dbQueryOverride());
-    dbQueryFields().save(settings, QStringLiteral("fields"));
-    settings.setValue(QStringLiteral("musicbrainzurl"), musicBrainzUrl());
-    settings.setValue(QStringLiteral("coverartarchiveurl"), coverArtArchiveUrl());
+    settings.setValue(QStringLiteral("visible"), v.dbQuery.widgetShown);
+    settings.setValue(QStringLiteral("override"), v.dbQuery.override);
+    v.dbQuery.fields.save(settings, QStringLiteral("fields"));
+    settings.setValue(QStringLiteral("musicbrainzurl"), v.dbQuery.musicBrainzUrl);
+    settings.setValue(QStringLiteral("coverartarchiveurl"), v.dbQuery.coverArtArchiveUrl);
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("renamedlg"));
-    settings.setValue(QStringLiteral("src"), Settings::scriptSource());
-    settings.setValue(QStringLiteral("file"), Settings::externalScript());
-    settings.setValue(QStringLiteral("script"), Settings::editorScript());
+    settings.setValue(QStringLiteral("src"), v.renamingUtility.scriptSource);
+    settings.setValue(QStringLiteral("file"), v.renamingUtility.externalScript);
+    settings.setValue(QStringLiteral("script"), v.renamingUtility.editorScript);
     settings.endGroup();
 
-    qtSettings().save(settings);
+    v.qt.save(settings);
 }
 
 }

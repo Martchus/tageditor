@@ -206,7 +206,8 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
     }
 
     // compose URL
-    QUrl url(Settings::musicBrainzUrl().isEmpty() ? defaultMusicBrainzUrl : (Settings::musicBrainzUrl() + QStringLiteral("/recording/")));
+    const QString &musicBrainzUrl = Settings::values().dbQuery.musicBrainzUrl;
+    QUrl url(musicBrainzUrl.isEmpty() ? defaultMusicBrainzUrl : (musicBrainzUrl + QStringLiteral("/recording/")));
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("query"), parts.join(QStringLiteral(" AND ")));
     url.setQuery(query);
@@ -218,7 +219,8 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
 QNetworkReply *queryCoverArtArchive(const QString &albumId)
 {
     static const QString defaultArchiveUrl(QStringLiteral("https://coverartarchive.org"));
-    return networkAccessManager().get(QNetworkRequest(QUrl((Settings::coverArtArchiveUrl().isEmpty() ? defaultArchiveUrl : Settings::coverArtArchiveUrl()) % QStringLiteral("/release/") % albumId % QStringLiteral("/front"))));
+    const QString &coverArtArchiveUrl = Settings::values().dbQuery.coverArtArchiveUrl;
+    return networkAccessManager().get(QNetworkRequest(QUrl((coverArtArchiveUrl.isEmpty() ? defaultArchiveUrl : coverArtArchiveUrl) % QStringLiteral("/release/") % albumId % QStringLiteral("/front"))));
 }
 
 } // namespace QtGui

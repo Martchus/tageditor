@@ -88,8 +88,9 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
     // restore geometry and state
-    restoreGeometry(Settings::mainWindowGeometry());
-    restoreState(Settings::mainWindowState());
+    const auto &settings = Settings::values();
+    restoreGeometry(settings.mainWindow.geometry);
+    restoreState(settings.mainWindow.state);
 
     // setup file model and file tree view
     m_fileModel = new QFileSystemModel(this);
@@ -97,7 +98,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_fileFilterModel = new FileFilterProxyModel(this);
     m_fileFilterModel->setExtensionsToBeFiltered(QStringList() << QStringLiteral("bak") << QStringLiteral("tmp"));
     m_fileFilterModel->setSourceModel(m_fileModel);
-    m_fileFilterModel->setFilterEnabled(Settings::hideBackupFiles());
+    m_fileFilterModel->setFilterEnabled(settings.fileBrowser.hideBackupFiles);
     m_ui->filesTreeView->sortByColumn(0, Qt::AscendingOrder);
     m_ui->filesTreeView->setModel(m_fileFilterModel);
     m_ui->filesTreeView->setColumnWidth(0, 300);
@@ -109,12 +110,12 @@ MainWindow::MainWindow(QWidget *parent) :
     handleFileStatusChange(false, false);
 
     // dbquery dock widget
-    if(Settings::dbQueryWidgetShown()) {
+    if(settings.dbQuery.widgetShown) {
         m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
     }
 
     // restore locked
-    setLayoutLocked(Settings::mainWindowLayoutLocked());
+    setLayoutLocked(settings.mainWindow.layoutLocked);
 
     // connect signals and slots, install event filter
     //  menu: application
@@ -147,7 +148,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->filesTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::fileSelected);
     connect(m_ui->selectNextCommandLinkButton, &QCommandLinkButton::clicked, this, static_cast<void(MainWindow::*)(void)>(&MainWindow::selectNextFile));
     // apply settings
-    setCurrentDirectory(Settings::mainWindowCurrentFileBrowserDirectory());
+    setCurrentDirectory(settings.mainWindow.currentFileBrowserDirectory);
     applySettingsFromDialog();
 }
 
@@ -222,14 +223,15 @@ void MainWindow::startParsing(const QString &path)
  */
 bool MainWindow::event(QEvent *event)
 {
+    auto &settings = Settings::values();
     switch(event->type()) {
     case QEvent::Close:
         // save settings
-        Settings::mainWindowGeometry() = saveGeometry();
-        Settings::mainWindowState() = saveState();
-        Settings::mainWindowCurrentFileBrowserDirectory() = currentDirectory();
-        Settings::mainWindowLayoutLocked() = isLayoutLocked();
-        Settings::dbQueryWidgetShown() = m_ui->dbQueryDockWidget->isVisible();
+        settings.mainWindow.geometry = saveGeometry();
+        settings.mainWindow.state = saveState();
+        settings.mainWindow.currentFileBrowserDirectory = currentDirectory();
+        settings.mainWindow.layoutLocked = isLayoutLocked();
+        settings.dbQuery.widgetShown = m_ui->dbQueryDockWidget->isVisible();
         break;
     default:
         ;
@@ -542,16 +544,17 @@ void MainWindow::saveFileInformation()
  */
 void MainWindow::applySettingsFromDialog()
 {
-    if(m_fileFilterModel->isFilterEnabled() != Settings::hideBackupFiles()) {
+    auto &settings = Settings::values();
+    if(m_fileFilterModel->isFilterEnabled() != settings.fileBrowser.hideBackupFiles) {
         // check this condition to avoid unnecessary model reset
-        m_fileFilterModel->setFilterEnabled(Settings::hideBackupFiles());
+        m_fileFilterModel->setFilterEnabled(settings.fileBrowser.hideBackupFiles);
         const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(m_ui->pathLineEdit->text()));
         if(index.isValid()) {
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
         }
     }
-    if(m_fileModel->isReadOnly() != Settings::fileBrowserReadOnly()) {
-        m_fileModel->setReadOnly(Settings::fileBrowserReadOnly());
+    if(m_fileModel->isReadOnly() != settings.fileBrowser.readOnly) {
+        m_fileModel->setReadOnly(settings.fileBrowser.readOnly);
     }
 }
 
