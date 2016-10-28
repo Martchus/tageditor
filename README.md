@@ -100,7 +100,7 @@ Here are some Bash examples which illustrate getting and setting tag information
     ```
 
 
-  * *Displays* technical information about all *.m4a files in the specified directory:
+* *Displays* technical information about all *.m4a files in the specified directory:
     ```
     tageditor info --files /some/dir/*.m4a
     ```
