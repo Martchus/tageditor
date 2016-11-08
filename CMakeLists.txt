@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 set(META_PROJECT_NAME tageditor)
 set(META_PROJECT_TYPE application)
 set(META_APP_NAME "Tag Editor")
-set(META_APP_CATEGORIES "Utility;Audio;Video;")
+set(META_APP_CATEGORIES "AudioVideo;Database;")
 set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
 set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska")
@@ -194,7 +194,7 @@ set(REQUIRED_ICONS
 )
 
 # find c++utilities
-find_package(c++utilities 4.1.0 REQUIRED)
+find_package(c++utilities 4.3.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
@@ -231,6 +231,7 @@ add_desktop_file()
 # create custom desktop file for launching the renaming utility separately
 add_custom_desktop_file(
     "${META_PROJECT_NAME}-renamingutility"
+    "Renaming utility (${META_APP_NAME})"
     "Renaming utility (${META_APP_NAME})"
     "Tool to rename files using its tag information"
     "${META_APP_CATEGORIES}"
