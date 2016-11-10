@@ -4,9 +4,9 @@
 #include <c++utilities/application/global.h>
 
 #include <QAbstractTableModel>
+#include <QNetworkReply>
 
 #ifdef DEBUG_BUILD
-# include <QNetworkReply>
 # include <iostream>
 #endif
 

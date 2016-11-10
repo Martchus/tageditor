@@ -7,12 +7,7 @@
 #include <tagparser/tag.h>
 #include <tagparser/signature.h>
 
-#include <QNetworkReply>
 #include <QMessageBox>
-
-#ifdef DEBUG_BUILD
-# include <iostream>
-#endif
 
 using namespace std;
 using namespace Utility;
