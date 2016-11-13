@@ -68,6 +68,9 @@
         <property name="text">
          <string>UTF-1&amp;6 Big Endian</string>
         </property>
+        <attribute name="buttonGroup">
+         <string notr="true">preferredTextEncodingButtonGroup</string>
+        </attribute>
        </widget>
       </item>
      </layout>
