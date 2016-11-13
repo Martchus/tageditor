@@ -317,9 +317,9 @@ uint64 parseUInt64(const Argument &arg, uint64 defaultValue)
     if(arg.isPresent()) {
         try {
             if(*arg.values().front() == '0' && *(arg.values().front() + 1) == 'x') {
-                return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front() + 2, 16);
+                return stringToNumber<uint64>(arg.values().front() + 2, 16);
             } else {
-                return stringToNumber<decltype(parseUInt64(arg, defaultValue))>(arg.values().front());
+                return stringToNumber<uint64>(arg.values().front());
             }
         } catch(const ConversionException &) {
             cerr << "Warning: The specified value \"" << arg.values().front() << "\" is no valid unsigned integer and will be ignored." << endl;

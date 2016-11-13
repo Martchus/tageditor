@@ -752,26 +752,34 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         auto startThread = [this] {
             m_fileOperationMutex.lock();
             char result;
-            try {
+            try { // credits for this nesting go to GCC regression 66145
                 try {
-                    // try to open with write access
-                    m_fileInfo.reopen(false);
+                    try {
+                        // try to open with write access
+                        m_fileInfo.reopen(false);
+                    } catch(...) {
+                        ::IoUtilities::catchIoFailure();
+                        // try to open read-only if opening with write access failed
+                        m_fileInfo.reopen(true);
+                    }
+                    m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
+                    m_fileInfo.parseEverything();
+                    result = ParsingSuccessful;
+                } catch(const Failure &) {
+                    // the file has been opened; parsing notifications will be shown in the info box
+                    result = FatalParsingError;
                 } catch(...) {
                     ::IoUtilities::catchIoFailure();
-                    // try to open read-only if opening with write access failed
-                    m_fileInfo.reopen(true);
+                    // the file could not be opened because an IO error occured
+                    m_fileInfo.close(); // ensure file is closed
+                    result = IoError;
                 }
-                m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
-                m_fileInfo.parseEverything();
-                result = ParsingSuccessful;
-            } catch(const Failure &) {
-                // the file has been opened; parsing notifications will be shown in the info box
+            } catch(const exception &e) {
+                m_fileInfo.addNotification(Media::NotificationType::Critical, string("Something completely unexpected happened: ") + e.what(), "parsing");
                 result = FatalParsingError;
             } catch(...) {
-                ::IoUtilities::catchIoFailure();
-                // the file could not be opened because an IO error occured
-                m_fileInfo.close(); // ensure file is closed
-                result = IoError;
+                m_fileInfo.addNotification(Media::NotificationType::Critical, "Something completely unexpected happened", "parsing");
+                result = FatalParsingError;
             }
             m_fileInfo.unregisterAllCallbacks();
             QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
@@ -1080,12 +1088,20 @@ bool TagEditorWidget::startSaving()
             m_fileOperationMutex.lock();
             bool processingError = false, ioError = false;
             try {
-                m_fileInfo.applyChanges();
-            } catch(const Failure &) {
+                try {
+                    m_fileInfo.applyChanges();
+                } catch(const Failure &) {
+                    processingError = true;
+                } catch(...) {
+                    ::IoUtilities::catchIoFailure();
+                    ioError = true;
+                }
+            } catch(const exception &e) {
+                m_fileInfo.addNotification(Media::NotificationType::Critical, string("Something completely unexpected happened: ") + e.what(), "making");
                 processingError = true;
             } catch(...) {
-                ::IoUtilities::catchIoFailure();
-                ioError = true;
+                m_fileInfo.addNotification(Media::NotificationType::Critical, "Something completely unexpected happened", "making");
+                processingError = true;
             }
             m_fileInfo.unregisterAllCallbacks();
             QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
