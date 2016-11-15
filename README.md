@@ -22,8 +22,25 @@ It also allows to inspect and validate the element structure of MP4 and Matroska
 The editor allows you to choose whether tags should be placed at the beginning or at
 the end of an MP4/Matroska file.
 
+In the CLI, this is controlled via `--tag-pos` option.
+To enfore a specific `--tag-pos`, even if this requires the file to be rewritten, combine
+with the `--force` option. So for forcing *faststart* the following options are required:
+
+```
+tageditor set --tag-pos front --force
+```
+
+Note: Putting tags at the beginning of the file is sometimes called *faststart*.
+
 ID3v2 tags and Vorbis/Opus comments can only be placed at the beginning. ID3v1 tags
 can only be placed at the end of the file.
+
+### Index position
+It is also possible to control the position of the index/cues. However, this is currently
+only supported when dealing with Matroska files.
+
+Note: This can not be implemented for MP4 since tags and index are tied to each other. When dealing
+with MP4 files the index position will always be the same as the tag position.
 
 ### Padding
 Padding allows adding additional tag information without rewriting the entire file
@@ -31,7 +48,13 @@ or appending the tag. Usage of padding can be configured:
 - minimum/maximum padding: The file is rewritten if the padding would fall below/exceed the specifed limits.
 - preferred padding: If the file needs to be rewritten the preferred padding is used.
 
+Default value for minimum and maximum padding is zero (in the CLI and GUI). This leads to the fact that
+the Tag Editor will almost always have to rewrite the entire file to apply changes. To prevent this, set
+at least the maximum padding to a higher value.
+
 However, it is also possible to force rewriting the entire file.
+
+The relevant CLI options are `--min-padding`, `--max-padding` and `--force-rewrite`.
 
 Taking advantage of padding is currently not supported when dealing with Ogg streams (it is supported when
 dealing with raw FLAC streams).
@@ -83,7 +106,7 @@ However, this feature is still experimental.
 ```
 tageditor <operation> [options]
 ```
-Checkout the available operations and options with --help.
+Checkout the available operations and options with `--help`.
 
 #### Examples
 Here are some Bash examples which illustrate getting and setting tag information:
