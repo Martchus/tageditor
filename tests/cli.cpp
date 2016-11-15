@@ -41,6 +41,7 @@ class CliTests : public TestFixture
     CPPUNIT_TEST(testDisplayingInfo);
     CPPUNIT_TEST(testExtraction);
     CPPUNIT_TEST(testReadingAndWritingDocumentTitle);
+    CPPUNIT_TEST(testFileLayoutOptions);
 #endif
     CPPUNIT_TEST_SUITE_END();
 
@@ -59,6 +60,7 @@ public:
     void testDisplayingInfo();
     void testExtraction();
     void testReadingAndWritingDocumentTitle();
+    void testFileLayoutOptions();
 #endif
 
 private:
@@ -564,5 +566,25 @@ void CliTests::testReadingAndWritingDocumentTitle()
 
     remove(mkvFile.data());
     remove((mkvFile + ".bak").data());
+}
+
+/*!
+ * \brief Tests options for controlling file layout.
+ */
+void CliTests::testFileLayoutOptions()
+{
+    cout << "\nFile layout options" <<  endl;
+    string stdout, stderr;
+
+    const string mp4File1(workingCopyPath("mtx-test-data/alac/othertest-itunes.m4a"));
+    const char *const args1[] = {"tageditor", "set", "title=File layout test", "--tag-pos", "back", "--force", "-f", mp4File1.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+
+    const char *const args2[] = {"tageditor", "info", "-f", mp4File1.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(stdout.find("Tag position                  after data") != string::npos);
+
+    remove(mp4File1.data());
+    remove((mp4File1 + ".bak").data());
 }
 #endif

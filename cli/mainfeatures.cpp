@@ -295,10 +295,10 @@ TagTextEncoding parseEncodingDenotation(const Argument &encodingArg, TagTextEnco
     return defaultEncoding;
 }
 
-ElementPosition parsePositionDenotation(const Argument &posArg, ElementPosition defaultPos)
+ElementPosition parsePositionDenotation(const Argument &posArg, const Argument &valueArg, ElementPosition defaultPos)
 {
     if(posArg.isPresent()) {
-        const auto &val = posArg.values().front();
+        const char *val = valueArg.values(0).front();
         if(!strcmp(val, "front")) {
             return ElementPosition::BeforeData;
         } else if(!strcmp(val, "back")) {
@@ -812,6 +812,20 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     printProperty("Duration", container->duration());
                     printProperty("Creation time", container->creationTime());
                     printProperty("Modification time", container->modificationTime());
+                    const char *tagPos;
+                    switch(container->determineTagPosition()) {
+                    case ElementPosition::BeforeData:
+                        tagPos = "before data";
+                        break;
+                    case ElementPosition::AfterData:
+                        tagPos = "after data";
+                        break;
+                    case ElementPosition::Keep:
+                        tagPos = nullptr;
+                    }
+                    if(tagPos) {
+                        printProperty("Tag position", tagPos);
+                    }
                 }
                 if(fileInfo.paddingSize()) {
                     printProperty("Padding", dataSizeToString(fileInfo.paddingSize()));
@@ -1094,9 +1108,9 @@ void setTagInfo(const SetTagInfoArgs &args)
     fileInfo.setMinPadding(parseUInt64(args.minPaddingArg, 0));
     fileInfo.setMaxPadding(parseUInt64(args.maxPaddingArg, 0));
     fileInfo.setPreferredPadding(parseUInt64(args.prefPaddingArg, 0));
-    fileInfo.setTagPosition(parsePositionDenotation(args.tagPosArg, ElementPosition::BeforeData));
+    fileInfo.setTagPosition(parsePositionDenotation(args.tagPosArg, args.tagPosValueArg, ElementPosition::BeforeData));
     fileInfo.setForceTagPosition(args.forceTagPosArg.isPresent());
-    fileInfo.setIndexPosition(parsePositionDenotation(args.indexPosArg, ElementPosition::BeforeData));
+    fileInfo.setIndexPosition(parsePositionDenotation(args.indexPosArg, args.indexPosValueArg, ElementPosition::BeforeData));
     fileInfo.setForceIndexPosition(args.forceIndexPosArg.isPresent());
     fileInfo.setForceRewrite(args.forceRewriteArg.isPresent());
     // iterate through all specified files

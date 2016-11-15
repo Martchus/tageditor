@@ -117,6 +117,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     tagPosValueArg.setValueNames({"front/back/current"});
     tagPosValueArg.setPreDefinedCompletionValues("front back current");
     tagPosValueArg.setImplicit(true);
+    tagPosValueArg.setRequired(true);
     forceTagPosArg.setCombinable(true);    
     tagPosArg.setCombinable(true);
     tagPosArg.setSubArguments({&tagPosValueArg, &forceTagPosArg});
@@ -125,6 +126,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     indexPosValueArg.setValueNames({"front/back/current"});
     indexPosValueArg.setPreDefinedCompletionValues("front back current");
     indexPosValueArg.setImplicit(true);
+    indexPosValueArg.setRequired(true);
     indexPosArg.setCombinable(true);
     indexPosArg.setSubArguments({&indexPosValueArg, &forceIndexPosArg});
     forceRewriteArg.setCombinable(true);
