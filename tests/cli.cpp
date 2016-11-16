@@ -464,7 +464,9 @@ void CliTests::testDisplayingInfo()
                                           "    Version                       1\n"
                                           "    Document read version         2\n"
                                           "    Document version              2\n"
-                                          "    Duration                      47 s 509 ms\n",
+                                          "    Duration                      47 s 509 ms\n"
+                                          "    Tag position                  before data\n"
+                                          "    Index position                before data\n",
                                           "  Tracks:\n"
                                           "    ID                            1863976627\n"
                                           "    Type                          Video\n"
