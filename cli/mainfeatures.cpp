@@ -766,6 +766,24 @@ void printProperty(const char *propName, DateTime dateTime, const char *suffix =
     }
 }
 
+void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, Indentation indentation = 4)
+{
+    const char *pos;
+    switch(elementPosition) {
+    case ElementPosition::BeforeData:
+        pos = "before data";
+        break;
+    case ElementPosition::AfterData:
+        pos = "after data";
+        break;
+    case ElementPosition::Keep:
+        pos = nullptr;
+    }
+    if(pos) {
+        printProperty(propName, pos, suffix, indentation);
+    }
+}
+
 template<typename intType>
 void printProperty(const char *propName, const intType value, const char *suffix = nullptr, bool force = false, Indentation indentation = 4)
 {
@@ -812,20 +830,8 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     printProperty("Duration", container->duration());
                     printProperty("Creation time", container->creationTime());
                     printProperty("Modification time", container->modificationTime());
-                    const char *tagPos;
-                    switch(container->determineTagPosition()) {
-                    case ElementPosition::BeforeData:
-                        tagPos = "before data";
-                        break;
-                    case ElementPosition::AfterData:
-                        tagPos = "after data";
-                        break;
-                    case ElementPosition::Keep:
-                        tagPos = nullptr;
-                    }
-                    if(tagPos) {
-                        printProperty("Tag position", tagPos);
-                    }
+                    printProperty("Tag position", container->determineTagPosition());
+                    printProperty("Index position", container->determineIndexPosition());
                 }
                 if(fileInfo.paddingSize()) {
                     printProperty("Padding", dataSizeToString(fileInfo.paddingSize()));
