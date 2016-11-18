@@ -62,12 +62,25 @@ The relevant CLI options are `--min-padding`, `--max-padding` and `--force-rewri
 Taking advantage of padding is currently not supported when dealing with Ogg streams (it is supported when
 dealing with raw FLAC streams).
 
-## Download / binary repository
-I currently provide packages for Arch Linux and Windows. Sources for those packages can be found in a
-separate [repository](https://github.com/Martchus/PKGBUILDs). For binaries checkout my
-[website](http://martchus.no-ip.biz/website/page.php?name=programming).
+## Download
+### Source
+See the release section on GitHub.
 
-Gentoo packages are provided by perfect7gentleman. Checkout his [repository](https://github.com/perfect7gentleman/pg_overlay).
+### Packages and binaries
+* Arch Linux
+  * for PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs) or
+    [the AUR](https://aur.archlinux.org/packages?SeB=m&K=Martchus)
+  * for binary repository checkout [my website](http://martchus.no-ip.biz/website/page.php?name=programming)
+* Tumbleweed
+  * for RPM \*.spec files and binary repository checkout
+    [openSUSE Build Servide](https://build.opensuse.org/project/show/home:mkittler)
+* Gentoo
+  * packages are provided by perfect7gentleman; checkout his
+    [repository](https://github.com/perfect7gentleman/pg_overlay)
+* Windows
+  * for mingw-w64 PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs)
+  * for binaries checkout [my website](http://martchus.no-ip.biz/website/page.php?name=programming) and the
+    release section on GitHub
 
 ## Usage
 The Tag Editor has a GUI (Qt 5) and a command line interface. For a C++ library
