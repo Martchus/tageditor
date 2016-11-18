@@ -44,6 +44,7 @@ class TagEditorWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QString currentPath READ currentPath NOTIFY currentPathChanged)
+    Q_PROPERTY(QString currentDir READ currentDir)
     Q_PROPERTY(bool tagEditShown READ isTagEditShown)
     Q_PROPERTY(QByteArray fileInfoHtml READ fileInfoHtml)
     Q_PROPERTY(bool fileNameVisible READ isFileNameVisible WRITE setFileNameVisible)
@@ -56,6 +57,7 @@ public:
 public:
     QMutex &fileOperationMutex();
     const QString &currentPath() const;
+    const QString &currentDir() const;
     Media::MediaFileInfo &fileInfo();
     Media::NotificationList &originalNotifications();
     bool isTagEditShown() const;
@@ -141,7 +143,6 @@ private:
     Media::MediaFileInfo m_fileInfo;
     std::vector<Media::Tag *> m_tags;
     QByteArray m_fileInfoHtml;
-    /// \brief This is the actual direcotry of the opened file which may differ from the directory selected in the tree view of the main window.
     QString m_currentDir;
     QString m_lastDir;
     QString m_saveFilePath;
@@ -167,6 +168,15 @@ inline QMutex &TagEditorWidget::fileOperationMutex()
 inline const QString &TagEditorWidget::currentPath() const
 {
     return m_currentPath;
+}
+
+/*!
+ * \brief Returns the current directory.
+ * \remarks This is the actual direcotry of the opened file which may differ from the directory selected in the tree view of the main window.
+ */
+inline const QString &TagEditorWidget::currentDir() const
+{
+    return m_currentDir;
 }
 
 /*!
