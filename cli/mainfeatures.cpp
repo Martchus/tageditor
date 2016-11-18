@@ -1066,8 +1066,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             && !args.id3v1UsageArg.isPresent()
             && !args.id3v2UsageArg.isPresent()
             && !args.id3v2VersionArg.isPresent()) {
-        cerr << "Error: No fields/attachments have been specified." << endl;
-        return;
+        cerr << "Warning: No fields/attachments have been specified." << endl;
     }
     // determine required targets
     vector<TagTarget> requiredTargets;

@@ -24,13 +24,7 @@ the end of an MP4/Matroska file.
 
 In the CLI, this is controlled via `--tag-pos` option.
 To enfore a specific `--tag-pos`, even if this requires the file to be rewritten, combine
-with the `--force` option. So for forcing *faststart* the following options are required:
-
-```
-tageditor set --tag-pos front --force
-```
-
-Note: Putting tags at the beginning of the file is sometimes called *faststart*.
+with the `--force` option.
 
 ID3v2 tags and Vorbis/Opus comments can only be placed at the beginning. ID3v1 tags
 can only be placed at the end of the file.
@@ -41,6 +35,15 @@ only supported when dealing with Matroska files.
 
 Note: This can not be implemented for MP4 since tags and index are tied to each other. When dealing
 with MP4 files the index position will always be the same as the tag position.
+
+#### Faststart
+Putting the index at the beginning of the file is sometimes called *faststart*.
+
+For forcing *faststart* via CLI the following options are required:
+
+```
+tageditor set --index-pos front --force
+```
 
 ### Padding
 Padding allows adding additional tag information without rewriting the entire file
