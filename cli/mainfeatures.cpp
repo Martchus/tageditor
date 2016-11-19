@@ -107,6 +107,24 @@ namespace std {
 
 using namespace Cli;
 
+template <> struct hash<KnownField>
+{
+    std::size_t operator()(const KnownField &ids) const
+    {
+        using type = typename std::underlying_type<KnownField>::type;
+        return std::hash<type>()(static_cast<type>(ids));
+    }
+};
+
+template <> struct hash<TagType>
+{
+    std::size_t operator()(const TagType &ids) const
+    {
+        using type = typename std::underlying_type<TagType>::type;
+        return std::hash<type>()(static_cast<type>(ids));
+    }
+};
+
 template <> struct hash<TagTarget::IdContainerType>
 {
     std::size_t operator()(const TagTarget::IdContainerType &ids) const
