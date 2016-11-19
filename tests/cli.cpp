@@ -579,7 +579,7 @@ void CliTests::testFileLayoutOptions()
     string stdout, stderr;
 
     const string mp4File1(workingCopyPath("mtx-test-data/alac/othertest-itunes.m4a"));
-    const char *const args1[] = {"tageditor", "set", "title=File layout test", "--tag-pos", "back", "--force", "-f", mp4File1.data(), nullptr};
+    const char *const args1[] = {"tageditor", "set", "--tag-pos", "back", "--force", "-f", mp4File1.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
 
     const char *const args2[] = {"tageditor", "info", "-f", mp4File1.data(), nullptr};
@@ -588,5 +588,35 @@ void CliTests::testFileLayoutOptions()
 
     remove(mp4File1.data());
     remove((mp4File1 + ".bak").data());
+
+    const string mp4File2(workingCopyPath("mp4/test1.m4a"));
+    const char *const args3[] = {"tageditor", "set", "genre=Rock", "--index-pos", "back", "--force", "-f", mp4File2.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args3);
+
+    const char *const args4[] = {"tageditor", "info", "-f", mp4File2.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args4);
+    CPPUNIT_ASSERT(stdout.find("Tag position                  after data") != string::npos);
+
+    const char *const args5[] = {"tageditor", "get", "-f", mp4File2.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args5);
+    CPPUNIT_ASSERT(stdout.find("MP4/iTunes tag\n"
+                               " Title             You Shook Me All Night Long\n"
+                               " Album             Who Made Who\n"
+                               " Artist            ACDC\n"
+                               " Genre             Rock\n"
+                               " Year              1986\n"
+                               " Track             2/9\n"
+                               " Encoder           Nero AAC codec / 1.5.3.0, remuxed with Lavf57.56.100\n"
+                               " Encoder settings  ndaudio 1.5.3.0 / -q 0.34") != string::npos);
+    remove((mp4File2 + ".bak").data());
+
+    const char *const args6[] = {"tageditor", "set", "--index-pos", "front", "--force", "-f", mp4File2.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args6);
+
+    TESTUTILS_ASSERT_EXEC(args4);
+    CPPUNIT_ASSERT(stdout.find("Tag position                  before data") != string::npos);
+
+    remove(mp4File2.data());
+    remove((mp4File2 + ".bak").data());
 }
 #endif
