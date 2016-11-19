@@ -1303,20 +1303,16 @@ void setTagInfo(const SetTagInfoArgs &args)
                     // notification will be added by the file info automatically
                 }
             }
-            if(!tags.empty() || docTitleModified || attachmentsModified) {
-                try {
-                    // save parsing notifications because notifications of sub objects like tags, tracks, ... will be gone after applying changes
-                    fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
-                    fileInfo.gatherRelatedNotifications(notifications);
-                    fileInfo.invalidateNotifications();
-                    fileInfo.applyChanges();
-                    fileInfo.gatherRelatedNotifications(notifications);
-                    cout << "Changes have been applied." << endl;
-                } catch(const ApplicationUtilities::Failure &) {
-                    cerr << "Error: Failed to apply changes." << endl;
-                }
-            } else {
-                cerr << "Warning: No changed to be applied." << endl;
+            try {
+                // save parsing notifications because notifications of sub objects like tags, tracks, ... will be gone after applying changes
+                fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
+                fileInfo.gatherRelatedNotifications(notifications);
+                fileInfo.invalidateNotifications();
+                fileInfo.applyChanges();
+                fileInfo.gatherRelatedNotifications(notifications);
+                cout << "Changes have been applied." << endl;
+            } catch(const ApplicationUtilities::Failure &) {
+                cerr << "Error: Failed to apply changes." << endl;
             }
         } catch(const ApplicationUtilities::Failure &) {
             cerr << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
