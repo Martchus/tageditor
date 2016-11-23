@@ -7,7 +7,6 @@
 
 #include <QWidget>
 #include <QByteArray>
-#include <QMutex>
 
 #include <functional>
 
@@ -55,7 +54,7 @@ public:
     ~TagEditorWidget();
 
 public:
-    QMutex &fileOperationMutex();
+    bool fileOperationOngoing() const;
     const QString &currentPath() const;
     const QString &currentDir() const;
     Media::MediaFileInfo &fileInfo();
@@ -151,15 +150,15 @@ private:
     bool m_makingResultsAvailable;
     Media::NotificationList m_originalNotifications;
     bool m_abortClicked;
-    QMutex m_fileOperationMutex;
+    bool m_fileOperationOngoing;
 };
 
 /*!
  * \brief Returns the mutex which is internally used for thread-synchronization.
  */
-inline QMutex &TagEditorWidget::fileOperationMutex()
+inline bool TagEditorWidget::fileOperationOngoing() const
 {
-    return m_fileOperationMutex;
+    return m_fileOperationOngoing;
 }
 
 /*!

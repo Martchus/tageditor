@@ -2,6 +2,7 @@
 #define DBQUERY_H
 
 #include <c++utilities/application/global.h>
+#include <c++utilities/conversion/types.h>
 
 #include <QAbstractTableModel>
 #include <QNetworkReply>
@@ -29,9 +30,9 @@ struct SongDescription
     QString artist;
     QString year;
     QString genre;
-    unsigned int track;
-    unsigned int totalTracks;
-    unsigned int disk;
+    int32 track;
+    int32 totalTracks;
+    int32 disk;
     QByteArray cover;
     QString lyrics;
 };

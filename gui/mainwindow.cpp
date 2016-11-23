@@ -55,9 +55,9 @@ enum LoadingResult : char
 /*!
  * \brief Shortcut to access file operation mutex of TagEditorWidget.
  */
-QMutex &MainWindow::fileOperationMutex()
+bool MainWindow::fileOperationOngoing() const
 {
-    return m_ui->tagEditorWidget->fileOperationMutex();
+    return m_ui->tagEditorWidget->fileOperationOngoing();
 }
 
 /*!
@@ -503,39 +503,41 @@ void MainWindow::showSaveAsDlg()
  */
 void MainWindow::saveFileInformation()
 {
-    TryLocker<> locker(fileOperationMutex());
-    if(locker) {
-        if(fileInfo().isOpen()) {
-            const QByteArray htmlData =
-        #ifndef TAGEDITOR_NO_WEBVIEW
-                   !m_ui->tagEditorWidget->fileInfoHtml().isEmpty() ?
-                        m_ui->tagEditorWidget->fileInfoHtml() :
-            #endif
-                        HtmlInfo::generateInfo(fileInfo(), m_ui->tagEditorWidget->originalNotifications());
-            if(!htmlData.isEmpty()) {
-                const QString path = QFileDialog::getSaveFileName(this, tr("Save file information - ") + QCoreApplication::applicationName());
-                if(!path.isEmpty()) {
-                    QFile file(path);
-                    if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-                        QTextStream stream(&file);
-                        stream.setCodec(QTextCodec::codecForName("UTF-8"));
-                        stream << htmlData;
-                        file.close();
-                        if(file.error() != QFileDevice::NoError) {
-                            QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file.\n%1").arg(file.errorString()));
-                        }
-                    } else {
-                        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
-                    }
-                }
-            } else {
-                QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
-            }
-        } else {
-            QMessageBox::information(this, QApplication::applicationName(), tr("No file is opened."));
-        }
-    } else {
+    if(fileOperationOngoing()) {
         m_ui->statusBar->showMessage(tr("Unable to save file information because the current process hasn't been finished yet."));
+        return;
+    }
+    if(!fileInfo().isOpen()) {
+        QMessageBox::information(this, QApplication::applicationName(), tr("No file is opened."));
+        return;
+    }
+
+    const QByteArray htmlData =
+        #ifndef TAGEDITOR_NO_WEBVIEW
+            !m_ui->tagEditorWidget->fileInfoHtml().isEmpty() ?
+                m_ui->tagEditorWidget->fileInfoHtml() :
+            #endif
+                HtmlInfo::generateInfo(fileInfo(), m_ui->tagEditorWidget->originalNotifications());
+    if(htmlData.isEmpty()) {
+        QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
+        return;
+    }
+
+    const QString path = QFileDialog::getSaveFileName(this, tr("Save file information - ") + QCoreApplication::applicationName());
+    if(path.isEmpty()) {
+        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
+        return;
+    }
+
+    QFile file(path);
+    if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        QTextStream stream(&file);
+        stream.setCodec(QTextCodec::codecForName("UTF-8"));
+        stream << htmlData;
+        file.close();
+        if(file.error() != QFileDevice::NoError) {
+            QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file.\n%1").arg(file.errorString()));
+        }
     }
 }
 

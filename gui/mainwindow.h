@@ -12,7 +12,6 @@
 
 QT_FORWARD_DECLARE_CLASS(QFileSystemModel)
 QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
-QT_FORWARD_DECLARE_CLASS(QMutex)
 
 namespace Media {
 DECLARE_ENUM_CLASS(TagType, unsigned int);
@@ -80,7 +79,7 @@ private slots:
     void toggleDbQueryWidget();
 
 private:
-    QMutex &fileOperationMutex();
+    bool fileOperationOngoing() const;
     Media::MediaFileInfo &fileInfo();
 
     // UI

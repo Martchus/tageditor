@@ -40,10 +40,10 @@ void QueryResultsModel::setFetchingCover(bool fetchingCover)
     m_fetchingCover = fetchingCover;
 }
 
-#define returnValue(field) return qstringToTagValue(res.field, TagTextEncoding::Utf16LittleEndian)
-
 void QueryResultsModel::abort()
 {}
+
+#define returnValue(field) return qstringToTagValue(res.field, TagTextEncoding::Utf16LittleEndian)
 
 TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
 {
