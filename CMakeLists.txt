@@ -152,45 +152,50 @@ set(DOC_FILES
 )
 
 set(REQUIRED_ICONS
-    collapse-menu-hover
-    edit-paste
     window-close
-    document-save-as
     document-open
-    view-list-tree
     edit-copy
     preferences-other
-    document-edit
-    edit-delete
-    document-revert
-    document-open-recent
     view-preview
-    dialog-ok
+    document-open-recent
     tag-add
     process-stop
     edit-find
     media-playback-start
-    dialog-cancel
-    edit-clear
     list-add
-    dialog-ok-apply
     tag
+    dialog-ok-apply
     help-about
-    application-exit
+    preferences-desktop-locale
     edit-undo
     document-properties
-    tag-delete
-    system-file-manager
     image-x-generic
-    document-save
+    unlock
     tag-properties
-    system-run
     edit-rename
+    system-run
     go-next
     expand-menu-hover
     autocorrection
-    unlock
     lock
+    qtcreator
+    collapse-menu-hover
+    edit-paste
+    document-save-as
+    view-list-tree
+    document-edit
+    edit-delete
+    system-search
+    document-revert
+    dialog-ok
+    preferences-desktop-icons
+    dialog-cancel
+    edit-clear
+    application-exit
+    tag-delete
+    system-file-manager
+    document-save
+    view-media-lyrics
 )
 
 # find c++utilities
