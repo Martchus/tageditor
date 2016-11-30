@@ -795,12 +795,12 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     const initializer_list<ButtonOverlay *> widgets = {m_lineEdit, m_comboBox, m_spinBoxes.first, m_spinBoxes.second};
     bool canApply = this->canApply(m_field);
     if(conversionError || !canApply) {
-        QPixmap pixmap = style()->standardPixmap(QStyle::SP_MessageBoxCritical).scaled(16, 16);
+        const QPixmap pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/16x16/actions/edit-error.png")).pixmap(16));
         QString text;
         if(conversionError) {
             text = tr("The value of this field could not be read from the file because it couldn't be converted proberly.");
             if(!canApply) {
-                text += "\n";
+                text += QChar('\n');
             }
         }
         if(!canApply) {
