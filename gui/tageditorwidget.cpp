@@ -32,6 +32,7 @@
 #include <QKeyEvent>
 #include <QClipboard>
 #include <QFileSystemModel>
+#include <QFileInfo>
 #include <QPlainTextEdit>
 #include <QMimeData>
 #include <QFileSystemWatcher>
@@ -558,14 +559,14 @@ void TagEditorWidget::updateTagManagementMenu()
 
 /*!
  * \brief Inserts the title from the filename if no title is available from the tags.
- * \remarks Does nothing if there are no tags assigned and if this feature is not enabled in the settings.
+ * \remarks Does nothing if there are no tags assigned or if this feature is not enabled.
  */
 void TagEditorWidget::insertTitleFromFilename()
 {
     if(!m_tags.empty() && Settings::values().editor.autoCompletition.insertTitleFromFilename) {
         QString title;
         int trackNum;
-        parseFileName(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()), title, trackNum);
+        parseFileName(m_fileName, title, trackNum);
         const TagValue titleValue = qstringToTagValue(title, TagTextEncoding::Utf16LittleEndian);
         foreachTagEdit([&titleValue] (TagEdit *edit) {
             for(const Tag *tag : edit->tags()) {
@@ -738,9 +739,11 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         m_currentPath = path;
         m_fileInfo.setSaveFilePath(string());
         m_fileInfo.setPath(path.toLocal8Bit().data());
-        // update directory
+        // update file name and directory
+        QFileInfo fileInfo(path);
         m_lastDir = m_currentDir;
-        m_currentDir = QString::fromLocal8Bit(m_fileInfo.containingDirectory().c_str());
+        m_currentDir = fileInfo.absolutePath();
+        m_fileName = fileInfo.fileName();
     }
     // update availability of making results
     m_makingResultsAvailable &= sameFile;
@@ -748,7 +751,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         m_originalNotifications.clear();
     }
     // show filename
-    m_ui->fileNameLabel->setText(QString::fromLocal8Bit(m_fileInfo.fileName().c_str()));
+    m_ui->fileNameLabel->setText(m_fileName);
     // define function to parse the file
     auto startThread = [this] {
         char result;
@@ -829,7 +832,7 @@ void TagEditorWidget::showFile(char result)
         auto msgBox = new QMessageBox(this);
         msgBox->setIcon(QMessageBox::Critical);
         msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
-        msgBox->setWindowTitle(tr("Opening file - %1").arg(QCoreApplication::applicationName()));
+        msgBox->setWindowTitle(tr("Opening file - ") + QCoreApplication::applicationName());
         msgBox->setText(statusMsg);
         msgBox->setInformativeText(tr("Opening file: ") + m_currentPath);
         msgBox->show();
@@ -911,9 +914,11 @@ void TagEditorWidget::showFile(char result)
         updateTagEditsAndAttachmentEdits();
         updateTagSelectionComboBox();
         updateTagManagementMenu();
+        emit tagValuesLoaded();
         insertTitleFromFilename();
-        emit statusMessage(tr("The file %1 has been opened.").arg(m_currentPath));
         updateFileStatusStatus();
+        emit statusMessage(tr("The file %1 has been opened.").arg(m_currentPath));
+        emit fileShown();
     }
 }
 

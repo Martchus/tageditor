@@ -55,10 +55,10 @@ TagEdit::TagEdit(QWidget *parent) :
  * \brief Returns the current value for the specified \a field.
  * \remarks Doesn't work for fields of the type picture.
  */
-TagValue TagEdit::value(KnownField field) const
+TagValue TagEdit::value(KnownField field, TagTextEncoding encoding) const
 {
     if(const TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
-        return edit->value(TagTextEncoding::Utf16LittleEndian, false);
+        return edit->value(encoding, false);
     } else {
         return TagValue();
     }

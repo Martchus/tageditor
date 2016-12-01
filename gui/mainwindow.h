@@ -76,6 +76,7 @@ private slots:
     void showAboutDlg();
     void showRenameFilesDlg();
     void spawnExternalPlayer();
+    void initDbQueryWidget();
     void toggleDbQueryWidget();
 
 private:

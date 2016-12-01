@@ -208,14 +208,31 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="overrideCheckBox">
-            <property name="text">
-             <string>Override existing values</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QCheckBox" name="overrideCheckBox">
+              <property name="toolTip">
+               <string>Whether existing values of selected &quot;Fields to be used&quot; should be overridden with values from search result</string>
+              </property>
+              <property name="text">
+               <string>Override existing values</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="autoInsertCheckBox">
+              <property name="toolTip">
+               <string>Whether matching values for selected &quot;Fields to be used&quot; from the search result should be inserted automatically when opening a file</string>
+              </property>
+              <property name="text">
+               <string>Insert automatically</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </item>
          </layout>
         </widget>
@@ -267,6 +284,9 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="toolTip">
+         <string>Aborts the current query</string>
+        </property>
         <property name="text">
          <string>Abort</string>
         </property>
@@ -279,6 +299,9 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Searches MusicBrainz for meta data matching the specified &quot;Search criteria&quot;</string>
         </property>
         <property name="text">
          <string>Search
@@ -297,6 +320,9 @@ MusicBrainz</string>
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Searches LyricWikia for meta data matching the specified &quot;Search criteria&quot;</string>
         </property>
         <property name="text">
          <string>Search
@@ -320,7 +346,7 @@ LyricWikia</string>
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string>Inserts the selected result into the current tag (doesn't save anything)</string>
+         <string>Inserts values of &quot;Fields to be used&quot; from the selected result into the current tag but does not save anything</string>
         </property>
         <property name="text">
          <string>Use selected

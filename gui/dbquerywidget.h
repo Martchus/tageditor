@@ -43,6 +43,7 @@ public slots:
     void applySelectedResults();
     void applyMatchingResults();
     void applyMatchingResults(TagEdit *tagEdit);
+    void autoInsertMatchingResults();
     void insertSearchTermsFromActiveTagEdit();
     void clearSearchCriteria();
 

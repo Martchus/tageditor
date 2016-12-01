@@ -85,10 +85,16 @@ signals:
     void nextFileSelected();
     /// \brief Emitted to show a status message.
     void statusMessage(const QString &message, int timeout = 0);
-    /// \brief Emmited when the file status (opened/closed) has changed.
+    /// \brief Emitted when the file status (opened/closed) has changed.
     void fileStatusChanged(bool opened, bool hasTag);
     /// \brief Emitted when the current path has changed; always emitted a saving.
     void currentPathChanged(const QString &newPath);
+    /// \brief Emitted when all tag values have been parsed and loaded into tag edits.
+    /// \remarks In particular, this is emitted *before* any additional data is inserted (like title from file name).
+    void tagValuesLoaded();
+    /// \brief Emitted when a file has been shown (file is parsed and all widgets have been updated accordingly).
+    /// \remarks In particular, this is emitted *after* additional data (like title from file name) might have been inserted.
+    void fileShown();
 
 protected:
     bool event(QEvent *event);
@@ -142,6 +148,7 @@ private:
     Media::MediaFileInfo m_fileInfo;
     std::vector<Media::Tag *> m_tags;
     QByteArray m_fileInfoHtml;
+    QString m_fileName;
     QString m_currentDir;
     QString m_lastDir;
     QString m_saveFilePath;
@@ -162,7 +169,7 @@ inline bool TagEditorWidget::fileOperationOngoing() const
 }
 
 /*!
- * \brief Returns the current path.
+ * \brief Returns the path of the currently opened file including filename.
  */
 inline const QString &TagEditorWidget::currentPath() const
 {
@@ -170,8 +177,8 @@ inline const QString &TagEditorWidget::currentPath() const
 }
 
 /*!
- * \brief Returns the current directory.
- * \remarks This is the actual direcotry of the opened file which may differ from the directory selected in the tree view of the main window.
+ * \brief Returns the path of the currently opened file excluding filename.
+ * \remarks This is the actual directory of the opened file which may differ from the directory selected in the tree view of the main window.
  */
 inline const QString &TagEditorWidget::currentDir() const
 {

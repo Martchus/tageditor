@@ -281,6 +281,10 @@ void DbQueryWidget::applyMatchingResults()
  */
 void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
 {
+    if(!m_model) {
+        return;
+    }
+
     // determine already present title, album and artist
     const TagValue givenTitle = tagEdit->value(KnownField::Title);
     const TagValue givenAlbum = tagEdit->value(KnownField::Album);
@@ -291,6 +295,7 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
     try {
         givenTrack = tagEdit->value(KnownField::TrackPosition).toPositionInSet().position();
     } catch (const ConversionException &) {
+        givenTrack = 0;
     }
     if(!givenTrack) {
         for(const Tag *tag : tagEdit->tags()) {
@@ -304,12 +309,16 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
         }
     }
 
+    if(givenTitle.isEmpty() || !givenTrack) {
+        return;
+    }
+
     // find row matching already present data
     for(int row = 0, rowCount = m_model->rowCount(); row != rowCount; ++row) {
         if((!givenTitle.isEmpty() && givenTitle != m_model->fieldValue(row, KnownField::Title))
                 || (!givenAlbum.isEmpty() && givenAlbum != m_model->fieldValue(row, KnownField::Album))
                 || (!givenArtist.isEmpty() && givenArtist != m_model->fieldValue(row, KnownField::Artist))
-                || (givenTrack && m_model->data(m_model->index(row, QueryResultsModel::TitleCol)).toInt())) {
+                || (givenTrack && givenTrack != m_model->fieldValue(row, KnownField::PartNumber).toInteger())) {
             continue;
         }
 
@@ -318,6 +327,16 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
 
         // just take the first matching row for now
         break;
+    }
+}
+
+/*!
+ * \brief The same as applyMatchingResults() but checks whether auto-insert is enabled before (and does nothing if not).
+ */
+void DbQueryWidget::autoInsertMatchingResults()
+{
+    if(m_ui->autoInsertCheckBox->isChecked()) {
+        applyMatchingResults();
     }
 }
 

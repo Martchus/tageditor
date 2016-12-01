@@ -111,7 +111,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // dbquery dock widget
     if(settings.dbQuery.widgetShown) {
-        m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
+        initDbQueryWidget();
     }
 
     // restore locked
@@ -336,13 +336,22 @@ void MainWindow::spawnExternalPlayer()
 }
 
 /*!
+ * \brief Initializes m_dbQueryWidget is not already initialized.
+ */
+void MainWindow::initDbQueryWidget()
+{
+    if(!m_dbQueryWidget) {
+        m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
+        connect(m_ui->tagEditorWidget, &TagEditorWidget::tagValuesLoaded, m_dbQueryWidget, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::autoInsertMatchingResults), Qt::DirectConnection);
+    }
+}
+
+/*!
  * \brief Toggles visibility of the database query widget.
  */
 void MainWindow::toggleDbQueryWidget()
 {
-    if(!m_dbQueryWidget) {
-        m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
-    }
+    initDbQueryWidget();
     m_ui->dbQueryDockWidget->setVisible(m_ui->dbQueryDockWidget->isHidden());
 }
 
