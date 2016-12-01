@@ -828,7 +828,7 @@ IconButton *TagFieldEdit::setupRestoreButton()
     if(!m_restoreButton) { // setup restore button
         m_restoreButton = new IconButton(this);
         m_restoreButton->setPixmap(/*QIcon::fromTheme(QStringLiteral("edit-undo"), */QIcon(QStringLiteral(":/qtutilities/icons/hicolor/16x16/actions/edit-menu.png")/*)*/).pixmap(16));
-        m_restoreButton->setToolTip(tr("restore"));
+        m_restoreButton->setToolTip(tr("Restore value as it is currently present in the file"));
         connect(m_restoreButton, &IconButton::clicked, this, &TagFieldEdit::handleRestoreButtonClicked);
         // ownership might be transfered to a child widget/layout
         connect(m_restoreButton, &IconButton::destroyed, this, &TagFieldEdit::handleRestoreButtonDestroyed);
