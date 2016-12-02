@@ -149,8 +149,6 @@ Here are some Bash examples which illustrate getting and setting tag information
   tageditor info --files /some/dir/*.m4a
   ```
 
-**Note**: All values are printed in UTF-8 encoding, no matter which  encoding is actually used within the tag.
-
 ##### Writing tags
 * *Sets* title, album, artist, cover and track number of all *.m4a files in the specified directory:
 
@@ -201,7 +199,12 @@ Here are some Bash examples which illustrate getting and setting tag information
   **Note**: The *+* sign after the field name *track* which indicates that the field value should be increased after
   a file has been processed.
 
-**Note**: All specified values are assumed to be UTF-8 encoded, no matter which encoding has been specified as preferred encoding via ``--encoding`` option. (This mentioned option only affects the encoding to be used *within* the tag.)
+## Text encoding / unicode support
+* It is possible to set the preferred encoding used *within* the tags via CLI option ``--encoding`` and in the GUI settings.
+* The CLI assumes all arguments to be UTF-8 encoded (no matter which preferred encoding is specified).
+* The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
+* *Windows only*: The GUI can currently not handle non-ASCII characters in file names under all locale settings due
+  to limitations of the C++ standard library provided by mingw-w64. However, German locale and umlauts work.
 
 ## Build instructions
 The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
