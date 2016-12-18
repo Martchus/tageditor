@@ -11,7 +11,7 @@ set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Su
 set(META_GUI_OPTIONAL true)
 set(META_VERSION_MAJOR 2)
 set(META_VERSION_MINOR 1)
-set(META_VERSION_PATCH 0)
+set(META_VERSION_PATCH 1)
 
 # add project files
 set(HEADER_FILES
@@ -199,7 +199,7 @@ set(REQUIRED_ICONS
 )
 
 # find c++utilities
-find_package(c++utilities 4.3.0 REQUIRED)
+find_package(c++utilities 4.4.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 

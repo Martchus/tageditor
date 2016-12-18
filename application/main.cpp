@@ -152,6 +152,7 @@ int main(int argc, char *argv[])
 {
     // setup argument parser
     ArgumentParser parser;
+    CMD_UTILS_CONVERT_ARGS_TO_UTF8;
     SET_APPLICATION_INFO;
     QT_CONFIG_ARGUMENTS qtConfigArgs;
     HelpArgument helpArg(parser);
