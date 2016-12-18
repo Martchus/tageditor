@@ -1163,14 +1163,12 @@ void setTagInfo(const SetTagInfoArgs &args)
             // create new tags according to settings
             fileInfo.createAppropriateTags(args.treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, args.id3InitOnCreateArg.isPresent(), args.id3TransferOnRemovalArg.isPresent(), args.mergeMultipleSuccessiveTagsArg.isPresent(), !args.id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
             auto container = fileInfo.container();
-            bool docTitleModified = false;
             if(args.docTitleArg.isPresent() && !args.docTitleArg.values().empty()) {
                 if(container && container->supportsTitle()) {
                     size_t segmentIndex = 0, segmentCount = container->titles().size();
                     for(const auto &newTitle : args.docTitleArg.values()) {
                         if(segmentIndex < segmentCount) {
                             container->setTitle(newTitle, segmentIndex);
-                            docTitleModified = true;
                         } else {
                             cerr << "Warning: The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments." << endl;
                         }
