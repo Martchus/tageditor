@@ -7,8 +7,11 @@
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/abstractattachment.h>
 
+#include <qtutilities/misc/conversion.h>
+
 #include <c++utilities/io/copy.h>
 #include <c++utilities/io/catchiofailure.h>
+#include <c++utilities/io/nativefilestream.h>
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -17,6 +20,7 @@
 
 using namespace std;
 using namespace IoUtilities;
+using namespace ConversionUtilities;
 using namespace Media;
 
 namespace QtGui {
@@ -91,7 +95,7 @@ void AttachmentsEdit::addFile(const QString &path)
         // create and add attachment
         auto *attachment = fileInfo()->container()->createAttachment();
         attachment->setIgnored(true);
-        attachment->setFile(path.toLocal8Bit().data());
+        attachment->setFile(toNativeFileName(path).data());
         m_addedAttachments << attachment;
         m_model->addAttachment(-1, attachment, true, path);
     } else {
@@ -124,11 +128,11 @@ void AttachmentsEdit::extractSelected()
                 if(!fileName.isEmpty()) {
                     auto *data = attachment->data();
                     auto &input = attachment->data()->stream();
-                    fstream file;
+                    NativeFileStream file;
                     file.exceptions(ios_base::badbit | ios_base::failbit);
                     try {
                         input.seekg(data->startOffset());
-                        file.open(fileName.toLocal8Bit().data(), ios_base::out | ios_base::binary);
+                        file.open(toNativeFileName(fileName).data(), ios_base::out | ios_base::binary);
                         CopyHelper<0x1000> helper;
                         helper.copy(input, file, data->size());
                     } catch(...) {

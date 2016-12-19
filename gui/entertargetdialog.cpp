@@ -97,7 +97,7 @@ Media::TagTarget EnterTargetDialog::target() const
 {
     TagTarget target;
     target.setLevel(static_cast<uint64>(m_ui->levelSpinBox->value()));
-    target.setLevelName(m_ui->levelNameLineEdit->text().toLocal8Bit().data());
+    target.setLevelName(m_ui->levelNameLineEdit->text().toUtf8().data());
     addIds(target.tracks(), m_tracksModel);
     addIds(target.chapters(), m_chaptersModel);
     addIds(target.editions(), m_editionsModel);

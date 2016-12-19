@@ -132,7 +132,7 @@ inline void HttpResultsModel::addReply(QNetworkReply *reply, Object object, Func
 {
     (m_replies << reply), connect(reply, &QNetworkReply::finished, object, handler);
 #ifdef DEBUG_BUILD
-    std::cerr << "HTTP query: " << reply->url().toString().toLocal8Bit().data() << std::endl;
+    std::cerr << "HTTP query: " << reply->url().toString().toUtf8().data() << std::endl;
 #endif
 }
 
@@ -145,7 +145,7 @@ inline void HttpResultsModel::addReply(QNetworkReply *reply, Function handler)
 {
     (m_replies << reply), connect(reply, &QNetworkReply::finished, handler);
 #ifdef DEBUG_BUILD
-    std::cerr << "HTTP query: " << reply->url().toString().toLocal8Bit().data() << std::endl;
+    std::cerr << "HTTP query: " << reply->url().toString().toUtf8().data() << std::endl;
 #endif
 }
 

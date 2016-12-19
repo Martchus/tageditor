@@ -10,6 +10,8 @@
 #include <tagparser/tagvalue.h>
 #include <tagparser/exceptions.h>
 
+#include <qtutilities/misc/conversion.h>
+
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/io/catchiofailure.h>
 
@@ -135,7 +137,7 @@ const QString &TagEditorObject::newRelativeDirectory() const
 
 TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
 {
-    MediaFileInfo fileInfo(fileName.toLocal8Bit().data());
+    MediaFileInfo fileInfo(toNativeFileName(fileName).data());
 
     auto fileInfoObject = m_engine->newObject();
     fileInfoObject.setProperty(QStringLiteral("currentName"), QString::fromLocal8Bit(fileInfo.fileName(false).data()));

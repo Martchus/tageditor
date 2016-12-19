@@ -18,6 +18,7 @@
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/io/ansiescapecodes.h>
 #include <c++utilities/io/catchiofailure.h>
+#include <c++utilities/io/nativefilestream.h>
 #include <c++utilities/misc/memory.h>
 
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
@@ -34,6 +35,7 @@ using namespace std;
 using namespace ApplicationUtilities;
 using namespace ConversionUtilities;
 using namespace ChronoUtilities;
+using namespace IoUtilities;
 using namespace EscapeCodes;
 using namespace Settings;
 using namespace Media;
@@ -958,6 +960,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
             fileInfo.open(true);
             fileInfo.parseContainerFormat();
             fileInfo.parseTags();
+            cout << file << endl;
             cout << "Tag information for \"" << file << "\":" << endl;
             const auto tags = fileInfo.tags();
             if(!tags.empty()) {
@@ -1379,7 +1382,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                         outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
                     }
                     for(const auto &value : values) {
-                        fstream outputFileStream;
+                        NativeFileStream outputFileStream;
                         outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
                         auto path = values.size() > 1 ? joinStrings({outputFilePathWithoutExtension, "-", value.second, outputFileExtension}) : outputFileArg.values().front();
                         try {
@@ -1427,7 +1430,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                         outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
                     }
                     for(const auto &attachment : attachments) {
-                        fstream outputFileStream;
+                        NativeFileStream outputFileStream;
                         outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
                         auto path = attachments.size() > 1 ? joinStrings({outputFilePathWithoutExtension, "-", attachment.second, outputFileExtension}) : outputFileArg.values().front();
                         try {

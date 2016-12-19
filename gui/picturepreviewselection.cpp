@@ -12,6 +12,8 @@
 #include <tagparser/vorbis/vorbiscomment.h>
 #include <tagparser/vorbis/vorbiscommentfield.h>
 
+#include <qtutilities/misc/conversion.h>
+
 #include <c++utilities/misc/memory.h>
 #include <c++utilities/io/catchiofailure.h>
 
@@ -37,6 +39,7 @@
 
 using namespace std;
 using namespace Media;
+using namespace ConversionUtilities;
 
 namespace QtGui {
 
@@ -314,7 +317,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
     assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     try {
-        MediaFileInfo fileInfo(path.toLocal8Bit().constData());
+        MediaFileInfo fileInfo(toNativeFileName(path).constData());
         fileInfo.open(true);
         fileInfo.parseContainerFormat();
         auto mimeType = QString::fromLocal8Bit(fileInfo.mimeType());
@@ -327,7 +330,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
                 fileInfo.stream().seekg(0);
                 fileInfo.stream().read(buff.get(), fileInfo.size());
                 selectedCover.assignData(std::move(buff), fileInfo.size(), TagDataType::Picture);
-                selectedCover.setMimeType(mimeType.toLocal8Bit().constData());
+                selectedCover.setMimeType(mimeType.toUtf8().constData());
                 emit pictureChanged();
             }
         }
@@ -438,7 +441,7 @@ void PicturePreviewSelection::changeMimeTypeOfSelected()
     bool ok;
     mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
     if(ok) {
-        selectedCover.setMimeType(mimeType.toLocal8Bit().data());
+        selectedCover.setMimeType(mimeType.toUtf8().data());
     }
 
 }

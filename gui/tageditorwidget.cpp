@@ -22,6 +22,7 @@
 #include <tagparser/ogg/oggcontainer.h>
 
 #include <qtutilities/misc/dialogutils.h>
+#include <qtutilities/misc/conversion.h>
 #include <qtutilities/widgets/clearlineedit.h>
 
 #include <c++utilities/conversion/stringconversion.h>
@@ -57,6 +58,7 @@ using namespace Dialogs;
 using namespace Widgets;
 using namespace Media;
 using namespace Models;
+using namespace ConversionUtilities;
 
 namespace QtGui {
 
@@ -738,7 +740,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         // set path of file info
         m_currentPath = path;
         m_fileInfo.setSaveFilePath(string());
-        m_fileInfo.setPath(path.toLocal8Bit().data());
+        m_fileInfo.setPath(toNativeFileName(path).data());
         // update file name and directory
         QFileInfo fileInfo(path);
         m_lastDir = m_currentDir;
