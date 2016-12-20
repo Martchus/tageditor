@@ -320,7 +320,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
         MediaFileInfo fileInfo(toNativeFileName(path).constData());
         fileInfo.open(true);
         fileInfo.parseContainerFormat();
-        auto mimeType = QString::fromLocal8Bit(fileInfo.mimeType());
+        auto mimeType = QString::fromUtf8(fileInfo.mimeType());
         bool ok;
         mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
         if(ok) {
@@ -437,7 +437,7 @@ void PicturePreviewSelection::changeMimeTypeOfSelected()
 {
     assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
     TagValue &selectedCover = m_values[m_currentTypeIndex];
-    auto mimeType = QString::fromLocal8Bit(selectedCover.mimeType().data());
+    auto mimeType = QString::fromUtf8(selectedCover.mimeType().data());
     bool ok;
     mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
     if(ok) {

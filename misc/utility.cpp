@@ -56,7 +56,7 @@ QString tagValueToQString(const TagValue &value)
         case TagDataType::StandardGenreIndex:
         case TagDataType::TimeSpan:
         case TagDataType::PositionInSet:
-            return QString::fromLocal8Bit(value.toString().c_str());
+            return QString::fromUtf8(value.toString().c_str());
         default:
             ;
         }
@@ -66,13 +66,13 @@ QString tagValueToQString(const TagValue &value)
 
 QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encoding)
 {
-    if(data && dataSize > 0) {
+    if(data && dataSize) {
         const char *codecName = textEncodingToCodecName(encoding);
         auto *codec = QTextCodec::codecForName(codecName);
         if(!codec) {
             codec = QTextCodec::codecForLocale();
         }
-        return codec->toUnicode(data, dataSize);
+        return codec->toUnicode(data, static_cast<int>(dataSize));
     }
     return QString();
 }

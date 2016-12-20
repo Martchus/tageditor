@@ -37,7 +37,7 @@ void addIds(ChecklistModel *targetModel, const T &fileIds, const vector<uint64> 
     QList<ChecklistItem> items;
     for(const auto &i : fileIds) {
         items << ChecklistItem(QVariant::fromValue(i->id()),
-                                     QString::fromLocal8Bit(i->label().c_str()),
+                                     QString::fromUtf8(i->label().data()),
                                      std::find(targetIds.cbegin(), targetIds.cend(), i->id()) == targetIds.cend() ? Qt::Unchecked : Qt::Checked);
         ids << i->id();
     }
@@ -116,7 +116,7 @@ void EnterTargetDialog::setTarget(const TagTarget &target, const MediaFileInfo *
     } else {
         m_ui->levelWarningLabel->setHidden(false);
     }
-    m_ui->levelNameLineEdit->setText(QString::fromLocal8Bit(target.levelName().c_str()));
+    m_ui->levelNameLineEdit->setText(QString::fromUtf8(target.levelName().c_str()));
     if(file) {
         // add track IDs
         addIds(m_tracksModel, file->tracks(), target.tracks());

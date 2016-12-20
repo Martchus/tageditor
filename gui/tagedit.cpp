@@ -135,7 +135,7 @@ QString TagEdit::generateLabel() const
         QStringList tagNames;
         tagNames.reserve(m_tags.size());
         for(const Tag *tag : m_tags) {
-            tagNames << QString::fromLocal8Bit(tag->typeName());
+            tagNames << QString::fromUtf8(tag->typeName());
             if(!differentTargets && !(target == tag->target())) {
                 differentTargets = true;
             }
@@ -147,7 +147,7 @@ QString TagEdit::generateLabel() const
         if(differentTargets) {
             res.append(tr(" with different targets"));
         } else if(haveMatroskaTags || !target.isEmpty()) {
-            res.append(tr(" targeting %1").arg(QString::fromLocal8Bit(m_tags.front()->targetString().c_str())));
+            res.append(tr(" targeting %1").arg(QString::fromUtf8(m_tags.front()->targetString().c_str())));
         }
         return res;
     }

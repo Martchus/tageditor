@@ -7,6 +7,8 @@
 
 #include "resources/config.h"
 
+#include <qtutilities/misc/conversion.h>
+
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
 # include <qtutilities/resources/qtconfigarguments.h>
 #else
@@ -21,6 +23,7 @@
 
 using namespace std;
 using namespace std::placeholders;
+using namespace ConversionUtilities;
 using namespace ApplicationUtilities;
 
 namespace Cli {
@@ -227,7 +230,7 @@ int main(int argc, char *argv[])
         parser.parseArgs(argc, argv);
         if(qtConfigArgs.areQtGuiArgsPresent()) {
 #ifdef GUI_QTWIDGETS
-            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? QString::fromLocal8Bit(defaultFileArg.values().front()) : QString(), renamingUtilityArg.isPresent());
+            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? fromNativeFileName(defaultFileArg.values().front()) : QString(), renamingUtilityArg.isPresent());
 #else
             CMD_UTILS_START_CONSOLE;
             cerr << "Application has not been build with Qt widgets GUI support." << endl;

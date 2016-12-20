@@ -39,7 +39,7 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &notificationsObject, const S
     quint32 counter = 0;
     for(const auto &notification : statusProvider.notifications()) {
         TAGEDITOR_JS_VALUE val;
-        val.setProperty("msg", QString::fromLocal8Bit(notification.message().data()) TAGEDITOR_JS_READONLY);
+        val.setProperty("msg", QString::fromUtf8(notification.message().data()) TAGEDITOR_JS_READONLY);
         val.setProperty("critical", notification.type() == NotificationType::Critical TAGEDITOR_JS_READONLY);
         notificationsObject.setProperty(counter, val);
         ++counter;
@@ -140,9 +140,9 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     MediaFileInfo fileInfo(toNativeFileName(fileName).data());
 
     auto fileInfoObject = m_engine->newObject();
-    fileInfoObject.setProperty(QStringLiteral("currentName"), QString::fromLocal8Bit(fileInfo.fileName(false).data()));
-    fileInfoObject.setProperty(QStringLiteral("currentBaseName"), QString::fromLocal8Bit(fileInfo.fileName(true).data()));
-    QString suffix = QString::fromLocal8Bit(fileInfo.extension().data());
+    fileInfoObject.setProperty(QStringLiteral("currentName"), QString::fromUtf8(fileInfo.fileName(false).data()));
+    fileInfoObject.setProperty(QStringLiteral("currentBaseName"), QString::fromUtf8(fileInfo.fileName(true).data()));
+    QString suffix = fromNativeFileName(fileInfo.extension().data());
     if(suffix.startsWith('.')) {
         suffix.remove(0, 1);
     }
@@ -164,8 +164,8 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     fileInfoObject.setProperty(QStringLiteral("hasCriticalNotifications"), critical);
     fileInfoObject.setProperty(QStringLiteral("notifications"), mainNotificationObject);
 
-    fileInfoObject.setProperty(QStringLiteral("mimeType"), QString::fromLocal8Bit(fileInfo.mimeType()) TAGEDITOR_JS_READONLY);
-    fileInfoObject.setProperty(QStringLiteral("suitableSuffix"), QString::fromLocal8Bit(fileInfo.containerFormatAbbreviation()) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("mimeType"), QString::fromUtf8(fileInfo.mimeType()) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("suitableSuffix"), QString::fromUtf8(fileInfo.containerFormatAbbreviation()) TAGEDITOR_JS_READONLY);
 
     vector<Tag *> tags;
     fileInfo.tags(tags);

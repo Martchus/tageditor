@@ -73,13 +73,13 @@ QVariant NotificationModel::data(const QModelIndex &index, int role) const
                 if(context.empty()) {
                     return tr("unspecified");
                 } else {
-                    return QString::fromLocal8Bit(context.c_str());
+                    return QString::fromUtf8(context.c_str());
                 }
             }
             case 1:
-                return QString::fromLocal8Bit(m_notifications.at(index.row()).message().c_str());
+                return QString::fromUtf8(m_notifications.at(index.row()).message().c_str());
             case 2:
-                return QString::fromLocal8Bit(m_notifications.at(index.row()).creationTime().toString(DateTimeOutputFormat::DateAndTime, true).c_str());
+                return QString::fromUtf8(m_notifications.at(index.row()).creationTime().toString(DateTimeOutputFormat::DateAndTime, true).c_str());
             default:
                 ;
             }

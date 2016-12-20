@@ -62,12 +62,12 @@ namespace HtmlInfo {
 
 inline QString qstr(const char *cstr)
 {
-    return QString::fromLocal8Bit(cstr);
+    return QString::fromUtf8(cstr);
 }
 
 inline QString qstr(const string &stdstr)
 {
-    return qstr(stdstr.c_str());
+    return QString::fromUtf8(stdstr.data(), static_cast<int>(stdstr.size()));
 }
 
 class RowMaker
@@ -589,9 +589,9 @@ public:
         }
         if(track->channelConfigString()) {
             if(track->extensionChannelConfigString()) {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QStringLiteral("%1 / %2").arg(QString::fromLocal8Bit(track->extensionChannelConfigString()), QString::fromLocal8Bit(track->channelConfigString())));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QStringLiteral("%1 / %2").arg(QString::fromUtf8(track->extensionChannelConfigString()), QString::fromUtf8(track->channelConfigString())));
             } else {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromLocal8Bit(track->channelConfigString()));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromUtf8(track->channelConfigString()));
             }
         } else if(track->channelCount()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel count"), QString::number(track->channelCount()));

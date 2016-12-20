@@ -12,6 +12,8 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
 
+#include <qtutilities/misc/conversion.h>
+
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/conversion/stringconversion.h>
@@ -733,7 +735,7 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         (outputFileArg.isPresent() ? cout : cerr) << "Saving file info for \"" << inputFileArg.values().front() << "\" ..." << endl;
         NotificationList origNotify;
         if(outputFileArg.isPresent()) {
-            QFile file(QString::fromLocal8Bit(outputFileArg.values().front()));
+            QFile file(fromNativeFileName(outputFileArg.values().front()));
             if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
                 cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
             } else {

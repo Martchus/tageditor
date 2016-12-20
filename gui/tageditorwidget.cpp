@@ -548,9 +548,9 @@ void TagEditorWidget::updateTagManagementMenu()
                 }
             }
 
-            connect(m_removeTagMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::removeTag, this, tag));
+            connect(m_removeTagMenu->addAction(QString::fromUtf8(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::removeTag, this, tag));
             if(tag->supportsTarget()) {
-                connect(m_changeTargetMenu->addAction(QString::fromLocal8Bit(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::changeTarget, this, tag));
+                connect(m_changeTargetMenu->addAction(QString::fromUtf8(tag->toString().c_str())), &QAction::triggered, std::bind(&TagEditorWidget::changeTarget, this, tag));
             }
         }
     }
@@ -1168,7 +1168,7 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
             emit nextFileSelected();
         } else {
             // the current path might have changed through "save file path" mechanism
-            startParsing(m_currentPath = QString::fromLocal8Bit(m_fileInfo.path().data()), true);
+            startParsing(m_currentPath = fromNativeFileName(m_fileInfo.path()), true);
         }
         m_nextFileAfterSaving = false;
     } else {

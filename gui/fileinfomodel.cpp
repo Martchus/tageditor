@@ -1,5 +1,7 @@
 #include "./fileinfomodel.h"
 
+#include <qtutilities/misc/conversion.h>
+
 #include <tagparser/signature.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/abstractcontainer.h>
@@ -65,7 +67,7 @@ public:
 
     void appendRow(const QString &label, const char *text)
     {
-        appendRow(label, QString::fromLocal8Bit(text));
+        appendRow(label, QString::fromUtf8(text));
     }
 
     void appendRow(const QString &label, const string &text)
@@ -121,7 +123,7 @@ void addNotifications(Media::NotificationList *notifications, QStandardItem *par
         QList<QStandardItem *> notificationRow;
         notificationRow.reserve(3);
 
-        auto *firstItem = defaultItem(QString::fromLocal8Bit(notification.creationTime().toString().data()));
+        auto *firstItem = defaultItem(QString::fromUtf8(notification.creationTime().toString().data()));
         switch(notification.type()) {
         case NotificationType::Critical:
             firstItem->setIcon(FileInfoModel::errorIcon());
@@ -138,8 +140,8 @@ void addNotifications(Media::NotificationList *notifications, QStandardItem *par
         }
         parent->appendRow(QList<QStandardItem *>()
                           << firstItem
-                          << defaultItem(QString::fromLocal8Bit(notification.message().data()))
-                          << defaultItem(QString::fromLocal8Bit(notification.context().data())));
+                          << defaultItem(QString::fromUtf8(notification.message().data()))
+                          << defaultItem(QString::fromUtf8(notification.context().data())));
     }
 
 }
@@ -276,7 +278,7 @@ void FileInfoModel::updateCache()
         ItemHelper rootHelper(rootItem);
 
         // add general information
-        rootHelper.appendRow(tr("Path"), m_file->path());
+        rootHelper.appendRow(tr("Path"), fromNativeFileName(m_file->path().data()));
         rootHelper.appendRow(tr("Size"), dataSizeToString(m_file->size()));
         const TimeSpan duration = m_file->duration();
         if(!duration.isNull()) {
@@ -302,9 +304,9 @@ void FileInfoModel::updateCache()
         QString containerName;
         const char *const subversion = m_file->containerFormatSubversion();
         if(*subversion) {
-            containerName = QString::fromLocal8Bit(m_file->containerFormatName()) % QChar(' ') % QString::fromLocal8Bit(m_file->containerFormatSubversion());
+            containerName = QString::fromUtf8(m_file->containerFormatName()) % QChar(' ') % QString::fromUtf8(m_file->containerFormatSubversion());
         } else {
-            containerName = QString::fromLocal8Bit(m_file->containerFormatName());
+            containerName = QString::fromUtf8(m_file->containerFormatName());
         }
         setItem(currentRow, 1, defaultItem(containerName));
 
@@ -406,8 +408,8 @@ void FileInfoModel::updateCache()
                     trackHelper.appendRow(tr("Resolution"), track->resolution());
                     if(track->channelConfigString()) {
                         trackHelper.appendRow(tr("Channel config"), track->extensionChannelConfigString()
-                                              ? QString::fromLocal8Bit(track->extensionChannelConfigString()) % QStringLiteral(" / ") % QString::fromLocal8Bit(track->channelConfigString())
-                                              : QString::fromLocal8Bit(track->channelConfigString()));
+                                              ? QString::fromUtf8(track->extensionChannelConfigString()) % QStringLiteral(" / ") % QString::fromUtf8(track->channelConfigString())
+                                              : QString::fromUtf8(track->channelConfigString()));
                     } else {
                         trackHelper.appendRow(tr("Channel count"), track->channelCount());
                     }
@@ -474,7 +476,7 @@ void FileInfoModel::updateCache()
                 for(const LocaleAwareString &name : chapter->names()) {
                     static const string delim(", ");
                     const string locale = joinStrings(initializer_list<string>{joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true)}, delim, true);
-                    chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromLocal8Bit(locale.data())), name);
+                    chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromUtf8(locale.data())), name);
                 }
                 if(!chapter->startTime().isNegative()) {
                     chapterHelper.appendRow(tr("Start time"), chapter->startTime());
