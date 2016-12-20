@@ -200,11 +200,21 @@ Here are some Bash examples which illustrate getting and setting tag information
   a file has been processed.
 
 ## Text encoding / unicode support
-* It is possible to set the preferred encoding used *within* the tags via CLI option ``--encoding`` and in the GUI settings.
-* The CLI assumes all arguments to be UTF-8 encoded (no matter which preferred encoding is specified).
-* The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
-* *Windows only*: The GUI can currently not handle non-ASCII characters in file names under all locale settings due
-  to limitations of the C++ standard library provided by mingw-w64. However, German locale and umlauts work.
+1. It is possible to set the preferred encoding used *within* the tags via CLI option ``--encoding`` and
+   in the GUI settings.
+2. The CLI assumes all arguments to be UTF-8 encoded (no matter which preferred encoding is specified)
+   and file names are just passed as specified.
+3. The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
+
+### Windows only
+  * The Tag Editor sets the codepage to UTF-8 to ensure *3.* is handled correctly by the terminal. So
+    far it seems that this effort just causes weird truncating behaviour in some cases and might
+    prevent pipes/redirections to function. One can use MSYS2 terminal to work around this.
+  * The Tag Editor converts all UTF-16 encoded arguments as provided by WinAPI to UTF-8 so *2.*
+    shouldn't cause any trouble in theory.
+    * Opening files with unicode characters in the name *does* work.
+    * Setting unicode values via CLI does *not* work, though.
+
 
 ## Build instructions
 The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
