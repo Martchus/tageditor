@@ -50,34 +50,39 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &notificationsObject, const S
 TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
 {
     // text fields
-    tagObject.setProperty("title", tagValueToQString(tag.value(KnownField::Title)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("artist", tagValueToQString(tag.value(KnownField::Artist)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("album", tagValueToQString(tag.value(KnownField::Album)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("year", tagValueToQString(tag.value(KnownField::Year)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("comment", tagValueToQString(tag.value(KnownField::Comment)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("genre", tagValueToQString(tag.value(KnownField::Genre)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("encoder", tagValueToQString(tag.value(KnownField::Encoder)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("language", tagValueToQString(tag.value(KnownField::Language)) TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("descriptions", tagValueToQString(tag.value(KnownField::Description)) TAGEDITOR_JS_READONLY);
+    static const char *fieldNames[] = {"title", "artist", "album", "year", "comment", "genre", "encoder", "language",
+                                       "description", nullptr};
+    static const KnownField fields[] = {KnownField::Title, KnownField::Artist, KnownField::Album, KnownField::Year,
+                                        KnownField::Comment, KnownField::Genre, KnownField::Encoder, KnownField::Language,
+                                        KnownField::Description};
+    const char **fieldName = fieldNames;
+    const KnownField *field = fields;
+    for(; *fieldName; ++fieldName, ++field) {
+        try {
+            tagObject.setProperty(*fieldName, tagValueToQString(tag.value(*field)) TAGEDITOR_JS_READONLY);
+        } catch(const ConversionException &) {}
+    }
+
     // numeric fields
     try {
         tagObject.setProperty("partNumber", tag.value(KnownField::PartNumber).toInteger() TAGEDITOR_JS_READONLY);
-    } catch(ConversionException &) {}
+    } catch(const ConversionException &) {}
     try {
         tagObject.setProperty("totalParts", tag.value(KnownField::TotalParts).toInteger() TAGEDITOR_JS_READONLY);
-    } catch(ConversionException &) {}
+    } catch(const ConversionException &) {}
     PositionInSet pos;
     try {
         pos = tag.value(KnownField::TrackPosition).toPositionInSet();
-    } catch(ConversionException &) {}
+    } catch(const ConversionException &) {}
     tagObject.setProperty("trackPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("trackTotal", pos.total() TAGEDITOR_JS_READONLY);
     pos = PositionInSet();
     try {
         pos = tag.value(KnownField::DiskPosition).toPositionInSet();
-    } catch(ConversionException &) {}
+    } catch(const ConversionException &) {}
     tagObject.setProperty("diskPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("diskTotal", pos.total() TAGEDITOR_JS_READONLY);
+
     // notifications
     tagObject.setProperty("hasCriticalNotifications", tag.hasCriticalNotifications() TAGEDITOR_JS_READONLY);
     return tagObject;
