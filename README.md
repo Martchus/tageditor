@@ -245,6 +245,7 @@ To build without GUI, add the following parameters to the CMake call:
 
 ## Bugs
 - Large file information is not shown when using Qt WebEngine
-- It is recommend you to create backups before editing because I can not test whether the library works with all kind of files (when forcing rewrite a backup is always created)
+- It is recommend to create backups before editing because I can not test whether the underlying library
+  works with all kinds of files (when forcing rewrite a backup is always created)
 - underlying library: Matroska files composed of more than one segment aren't tested yet and might not work.
 - Also note the issue tracker on GitHub
