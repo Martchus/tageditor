@@ -230,13 +230,13 @@ void CliTests::testId3SpecificOptions()
                                " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
     remove(mp3File1Backup.data());
 
-    // convert remaining ID3v2 tag to version 2, add an ID3v1 tag again
-    const char *const args3[] = {"tageditor", "set", "--id3v1-usage", "always", "--id3v2-version", "2", "--id3-init-on-create", "-f", mp3File1.data(), nullptr};
+    // convert remaining ID3v2 tag to version 2, add an ID3v1 tag again and set a field with unicode char by the way
+    const char *const args3[] = {"tageditor", "set", "album=Dóuble Nickels On The Dime", "--id3v1-usage", "always", "--id3v2-version", "2", "--id3-init-on-create", "-f", mp3File1.data(), nullptr};
     CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT(stdout.find("ID3v1 tag\n"
                                " Title             Cohesion\n"
-                               " Album             Double Nickels On The Dime\n"
+                               " Album             Dóuble Nickels On The Dime\n"
                                " Artist            Minutemen\n"
                                " Genre             Punk Rock\n"
                                " Year              1984\n"
@@ -244,7 +244,7 @@ void CliTests::testId3SpecificOptions()
                                " Track             4\n"
                                "ID3v2 tag (version 2.2.0)\n"
                                " Title             Cohesion\n"
-                               " Album             Double Nickels On The Dime\n"
+                               " Album             Dóuble Nickels On The Dime\n"
                                " Artist            Minutemen\n"
                                " Genre             Punk Rock\n"
                                " Year              1984\n"
