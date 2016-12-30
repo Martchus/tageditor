@@ -7,10 +7,9 @@
 
 #include "resources/config.h"
 
-#include <qtutilities/misc/conversion.h>
-
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
 # include <qtutilities/resources/qtconfigarguments.h>
+# include <qtutilities/misc/conversion.h>
 #else
 # include <c++utilities/application/fakeqtconfigarguments.h>
 #endif
