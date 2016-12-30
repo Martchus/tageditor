@@ -12,8 +12,6 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
 
-#include <qtutilities/misc/conversion.h>
-
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/conversion/stringconversion.h>
@@ -25,6 +23,7 @@
 
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
 # include <QDir>
+# include <qtutilities/misc/conversion.h>
 #endif
 
 #include <iostream>
