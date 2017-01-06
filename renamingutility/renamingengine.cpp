@@ -16,7 +16,7 @@ using namespace ThreadingUtils;
 
 namespace RenamingUtility {
 
-RemamingEngine::RemamingEngine(QObject *parent) :
+RenamingEngine::RenamingEngine(QObject *parent) :
     QObject(parent),
 #ifndef TAGEDITOR_NO_JSENGINE
     m_tagEditorQObj(new TagEditorObject(&m_engine)),
@@ -33,12 +33,12 @@ RemamingEngine::RemamingEngine(QObject *parent) :
 #ifndef TAGEDITOR_NO_JSENGINE
     m_engine.globalObject().setProperty(QStringLiteral("tageditor"), m_tagEditorJsObj);
 #endif
-    connect(this, &RemamingEngine::previewGenerated, this, &RemamingEngine::processPreviewGenerated);
-    connect(this, &RemamingEngine::changingsApplied, this, &RemamingEngine::processChangingsApplied);
+    connect(this, &RenamingEngine::previewGenerated, this, &RenamingEngine::processPreviewGenerated);
+    connect(this, &RenamingEngine::changingsApplied, this, &RenamingEngine::processChangingsApplied);
 }
 
 #ifndef TAGEDITOR_NO_JSENGINE
-bool RemamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
+bool RenamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
 {
     if(TAGEDITOR_JS_IS_VALID_PROG(program)) {
         m_errorMessage.clear();
@@ -56,7 +56,7 @@ bool RemamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
 }
 #endif
 
-bool RemamingEngine::setProgram(const QString &program)
+bool RenamingEngine::setProgram(const QString &program)
 {
 #ifndef TAGEDITOR_NO_JSENGINE
     return setProgram(m_engine.evaluate(QStringLiteral("(function(){") % program % QStringLiteral("})")));
@@ -67,7 +67,7 @@ bool RemamingEngine::setProgram(const QString &program)
 #endif
 }
 
-bool RemamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubdirs)
+bool RenamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubdirs)
 {
 #ifndef TAGEDITOR_NO_JSENGINE
     TryLocker<> locker(m_mutex);
@@ -94,7 +94,7 @@ bool RemamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubd
 #endif
 }
 
-bool RemamingEngine::applyChangings()
+bool RenamingEngine::applyChangings()
 {
     if(!m_rootItem) {
         return false;
@@ -117,7 +117,7 @@ bool RemamingEngine::applyChangings()
     }
 }
 
-bool RemamingEngine::isBusy()
+bool RenamingEngine::isBusy()
 {
     if(m_mutex.tryLock()) {
         m_mutex.unlock();
@@ -127,17 +127,17 @@ bool RemamingEngine::isBusy()
     }
 }
 
-void RemamingEngine::abort()
+void RenamingEngine::abort()
 {
     m_aborted.store(1);
 }
 
-bool RemamingEngine::isAborted()
+bool RenamingEngine::isAborted()
 {
     return m_aborted.load();
 }
 
-bool RemamingEngine::clearPreview()
+bool RenamingEngine::clearPreview()
 {
     TryLocker<> locker(m_mutex);
     if(locker) {
@@ -149,7 +149,7 @@ bool RemamingEngine::clearPreview()
     }
 }
 
-FileSystemItemModel *RemamingEngine::model()
+FileSystemItemModel *RenamingEngine::model()
 {
     if(!m_model) {
         m_model = new FileSystemItemModel(m_rootItem.get(), this);
@@ -157,7 +157,7 @@ FileSystemItemModel *RemamingEngine::model()
     return m_model;
 }
 
-FilteredFileSystemItemModel *RemamingEngine::currentModel()
+FilteredFileSystemItemModel *RenamingEngine::currentModel()
 {
     if(!m_currentModel) {
         m_currentModel = new FilteredFileSystemItemModel(ItemStatus::Current, this);
@@ -166,7 +166,7 @@ FilteredFileSystemItemModel *RemamingEngine::currentModel()
     return m_currentModel;
 }
 
-FilteredFileSystemItemModel *RemamingEngine::previewModel()
+FilteredFileSystemItemModel *RenamingEngine::previewModel()
 {
     if(!m_previewModel) {
         m_previewModel = new FilteredFileSystemItemModel(ItemStatus::New, this);
@@ -175,24 +175,24 @@ FilteredFileSystemItemModel *RemamingEngine::previewModel()
     return m_previewModel;
 }
 
-void RemamingEngine::processPreviewGenerated()
+void RenamingEngine::processPreviewGenerated()
 {
     setRootItem(move(m_newlyGeneratedRootItem));
 }
 
-void RemamingEngine::processChangingsApplied()
+void RenamingEngine::processChangingsApplied()
 {
     updateModel(nullptr);
     updateModel(m_rootItem.get());
 }
 
-inline void RemamingEngine::setRootItem(unique_ptr<FileSystemItem> &&rootItem)
+inline void RenamingEngine::setRootItem(unique_ptr<FileSystemItem> &&rootItem)
 {
     updateModel(rootItem.get());
     m_rootItem = move(rootItem);
 }
 
-void RemamingEngine::updateModel(FileSystemItem *rootItem)
+void RenamingEngine::updateModel(FileSystemItem *rootItem)
 {
     if(m_model) {
         m_model->setRootItem(rootItem);
@@ -200,7 +200,7 @@ void RemamingEngine::updateModel(FileSystemItem *rootItem)
 }
 
 #ifndef TAGEDITOR_NO_JSENGINE
-unique_ptr<FileSystemItem> RemamingEngine::generatePreview(const QDir &dir, FileSystemItem *parent)
+unique_ptr<FileSystemItem> RenamingEngine::generatePreview(const QDir &dir, FileSystemItem *parent)
 {
     auto item = make_unique<FileSystemItem>(ItemStatus::Current, ItemType::Dir, dir.dirName(), parent);
     item->setApplied(false);
@@ -234,7 +234,7 @@ unique_ptr<FileSystemItem> RemamingEngine::generatePreview(const QDir &dir, File
 }
 #endif
 
-void RemamingEngine::applyChangings(FileSystemItem *parentItem)
+void RenamingEngine::applyChangings(FileSystemItem *parentItem)
 {
     for(FileSystemItem *item : parentItem->children()) {
         if(!item->applied() && !item->errorOccured()) {
@@ -308,7 +308,7 @@ void RemamingEngine::applyChangings(FileSystemItem *parentItem)
     emit progress(m_itemsProcessed, m_errorsOccured);
 }
 
-void RemamingEngine::setError(const QList<FileSystemItem *> items)
+void RenamingEngine::setError(const QList<FileSystemItem *> items)
 {
     for(FileSystemItem *item : items) {
         item->setErrorOccured(true);
@@ -317,7 +317,7 @@ void RemamingEngine::setError(const QList<FileSystemItem *> items)
 }
 
 #ifndef TAGEDITOR_NO_JSENGINE
-void RemamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemItem *item)
+void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemItem *item)
 {
     // make file info for the specified item available in the script
     m_tagEditorQObj->setFileInfo(fileInfo, item);

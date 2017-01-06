@@ -17,8 +17,8 @@ class FileSystemItemModel : public QAbstractItemModel
     Q_OBJECT
 
 public:
-    FileSystemItemModel(FileSystemItem *rootItem, QObject *parent = nullptr);
-    virtual ~FileSystemItemModel();
+    explicit FileSystemItemModel(FileSystemItem *rootItem, QObject *parent = nullptr);
+    ~FileSystemItemModel();
 
     void setRootItem(FileSystemItem *rootItem);
     QVariant data(const QModelIndex &index, int role) const;

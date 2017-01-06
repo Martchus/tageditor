@@ -45,7 +45,7 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     m_ui->externalScriptPage->setBackgroundRole(QPalette::Base);
 
     // setup preview tree view
-    m_engine = new RemamingEngine(this);
+    m_engine = new RenamingEngine(this);
     m_ui->currentTreeView->setModel(m_engine->currentModel());
     m_ui->previewTreeView->setModel(m_engine->previewModel());
 
@@ -82,9 +82,9 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
     connect(m_ui->generatePreviewPushButton, &QPushButton::clicked, this, &RenameFilesDialog::startGeneratingPreview);
     connect(m_ui->applyChangingsPushButton, &QPushButton::clicked, this, &RenameFilesDialog::startApplyChangings);
     connect(m_ui->abortClosePushButton, &QPushButton::clicked, this, &RenameFilesDialog::abortClose);
-    connect(m_engine, &RemamingEngine::previewGenerated, this, &RenameFilesDialog::showPreviewResults);
-    connect(m_engine, &RemamingEngine::changingsApplied, this, &RenameFilesDialog::showChangsingsResults);
-    connect(m_engine, &RemamingEngine::progress, this, &RenameFilesDialog::showPreviewProgress);
+    connect(m_engine, &RenamingEngine::previewGenerated, this, &RenameFilesDialog::showPreviewResults);
+    connect(m_engine, &RenamingEngine::changingsApplied, this, &RenameFilesDialog::showChangsingsResults);
+    connect(m_engine, &RenamingEngine::progress, this, &RenameFilesDialog::showPreviewProgress);
     connect(m_ui->currentTreeView, &QTreeView::customContextMenuRequested, this, &RenameFilesDialog::showTreeViewContextMenu);
     connect(m_ui->previewTreeView, &QTreeView::customContextMenuRequested, this, &RenameFilesDialog::showTreeViewContextMenu);
     connect(m_ui->currentTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &RenameFilesDialog::currentItemSelected);

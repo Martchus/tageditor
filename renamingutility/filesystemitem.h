@@ -29,7 +29,7 @@ class FileSystemItem
 {
 
 public:
-    FileSystemItem(ItemStatus status = ItemStatus::Current, ItemType type = ItemType::File, const QString &name = QString(), FileSystemItem *parent = nullptr);
+    explicit FileSystemItem(ItemStatus status = ItemStatus::Current, ItemType type = ItemType::File, const QString &name = QString(), FileSystemItem *parent = nullptr);
     ~FileSystemItem();
     FileSystemItem(const FileSystemItem &other) = delete;
     FileSystemItem &operator =(const FileSystemItem &other) = delete;

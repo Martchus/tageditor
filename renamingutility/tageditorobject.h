@@ -32,7 +32,7 @@ class TagEditorObject : public QObject
     Q_PROPERTY(QString newRelativeDirectory READ newRelativeDirectory WRITE move)
 
 public:
-    TagEditorObject(TAGEDITOR_JS_ENGINE *engine);
+    explicit TagEditorObject(TAGEDITOR_JS_ENGINE *engine);
 
     ActionType action() const;
     void setFileInfo(const QFileInfo &file, FileSystemItem *item);

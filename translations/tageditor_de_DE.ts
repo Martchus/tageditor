@@ -4334,6 +4334,9 @@ Remarks
         <comment>Necessary for lupdate.</comment>
         <translation></translation>
     </message>
+</context>
+<context>
+    <name>RenamingUtility::RenamingEngine</name>
     <message>
         <location filename="../renamingutility/renamingengine.cpp" line="52"/>
         <source>Program is not callable.</source>

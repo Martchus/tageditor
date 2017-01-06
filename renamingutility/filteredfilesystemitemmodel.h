@@ -12,7 +12,7 @@ class FilteredFileSystemItemModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    FilteredFileSystemItemModel(ItemStatus statusFilter = ItemStatus::Current, QObject *parent = nullptr);
+    explicit FilteredFileSystemItemModel(ItemStatus statusFilter = ItemStatus::Current, QObject *parent = nullptr);
 
     ItemStatus statusFilter() const;
     void setStatusFilter(ItemStatus statusFilter);

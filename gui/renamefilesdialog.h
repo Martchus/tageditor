@@ -9,7 +9,7 @@
 QT_FORWARD_DECLARE_CLASS(QItemSelection)
 
 namespace RenamingUtility {
-class RemamingEngine;
+class RenamingEngine;
 }
 
 namespace QtGui {
@@ -56,7 +56,7 @@ private slots:
 private:
     std::unique_ptr<Ui::RenameFilesDialog> m_ui;
     JavaScriptHighlighter *m_highlighter;
-    RenamingUtility::RemamingEngine *m_engine;
+    RenamingUtility::RenamingEngine *m_engine;
     int m_itemsProcessed;
     int m_errorsOccured;
     bool m_changingSelection;

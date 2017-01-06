@@ -27,12 +27,12 @@ class FileSystemItemModel;
 class FilteredFileSystemItemModel;
 class TagEditorObject;
 
-class RemamingEngine : public QObject
+class RenamingEngine : public QObject
 {
     Q_OBJECT
 
 public:
-    RemamingEngine(QObject *parent = nullptr);
+    explicit RenamingEngine(QObject *parent = nullptr);
 
     FileSystemItem *rootItem() const;
 #ifndef TAGEDITOR_NO_JSENGINE
@@ -100,34 +100,34 @@ private:
     int m_errorLineNumber;
 };
 
-inline FileSystemItem *RemamingEngine::rootItem() const
+inline FileSystemItem *RenamingEngine::rootItem() const
 {
     return m_rootItem.get();
 }
 
 #ifndef TAGEDITOR_NO_JSENGINE
-inline const TAGEDITOR_JS_VALUE &RemamingEngine::scriptProgram() const
+inline const TAGEDITOR_JS_VALUE &RenamingEngine::scriptProgram() const
 {
     return m_program;
 }
 #endif
 
-inline const QDir &RemamingEngine::rootDirectory() const
+inline const QDir &RenamingEngine::rootDirectory() const
 {
     return m_dir;
 }
 
-inline bool RemamingEngine::subdirsIncluded() const
+inline bool RenamingEngine::subdirsIncluded() const
 {
     return m_includeSubdirs;
 }
 
-inline const QString &RemamingEngine::errorMessage() const
+inline const QString &RenamingEngine::errorMessage() const
 {
     return m_errorMessage;
 }
 
-inline int RemamingEngine::errorLineNumber() const
+inline int RenamingEngine::errorLineNumber() const
 {
     return m_errorLineNumber;
 }
