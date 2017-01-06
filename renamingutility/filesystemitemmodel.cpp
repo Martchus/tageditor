@@ -94,16 +94,6 @@ QVariant FileSystemItemModel::data(const QModelIndex &index, int role) const
                     return QBrush(Qt::gray);
                 }
                 break;
-            /*case Qt::CheckStateRole:
-                if(item->checkable() && index.column() == 1) {
-                    return item->checked() ? Qt::Checked : Qt::Unchecked;
-                }
-                break;
-            case CheckableRole:
-                if(index.column() == 1) {
-                    return item->checkable();
-                }
-                break;*/
             case ErrorStatusRole:
                 return item->errorOccured();
             default:
@@ -139,10 +129,6 @@ bool FileSystemItemModel::setData(const QModelIndex &index, const QVariant &valu
                 default: ;
                 }
                 break;
-            /*case Qt::CheckStateRole:
-                item->setChecked(value.toInt() == Qt::Checked);
-                emit dataChanged(index, index, QVector<int>() << role);
-                return true;*/
             case ErrorStatusRole:
                 item->setErrorOccured(value.toBool());
                 emit dataChanged(index, index, QVector<int>() << role << Qt::DecorationRole);
@@ -153,18 +139,6 @@ bool FileSystemItemModel::setData(const QModelIndex &index, const QVariant &valu
         }
     }
     return false;
-}
-
-Qt::ItemFlags FileSystemItemModel::flags(const QModelIndex &index) const
-{
-    /*if(index.isValid() && index.column() == 1) {
-        if(FileSystemItem *item = reinterpret_cast<FileSystemItem *>(index.internalPointer())) {
-            if(item->checkable()) {
-                return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable;
-            }
-        }
-    }*/
-    return QAbstractItemModel::flags(index);
 }
 
 QVariant FileSystemItemModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -253,10 +227,10 @@ QModelIndex FileSystemItemModel::counterpart(const QModelIndex &index, int colum
 
 int FileSystemItemModel::rowCount(const QModelIndex &parent) const
 {
-    if(FileSystemItem *parentItem = parent.isValid()
+    if(const FileSystemItem *parentItem = (parent.isValid()
             ? reinterpret_cast<FileSystemItem *>(parent.internalPointer())
-            : m_rootItem) {
-        return parentItem->children().length();
+            : m_rootItem)) {
+        return parentItem->children().size();
     } else {
         return 0;
     }
@@ -264,10 +238,10 @@ int FileSystemItemModel::rowCount(const QModelIndex &parent) const
 
 bool FileSystemItemModel::hasChildren(const QModelIndex &parent) const
 {
-    if(FileSystemItem *parentItem = parent.isValid()
-            ? reinterpret_cast<FileSystemItem *>(parent.internalPointer())
-            : m_rootItem) {
-        return parentItem->children().length() > 0;
+    if(const FileSystemItem *parentItem = (parent.isValid()
+            ? reinterpret_cast<const FileSystemItem *>(parent.internalPointer())
+            : m_rootItem)) {
+        return parentItem->children().size() > 0;
     } else {
         return false;
     }

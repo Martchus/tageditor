@@ -2,7 +2,6 @@
 
 #include <QDir>
 #include <QCoreApplication>
-#include <QDebug>
 
 namespace RenamingUtility {
 
@@ -65,8 +64,6 @@ const QString &FileSystemItem::currentName() const
                 : emptyStr();
     case ItemStatus::Current:
         return m_name;
-    default:
-        return emptyStr();
     }
 }
 
@@ -97,8 +94,6 @@ const QString &FileSystemItem::newName() const
                 : emptyStr();
     case ItemStatus::New:
         return m_name;
-    default:
-        return emptyStr();
     }
 }
 
@@ -122,8 +117,6 @@ bool FileSystemItem::setNewName(const QString &newName)
     case ItemStatus::New:
         setName(newName);
         return true;
-    default: // avoid warning
-        return false;
     }
 }
 
@@ -206,7 +199,7 @@ bool FileSystemItem::hasSibling(const QString &name) const
 {
     if(m_parent) {
         const QList<FileSystemItem *> &siblings = m_parent->children();
-        for(FileSystemItem *siblingItem : siblings) {
+        for(const FileSystemItem *siblingItem : siblings) {
             if(siblingItem == this) {
                 continue;
             }

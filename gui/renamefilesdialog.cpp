@@ -137,71 +137,73 @@ void RenameFilesDialog::showScriptFileSelectionDlg()
 
 void RenameFilesDialog::startGeneratingPreview()
 {
-    if(!m_engine->isBusy()) {
-        QDir selectedDir(directory());
-        m_ui->notificationLabel->setHidden(false);
-        if(selectedDir.exists()) {
-            QString program;
-            if(m_ui->sourceFileStackedWidget->currentIndex() == 0) {
-                program = m_ui->javaScriptPlainTextEdit->toPlainText();
+    if(m_engine->isBusy()) {
+        return;
+    }
+    QDir selectedDir(directory());
+    m_ui->notificationLabel->setHidden(false);
+    if(selectedDir.exists()) {
+        QString program;
+        if(m_ui->sourceFileStackedWidget->currentIndex() == 0) {
+            program = m_ui->javaScriptPlainTextEdit->toPlainText();
+        } else {
+            QString fileName = m_ui->scriptFilePathLineEdit->text();
+            if(fileName.isEmpty()) {
+                m_ui->notificationLabel->setText(tr("There is no external script file is selected."));
             } else {
-                QString fileName = m_ui->scriptFilePathLineEdit->text();
-                if(fileName.isEmpty()) {
-                    m_ui->notificationLabel->setText(tr("There is no external script file is selected."));
+                QFile file(fileName);
+                if(file.open(QFile::ReadOnly)) {
+                    QTextStream textStream(&file);
+                    program = textStream.readAll();
                 } else {
-                    QFile file(fileName);
-                    if(file.open(QFile::ReadOnly)) {
-                        QTextStream textStream(&file);
-                        program = textStream.readAll();
-                    } else {
-                        m_ui->notificationLabel->setText(tr("Unable to open external script file."));
-                    }
+                    m_ui->notificationLabel->setText(tr("Unable to open external script file."));
                 }
             }
-            if(!program.isEmpty()) {
-                if(m_engine->setProgram(program)) {
-                    m_ui->notificationLabel->setText(tr("Generating preview ..."));
-                    m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                    m_ui->abortClosePushButton->setText(tr("Abort"));
-                    m_ui->generatePreviewPushButton->setHidden(true);
-                    m_ui->applyChangingsPushButton->setHidden(true);
-                    m_engine->generatePreview(directory(), m_ui->includeSubdirsCheckBox->isChecked());
-                } else {
-                    m_engine->clearPreview();
-                    if(m_engine->errorLineNumber()) {
-                        m_ui->notificationLabel->setText(tr("The script is not valid.\nError in line %1: %3")
-                                                        .arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
-                    } else {
-                        m_ui->notificationLabel->setText(tr("An error occured when parsing the script: %1").arg(m_engine->errorMessage()));
-                    }
-                    m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
-                }
+        }
+        if(!program.isEmpty()) {
+            if(m_engine->setProgram(program)) {
+                m_ui->notificationLabel->setText(tr("Generating preview ..."));
+                m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+                m_ui->abortClosePushButton->setText(tr("Abort"));
+                m_ui->generatePreviewPushButton->setHidden(true);
+                m_ui->applyChangingsPushButton->setHidden(true);
+                m_engine->generatePreview(directory(), m_ui->includeSubdirsCheckBox->isChecked());
             } else {
                 m_engine->clearPreview();
-                m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
-                if(m_ui->notificationLabel->text().isEmpty()) {
-                    m_ui->notificationLabel->setText(tr("The script is empty."));
+                if(m_engine->errorLineNumber()) {
+                    m_ui->notificationLabel->setText(tr("The script is not valid.\nError in line %1: %3")
+                                                    .arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
+                } else {
+                    m_ui->notificationLabel->setText(tr("An error occured when parsing the script: %1").arg(m_engine->errorMessage()));
                 }
+                m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
             }
         } else {
             m_engine->clearPreview();
-            m_ui->notificationLabel->setText(tr("The selected directory doesn't exist."));
             m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
+            if(m_ui->notificationLabel->text().isEmpty()) {
+                m_ui->notificationLabel->setText(tr("The script is empty."));
+            }
         }
+    } else {
+        m_engine->clearPreview();
+        m_ui->notificationLabel->setText(tr("The selected directory doesn't exist."));
+        m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
 }
 
 
 void RenameFilesDialog::startApplyChangings()
 {
-    if(!m_engine->isBusy()) {
-        m_ui->notificationLabel->setText(tr("Applying changings ..."));
-        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-        m_ui->abortClosePushButton->setText(tr("Abort"));
-        m_ui->generatePreviewPushButton->setHidden(true);
-        m_ui->applyChangingsPushButton->setHidden(true);
-        m_engine->applyChangings();
+    if(m_engine->isBusy()) {
+        return;
     }
+    m_ui->notificationLabel->setText(tr("Applying changings ..."));
+    m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+    m_ui->abortClosePushButton->setText(tr("Abort"));
+    m_ui->generatePreviewPushButton->setHidden(true);
+    m_ui->applyChangingsPushButton->setHidden(true);
+    m_engine->applyChangings();
 }
 
 void RenameFilesDialog::showPreviewProgress(int itemsProcessed, int errorsOccured)
@@ -261,54 +263,58 @@ void RenameFilesDialog::showChangsingsResults()
 
 void RenameFilesDialog::currentItemSelected(const QItemSelection &, const QItemSelection &)
 {
-    if(!m_changingSelection) {
-        m_changingSelection = true;
-        m_ui->previewTreeView->selectionModel()->clear();
-        for(const QModelIndex &row : m_ui->currentTreeView->selectionModel()->selectedRows()) {
-            QModelIndex currentIndex = m_engine->currentModel()->mapToSource(row);
-            QModelIndex counterpartIndex = m_engine->model()->counterpart(
-                        currentIndex, 1);
-            if(!counterpartIndex.isValid()) {
-                counterpartIndex = currentIndex;
-            }
-            QModelIndex previewIndex = m_engine->previewModel()->mapFromSource(counterpartIndex);
-            if(previewIndex.isValid()) {
-                QModelIndex parent = previewIndex.parent();
-                if(parent.isValid()) {
-                    m_ui->previewTreeView->expand(m_engine->previewModel()->index(parent.row(), parent.column(), parent.parent()));
-                }
-                m_ui->previewTreeView->scrollTo(previewIndex);
-                m_ui->previewTreeView->selectionModel()->select(previewIndex, QItemSelectionModel::Rows | QItemSelectionModel::Select);
-            }
-        }
-        m_changingSelection = false;
+    if(m_changingSelection) {
+        return;
     }
+
+    m_changingSelection = true;
+    m_ui->previewTreeView->selectionModel()->clear();
+    for(const QModelIndex &row : m_ui->currentTreeView->selectionModel()->selectedRows()) {
+        QModelIndex currentIndex = m_engine->currentModel()->mapToSource(row);
+        QModelIndex counterpartIndex = m_engine->model()->counterpart(
+                    currentIndex, 1);
+        if(!counterpartIndex.isValid()) {
+            counterpartIndex = currentIndex;
+        }
+        QModelIndex previewIndex = m_engine->previewModel()->mapFromSource(counterpartIndex);
+        if(previewIndex.isValid()) {
+            QModelIndex parent = previewIndex.parent();
+            if(parent.isValid()) {
+                m_ui->previewTreeView->expand(m_engine->previewModel()->index(parent.row(), parent.column(), parent.parent()));
+            }
+            m_ui->previewTreeView->scrollTo(previewIndex);
+            m_ui->previewTreeView->selectionModel()->select(previewIndex, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+        }
+    }
+    m_changingSelection = false;
 }
 
 void RenameFilesDialog::previewItemSelected(const QItemSelection &, const QItemSelection &)
 {
-    if(!m_changingSelection) {
-        m_changingSelection = true;
-        m_ui->currentTreeView->selectionModel()->clear();
-        for(const QModelIndex &row : m_ui->previewTreeView->selectionModel()->selectedRows()) {
-            QModelIndex previewIndex = m_engine->previewModel()->mapToSource(row);
-            QModelIndex counterpartIndex = m_engine->model()->counterpart(
-                        previewIndex, 0);
-            if(!counterpartIndex.isValid()) {
-                counterpartIndex = previewIndex;
-            }
-            QModelIndex currentIndex = m_engine->currentModel()->mapFromSource(counterpartIndex);
-            if(currentIndex.isValid()) {
-                QModelIndex parent = currentIndex.parent();
-                if(parent.isValid()) {
-                    m_ui->currentTreeView->expand(m_engine->currentModel()->index(parent.row(), parent.column(), parent.parent()));
-                }
-                m_ui->currentTreeView->scrollTo(currentIndex);
-                m_ui->currentTreeView->selectionModel()->select(currentIndex, QItemSelectionModel::Rows | QItemSelectionModel::Select);
-            }
-        }
-        m_changingSelection = false;
+    if(m_changingSelection) {
+        return;
     }
+
+    m_changingSelection = true;
+    m_ui->currentTreeView->selectionModel()->clear();
+    for(const QModelIndex &row : m_ui->previewTreeView->selectionModel()->selectedRows()) {
+        QModelIndex previewIndex = m_engine->previewModel()->mapToSource(row);
+        QModelIndex counterpartIndex = m_engine->model()->counterpart(
+                    previewIndex, 0);
+        if(!counterpartIndex.isValid()) {
+            counterpartIndex = previewIndex;
+        }
+        QModelIndex currentIndex = m_engine->currentModel()->mapFromSource(counterpartIndex);
+        if(currentIndex.isValid()) {
+            QModelIndex parent = currentIndex.parent();
+            if(parent.isValid()) {
+                m_ui->currentTreeView->expand(m_engine->currentModel()->index(parent.row(), parent.column(), parent.parent()));
+            }
+            m_ui->currentTreeView->scrollTo(currentIndex);
+            m_ui->currentTreeView->selectionModel()->select(currentIndex, QItemSelectionModel::Rows | QItemSelectionModel::Select);
+        }
+    }
+    m_changingSelection = false;
 }
 
 void RenameFilesDialog::pasteScriptFromFile(const QString &fileName)
@@ -341,12 +347,13 @@ void RenameFilesDialog::abortClose()
 
 void RenameFilesDialog::pasteScriptFromClipboard()
 {
-    QString script = QApplication::clipboard()->text();
-    if(!script.isEmpty()) {
-        m_ui->javaScriptPlainTextEdit->setPlainText(script);
-    } else {
+    const QString script = QApplication::clipboard()->text();
+    if(script.isEmpty()) {
         QMessageBox::warning(this, windowTitle(), tr("Clipboard contains no text."));
+        return;
     }
+
+    m_ui->javaScriptPlainTextEdit->setPlainText(script);
 }
 
 void RenameFilesDialog::pasteDefaultExampleScript()
@@ -356,10 +363,10 @@ void RenameFilesDialog::pasteDefaultExampleScript()
 
 void RenameFilesDialog::showTreeViewContextMenu()
 {
-    if(QObject *sender = QObject::sender()) {
+    if(const QTreeView *sender = qobject_cast<const QTreeView *>(QObject::sender())) {
         QMenu menu;
-        menu.addAction(tr("Expand all"), sender, SLOT(expandAll()));
-        menu.addAction(tr("Collapse all"), sender, SLOT(collapseAll()));
+        connect(menu.addAction(tr("Expand all")), &QAction::trigger, sender, &QTreeView::expandAll);
+        connect(menu.addAction(tr("Collapse all")), &QAction::trigger, sender, &QTreeView::collapseAll);
         menu.exec(QCursor::pos());
     }
 }
