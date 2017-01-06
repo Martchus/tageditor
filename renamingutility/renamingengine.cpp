@@ -5,14 +5,11 @@
 
 #include <c++utilities/misc/memory.h>
 
-#include <qtutilities/misc/trylocker.h>
-
 #include <QDir>
 #include <QStringBuilder>
 #include <QtConcurrent>
 
 using namespace std;
-using namespace ThreadingUtils;
 
 namespace RenamingUtility {
 
@@ -26,6 +23,7 @@ RenamingEngine::RenamingEngine(QObject *parent) :
     m_errorsOccured(0),
     m_aborted(false),
     m_includeSubdirs(false),
+    m_isBusy(false),
     m_model(nullptr),
     m_currentModel(nullptr),
     m_previewModel(nullptr)
@@ -70,25 +68,20 @@ bool RenamingEngine::setProgram(const QString &program)
 bool RenamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubdirs)
 {
 #ifndef TAGEDITOR_NO_JSENGINE
-    TryLocker<> locker(m_mutex);
-    if(locker) {
-        setRootItem();
-        m_includeSubdirs = includeSubdirs;
-        m_dir = rootDirectory;
-        QtConcurrent::run([this] () {
-            {
-                QMutexLocker locker(&m_mutex);
-                m_aborted.store(false);
-                m_itemsProcessed = 0;
-                m_errorsOccured = 0;
-                m_newlyGeneratedRootItem = generatePreview(m_dir);
-            }
-            emit previewGenerated();
-        });
-        return true;
-    } else {
+    if(m_isBusy) {
         return false;
     }
+    setRootItem();
+    m_includeSubdirs = includeSubdirs;
+    m_dir = rootDirectory;
+    QtConcurrent::run([this] () {
+        m_aborted.store(false);
+        m_itemsProcessed = 0;
+        m_errorsOccured = 0;
+        m_newlyGeneratedRootItem = generatePreview(m_dir);
+        emit previewGenerated();
+    });
+    return m_isBusy = true;
 #else
     return false;
 #endif
@@ -96,57 +89,28 @@ bool RenamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubd
 
 bool RenamingEngine::applyChangings()
 {
-    if(!m_rootItem) {
+    if(!m_rootItem || m_isBusy) {
         return false;
     }
-    TryLocker<> locker(m_mutex);
-    if(locker) {
-        QtConcurrent::run([this] () {
-            {
-                QMutexLocker locker(&m_mutex);
-                m_aborted.store(false);
-                m_itemsProcessed = 0;
-                m_errorsOccured = 0;
-                applyChangings(m_rootItem.get());
-            }
-            emit changingsApplied();
-        });
-        return true;
-    } else {
-        return false;
-    }
-}
-
-bool RenamingEngine::isBusy()
-{
-    if(m_mutex.tryLock()) {
-        m_mutex.unlock();
-        return false;
-    } else {
-        return true;
-    }
-}
-
-void RenamingEngine::abort()
-{
-    m_aborted.store(1);
-}
-
-bool RenamingEngine::isAborted()
-{
-    return m_aborted.load();
+    QtConcurrent::run([this] () {
+        m_aborted.store(false);
+        m_itemsProcessed = 0;
+        m_errorsOccured = 0;
+        applyChangings(m_rootItem.get());
+        emit changingsApplied();
+    });
+    return m_isBusy = true;
 }
 
 bool RenamingEngine::clearPreview()
 {
-    TryLocker<> locker(m_mutex);
-    if(locker) {
-        updateModel(nullptr);
-        m_rootItem.reset();
-        return true;
-    } else {
+    if(m_isBusy) {
         return false;
     }
+
+    updateModel(nullptr);
+    m_rootItem.reset();
+    return true;
 }
 
 FileSystemItemModel *RenamingEngine::model()
@@ -177,11 +141,13 @@ FilteredFileSystemItemModel *RenamingEngine::previewModel()
 
 void RenamingEngine::processPreviewGenerated()
 {
+    m_isBusy = false;
     setRootItem(move(m_newlyGeneratedRootItem));
 }
 
 void RenamingEngine::processChangingsApplied()
 {
+    m_isBusy = false;
     updateModel(nullptr);
     updateModel(m_rootItem.get());
 }
@@ -240,9 +206,9 @@ void RenamingEngine::applyChangings(FileSystemItem *parentItem)
         if(!item->applied() && !item->errorOccured()) {
             switch(item->status()) {
             case ItemStatus::New: {
-                FileSystemItem *counterpartItem = item->counterpart(); // holds current name
-                QString currentPath = counterpartItem ? counterpartItem->relativePath() : QString();
-                QString newPath = item->relativePath();
+                const FileSystemItem *counterpartItem = item->counterpart(); // holds current name
+                const QString currentPath = counterpartItem ? counterpartItem->relativePath() : QString();
+                const QString newPath = item->relativePath();
                 if(item->name().isEmpty()) {
                     // new item name mustn't be empty
                     item->setNote(tr("generated name is empty"));
@@ -292,8 +258,6 @@ void RenamingEngine::applyChangings(FileSystemItem *parentItem)
                 break;
             } case ItemStatus::Current:
                 break;
-            default:
-                ;
             }
         }
         if(item->errorOccured()) {

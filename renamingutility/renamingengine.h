@@ -7,7 +7,6 @@
 #include <QObject>
 #include <QList>
 #include <QDir>
-#include <QMutex>
 #include <QAtomicInteger>
 #if defined(TAGEDITOR_USE_JSENGINE)
 # include <QJSEngine>
@@ -92,7 +91,7 @@ private:
 #endif
     QDir m_dir;
     bool m_includeSubdirs;
-    QMutex m_mutex;
+    bool m_isBusy;
     FileSystemItemModel *m_model;
     FilteredFileSystemItemModel *m_currentModel;
     FilteredFileSystemItemModel *m_previewModel;
@@ -130,6 +129,21 @@ inline const QString &RenamingEngine::errorMessage() const
 inline int RenamingEngine::errorLineNumber() const
 {
     return m_errorLineNumber;
+}
+
+inline bool RenamingEngine::isBusy()
+{
+    return m_isBusy;
+}
+
+inline void RenamingEngine::abort()
+{
+    m_aborted.store(1);
+}
+
+inline bool RenamingEngine::isAborted()
+{
+    return m_aborted.load();
 }
 
 } // namespace RenamingUtility
