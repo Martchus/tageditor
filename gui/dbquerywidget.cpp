@@ -430,11 +430,12 @@ void DbQueryWidget::showResultsContextMenu()
         if(!selection.isEmpty()) {
             QMenu contextMenu;
             if(m_ui->applyPushButton->isEnabled()) {
-                contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this, SLOT(applyResults()));
+                connect(contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row")), &QAction::trigger, this, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
+                // NOTE: available in Qt 5.6 or later: contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
             }
             if(m_model && m_model->areResultsAvailable()) {
-                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, SLOT(fetchAndShowCoverForSelection()));
-                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, SLOT(fetchAndShowLyricsForSelection()));
+                connect(contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover")), &QAction::trigger, this, &DbQueryWidget::fetchAndShowCoverForSelection);
+                connect(contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics")), &QAction::trigger, this, &DbQueryWidget::fetchAndShowLyricsForSelection);
             }
             contextMenu.exec(QCursor::pos());
         }
