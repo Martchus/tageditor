@@ -673,7 +673,14 @@
     <widget class="QWidget" name="bottomWidget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="NotificationLabel" name="notificationLabel" native="true"/>
+       <widget class="NotificationLabel" name="notificationLabel" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer">
@@ -682,7 +689,7 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>463</width>
+          <width>40</width>
           <height>20</height>
          </size>
         </property>
