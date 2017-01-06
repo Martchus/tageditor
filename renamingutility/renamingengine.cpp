@@ -302,10 +302,6 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         case ActionType::Rename:
             if(!newRelativeDirectory.isEmpty()) {
                 FileSystemItem *counterpartParent = item->root()->makeChildAvailable(newRelativeDirectory);
-                if(counterpartParent->status() == ItemStatus::New
-                        && counterpartParent->note().isEmpty()) {
-                    counterpartParent->setNote(tr("will be created"));
-                }
                 const QString &counterpartName = newName.isEmpty() ? item->name() : newName;
                 if(counterpartParent->findChild(counterpartName, item)) {
                     item->setNote(tr("name is already used at new location"));

@@ -1,6 +1,7 @@
 #include "./filesystemitem.h"
 
 #include <QDir>
+#include <QCoreApplication>
 #include <QDebug>
 
 namespace RenamingUtility {
@@ -161,6 +162,7 @@ FileSystemItem *FileSystemItem::makeChildAvailable(const QString &relativePath)
             if(!child) {
                 child = new FileSystemItem(ItemStatus::New, ItemType::Dir, dir);
                 child->setParent(parent);
+                child->setNote(QCoreApplication::translate("RenamingUtility::FileSystemItem", "will be created"));
             }
             parent = child;
         }
