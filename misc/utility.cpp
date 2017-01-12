@@ -113,9 +113,8 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
 {
     QString res;
     bool whitespace = true;
-    QChar current;
-    for(int i = 0, size = str.size(); i < size; ++i) {
-        current = str.at(i);
+    for(int i = 0, size = str.size(); i != size; ++i) {
+        const QChar current = str.at(i);
         if(current.isSpace() || current == QChar('(') || current == QChar('[')) {
             whitespace = true;
             res += current;
@@ -123,9 +122,9 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
             whitespace = true;
             res += ' ';
         } else if(whitespace) {
-            if(i > 0) {
+            if(i) {
                 auto rest = str.midRef(i);
-                static const char *const connectingWords[] = {"the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on "};
+                static const char *const connectingWords[] = {"the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on ", "as "};
                 for(const char *word : connectingWords) {
                     if(rest.startsWith(QLatin1String(word), Qt::CaseInsensitive)) {
                         res += current.toLower();
