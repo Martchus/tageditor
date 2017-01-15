@@ -140,7 +140,10 @@ You can also create or remove tags manually.</string>
            </property>
            <property name="toolTip">
             <string>Restores the original values read from
-the file reverting all unsaved changings.</string>
+the file reverting all unsaved changings.
+Only affects the currently shown tag
+and none of the actions under
+'Tag management'.</string>
            </property>
            <property name="text">
             <string>Restore</string>
@@ -166,7 +169,8 @@ the file reverting all unsaved changings.</string>
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>Clears all values.</string>
+            <string>Clears all values. Only affects the
+currently shown tag.</string>
            </property>
            <property name="text">
             <string>Clear</string>
