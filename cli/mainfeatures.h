@@ -1,11 +1,7 @@
 #ifndef MAINFEATURES_H
 #define MAINFEATURES_H
 
-#include <tagparser/tagvalue.h>
-
 #include <c++utilities/application/argumentparser.h>
-
-#include <vector>
 
 namespace ApplicationUtilities {
 class Argument;

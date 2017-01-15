@@ -15,11 +15,15 @@ set(META_VERSION_PATCH 2)
 
 # add project files
 set(HEADER_FILES
+    cli/attachmentinfo.h
+    cli/helper.h
     cli/mainfeatures.h
     application/knownfieldmodel.h
 )
 set(SRC_FILES
     application/main.cpp
+    cli/attachmentinfo.cpp
+    cli/helper.cpp
     cli/mainfeatures.cpp
     application/knownfieldmodel.cpp
 )
