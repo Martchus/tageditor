@@ -207,13 +207,11 @@ Here are some Bash examples which illustrate getting and setting tag information
 3. The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
 
 ### Windows only
-  * The Tag Editor sets the codepage to UTF-8 to ensure *3.* is handled correctly by the terminal. So
+  * Codepage is set to UTF-8 to ensure *3.* is handled correctly by the terminal. So
     far it seems that this effort just causes weird truncating behaviour in some cases and might
     prevent pipes/redirections to function. One can use MSYS2 terminal to work around this.
-  * The Tag Editor converts all UTF-16 encoded arguments as provided by WinAPI to UTF-8 so *2.*
-    shouldn't cause any trouble in theory.
-    * Opening files with unicode characters in the name *does* work.
-    * Setting unicode values via CLI does *not* work, though.
+  * All UTF-16 encoded arguments as provided by WinAPI are converted to UTF-8 so *2.*
+    shouldn't cause any trouble.
 
 
 ## Build instructions
