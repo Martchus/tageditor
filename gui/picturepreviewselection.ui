@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QtGui::PicturePreviewSelection</class>
  <widget class="QWidget" name="QtGui::PicturePreviewSelection">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>284</width>
-    <height>242</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
