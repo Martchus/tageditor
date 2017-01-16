@@ -272,71 +272,13 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                     // iterate through fields specified by the user
                     if(fields.empty()) {
                         for(auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
-                            const auto &values = tag->values(field);
-                            if(!values.empty()) {
-                                const char *fieldName = KnownFieldModel::fieldName(field);
-                                const auto fieldNameLen = strlen(fieldName);
-                                for(const auto &value : values) {
-                                    // write field name
-                                    cout << ' ' << fieldName;
-                                    // write padding
-                                    for(auto i = fieldNameLen; i < 18; ++i) {
-                                        cout << ' ';
-                                    }
-                                    // write value
-                                    try {
-                                        const auto textValue = value->toString(TagTextEncoding::Utf8);
-                                        if(textValue.empty()) {
-                                            cout << "can't display here (see --extract)";
-                                        } else {
-                                            cout << textValue;
-                                        }
-                                    } catch(const ConversionException &) {
-                                        cout << "conversion error";
-                                    }
-                                    cout << endl;
-                                }
-                            }
+                            printField(FieldScope(field), tag, true);
                         }
                     } else {
                         for(const auto &fieldDenotation : fields) {
                             const FieldScope &denotedScope = fieldDenotation.first;
                             if(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType | tagType) != TagType::Unspecified) {
-                                const auto &values = tag->values(denotedScope.field);
-                                const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
-                                const auto fieldNameLen = strlen(fieldName);
-                                if(values.empty()) {
-                                    // write field name
-                                    const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
-                                    cout << ' ' << fieldName;
-                                    // write padding
-                                    for(auto i = fieldNameLen; i < 18; ++i) {
-                                        cout << ' ';
-                                    }
-                                    cout << "none";
-                                } else {
-                                    for(const auto &value : values) {
-                                        // write field name
-                                        const char *fieldName = KnownFieldModel::fieldName(denotedScope.field);
-                                        cout << ' ' << fieldName;
-                                        // write padding
-                                        for(auto i = fieldNameLen; i < 18; ++i) {
-                                            cout << ' ';
-                                        }
-                                        // write value
-                                        try {
-                                            const auto textValue = value->toString(TagTextEncoding::Utf8);
-                                            if(textValue.empty()) {
-                                                cout << "can't display here (see --extract)";
-                                            } else {
-                                                cout << textValue;
-                                            }
-                                        } catch(const ConversionException &) {
-                                            cout << "conversion error";
-                                        }
-                                        cout << endl;
-                                    }
-                                }
+                                printField(denotedScope, tag, false);
                             }
                         }
                     }

@@ -49,6 +49,24 @@ inline TagType &operator|= (TagType &lhs, TagType rhs)
     return lhs = static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
 }
 
+struct FieldId
+{
+    constexpr FieldId(KnownField field);
+    constexpr FieldId(const char *field);
+    KnownField genericField;
+    const char *nativeField;
+};
+
+constexpr FieldId::FieldId(KnownField field) :
+    genericField(field),
+    nativeField(nullptr)
+{}
+
+constexpr FieldId::FieldId(const char *field) :
+    genericField(KnownField::Invalid),
+    nativeField(field)
+{}
+
 struct FieldScope
 {
     FieldScope(KnownField field = KnownField::Invalid, TagType tagType = TagType::Unspecified, TagTarget tagTarget = TagTarget());
@@ -191,6 +209,8 @@ inline void printProperty(const char *propName, const intType value, const char 
         printProperty(propName, ConversionUtilities::numberToString<intType>(value), suffix, indentation);
     }
 }
+
+void printField(const FieldScope &scope, const Tag *tag, bool skipEmpty);
 
 TagUsage parseUsageDenotation(const ApplicationUtilities::Argument &usageArg, TagUsage defaultUsage);
 TagTextEncoding parseEncodingDenotation(const ApplicationUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);

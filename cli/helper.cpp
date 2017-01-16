@@ -1,16 +1,20 @@
 #include "./helper.h"
 
+#include "../application/knownfieldmodel.h"
+
 #include <tagparser/mediafileinfo.h>
 
 #include <c++utilities/application/argumentparser.h>
 
 #include <iostream>
+#include <cstring>
 
 using namespace std;
 using namespace ApplicationUtilities;
 using namespace ConversionUtilities;
 using namespace ChronoUtilities;
 using namespace Media;
+using namespace Settings;
 
 namespace Cli {
 
@@ -124,6 +128,46 @@ void printProperty(const char *propName, ElementPosition elementPosition, const 
     }
     if(pos) {
         printProperty(propName, pos, suffix, indentation);
+    }
+}
+
+void printFieldName(const char *fieldName, size_t fieldNameLen)
+{
+    cout << ' ' << fieldName;
+    // also write padding
+    for(auto i = fieldNameLen; i < 18; ++i) {
+        cout << ' ';
+    }
+}
+
+void printField(const FieldScope &scope, const Tag *tag, bool skipEmpty)
+{
+    const auto &values = tag->values(scope.field);
+    if(!skipEmpty || !values.empty()) {
+        // write field name
+        const char *fieldName = KnownFieldModel::fieldName(scope.field);
+        const auto fieldNameLen = strlen(fieldName);
+
+        // write value
+        if(values.empty()) {
+            printFieldName(fieldName, fieldNameLen);
+            cout << "none\n";
+        } else {
+            for(const auto &value : values) {
+                printFieldName(fieldName, fieldNameLen);
+                try {
+                    const auto textValue = value->toString(TagTextEncoding::Utf8);
+                    if(textValue.empty()) {
+                        cout << "can't display here (see --extract)";
+                    } else {
+                        cout << textValue;
+                    }
+                } catch(const ConversionException &) {
+                    cout << "conversion error";
+                }
+                cout << '\n';
+            }
+        }
     }
 }
 
