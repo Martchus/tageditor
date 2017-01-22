@@ -47,12 +47,16 @@ using namespace Utility;
 
 namespace Cli {
 
-#define FIELD_NAMES "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n" \
+#define FIELD_NAMES \
+    "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n" \
     "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n" \
     "recordlabel cover composer rating description"
 
-#define TAG_MODIFIER "tag=id3v1 tag=id3v2 tag=id3 tag=itunes tag=vorbis tag=matroska tag=all"
-#define TARGET_MODIFIER "target-level target-levelname target-tracks target-tracks\n" \
+#define TAG_MODIFIER \
+    "tag=id3v1 tag=id3v2 tag=id3 tag=itunes tag=vorbis tag=matroska tag=all"
+
+#define TARGET_MODIFIER \
+    "target-level target-levelname target-tracks target-tracks\n" \
     "target-chapters target-editions target-attachments target-reset"
 
 const char *const fieldNames = FIELD_NAMES;
@@ -272,13 +276,13 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                     // iterate through fields specified by the user
                     if(fields.empty()) {
                         for(auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
-                            printField(FieldScope(field), tag, true);
+                            printField(FieldScope(field), tag, tagType, true);
                         }
                     } else {
                         for(const auto &fieldDenotation : fields) {
                             const FieldScope &denotedScope = fieldDenotation.first;
                             if(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType | tagType) != TagType::Unspecified) {
-                                printField(denotedScope, tag, false);
+                                printField(denotedScope, tag, tagType, false);
                             }
                         }
                     }
@@ -487,7 +491,11 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 }
                             }
                             // finally set the values
-                            tag->setValues(denotedScope.field, convertedValues);
+                            try {
+                                denotedScope.field.setValues(tag, tagType, convertedValues);
+                            } catch(const ConversionException &e) {
+                                fileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" + string(denotedScope.field.name()) + "\": " + e.what(), context);
+                            }
                         }
                     }
                 }
@@ -599,10 +607,14 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                 vector<pair<const TagValue *, string> > values;
                 // iterate through all tags
                 for(const Tag *tag : tags) {
-                    for(const auto &fieldDenotation : fieldDenotations) {
-                        const auto &value = tag->value(fieldDenotation.first.field);
-                        if(!value.isEmpty()) {
-                            values.emplace_back(&value, joinStrings({tag->typeName(), numberToString(values.size())}, "-", true));
+                    const TagType tagType = tag->type();
+                    for(const pair<FieldScope, FieldValues> &fieldDenotation : fieldDenotations) {
+                        try {
+                            for(const TagValue *value : fieldDenotation.first.field.values(tag, tagType)) {
+                                values.emplace_back(value, joinStrings({tag->typeName(), numberToString(values.size())}, "-", true));
+                            }
+                        } catch(const ConversionException &e) {
+                            inputFileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" + string(fieldDenotation.first.field.name()) + "\": " + e.what(), "extracting field");
                         }
                     }
                 }

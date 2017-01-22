@@ -1,6 +1,8 @@
 #ifndef CLI_HELPER
 #define CLI_HELPER
 
+#include "../application/knownfieldmodel.h"
+
 #include <tagparser/tag.h>
 
 #include <c++utilities/application/commandlineutils.h>
@@ -10,6 +12,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <functional>
 
 namespace ApplicationUtilities {
 class Argument;
@@ -49,29 +52,61 @@ inline TagType &operator|= (TagType &lhs, TagType rhs)
     return lhs = static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
 }
 
-struct FieldId
+class FieldId
 {
-    constexpr FieldId(KnownField field);
-    constexpr FieldId(const char *field);
-    KnownField genericField;
-    const char *nativeField;
+public:
+    FieldId(KnownField m_knownField = KnownField::Invalid);
+    static FieldId fromDenotation(const char *denotation, std::size_t denotationSize);
+    bool operator ==(const FieldId &other) const;
+    KnownField knownField() const;
+    const char *nativeField() const;
+    const char *name() const;
+    std::vector<const TagValue *> values(const Tag *tag, TagType tagType) const;
+    bool setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &values) const;
+
+private:
+    typedef std::function<std::vector<const TagValue *>(const Tag *, TagType)> GetValuesForNativeFieldType;
+    typedef std::function<bool(Tag *, TagType, const std::vector<TagValue> &)> SetValuesForNativeFieldType;
+    FieldId(const char *m_nativeField, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField);
+    template<class ConcreteTag>
+    static FieldId fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize = std::string::npos);
+
+    KnownField m_knownField;
+    const char *m_nativeField;
+    GetValuesForNativeFieldType m_valuesForNativeField;
+    SetValuesForNativeFieldType m_setValuesForNativeField;
 };
 
-constexpr FieldId::FieldId(KnownField field) :
-    genericField(field),
-    nativeField(nullptr)
+inline FieldId::FieldId(KnownField knownField) :
+    m_knownField(knownField),
+    m_nativeField(nullptr)
 {}
 
-constexpr FieldId::FieldId(const char *field) :
-    genericField(KnownField::Invalid),
-    nativeField(field)
-{}
+inline bool FieldId::operator ==(const FieldId &other) const
+{
+    return m_knownField == other.m_knownField && m_nativeField == other.m_nativeField;
+}
+
+inline KnownField FieldId::knownField() const
+{
+    return m_knownField;
+}
+
+inline const char *FieldId::nativeField() const
+{
+    return m_nativeField;
+}
+
+inline const char *FieldId::name() const
+{
+    return m_nativeField ? m_nativeField : Settings::KnownFieldModel::fieldName(m_knownField);
+}
 
 struct FieldScope
 {
     FieldScope(KnownField field = KnownField::Invalid, TagType tagType = TagType::Unspecified, TagTarget tagTarget = TagTarget());
     bool operator ==(const FieldScope &other) const;
-    KnownField field;
+    FieldId field;
     TagType tagType;
     TagTarget tagTarget;
 };
@@ -142,7 +177,7 @@ template <> struct hash<TagTarget::IdContainerType>
 
 template <> struct hash<TagTarget>
 {
-    std::size_t operator()(const TagTarget& target) const
+    std::size_t operator()(const TagTarget &target) const
     {
         using std::hash;
         return ((hash<uint64>()(target.level())
@@ -151,12 +186,22 @@ template <> struct hash<TagTarget>
     }
 };
 
-template <> struct hash<FieldScope>
+template <> struct hash<FieldId>
 {
-    std::size_t operator()(const FieldScope& scope) const
+    std::size_t operator()(const FieldId &id) const
     {
         using std::hash;
-        return ((hash<KnownField>()(scope.field)
+        return (hash<KnownField>()(id.knownField())
+                 ^ (hash<const char *>()(id.nativeField()) << 1));
+    }
+};
+
+template <> struct hash<FieldScope>
+{
+    std::size_t operator()(const FieldScope &scope) const
+    {
+        using std::hash;
+        return ((hash<FieldId>()(scope.field)
                  ^ (hash<TagType>()(scope.tagType) << 1)) >> 1)
                 ^ (hash<TagTarget>()(scope.tagTarget) << 1);
     }
@@ -210,7 +255,7 @@ inline void printProperty(const char *propName, const intType value, const char 
     }
 }
 
-void printField(const FieldScope &scope, const Tag *tag, bool skipEmpty);
+void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool skipEmpty);
 
 TagUsage parseUsageDenotation(const ApplicationUtilities::Argument &usageArg, TagUsage defaultUsage);
 TagTextEncoding parseEncodingDenotation(const ApplicationUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);

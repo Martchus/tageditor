@@ -32,6 +32,7 @@ class CliTests : public TestFixture
     CPPUNIT_TEST_SUITE(CliTests);
 #ifdef PLATFORM_UNIX
     CPPUNIT_TEST(testBasicReadingAndWriting);
+    CPPUNIT_TEST(testSpecifyingNativeFieldIds);
     CPPUNIT_TEST(testHandlingOfTargets);
     CPPUNIT_TEST(testId3SpecificOptions);
     CPPUNIT_TEST(testMultipleFiles);
@@ -51,6 +52,7 @@ public:
 
 #ifdef PLATFORM_UNIX
     void testBasicReadingAndWriting();
+    void testSpecifyingNativeFieldIds();
     void testHandlingOfTargets();
     void testId3SpecificOptions();
     void testMultipleFiles();
@@ -76,6 +78,34 @@ void CliTests::tearDown()
 {}
 
 #ifdef PLATFORM_UNIX
+template <typename StringType, bool negateErrorCond = false>
+bool testContainsSubstrings(const StringType &str, std::initializer_list<const typename StringType::value_type *> substrings)
+{
+    bool res = containsSubstrings(str, substrings);
+    if(negateErrorCond) {
+        res = !res;
+    }
+    if(!res) {
+        if(!negateErrorCond) {
+            cout << "  - test failed: output does NOT contain required substrings\n";
+        } else {
+            cout << "  - test failed: output DOES contain substrings it shouldn't\n";
+        }
+        cout << "Output:\n" << str;
+        cout << "Substrings:\n";
+        for(const auto &substr : substrings) {
+            cout << substr << "\n";
+        }
+    }
+    return res;
+}
+
+template <typename StringType>
+bool testNotContainsSubstrings(const StringType &str, std::initializer_list<const typename StringType::value_type *> substrings)
+{
+    return testContainsSubstrings<StringType, true>(str, substrings);
+}
+
 /*!
  * \brief Tests basic reading and writing of tags.
  */
@@ -90,7 +120,7 @@ void CliTests::testBasicReadingAndWriting()
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
     // context of the following fields is the album (so "Title" means the title of the album)
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "album",
                                           "Title             Elephant Dream - test 2"
                                       }));
@@ -100,7 +130,7 @@ void CliTests::testBasicReadingAndWriting()
     const char *const args2[] = {"tageditor", "get", "-f", mkvFile.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Title             Elephant Dream - test 2",
                                           "Year              2010",
                                           "Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC"
@@ -112,7 +142,7 @@ void CliTests::testBasicReadingAndWriting()
     CPPUNIT_ASSERT(stdout.find("Changes have been applied") != string::npos);
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Title             A new title",
                                           "Genre             Testfile",
                                           "Year              2010",
@@ -126,7 +156,7 @@ void CliTests::testBasicReadingAndWriting()
     TESTUTILS_ASSERT_EXEC(args4);
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Title             Foo",
                                           "Artist            Bar"
                                       }));
@@ -134,8 +164,47 @@ void CliTests::testBasicReadingAndWriting()
     CPPUNIT_ASSERT(stdout.find("Comment") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Genre") == string::npos);
 
-    remove(mkvFile.c_str());
+    remove(mkvFile.data());
     remove(mkvFileBackup.data());
+}
+
+/*!
+ * \brief Tests specifying native fields IDs when getting and setting fields.
+ */
+void CliTests::testSpecifyingNativeFieldIds()
+{
+    cout << "\nSpecifying native field IDs" << endl;
+    string stdout, stderr;
+
+    // get specific field
+    const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
+    const string mkvFileBackup(mkvFile + ".bak");
+    const string mp4File(workingCopyPath("mtx-test-data/aac/he-aacv2-ps.m4a"));
+    const string mp4FileBackup(mp4File + ".bak");
+    const char *const args1[] = {"tageditor", "set", "mkv:FOO=bar", "mp4:©foo=bar", "mp4:invalid", "-f", mkvFile.data(), mp4File.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+    CPPUNIT_ASSERT(stderr.empty());
+    // FIXME: provide a way to specify raw data type
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"making MP4 tag field ©foo: It was not possible to find an appropriate raw data type id. UTF-8 will be assumed."}));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"Unable to parse denoted field ID \"invalid\": MP4 ID must be exactly 4 chars"}));
+
+    const char *const args2[] = {"tageditor", "get", "mkv:FOO", "mp4:©foo", "generic:year", "-f", mkvFile.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(stderr.empty());
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"Year              2010"}));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"FOO               bar"}));
+
+    const char *const args3[] = {"tageditor", "get", "mkv:FOO", "mp4:©foo", "mp4:invalid", "generic:year", "-f", mp4File.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args3);
+    CPPUNIT_ASSERT(stderr.empty());
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"test"}));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"Year              none"}));
+    // FIXME: number of whitespaces currently not correct because UTF-8 ©-sign counts as two characters
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"©foo             bar"}));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"invalid           unable to parse - MP4 ID must be exactly 4 chars"}));
+
+    remove(mkvFile.data()), remove(mkvFileBackup.data());
+    remove(mp4File.data()), remove(mp4FileBackup.data());
 }
 
 /*!
@@ -153,12 +222,12 @@ void CliTests::testHandlingOfTargets()
     const char *const args2[] = {"tageditor", "set", "target-level=30", "title=The song title", "genre=The song genre", "target-level=50", "genre=The album genre", "-f", mkvFile.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "song",
                                           "Title             The song title",
                                           "Genre             The song genre"
                                       }));
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "album",
                                           "Title             Elephant Dream - test 2",
                                           "Genre             The album genre"
@@ -169,10 +238,10 @@ void CliTests::testHandlingOfTargets()
     const char *const args3[] = {"tageditor", "set", "target-level=30", "target-tracks=3134325680", "title=The audio track", "encoder=likely some AAC encoder", "--remove-target", "target-level=30", "--remove-target", "target-level=50", "-f", mkvFile.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args3);
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {"song"}));
-    CPPUNIT_ASSERT(!containsSubstrings(stdout, {"song", "song"}));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"song"}));
+    CPPUNIT_ASSERT(testNotContainsSubstrings(stdout, {"song", "song"}));
     CPPUNIT_ASSERT(stdout.find("album") == string::npos);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "3134325680",
                                           "Title             The audio track",
                                           "Encoder           likely some AAC encoder"
@@ -270,7 +339,7 @@ void CliTests::testMultipleFiles()
     // get tags of 3 files at once
     const char *const args1[] = {"tageditor", "get", "-f", mkvFile1.data(), mkvFile2.data(), mkvFile3.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Title             Big Buck Bunny - test 1",
                                           "Title             Elephant Dream - test 2",
                                           "Title             Elephant Dream - test 3"
@@ -282,7 +351,7 @@ void CliTests::testMultipleFiles()
     const char *const args2[] = {"tageditor", "set", "target-level=30", "title=test1", "title=test2", "title=test3", "part+=1", "target-level=50", "title=MKV testfiles", "totalparts=3", "-f", mkvFile1.data(), mkvFile2.data(), mkvFile3.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Matroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\n"
                                           " Title             MKV testfiles\n"
                                           " Year              2010\n"
@@ -337,7 +406,7 @@ void CliTests::testOutputFile()
     // specified output files contain new titles
     const char *const args3[] = {"tageditor", "get", "-f", "/tmp/test1.mkv", "/tmp/test2.mkv", nullptr};
     TESTUTILS_ASSERT_EXEC(args3);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
                                           " Title             test1\n",
                                           "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
@@ -362,7 +431,7 @@ void CliTests::testMultipleValuesPerField()
 
     const char *const args2[] = {"tageditor", "get", "-f", mkvFile1.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Artist            test1",
                                           "Artist            test2",
                                           "Artist            test3"
@@ -396,7 +465,7 @@ void CliTests::testHandlingAttachments()
     TESTUTILS_ASSERT_EXEC(args2);
     const char *const args1[] = {"tageditor", "info", "-f", mkvFile1.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Attachments:",
                                           "Name                          test2.mkv",
                                           "MIME-type                     video/x-matroska",
@@ -410,7 +479,7 @@ void CliTests::testHandlingAttachments()
     const char *const args3[] = {"tageditor", "set", "--update-attachment", "name=test2.mkv", "desc=Updated test attachment", "-f", mkvFile1.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args3);
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "Attachments:",
                                           "Name                          test2.mkv",
                                           "MIME-type                     video/x-matroska",
@@ -457,7 +526,7 @@ void CliTests::testDisplayingInfo()
     const string mkvFile(testFilePath("matroska_wave1/test2.mkv"));
     const char *const args1[] = {"tageditor", "info", "-f", mkvFile.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "  Container format: Matroska\n"
                                           "    Document type                 matroska\n"
                                           "    Read version                  1\n"
@@ -486,7 +555,7 @@ void CliTests::testDisplayingInfo()
     const string mp4File(testFilePath("mtx-test-data/aac/he-aacv2-ps.m4a"));
     const char *const args2[] = {"tageditor", "info", "-f", mp4File.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
-    CPPUNIT_ASSERT(containsSubstrings(stdout, {
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
                                           "  Container format: MPEG-4 Part 14\n"
                                           "    Document type                 mp42\n"
                                           "    Duration                      3 min\n"
