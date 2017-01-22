@@ -179,6 +179,23 @@ Here are some Bash examples which illustrate getting and setting tag information
     ```
     For more information checkout the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).
 
+* *Sets* custom fields:
+    ```
+    tageditor set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a
+    ```
+
+  In particular, the custom field `FOO` is set to `bar1` in test.mkv and the custom field `©foo`
+  is set to `bar2` in test.m4a. So the prefixes tell the tag editor that the specified field
+  ID is a native field ID of a particular tag format rather than a generic identifier. Native
+  fields are only applied to the corresponding format of course.
+
+  The following prefixes are supported:
+    * `mp4`: iTune-style MP4/M4A ID (must be exactly 4 characters)
+    * `mkv`: Matroska ID
+    * `id3`: ID3v2 ID (must be exactly 3 or 4 characters depending on the tag version)
+    * `vorbis`: Vorbis comment ID
+
+
 * Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
 
   ```
