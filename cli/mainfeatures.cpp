@@ -18,6 +18,7 @@
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/conversion/stringconversion.h>
+#include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/io/ansiescapecodes.h>
 #include <c++utilities/io/catchiofailure.h>
@@ -131,7 +132,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     size_t segmentIndex = 0;
                     for(const auto &title : container->titles()) {
                         if(segmentIndex) {
-                            printProperty("Title", title + " (segment " + numberToString(++segmentIndex) + ")");
+                            printProperty("Title", title % " (segment " % ++segmentIndex + ")");
                         } else {
                             ++segmentIndex;
                             printProperty("Title", title);
@@ -494,7 +495,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                             try {
                                 denotedScope.field.setValues(tag, tagType, convertedValues);
                             } catch(const ConversionException &e) {
-                                fileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" + string(denotedScope.field.name()) + "\": " + e.what(), context);
+                                fileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" % string(denotedScope.field.name()) % "\": " + e.what(), context);
                             }
                         }
                     }
@@ -614,7 +615,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                                 values.emplace_back(value, joinStrings({tag->typeName(), numberToString(values.size())}, "-", true));
                             }
                         } catch(const ConversionException &e) {
-                            inputFileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" + string(fieldDenotation.first.field.name()) + "\": " + e.what(), "extracting field");
+                            inputFileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" % string(fieldDenotation.first.field.name()) % "\": " + e.what(), "extracting field");
                         }
                     }
                 }
