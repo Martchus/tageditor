@@ -3,11 +3,11 @@
 #include "./filteredfilesystemitemmodel.h"
 #include "./tageditorobject.h"
 
-#include <c++utilities/misc/memory.h>
-
 #include <QDir>
 #include <QStringBuilder>
 #include <QtConcurrent>
+
+#include <memory>
 
 using namespace std;
 

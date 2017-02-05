@@ -23,7 +23,6 @@
 #include <c++utilities/io/ansiescapecodes.h>
 #include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/nativefilestream.h>
-#include <c++utilities/misc/memory.h>
 
 #if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
 # include <QDir>
@@ -33,6 +32,7 @@
 #include <iostream>
 #include <cstring>
 #include <algorithm>
+#include <memory>
 
 using namespace std;
 using namespace ApplicationUtilities;

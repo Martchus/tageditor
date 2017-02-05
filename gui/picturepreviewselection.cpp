@@ -14,7 +14,6 @@
 
 #include <qtutilities/misc/conversion.h>
 
-#include <c++utilities/misc/memory.h>
 #include <c++utilities/io/catchiofailure.h>
 
 #include <QEvent>
@@ -36,6 +35,7 @@
 #include <stdexcept>
 #include <functional>
 #include <cassert>
+#include <memory>
 
 using namespace std;
 using namespace Media;
