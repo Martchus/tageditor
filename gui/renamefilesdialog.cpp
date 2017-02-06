@@ -54,9 +54,9 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
 
     // setup pasteScriptButton menu
     QMenu *pasteScriptButtonMenu = new QMenu(m_ui->pasteScriptPushButton);
-    pasteScriptButtonMenu->addAction(tr("from file"), this, SLOT(showSelectScriptFileDlg()));
-    pasteScriptButtonMenu->addAction(tr("from clipboard"), this, SLOT(pasteScriptFromClipboard()));
-    pasteScriptButtonMenu->addAction(tr("default script"), this, SLOT(pasteDefaultExampleScript()));
+    pasteScriptButtonMenu->addAction(tr("from file"), this, &RenameFilesDialog::showSelectScriptFileDlg);
+    pasteScriptButtonMenu->addAction(tr("from clipboard"), this, &RenameFilesDialog::pasteScriptFromClipboard);
+    pasteScriptButtonMenu->addAction(tr("default script"), this, &RenameFilesDialog::pasteDefaultExampleScript);
     m_ui->pasteScriptPushButton->setMenu(pasteScriptButtonMenu);
 
     // setup icons
