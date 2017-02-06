@@ -365,8 +365,8 @@ void RenameFilesDialog::showTreeViewContextMenu()
 {
     if(const QTreeView *sender = qobject_cast<const QTreeView *>(QObject::sender())) {
         QMenu menu;
-        connect(menu.addAction(tr("Expand all")), &QAction::trigger, sender, &QTreeView::expandAll);
-        connect(menu.addAction(tr("Collapse all")), &QAction::trigger, sender, &QTreeView::collapseAll);
+        menu.addAction(tr("Expand all"), sender, &QTreeView::expandAll);
+        menu.addAction(tr("Collapse all"), sender, &QTreeView::collapseAll);
         menu.exec(QCursor::pos());
     }
 }
