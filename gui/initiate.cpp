@@ -13,6 +13,8 @@
 
 #include <QApplication>
 
+ENABLE_QT_RESOURCES_OF_STATIC_DEPENDENCIES
+
 using namespace ApplicationUtilities;
 
 namespace QtGui {
@@ -25,8 +27,6 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     // apply settings specified via command line args after the settings chosen in the GUI to give the CLI options precedence
     Settings::values().qt.apply();
     qtConfigArgs.applySettings(Settings::values().qt.hasCustomFont());
-    // load resources needed by classes of qtutilities
-    QtUtilitiesResources::init();
     LOAD_QT_TRANSLATIONS;
     int res;
     if(launchRenamingUtility) {
@@ -42,8 +42,6 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
         res = a.exec();
     }
     Settings::save();
-    // cleanup resources
-    QtUtilitiesResources::cleanup();
     return res;
 }
 
