@@ -8,8 +8,6 @@
 #include <tagparser/tag.h>
 #include <tagparser/backuphelper.h>
 
-#include <qtutilities/settingsdialog/qtsettings.h>
-
 #include <QApplication>
 #include <QSettings>
 #include <QFile>
