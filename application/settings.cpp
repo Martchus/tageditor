@@ -2,6 +2,8 @@
 #include "./knownfieldmodel.h"
 #include "./targetlevelmodel.h"
 
+#include "resources/config.h"
+
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
 #include <tagparser/backuphelper.h>
@@ -10,6 +12,7 @@
 
 #include <QApplication>
 #include <QSettings>
+#include <QFile>
 
 using namespace Media;
 
@@ -45,7 +48,11 @@ Settings &values()
 
 void restore()
 {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,  QApplication::organizationName(), QApplication::applicationName());
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QStringLiteral(PROJECT_NAME));
+    // move old config to new location
+    const QString oldConfig = QSettings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()).fileName();
+    QFile::rename(oldConfig, settings.fileName()) || QFile::remove(oldConfig);
+    settings.sync();
     Settings &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
@@ -199,7 +206,7 @@ void restore()
 
 void save()
 {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope,  QApplication::organizationName(), QApplication::applicationName());
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QStringLiteral(PROJECT_NAME));
     const Settings &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
