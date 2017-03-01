@@ -795,7 +795,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     const initializer_list<ButtonOverlay *> widgets = {m_lineEdit, m_comboBox, m_spinBoxes.first, m_spinBoxes.second};
     bool canApply = this->canApply(m_field);
     if(conversionError || !canApply) {
-        const QPixmap pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/16x16/actions/edit-error.png")).pixmap(16));
+        const QPixmap pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")).pixmap(16));
         QString text;
         if(conversionError) {
             text = tr("The value of this field could not be read from the file because it couldn't be converted proberly.");
@@ -827,7 +827,7 @@ IconButton *TagFieldEdit::setupRestoreButton()
 {
     if(!m_restoreButton) { // setup restore button
         m_restoreButton = new IconButton(this);
-        m_restoreButton->setPixmap(/*QIcon::fromTheme(QStringLiteral("edit-undo"), */QIcon(QStringLiteral(":/qtutilities/icons/hicolor/16x16/actions/edit-menu.png")/*)*/).pixmap(16));
+        m_restoreButton->setPixmap(/*QIcon::fromTheme(QStringLiteral("edit-undo"), */QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-menu.png")/*)*/).pixmap(16));
         m_restoreButton->setToolTip(tr("Restore value as it is currently present in the file"));
         connect(m_restoreButton, &IconButton::clicked, this, &TagFieldEdit::handleRestoreButtonClicked);
         // ownership might be transfered to a child widget/layout
