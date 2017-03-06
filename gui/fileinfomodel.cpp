@@ -125,17 +125,19 @@ void addNotifications(Media::NotificationList *notifications, QStandardItem *par
 
         auto *firstItem = defaultItem(QString::fromUtf8(notification.creationTime().toString().data()));
         switch(notification.type()) {
-        case NotificationType::Critical:
-            firstItem->setIcon(FileInfoModel::errorIcon());
+        case NotificationType::None:
             break;
-        case NotificationType::Warning:
-            firstItem->setIcon(FileInfoModel::warningIcon());
+        case NotificationType::Debug:
+            firstItem->setIcon(FileInfoModel::debugIcon());
             break;
         case NotificationType::Information:
             firstItem->setIcon(FileInfoModel::informationIcon());
             break;
-        case NotificationType::Debug:
-            firstItem->setIcon(FileInfoModel::debugIcon());
+        case NotificationType::Warning:
+            firstItem->setIcon(FileInfoModel::warningIcon());
+            break;
+        case NotificationType::Critical:
+            firstItem->setIcon(FileInfoModel::errorIcon());
             break;
         }
         parent->appendRow(QList<QStandardItem *>()
