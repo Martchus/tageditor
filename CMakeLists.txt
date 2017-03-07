@@ -217,7 +217,7 @@ if(WIDGETS_GUI OR QUICK_GUI)
 endif()
 
 # find tagparser
-find_package(tagparser 6.4.0 REQUIRED)
+find_package(tagparser 7.0.0 REQUIRED)
 use_tag_parser()
 list(APPEND TEST_LIBRARIES ${TAG_PARSER_SHARED_LIB})
 

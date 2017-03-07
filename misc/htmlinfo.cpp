@@ -804,7 +804,7 @@ public:
     {
         mkElementNode(container->firstElement());
         for(auto &element : container->additionalElements()) {
-            mkElementNode<typename ContainerType::elementType, true>(element.get());
+            mkElementNode<typename ContainerType::ContainerElementType, true>(element.get());
         }
     }
 

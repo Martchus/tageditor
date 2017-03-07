@@ -95,9 +95,9 @@ void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandl
  * \brief Defines the predicate to get relevant fields.
  */
 template<class TagType>
-bool fieldPredicate(int i, const std::pair<typename TagType::fieldType::identifierType, typename TagType::fieldType> &pair)
+bool fieldPredicate(int i, const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
 {
-    return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == static_cast<unsigned int>(i)) : (i == 0);
+    return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == static_cast<typename TagType::FieldType::TypeInfoType>(i)) : (i == 0);
 }
 
 /*!
@@ -251,8 +251,8 @@ void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<Media::Tag
                 pair->second.setValue(TagValue());
             }
         } else if(!values[index].isEmpty()) {
-            typename TagType::fieldType field(id, values[index]);
-            field.setTypeInfo(static_cast<decltype(field.typeInfo())>(index));
+            typename TagType::FieldType field(id, values[index]);
+            field.setTypeInfo(index);
             fields.insert(std::make_pair(id, field));
         }
     }

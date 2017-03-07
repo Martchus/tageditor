@@ -554,7 +554,7 @@ std::vector<const TagValue *> valuesForNativeField(const char *idString, std::si
     if(tagType != ConcreteTag::tagType) {
         return vector<const TagValue *>();
     }
-    return static_cast<const ConcreteTag *>(tag)->values(ConcreteTag::fieldType::fieldIdFromString(idString, idStringSize));
+    return static_cast<const ConcreteTag *>(tag)->values(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize));
 }
 
 template<class ConcreteTag>
@@ -563,7 +563,7 @@ bool setValuesForNativeField(const char *idString, std::size_t idStringSize, Tag
     if(tagType != ConcreteTag::tagType) {
         return false;
     }
-    return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::fieldType::fieldIdFromString(idString, idStringSize), values);
+    return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize), values);
 }
 
 inline FieldId::FieldId(const char *nativeField, std::size_t nativeFieldSize, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField) :
