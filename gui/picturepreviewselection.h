@@ -82,7 +82,7 @@ private:
     Media::Tag *m_tag;
     Media::KnownField m_field;
     QList<Media::TagValue> m_values;
-    unsigned int m_currentTypeIndex;
+    int m_currentTypeIndex;
 };
 
 /*!

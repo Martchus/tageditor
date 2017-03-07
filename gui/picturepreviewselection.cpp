@@ -80,7 +80,7 @@ PicturePreviewSelection::~PicturePreviewSelection()
  */
 void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
-    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    assert(m_currentTypeIndex < m_values.size());
     TagValue &currentValue = m_values[m_currentTypeIndex];
     if(previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
         if(previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty()) {
@@ -95,7 +95,7 @@ void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandl
  * \brief Defines the predicate to get relevant fields.
  */
 template<class TagType>
-bool fieldPredicate(unsigned int i, const std::pair<typename TagType::fieldType::identifierType, typename TagType::fieldType> &pair)
+bool fieldPredicate(int i, const std::pair<typename TagType::fieldType::identifierType, typename TagType::fieldType> &pair)
 {
     return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == i) : (i == 0);
 }
@@ -238,7 +238,7 @@ void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<Media::Tag
     const auto range = fields.equal_range(id);
     const auto first = range.first;
     // iterate through all tag values
-    for(unsigned int index = 0, valueCount = values.size(); index < valueCount; ++index) {
+    for(int index = 0, valueCount = values.size(); index < valueCount; ++index) {
         // check whether there is already a tag value with the current index/type
         auto pair = find_if(first, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1));
         if(pair != range.second) {
@@ -302,7 +302,7 @@ void PicturePreviewSelection::clear()
  */
 void PicturePreviewSelection::addOfSelectedType()
 {
-    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    assert(m_currentTypeIndex < m_values.size());
     QString path = QFileDialog::getOpenFileName(this, tr("Select a picture to add as cover"));
     if(!path.isEmpty()) {
         addOfSelectedType(path);
@@ -314,7 +314,7 @@ void PicturePreviewSelection::addOfSelectedType()
  */
 void PicturePreviewSelection::addOfSelectedType(const QString &path)
 {
-    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    assert(m_currentTypeIndex < m_values.size());
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     try {
         MediaFileInfo fileInfo(toNativeFileName(path).constData());
@@ -366,7 +366,7 @@ void PicturePreviewSelection::removeSelected()
  */
 void PicturePreviewSelection::extractSelected()
 {
-    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    assert(m_currentTypeIndex < m_values.size());
     TagValue &value = m_values[m_currentTypeIndex];
     if(value.isEmpty()) {
         QMessageBox::information(this, QApplication::applicationName(), tr("There is no image attached to be extracted."));
@@ -393,7 +393,7 @@ void PicturePreviewSelection::extractSelected()
  */
 void PicturePreviewSelection::displaySelected()
 {
-    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    assert(m_currentTypeIndex < m_values.size());
     TagValue &value = m_values[m_currentTypeIndex];
     if(!value.isEmpty()) {
         QImage img;
@@ -435,7 +435,7 @@ void PicturePreviewSelection::displaySelected()
  */
 void PicturePreviewSelection::changeMimeTypeOfSelected()
 {
-    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    assert(m_currentTypeIndex < m_values.size());
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     auto mimeType = QString::fromUtf8(selectedCover.mimeType().data());
     bool ok;
@@ -525,12 +525,12 @@ void PicturePreviewSelection::dropEvent(QDropEvent *event)
  */
 void PicturePreviewSelection::typeSwitched(int index)
 {
-    assert(m_currentTypeIndex < static_cast<unsigned int>(m_values.size()));
+    assert(m_currentTypeIndex < m_values.size());
     int lastIndex = m_currentTypeIndex;
     if(index < 0 || index >= m_values.size()) {
         throw logic_error("current type index is invalid");
     } else {
-        m_currentTypeIndex = static_cast<unsigned int>(index);
+        m_currentTypeIndex = index;
     }
     updateDescription(lastIndex, index);
     updatePreview(index);
