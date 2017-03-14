@@ -9,6 +9,7 @@ set(META_APP_AUTHOR "Martchus")
 set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
 set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska")
 set(META_GUI_OPTIONAL true)
+set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 2)
 set(META_VERSION_MINOR 2)
 set(META_VERSION_PATCH 1)
@@ -71,7 +72,6 @@ set(WIDGETS_HEADER_FILES
     renamingutility/filesystemitemmodel.h
     renamingutility/filteredfilesystemitemmodel.h
     renamingutility/renamingengine.h
-    renamingutility/scriptdefs.h
     renamingutility/tageditorobject.h
 )
 set(WIDGETS_SRC_FILES

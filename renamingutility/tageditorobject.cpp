@@ -2,6 +2,7 @@
 
 #include "./tageditorobject.h"
 #include "./filesystemitem.h"
+#include "./jsincludes.h"
 
 #include "../misc/utility.h"
 
@@ -16,14 +17,6 @@
 #include <c++utilities/io/catchiofailure.h>
 
 #include <QDir>
-
-#if defined(TAGEDITOR_USE_JSENGINE)
-# include <QJSEngine>
-# include <QJSValue>
-#elif defined(TAGEDITOR_USE_SCRIPT)
-# include <QScriptEngine>
-# include <QScriptValue>
-#endif
 
 #include <iostream>
 

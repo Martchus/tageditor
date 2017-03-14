@@ -3,14 +3,9 @@
 
 #ifndef TAGEDITOR_NO_JSENGINE
 
-#include "./scriptdefs.h"
+#include "./jsdefs.h"
 
 #include <QObject>
-#if defined(TAGEDITOR_USE_JSENGINE)
-# include <QJSValue>
-#elif defined(TAGEDITOR_USE_SCRIPT)
-# include <QScriptValue>
-#endif
 
 QT_FORWARD_DECLARE_CLASS(QFileInfo)
 

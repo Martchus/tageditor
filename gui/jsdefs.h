@@ -1,5 +1,8 @@
-#ifndef SCRIPTDEFS_H
-#define SCRIPTDEFS_H
+// Created via CMake from template webviewdefs.h.in
+// WARNING! Any changes to this file will be overwritten by the next CMake run!
+
+#ifndef TAGEDITOR_JAVA_SCRIPT_DEFINES
+#define TAGEDITOR_JAVA_SCRIPT_DEFINES
 
 #include <QtGlobal>
 
@@ -11,8 +14,6 @@
 # define TAGEDITOR_JS_QOBJECT(engine, obj) engine.newQObject(obj)
 # define TAGEDITOR_JS_INT(value) value.toInt()
 # define TAGEDITOR_JS_IS_VALID_PROG(program) (!program.isError() && program.isCallable())
-QT_FORWARD_DECLARE_CLASS(QJSValue)
-QT_FORWARD_DECLARE_CLASS(QJSEngine)
 #elif defined(TAGEDITOR_USE_SCRIPT)
 # define TAGEDITOR_JS_ENGINE QScriptEngine
 # define TAGEDITOR_JS_VALUE QScriptValue
@@ -21,8 +22,15 @@ QT_FORWARD_DECLARE_CLASS(QJSEngine)
 # define TAGEDITOR_JS_QOBJECT(engine, obj) engine.newQObject(obj, QScriptEngine::ScriptOwnership)
 # define TAGEDITOR_JS_INT(value) value.toInt32()
 # define TAGEDITOR_JS_IS_VALID_PROG(program) (!program.isError() && program.isFunction())
-QT_FORWARD_DECLARE_CLASS(QScriptValue)
-QT_FORWARD_DECLARE_CLASS(QScriptEngine)
+#elif !defined(TAGEDITOR_NO_WEBVIEW)
+# error "No definition for JavaScript provider present."
 #endif
 
-#endif // SCRIPTDEFS_H
+#ifdef TAGEDITOR_JS_ENGINE
+QT_FORWARD_DECLARE_CLASS(TAGEDITOR_JS_ENGINE)
+#endif
+#ifdef TAGEDITOR_JS_VALUE
+QT_FORWARD_DECLARE_CLASS(TAGEDITOR_JS_VALUE)
+#endif
+
+#endif // TAGEDITOR_JAVA_SCRIPT_DEFINES

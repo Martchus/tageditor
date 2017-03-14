@@ -2,19 +2,13 @@
 #define RENAMINGUTILITY_RENAMINGENGINE_H
 
 #include "./filesystemitem.h"
-#include "./scriptdefs.h"
+#include "./jsdefs.h"
+#include "./jsincludes.h"
 
 #include <QObject>
 #include <QList>
 #include <QDir>
 #include <QAtomicInteger>
-#if defined(TAGEDITOR_USE_JSENGINE)
-# include <QJSEngine>
-# include <QJSValue>
-#elif defined(TAGEDITOR_USE_SCRIPT)
-# include <QScriptEngine>
-# include <QScriptValue>
-#endif
 
 #include <memory>
 
