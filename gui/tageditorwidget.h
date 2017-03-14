@@ -2,6 +2,7 @@
 #define TAGEDITORWIDGET_H
 
 #include "./previousvaluehandling.h"
+#include "./webviewdefs.h"
 
 #include <tagparser/mediafileinfo.h>
 
@@ -10,21 +11,9 @@
 
 #include <functional>
 
-#if defined(TAGEDITOR_NO_WEBVIEW)
-#elif defined(TAGEDITOR_USE_WEBENGINE)
-# define WEB_VIEW_PROVIDER QWebEngineView
-#elif defined(TAGEDITOR_USE_WEBKIT)
-# define WEB_VIEW_PROVIDER QWebView
-#else
-# error "Macro for WebView provider not specified."
-#endif
-
 QT_FORWARD_DECLARE_CLASS(QFileSystemWatcher)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QTreeView)
-#ifndef TAGEDITOR_NO_WEBVIEW
-QT_FORWARD_DECLARE_CLASS(WEB_VIEW_PROVIDER)
-#endif
 
 namespace Media {
 DECLARE_ENUM_CLASS(TagType, unsigned int);
@@ -137,7 +126,7 @@ private:
     QMenu *m_removeTagMenu;
     QMenu *m_changeTargetMenu;
 #ifndef TAGEDITOR_NO_WEBVIEW
-    WEB_VIEW_PROVIDER *m_infoWebView;
+    TAGEDITOR_WEB_VIEW *m_infoWebView;
 #endif
     FileInfoModel *m_infoModel;
     QTreeView *m_infoTreeView;

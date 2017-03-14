@@ -4,6 +4,7 @@
 #include "./attachmentsedit.h"
 #include "./entertargetdialog.h"
 #include "./fileinfomodel.h"
+#include "./webviewincludes.h"
 
 #include "../application/settings.h"
 #include "../application/targetlevelmodel.h"
@@ -41,12 +42,6 @@
 #include <QCheckBox>
 #include <QTreeView>
 #include <QtConcurrent>
-#if defined(TAGEDITOR_NO_WEBVIEW)
-#elif defined(TAGEDITOR_USE_WEBENGINE)
-# include <QWebEngineView>
-#else
-# include <QWebView>
-#endif
 
 #include <functional>
 #include <algorithm>
@@ -593,7 +588,7 @@ void TagEditorWidget::initInfoView()
             m_infoModel->deleteLater();
             m_infoModel = nullptr;
         }
-        m_infoWebView = new WEB_VIEW_PROVIDER(m_ui->tagSplitter);
+        m_infoWebView = new TAGEDITOR_WEB_VIEW(m_ui->tagSplitter);
         m_infoWebView->setAcceptDrops(false);
         m_infoWebView->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(m_infoWebView, &QWidget::customContextMenuRequested, this, &TagEditorWidget::showInfoWebViewContextMenu);
