@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
     } catch(const Failure &ex) {
         CMD_UTILS_START_CONSOLE;
         cerr << "Unable to parse arguments. " << ex.what() << "\nSee --help for available commands." << endl;
-    }    
+    }
     return 0;
 }
 
