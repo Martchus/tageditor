@@ -97,7 +97,7 @@ void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandl
 template<class TagType>
 bool fieldPredicate(int i, const std::pair<typename TagType::fieldType::identifierType, typename TagType::fieldType> &pair)
 {
-    return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == i) : (i == 0);
+    return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == static_cast<unsigned int>(i)) : (i == 0);
 }
 
 /*!
@@ -252,7 +252,7 @@ void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<Media::Tag
             }
         } else if(!values[index].isEmpty()) {
             typename TagType::fieldType field(id, values[index]);
-            field.setTypeInfo(index);
+            field.setTypeInfo(static_cast<decltype(field.typeInfo())>(index));
             fields.insert(std::make_pair(id, field));
         }
     }
@@ -348,7 +348,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
  */
 void PicturePreviewSelection::removeSelected()
 {
-    if(m_currentTypeIndex < static_cast<unsigned int>(m_values.size())) {
+    if(m_currentTypeIndex < m_values.size()) {
         if(m_values[m_currentTypeIndex].isEmpty()) {
             QMessageBox::information(this, QApplication::applicationName(), tr("There is no cover to remove."));
         } else {

@@ -77,7 +77,7 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
                                         iftag("item") {                                            
                                             songs << SongDescription();
                                             songs.back().title = text;
-                                            songs.back().track = static_cast<unsigned int>(songs.size());
+                                            songs.back().track = songs.size();
                                         } else_skip
                                     }
                                 } else_skip
@@ -85,13 +85,13 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
                             // need to filter results manually because the filtering provided by Lyrica Wiki API doesn't work
                             if((m_initialDescription.album.isEmpty() || m_initialDescription.album == album)
                                && (m_initialDescription.year.isEmpty() || m_initialDescription.year == year)
-                               && (!m_initialDescription.totalTracks || m_initialDescription.totalTracks == static_cast<unsigned int>(songs.size()))) {
+                               && (!m_initialDescription.totalTracks || m_initialDescription.totalTracks == songs.size())) {
                                 for(SongDescription &song : songs) {
                                     if((m_initialDescription.title.isEmpty() || m_initialDescription.title == song.title)
                                             && (!m_initialDescription.track || m_initialDescription.track == song.track)) {
                                         song.album = album;
                                         song.year = year;
-                                        song.totalTracks = static_cast<unsigned int>(songs.size());
+                                        song.totalTracks = songs.size();
                                         m_results << move(song);
                                     }
                                 }

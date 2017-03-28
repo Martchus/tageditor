@@ -68,7 +68,7 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
             return TagValue(res.totalTracks);
         case KnownField::Cover:
             if(!res.cover.isEmpty()) {
-                TagValue tagValue(res.cover.data(), res.cover.size(), TagDataType::Picture);
+                TagValue tagValue(res.cover.data(), static_cast<size_t>(res.cover.size()), TagDataType::Picture);
                 tagValue.setMimeType(containerMimeType(parseSignature(res.cover.data(), res.cover.size())));
                 return tagValue;
             }
