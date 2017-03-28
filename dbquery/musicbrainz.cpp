@@ -171,8 +171,7 @@ void MusicBrainzResultsModel::handleCoverReplyFinished(QNetworkReply *reply, con
 void MusicBrainzResultsModel::parseCoverResults(const QString &albumId, int row, const QByteArray &data)
 {
     // add cover -> determine album ID and row
-    bool ok;
-    if(!albumId.isEmpty() && ok && row < m_results.size()) {
+    if(!albumId.isEmpty() && row < m_results.size()) {
         if(!data.isEmpty()) {
             m_coverData[albumId] = data;
             m_results[row].cover = data;
