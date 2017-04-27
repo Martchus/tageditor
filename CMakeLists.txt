@@ -209,7 +209,7 @@ include(BasicConfig)
 
 # find qtutilities
 if(WIDGETS_GUI OR QUICK_GUI)
-    find_package(qtutilities 5.6.0 REQUIRED)
+    find_package(qtutilities 5.7.0 REQUIRED)
     use_qt_utilities()
 endif()
 

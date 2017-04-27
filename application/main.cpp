@@ -1,13 +1,12 @@
 #include "../cli/mainfeatures.h"
-#if defined(GUI_QTWIDGETS)
+#if defined(TAGEDITOR_GUI_QTWIDGETS)
 # include "../gui/initiate.h"
 # include "./knownfieldmodel.h"
-#elif defined(GUI_QTQUICK)
 #endif
 
 #include "resources/config.h"
 
-#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 # include <qtutilities/resources/qtconfigarguments.h>
 # include <qtutilities/misc/conversion.h>
 #else
@@ -227,7 +226,7 @@ int main(int argc, char *argv[])
     try {
         parser.parseArgs(argc, argv);
         if(qtConfigArgs.areQtGuiArgsPresent()) {
-#ifdef GUI_QTWIDGETS
+#if defined(TAGEDITOR_GUI_QTWIDGETS)
             return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? ConversionUtilities::fromNativeFileName(defaultFileArg.values().front()) : QString(), renamingUtilityArg.isPresent());
 #else
             CMD_UTILS_START_CONSOLE;

@@ -3,7 +3,7 @@
 #include "./attachmentinfo.h"
 
 #include "../application/knownfieldmodel.h"
-#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 # include "../misc/utility.h"
 # include "../misc/htmlinfo.h"
 #endif
@@ -24,7 +24,7 @@
 #include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/nativefilestream.h>
 
-#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 # include <QDir>
 # include <qtutilities/misc/conversion.h>
 #endif
@@ -42,7 +42,7 @@ using namespace IoUtilities;
 using namespace EscapeCodes;
 using namespace Settings;
 using namespace Media;
-#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 using namespace Utility;
 #endif
 
@@ -75,7 +75,7 @@ void printFieldNames(const ArgumentOccurrence &occurrence)
 void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
-#if defined(GUI_QTWIDGETS) || defined(GUI_QTQUICK)
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
     try {
         // parse tags
         MediaFileInfo inputFileInfo(inputFileArg.values().front());

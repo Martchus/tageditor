@@ -16,15 +16,13 @@
 #include <c++utilities/chrono/datetime.h>
 #include <c++utilities/conversion/stringconversion.h>
 
-#if defined(GUI_QTWIDGETS)
+#if defined(TAGEDITOR_GUI_QTWIDGETS)
 # include <QApplication>
 # include <QStyle>
-#elif defined(GUI_QTQUICK)
+#elif defined(TAGEDITOR_GUI_QTQUICK)
 # include <QGuiApplication>
-#elif !defined(GUI_NONE)
-# define GUI_NONE
 #endif
-#ifndef GUI_NONE
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 # include <QFont>
 # include <QFontMetrics>
 # include <QIcon>
@@ -41,12 +39,12 @@
 
 #include <list>
 
-#ifndef GUI_NONE
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 # define APPEND_GUI_RULE(rule, fallback) \
     if(ApplicationInstances::hasGuiApp()) { \
-    res.append(rule); \
+        res.append(rule); \
     } else { \
-    res.append(fallback); \
+        res.append(fallback); \
     }
 #else
 # define APPEND_GUI_RULE(rule, fallback) \
@@ -392,7 +390,7 @@ public:
                                           "#structure_links a {"
                                           "margin-right: 5px;"
                                           "}"));
-#ifdef GUI_QTWIDGETS
+#if defined(TAGEDITOR_GUI_QTWIDGETS)
         if(ApplicationInstances::hasWidgetsApp()) {
             res.append(QStringLiteral("td.warning {background-image: url(data:image/png;base64,"));
             res.append(mkWarningIconData());

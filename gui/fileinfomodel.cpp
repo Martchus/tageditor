@@ -15,15 +15,13 @@
 #include <c++utilities/chrono/datetime.h>
 #include <c++utilities/conversion/stringconversion.h>
 
-#if defined(GUI_QTWIDGETS)
+#if defined(TAGEDITOR_GUI_QTWIDGETS)
 # include <QApplication>
 # include <QStyle>
 # include <QIcon>
-#elif defined(GUI_QTQUICK)
+#elif defined(TAGEDITOR_GUI_QTQUICK)
 # include <QGuiApplication>
 # include <QIcon>
-#elif !defined(GUI_NONE)
-# define GUI_NONE
 #endif
 #include <QStringBuilder>
 
@@ -239,7 +237,7 @@ void FileInfoModel::setFileInfo(MediaFileInfo *fileInfo, Media::NotificationList
     updateCache();
 }
 
-#if defined(GUI_QTWIDGETS)
+#if defined(TAGEDITOR_GUI_QTWIDGETS)
 const QIcon &FileInfoModel::informationIcon()
 {
     static const QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
