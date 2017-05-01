@@ -13,6 +13,7 @@ set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 2)
 set(META_VERSION_MINOR 2)
 set(META_VERSION_PATCH 2)
+set(META_NO_TIDY ON)
 
 # add project files
 set(HEADER_FILES

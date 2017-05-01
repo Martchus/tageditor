@@ -39,3 +39,6 @@ Makefile*
 
 # documentation
 /doc
+
+# clang-format
+/.clang-format
