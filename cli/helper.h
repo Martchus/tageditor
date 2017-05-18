@@ -264,6 +264,7 @@ uint64 parseUInt64(const ApplicationUtilities::Argument &arg, uint64 defaultValu
 TagTarget::IdContainerType parseIds(const std::string &concatenatedIds);
 bool applyTargetConfiguration(TagTarget &target, const std::string &configStr);
 FieldDenotations parseFieldDenotations(const ApplicationUtilities::Argument &fieldsArg, bool readOnly);
+std::string tagName(const Tag *tag);
 
 }
 

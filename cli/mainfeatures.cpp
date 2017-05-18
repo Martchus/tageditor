@@ -265,15 +265,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                     // determine tag type
                     const TagType tagType = tag->type();
                     // write tag name and target, eg. MP4/iTunes tag
-                    cout << tag->typeName();
-                    if(tagType == TagType::Id3v2Tag) {
-                        // version only interesting for ID3v2 tags?
-                        cout << " (version " << tag->version() << ')';
-                    }
-                    if(tagType == TagType::MatroskaTag || !tag->target().isEmpty()) {
-                        cout << " targeting \"" << tag->targetString() << '\"';
-                    }
-                    cout << endl;
+                    cout << tagName(tag) << endl;
                     // iterate through fields specified by the user
                     if(fields.empty()) {
                         for(auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
@@ -431,6 +423,14 @@ void setTagInfo(const SetTagInfoArgs &args)
                     const auto tagType = tag->type();
                     const bool targetSupported = tag->supportsTarget();
                     const auto tagTarget = tag->target();
+                    // determine the encoding to store text values
+                    TagTextEncoding usedEncoding = denotedEncoding;
+                    if(!tag->canEncodingBeUsed(denotedEncoding)) {
+                        usedEncoding = tag->proposedTextEncoding();
+                        if(args.encodingArg.isPresent()) {
+                            fileInfo.addNotification(NotificationType::Warning, argsToString("Can't use specified encoding \"", args.encodingArg.values().front(), "\" in ", tagName(tag), " because the tag format/version doesn't support it."), context);
+                        }
+                    }
                     // iterate through all denoted field values
                     for(auto &fieldDenotation : fields) {
                         const FieldScope &denotedScope = fieldDenotation.first;
@@ -477,10 +477,6 @@ void setTagInfo(const SetTagInfoArgs &args)
                                             fileInfo.addNotification(NotificationType::Critical, "An IO error occured when parsing the specified cover file.", context);
                                         }
                                     } else {
-                                        TagTextEncoding usedEncoding = denotedEncoding;
-                                        if(!tag->canEncodingBeUsed(denotedEncoding)) {
-                                            usedEncoding = tag->proposedTextEncoding();
-                                        }
                                         convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
                                         if(relevantDenotedValue->type == DenotationType::Increment && tag == tags.back()) {
                                             relevantDenotedValue->value = incremented(relevantDenotedValue->value);
@@ -495,7 +491,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                             try {
                                 denotedScope.field.setValues(tag, tagType, convertedValues);
                             } catch(const ConversionException &e) {
-                                fileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" % string(denotedScope.field.name()) % "\": " + e.what(), context);
+                                fileInfo.addNotification(NotificationType::Critical, argsToString("Unable to parse denoted field ID \"", denotedScope.field.name(), "\": ", e.what()), context);
                             }
                         }
                     }

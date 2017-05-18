@@ -538,4 +538,20 @@ bool FieldId::setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &
     }
 }
 
+string tagName(const Tag *tag)
+{
+    stringstream ss;
+    const TagType tagType = tag->type();
+    // write tag name and target, eg. MP4/iTunes tag
+    ss << tag->typeName();
+    if(tagType == TagType::Id3v2Tag) {
+        // version only interesting for ID3v2 tags?
+        ss << " (version " << tag->version() << ')';
+    }
+    if(tagType == TagType::MatroskaTag || !tag->target().isEmpty()) {
+        ss << " targeting \"" << tag->targetString() << '\"';
+    }
+    return ss.str();
+}
+
 }
