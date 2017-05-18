@@ -217,8 +217,12 @@ Here are some Bash examples which illustrate getting and setting tag information
   a file has been processed.
 
 ## Text encoding / unicode support
-1. It is possible to set the preferred encoding used *within* the tags via CLI option ``--encoding`` and
-   in the GUI settings.
+1. It is possible to set the preferred encoding used *within* the tags via CLI option ``--encoding``
+   and in the GUI settings.
+   * However, in the GUI this only affects visible fields. In the CLI only specified fields are
+     affected. So reencoding all text fields is currently not supported.
+   * The option is ignored (with a warning) when the specified encoding is not supported by the
+     tag format.
 2. The CLI assumes all arguments to be UTF-8 encoded (no matter which preferred encoding is specified)
    and file names are just passed as specified.
 3. The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
