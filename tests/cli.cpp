@@ -35,6 +35,7 @@ class CliTests : public TestFixture
     CPPUNIT_TEST(testSpecifyingNativeFieldIds);
     CPPUNIT_TEST(testHandlingOfTargets);
     CPPUNIT_TEST(testId3SpecificOptions);
+    CPPUNIT_TEST(testEncodingOption);
     CPPUNIT_TEST(testMultipleFiles);
     CPPUNIT_TEST(testOutputFile);
     CPPUNIT_TEST(testMultipleValuesPerField);
@@ -55,6 +56,7 @@ public:
     void testSpecifyingNativeFieldIds();
     void testHandlingOfTargets();
     void testId3SpecificOptions();
+    void testEncodingOption();
     void testMultipleFiles();
     void testOutputFile();
     void testMultipleValuesPerField();
@@ -321,6 +323,60 @@ void CliTests::testId3SpecificOptions()
                                " Track             4/43\n"
                                " Duration          00:00:00\n"
                                " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
+    remove(mp3File1.data());
+    remove(mp3File1Backup.data());
+}
+
+bool bufferContains(const char *buffer, size_t bufferSize, const char *needle, size_t needleSize)
+{
+    for(const char *const bufferEnd = buffer + bufferSize, *const needleEnd = needle + needleSize; buffer != bufferEnd; ++buffer) {
+        const char *needleIterator = needle;
+        for(const char *bufferIterator = buffer; needleIterator != needleEnd && *needleIterator == *bufferIterator; ++needleIterator, ++bufferIterator);
+        if(needleIterator >= needleEnd) {
+            return true;
+        }
+    }
+    return false;
+}
+
+template<size_t headSize>
+bool fileHeadContains(const string &fileName, const char *needle, size_t needleSize)
+{
+    ifstream file;
+    file.exceptions(ios_base::failbit | ios_base::badbit);
+    file.open(fileName, ios_base::in | ios_base::binary);
+    char buffer[headSize];
+    file.read(buffer, sizeof(buffer));
+    return bufferContains(buffer, sizeof(buffer), needle, needleSize);
+}
+
+/*!
+ * \brief Tests the option to set the encoding.
+ */
+void CliTests::testEncodingOption()
+{
+    cout << "\nEncoding option" << endl;
+    string stdout, stderr;
+    const string mp3File1(workingCopyPath("mtx-test-data/mp3/id3-tag-and-xing-header.mp3"));
+    const string mp3File1Backup(mp3File1 + ".bak");
+
+    // try to use UTF-8 for ID3v2.3: not supported and hence should be ignored, UTF-8 CLI arguments must be converted to UTF-16
+    const char *const args1[] = {"tageditor", "set", "album=Täst", "--encoding", "utf8", "--id3v1-usage", "never", "--id3v2-version", "3", "-f", mp3File1.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+    CPPUNIT_ASSERT(stdout.find("setting tags: Can't use specified encoding \"utf8\" in ID3v2 tag (version 2.3.0) because the tag format/version doesn't support it.") != string::npos);
+
+    // check whether encoding is UTF-16 and BOM is present
+    CPPUNIT_ASSERT(fileHeadContains<1024>(mp3File1, "\x01\xff\xfe\x54\x00\xe4\x00\x73\x00\x74\x00\x00\x00", 13));
+    remove(mp3File1Backup.data());
+
+    // try to use UTF-8 for ID3v2.4: UTF-8 should be supported
+    const char *const args2[] = {"tageditor", "set", "album=Täst", "--encoding", "utf8", "--id3v1-usage", "never", "--id3v2-version", "4", "-f", mp3File1.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(stdout.find("Can't use specified encoding") == string::npos);
+
+    // check whether encoding is UTF-8
+    CPPUNIT_ASSERT(fileHeadContains<1024>(mp3File1, "\x03\x54\xc3\xa4\x73\x74\x00", 7));
+
     remove(mp3File1.data());
     remove(mp3File1Backup.data());
 }
