@@ -12,6 +12,7 @@
 
 using namespace std;
 using namespace TestUtilities;
+using namespace TestUtilities::Literals;
 using namespace ConversionUtilities;
 using namespace Media;
 
@@ -654,7 +655,7 @@ void CliTests::testExtraction()
     MediaFileInfo extractedInfo("/tmp/extracted.jpeg");
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat();
-    CPPUNIT_ASSERT_EQUAL(22771ul, extractedInfo.size());
+    CPPUNIT_ASSERT_EQUAL(22771_st, extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     extractedInfo.invalidate();
 
@@ -667,7 +668,7 @@ void CliTests::testExtraction()
     TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat();
-    CPPUNIT_ASSERT_EQUAL(22771ul, extractedInfo.size());
+    CPPUNIT_ASSERT_EQUAL(22771_st, extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     remove("/tmp/extracted.jpeg");
     remove(mp4File2.data());

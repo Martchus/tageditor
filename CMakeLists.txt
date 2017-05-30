@@ -12,7 +12,7 @@ set(META_GUI_OPTIONAL true)
 set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 2)
 set(META_VERSION_MINOR 2)
-set(META_VERSION_PATCH 2)
+set(META_VERSION_PATCH 3)
 set(META_NO_TIDY ON)
 
 # add project files
@@ -204,7 +204,7 @@ set(REQUIRED_ICONS
 )
 
 # find c++utilities
-find_package(c++utilities 4.6.0 REQUIRED)
+find_package(c++utilities 4.8.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
