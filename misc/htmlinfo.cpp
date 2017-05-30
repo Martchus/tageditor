@@ -734,7 +734,10 @@ public:
                     m_writer.writeAttribute(QStringLiteral("class"), QStringLiteral("parent-node"));
                     m_writer.writeAttribute(QStringLiteral("onclick"), QStringLiteral("expandCollapse(this.parentElement);"));
                 }
-                m_writer.writeTextElement(QStringLiteral("em"), QString::fromLatin1(element->idToString().c_str()));
+                string idString = element->idToString();
+                if(!idString.empty()) {
+                    m_writer.writeTextElement(QStringLiteral("em"), QString::fromLatin1(idString.data(), idString.size()));
+                }
 
                 m_writer.writeCharacters(QStringLiteral(" @"));
                 const auto startOffsetStr = QString::number(element->startOffset());
