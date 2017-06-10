@@ -65,6 +65,7 @@ const QString &FileSystemItem::currentName() const
     case ItemStatus::Current:
         return m_name;
     }
+    return emptyStr();
 }
 
 bool FileSystemItem::setCurrentName(const QString &currentName)
@@ -95,6 +96,7 @@ const QString &FileSystemItem::newName() const
     case ItemStatus::New:
         return m_name;
     }
+    return emptyStr();
 }
 
 bool FileSystemItem::setNewName(const QString &newName)
@@ -118,6 +120,7 @@ bool FileSystemItem::setNewName(const QString &newName)
         setName(newName);
         return true;
     }
+    return false;
 }
 
 FileSystemItem *FileSystemItem::findChild(const QString &name) const
