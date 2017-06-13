@@ -161,6 +161,9 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                         printProperty("ID", track->id(), nullptr, true);
                         printProperty("Name", track->name());
                         printProperty("Type", track->mediaTypeName());
+                        if(track->language() != "und") {
+                            printProperty("Language", track->language());
+                        }
                         const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
                         printProperty("Format", fmtName);
                         if(strcmp(fmtName, fmtAbbr)) {
@@ -188,6 +191,29 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                         printProperty("Sample count", track->sampleCount());
                         printProperty("Creation time", track->creationTime());
                         printProperty("Modification time", track->modificationTime());
+                        vector<string> labels;
+                        labels.reserve(7);
+                        if(track->isInterlaced()) {
+                            labels.emplace_back("interlaced");
+                        }
+                        if(!track->isEnabled()) {
+                            labels.emplace_back("disabled");
+                        }
+                        if(track->isDefault()) {
+                            labels.emplace_back("default");
+                        }
+                        if(track->isForced()) {
+                            labels.emplace_back("forced");
+                        }
+                        if(track->hasLacing()) {
+                            labels.emplace_back("has lacing");
+                        }
+                        if(track->isEncrypted()) {
+                            labels.emplace_back("encrypted");
+                        }
+                        if(!labels.empty()) {
+                            printProperty("Labeled as", joinStrings(labels, ", "));
+                        }
                         cout << endl;
                     }
                 } else {
@@ -323,7 +349,7 @@ void setTagInfo(const SetTagInfoArgs &args)
     vector<TagTarget> requiredTargets;
     for(const auto &fieldDenotation : fields) {
         const FieldScope &scope = fieldDenotation.first;
-        if(find(requiredTargets.cbegin(), requiredTargets.cend(), scope.tagTarget) == requiredTargets.cend()) {
+        if(!scope.isTrack() && find(requiredTargets.cbegin(), requiredTargets.cend(), scope.tagTarget) == requiredTargets.cend()) {
             requiredTargets.push_back(scope.tagTarget);
         }
     }
@@ -411,8 +437,29 @@ void setTagInfo(const SetTagInfoArgs &args)
                     cerr << "Warning: Setting the document title is not supported for the file." << endl;
                 }
             }
+            // select the relevant values for the current file index
+            for(auto &fieldDenotation : fields) {
+                FieldValues &denotedValues = fieldDenotation.second;
+                vector<FieldValue *> &relevantDenotedValues = denotedValues.relevantValues;
+                denotedValues.relevantValues.clear();
+                unsigned int currentFileIndex = 0;
+                for(FieldValue &denotatedValue : denotedValues.allValues) {
+                    if(denotatedValue.fileIndex <= fileIndex) {
+                        if(relevantDenotedValues.empty() || (denotatedValue.fileIndex >= currentFileIndex)) {
+                            if(currentFileIndex != denotatedValue.fileIndex) {
+                                currentFileIndex = denotatedValue.fileIndex;
+                                relevantDenotedValues.clear();
+                            }
+                            relevantDenotedValues.push_back(&denotatedValue);
+                        }
+                    }
+                }
+            }
+
             fileInfo.tags(tags);
-            if(!tags.empty()) {
+            if(tags.empty()) {
+                fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
+            } else {
                 // iterate through all tags
                 for(auto *tag : tags) {
                     // clear current values if option is present
@@ -432,30 +479,15 @@ void setTagInfo(const SetTagInfoArgs &args)
                         }
                     }
                     // iterate through all denoted field values
-                    for(auto &fieldDenotation : fields) {
+                    for(const auto &fieldDenotation : fields) {
                         const FieldScope &denotedScope = fieldDenotation.first;
-                        FieldValues &denotedValues = fieldDenotation.second;
                         // decide whether the scope of the denotation matches of the current tag
-                        if((denotedScope.tagType == TagType::Unspecified
+                        if(!denotedScope.isTrack() && (denotedScope.tagType == TagType::Unspecified
                             || (denotedScope.tagType & tagType) != TagType::Unspecified)
                                 && (!targetSupported || denotedScope.tagTarget == tagTarget)) {
-                            // select the relevant values for the current file index
-                            vector<FieldValue *> relevantDenotedValues;
-                            unsigned int currentFileIndex = 0;
-                            for(FieldValue &denotatedValue : denotedValues) {
-                                if(denotatedValue.fileIndex <= fileIndex) {
-                                    if(relevantDenotedValues.empty() || (denotatedValue.fileIndex >= currentFileIndex)) {
-                                        if(currentFileIndex != denotatedValue.fileIndex) {
-                                            currentFileIndex = denotatedValue.fileIndex;
-                                            relevantDenotedValues.clear();
-                                        }
-                                        relevantDenotedValues.push_back(&denotatedValue);
-                                    }
-                                }
-                            }
                             // convert the values to TagValue
                             vector<TagValue> convertedValues;
-                            for(FieldValue *relevantDenotedValue : relevantDenotedValues) {
+                            for(const FieldValue *relevantDenotedValue : fieldDenotation.second.relevantValues) {
                                 // one of the denoted values
                                 if(!relevantDenotedValue->value.empty()) {
                                     if(relevantDenotedValue->type == DenotationType::File) {
@@ -478,9 +510,6 @@ void setTagInfo(const SetTagInfoArgs &args)
                                         }
                                     } else {
                                         convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
-                                        if(relevantDenotedValue->type == DenotationType::Increment && tag == tags.back()) {
-                                            relevantDenotedValue->value = incremented(relevantDenotedValue->value);
-                                        }
                                     }
                                 } else {
                                     // if the denoted value is empty, just assign an empty TagValue to remove the field
@@ -496,8 +525,48 @@ void setTagInfo(const SetTagInfoArgs &args)
                         }
                     }
                 }
-            } else {
-                fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
+            }
+            for(AbstractTrack *track : fileInfo.tracks()) {
+                for(const auto &fieldDenotation : fields) {
+                    const auto &values = fieldDenotation.second.relevantValues;
+                    if(values.empty()) {
+                        continue;
+                    }
+
+                    const FieldScope &denotedScope = fieldDenotation.first;
+                    // decide whether the scope of the denotation matches of the current track
+                    if(denotedScope.allTracks || find(denotedScope.trackIds.cbegin(), denotedScope.trackIds.cend(), track->id()) != denotedScope.trackIds.cend()) {
+                        const FieldId &field = denotedScope.field;
+                        const string &value = values.front()->value;
+                        try {
+                            if(field.denotes("name")) {
+                                track->setName(value);
+                            } else if(field.denotes("language")) {
+                                track->setLanguage(value);
+                            } else if(field.denotes("tracknumber")) {
+                                track->setTrackNumber(stringToNumber<uint32>(value));
+                            } else if(field.denotes("enabled")) {
+                                track->setEnabled(stringToBool(value));
+                            } else if(field.denotes("forced")) {
+                                track->setForced(stringToBool(value));
+                            } else if(field.denotes("default")) {
+                                track->setDefault(stringToBool(value));
+                            } else {
+                                fileInfo.addNotification(NotificationType::Critical, argsToString("Denoted track property name \"", field.denotation(), "\" is invalid"), argsToString("setting meta-data of track ", track->id()));
+                            }
+                        } catch(const ConversionException &e) {
+                            fileInfo.addNotification(NotificationType::Critical, argsToString("Unable to parse value for track property \"", field.denotation(), "\": ", e.what()), argsToString("setting meta-data of track ", track->id()));
+                        }
+                    }
+                }
+            }
+            // increment relevant values
+            for(auto &fieldDenotation : fields) {
+                for(FieldValue *relevantDenotedValue : fieldDenotation.second.relevantValues) {
+                    if(!relevantDenotedValue->value.empty() && relevantDenotedValue->type == DenotationType::Increment) {
+                        relevantDenotedValue->value = incremented(relevantDenotedValue->value);
+                    }
+                }
             }
             bool attachmentsModified = false;
             if(args.addAttachmentArg.isPresent() || args.updateAttachmentArg.isPresent() || args.removeAttachmentArg.isPresent() || args.removeExistingAttachmentsArg.isPresent()) {

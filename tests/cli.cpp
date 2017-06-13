@@ -42,6 +42,7 @@ class CliTests : public TestFixture
     CPPUNIT_TEST(testMultipleValuesPerField);
     CPPUNIT_TEST(testHandlingAttachments);
     CPPUNIT_TEST(testDisplayingInfo);
+    CPPUNIT_TEST(testSettingTrackMetaData);
     CPPUNIT_TEST(testExtraction);
     CPPUNIT_TEST(testReadingAndWritingDocumentTitle);
     CPPUNIT_TEST(testFileLayoutOptions);
@@ -63,6 +64,7 @@ public:
     void testMultipleValuesPerField();
     void testHandlingAttachments();
     void testDisplayingInfo();
+    void testSettingTrackMetaData();
     void testExtraction();
     void testReadingAndWritingDocumentTitle();
     void testFileLayoutOptions();
@@ -622,6 +624,94 @@ void CliTests::testDisplayingInfo()
                                           "    ID                            1\n"
                                           "    Name                          soun\n"
                                           "    Type                          Audio\n"
+                                          "    Format                        Advanced Audio Coding Low Complexity Profile\n"
+                                          "    Abbreviation                  MPEG-4 AAC-LC\n"
+                                          "    Extensions                    Spectral Band Replication and Parametric Stereo / HE-AAC v2\n"
+                                          "    Raw format ID                 mp4a\n"
+                                          "    Size                          879.65 KiB (900759 byte)\n"
+                                          "    Duration                      3 min 138 ms\n"
+                                          "    Channel config                1 channel: front-center\n"
+                                          "    Extension channel config      2 channels: front-left, front-right\n"
+                                          "    Bitrate                       40 kbit/s\n"
+                                          "    Bits per sample               16\n"
+                                          "    Sampling frequency            24000 Hz\n"
+                                          "    Extension sampling frequency  48000 Hz\n"
+                                          "    Sample count                  4222\n"
+                                          "    Creation time                 2014-12-10 16:22:41\n"
+                                          "    Modification time             2014-12-10 16:22:41"}));
+}
+
+/*!
+ * \brief Tests setting track meta-data.
+ */
+void CliTests::testSettingTrackMetaData()
+{
+    cout << "\nSetting track meta-data" << endl;
+    string stdout, stderr;
+
+    // test Matroska file
+    const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
+    const string mp4File(workingCopyPath("mtx-test-data/aac/he-aacv2-ps.m4a"));
+    const char *const args1[] = {"tageditor", "set", "title=title of tag",
+                                 "track=1863976627", "name=video track",
+                                 "track=3134325680", "name=audio track", "language=ger", "default=yes", "forced=yes",
+                                 "tag=any", "artist=setting tag value again",
+                                 "track=any", "name1=sbr and ps", "language1=eng",
+                                 "-f", mkvFile.data(), mp4File.data(), nullptr};
+    const char *const args2[] = {"tageditor", "info", "-f", mkvFile.data(), nullptr};
+    const char *const args3[] = {"tageditor", "get", "-f", mkvFile.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                                          "  Container format: Matroska\n"
+                                          "    Document type                 matroska\n"
+                                          "    Read version                  1\n"
+                                          "    Version                       1\n"
+                                          "    Document read version         2\n"
+                                          "    Document version              2\n"
+                                          "    Duration                      47 s 509 ms\n"
+                                          "    Tag position                  before data\n"
+                                          "    Index position                before data\n",
+                                          "  Tracks:\n"
+                                          "    ID                            1863976627\n"
+                                          "    Name                          video track\n"
+                                          "    Type                          Video\n"
+                                          "    Format                        Advanced Video Coding Main Profile\n"
+                                          "    Abbreviation                  H.264\n"
+                                          "    Raw format ID                 V_MPEG4/ISO/AVC\n"
+                                          "    FPS                           24\n",
+                                          "    ID                            3134325680\n"
+                                          "    Name                          audio track\n"
+                                          "    Type                          Audio\n"
+                                          "    Language                      ger\n"
+                                          "    Format                        Advanced Audio Coding Low Complexity Profile\n"
+                                          "    Abbreviation                  MPEG-4 AAC-LC\n"
+                                          "    Raw format ID                 A_AAC\n"
+                                          "    Channel config                2 channels: front-left, front-right\n"
+                                          "    Sampling frequency            48000 Hz\n"
+                                          "    Labeled as                    default, forced"}));
+    TESTUTILS_ASSERT_EXEC(args3);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                                          "Matroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\n"
+                                          " Title             title of tag\n"
+                                          " Artist            setting tag value again\n"
+                                          " Year              2010\n"
+                                          " Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC"
+                                          }));
+
+    const char *const args4[] = {"tageditor", "info", "-f", mp4File.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args4);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                                          "  Container format: MPEG-4 Part 14\n"
+                                          "    Document type                 mp42\n"
+                                          "    Duration                      3 min\n"
+                                          "    Creation time                 2014-12-10 16:22:41\n"
+                                          "    Modification time             2014-12-10 16:22:41\n",
+                                          "  Tracks:\n"
+                                          "    ID                            1\n"
+                                          "    Name                          sbr and ps\n"
+                                          "    Type                          Audio\n"
+                                          "    Language                      eng\n"
                                           "    Format                        Advanced Audio Coding Low Complexity Profile\n"
                                           "    Abbreviation                  MPEG-4 AAC-LC\n"
                                           "    Extensions                    Spectral Band Replication and Parametric Stereo / HE-AAC v2\n"

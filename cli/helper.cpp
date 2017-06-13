@@ -7,6 +7,7 @@
 #include <tagparser/id3/id3v2tag.h>
 
 #include <c++utilities/application/argumentparser.h>
+#include <c++utilities/conversion/stringbuilder.h>
 
 #include <iostream>
 #include <cstring>
@@ -313,6 +314,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                     cerr << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
                 } else {
                     TagType tagType = TagType::Unspecified;
+                    bool error = false;
                     for(const auto &part : splitString(fieldDenotationString + 4, ",", EmptyPartsTreat::Omit)) {
                         if(part == "id3v1") {
                             tagType |= TagType::Id3v1Tag;
@@ -331,14 +333,43 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                             break;
                         } else {
                             cerr << "Warning: The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
-                            tagType = scope.tagType;
+                            error = true;
                             break;
                         }
                     }
-                    scope.tagType = tagType;
-                    break;
+                    if(!error) {
+                        scope.tagType = tagType;
+                        scope.allTracks = false;
+                        scope.trackIds.clear();
+                    }
                 }
+                continue;
             } else if(applyTargetConfiguration(scope.tagTarget, fieldDenotationString)) {
+                continue;
+            } else if(!strncmp(fieldDenotationString, "track=", 6)) {
+                const vector<string> parts = splitString<vector<string>>(fieldDenotationString + 6, ",", EmptyPartsTreat::Omit);
+                bool allTracks = scope.allTracks;
+                vector<uint64> trackIds;
+                trackIds.reserve(parts.size());
+                bool error = false;
+                for(const auto &part : parts) {
+                    if(part == "all" || part == "any") {
+                        allTracks = true;
+                        break;
+                    } else {
+                        try {
+                            trackIds.emplace_back(stringToNumber<uint64>(part));
+                        } catch(const ConversionException &) {
+                            cerr << "Warning: The value provided with the \"track\"-specifier is invalid and will be ignored. It must be a comma-separated list of track IDs." << endl;
+                            error = true;
+                            break;
+                        }
+                    }
+                }
+                if(!error) {
+                    scope.allTracks = allTracks;
+                    scope.trackIds = move(trackIds);
+                }
                 continue;
             }
             // check whether field name starts with + indicating an additional value
@@ -376,7 +407,11 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             }
             // parse the denoted field ID
             try {
-                scope.field = FieldId::fromDenotation(fieldDenotationString, fieldNameLen);
+                if(scope.isTrack()) {
+                    scope.field = FieldId::fromTrackDenotation(fieldDenotationString, fieldNameLen);
+                } else {
+                    scope.field = FieldId::fromTagDenotation(fieldDenotationString, fieldNameLen);
+                }
             } catch(const ConversionException &e) {
                 // unable to parse field ID denotation -> discard the field denotation
                 cerr << "Warning: The field denotation \"" << string(fieldDenotationString, fieldNameLen) << "\" could not be parsed and will be ignored: " << e.what() << endl;
@@ -397,7 +432,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                     // file index might have been specified explicitely
                     // if not (mult == 1) use the index of the last value and increase it by one if the value is not an additional one
                     // if there are no previous values, just use the index 0
-                    fieldValues.emplace_back(FieldValue(type, mult == 1 ? (fieldValues.empty() ? 0 : fieldValues.back().fileIndex + (additionalValue ? 0 : 1)) : fileIndex, (equationPos + 1)));
+                    fieldValues.allValues.emplace_back(type, mult == 1 ? (fieldValues.allValues.empty() ? 0 : fieldValues.allValues.back().fileIndex + (additionalValue ? 0 : 1)) : fileIndex, equationPos + 1);
                 }
             }
             if(additionalValue && readOnly) {
@@ -426,9 +461,9 @@ bool setValuesForNativeField(const char *idString, std::size_t idStringSize, Tag
     return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::fieldType::fieldIdFromString(idString, idStringSize), values);
 }
 
-inline FieldId::FieldId(const char *nativeField, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField) :
+inline FieldId::FieldId(const char *nativeField, std::size_t nativeFieldSize, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField) :
     m_knownField(KnownField::Invalid),
-    m_nativeField(nativeField),
+    m_nativeField(nativeField, nativeFieldSize),
     m_valuesForNativeField(valuesForNativeField),
     m_setValuesForNativeField(setValuesForNativeField)
 {}
@@ -438,13 +473,13 @@ template<class ConcreteTag>
 FieldId FieldId::fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize)
 {
     return FieldId(
-        nativeFieldId,
+        nativeFieldId, nativeFieldIdSize,
         bind(&valuesForNativeField<ConcreteTag>, nativeFieldId, nativeFieldIdSize, _1, _2),
         bind(&setValuesForNativeField<ConcreteTag>, nativeFieldId, nativeFieldIdSize, _1, _2, _3)
     );
 }
 
-FieldId FieldId::fromDenotation(const char *denotation, size_t denotationSize)
+FieldId FieldId::fromTagDenotation(const char *denotation, size_t denotationSize)
 {
     // check for native, format-specific denotation
     if(!strncmp(denotation, "mkv:", 4)) {
@@ -461,68 +496,54 @@ FieldId FieldId::fromDenotation(const char *denotation, size_t denotationSize)
     }
 
     // determine KnownField for generic denotation
-    if(!strncmp(denotation, "title", denotationSize)) {
-        return KnownField::Title;
-    } else if(!strncmp(denotation, "album", denotationSize)) {
-        return KnownField::Album;
-    } else if(!strncmp(denotation, "artist", denotationSize)) {
-        return KnownField::Artist;
-    } else if(!strncmp(denotation, "genre", denotationSize)) {
-        return KnownField::Genre;
-    } else if(!strncmp(denotation, "year", denotationSize)) {
-        return KnownField::Year;
-    } else if(!strncmp(denotation, "comment", denotationSize)) {
-        return KnownField::Comment;
-    } else if(!strncmp(denotation, "bpm", denotationSize)) {
-        return KnownField::Bpm;
-    } else if(!strncmp(denotation, "bps", denotationSize)) {
-        return KnownField::Bps;
-    } else if(!strncmp(denotation, "lyricist", denotationSize)) {
-        return KnownField::Lyricist;
-    } else if(!strncmp(denotation, "track", denotationSize)) {
-        return KnownField::TrackPosition;
-    } else if(!strncmp(denotation, "disk", denotationSize)) {
-        return KnownField::DiskPosition;
-    } else if(!strncmp(denotation, "part", denotationSize)) {
-        return KnownField::PartNumber;
-    } else if(!strncmp(denotation, "totalparts", denotationSize)) {
-        return KnownField::TotalParts;
-    } else if(!strncmp(denotation, "encoder", denotationSize)) {
-        return KnownField::Encoder;
-    } else if(!strncmp(denotation, "recorddate", denotationSize)) {
-        return KnownField::RecordDate;
-    } else if(!strncmp(denotation, "performers", denotationSize)) {
-        return KnownField::Performers;
-    } else if(!strncmp(denotation, "duration", denotationSize)) {
-        return KnownField::Length;
-    } else if(!strncmp(denotation, "language", denotationSize)) {
-        return KnownField::Language;
-    } else if(!strncmp(denotation, "encodersettings", denotationSize)) {
-        return KnownField::EncoderSettings;
-    } else if(!strncmp(denotation, "lyrics", denotationSize)) {
-        return KnownField::Lyrics;
-    } else if(!strncmp(denotation, "synchronizedlyrics", denotationSize)) {
-        return KnownField::SynchronizedLyrics;
-    } else if(!strncmp(denotation, "grouping", denotationSize)) {
-        return KnownField::Grouping;
-    } else if(!strncmp(denotation, "recordlabel", denotationSize)) {
-        return KnownField::RecordLabel;
-    } else if(!strncmp(denotation, "cover", denotationSize)) {
-        return KnownField::Cover;
-    } else if(!strncmp(denotation, "composer", denotationSize)) {
-        return KnownField::Composer;
-    } else if(!strncmp(denotation, "rating", denotationSize)) {
-        return KnownField::Rating;
-    } else if(!strncmp(denotation, "description", denotationSize)) {
-        return KnownField::Description;
-    } else {
-        throw ConversionException("generic field name is unknown");
+    static const struct {
+        const char *knownDenotation;
+        KnownField knownField;
+    } fieldMapping[] = {
+        {"title", KnownField::Title},
+        {"album", KnownField::Album},
+        {"artist", KnownField::Artist},
+        {"genre", KnownField::Genre},
+        {"year", KnownField::Year},
+        {"comment", KnownField::Comment},
+        {"bpm", KnownField::Bpm},
+        {"bps", KnownField::Bps},
+        {"lyricist", KnownField::Lyricist},
+        {"track", KnownField::TrackPosition},
+        {"disk", KnownField::DiskPosition},
+        {"part", KnownField::PartNumber},
+        {"totalparts", KnownField::TotalParts},
+        {"encoder", KnownField::Encoder},
+        {"recorddate", KnownField::RecordDate},
+        {"performers", KnownField::Performers},
+        {"duration", KnownField::Length},
+        {"language", KnownField::Language},
+        {"encodersettings", KnownField::EncoderSettings},
+        {"lyrics", KnownField::Lyrics},
+        {"synchronizedlyrics", KnownField::SynchronizedLyrics},
+        {"grouping", KnownField::Grouping},
+        {"recordlabel", KnownField::RecordLabel},
+        {"cover", KnownField::Cover},
+        {"composer", KnownField::Composer},
+        {"rating", KnownField::Rating},
+        {"description", KnownField::Description},
+    };
+    for(const auto &mapping : fieldMapping) {
+        if(!strncmp(denotation, mapping.knownDenotation, denotationSize)) {
+            return FieldId(mapping.knownField, nullptr, 0);
+        }
     }
+    throw ConversionException("generic field name is unknown");
+}
+
+FieldId FieldId::fromTrackDenotation(const char *denotation, size_t denotationSize)
+{
+    return FieldId(KnownField::Invalid, denotation, denotationSize);
 }
 
 std::vector<const TagValue *> FieldId::values(const Tag *tag, TagType tagType) const
 {
-    if(m_nativeField) {
+    if(!m_nativeField.empty()) {
         return m_valuesForNativeField(tag, tagType);
     } else {
         return tag->values(m_knownField);
@@ -531,7 +552,7 @@ std::vector<const TagValue *> FieldId::values(const Tag *tag, TagType tagType) c
 
 bool FieldId::setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &values) const
 {
-    if(m_nativeField) {
+    if(!m_nativeField.empty()) {
         return m_setValuesForNativeField(tag, tagType, values);
     } else {
         return tag->setValues(m_knownField, values);
@@ -552,6 +573,16 @@ string tagName(const Tag *tag)
         ss << " targeting \"" << tag->targetString() << '\"';
     }
     return ss.str();
+}
+
+bool stringToBool(const string &str)
+{
+    if(str == "yes" || str == "true" || str == "1") {
+        return true;
+    } else if(str == "no" || str == "false" || str == "0") {
+        return false;
+    }
+    throw ConversionException(argsToString('\"', str, " is not yes or no"));
 }
 
 }

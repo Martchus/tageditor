@@ -54,37 +54,42 @@ inline TagType &operator|= (TagType &lhs, TagType rhs)
 
 class FieldId
 {
+    friend struct std::hash<FieldId>;
+
 public:
-    FieldId(KnownField m_knownField = KnownField::Invalid);
-    static FieldId fromDenotation(const char *denotation, std::size_t denotationSize);
+    FieldId(KnownField m_knownField = KnownField::Invalid, const char *denotation = nullptr, std::size_t denotationSize = 0);
+    static FieldId fromTagDenotation(const char *denotation, std::size_t denotationSize);
+    static FieldId fromTrackDenotation(const char *denotation, std::size_t denotationSize);
     bool operator ==(const FieldId &other) const;
     KnownField knownField() const;
-    const char *nativeField() const;
     const char *name() const;
+    bool denotes(const char *knownDenotation) const;
+    const std::string &denotation() const;
     std::vector<const TagValue *> values(const Tag *tag, TagType tagType) const;
     bool setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &values) const;
 
 private:
     typedef std::function<std::vector<const TagValue *>(const Tag *, TagType)> GetValuesForNativeFieldType;
     typedef std::function<bool(Tag *, TagType, const std::vector<TagValue> &)> SetValuesForNativeFieldType;
-    FieldId(const char *m_nativeField, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField);
+    FieldId(const char *nativeField, std::size_t nativeFieldSize, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField);
     template<class ConcreteTag>
-    static FieldId fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize = std::string::npos);
+    static FieldId fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize);
 
     KnownField m_knownField;
-    const char *m_nativeField;
+    std::string m_denotation;
+    std::string m_nativeField;
     GetValuesForNativeFieldType m_valuesForNativeField;
     SetValuesForNativeFieldType m_setValuesForNativeField;
 };
 
-inline FieldId::FieldId(KnownField knownField) :
+inline FieldId::FieldId(KnownField knownField, const char *denotation, std::size_t denotationSize) :
     m_knownField(knownField),
-    m_nativeField(nullptr)
+    m_denotation(denotation, denotationSize)
 {}
 
 inline bool FieldId::operator ==(const FieldId &other) const
 {
-    return m_knownField == other.m_knownField && m_nativeField == other.m_nativeField;
+    return (m_knownField == other.m_knownField || m_denotation == other.m_denotation) && m_nativeField == other.m_nativeField;
 }
 
 inline KnownField FieldId::knownField() const
@@ -92,34 +97,49 @@ inline KnownField FieldId::knownField() const
     return m_knownField;
 }
 
-inline const char *FieldId::nativeField() const
-{
-    return m_nativeField;
-}
-
 inline const char *FieldId::name() const
 {
-    return m_nativeField ? m_nativeField : Settings::KnownFieldModel::fieldName(m_knownField);
+    return !m_nativeField.empty() ? m_nativeField.data() : Settings::KnownFieldModel::fieldName(m_knownField);
+}
+
+inline bool FieldId::denotes(const char *knownDenotation) const
+{
+    return !std::strncmp(m_denotation.data(), knownDenotation, m_denotation.size());
+}
+
+inline const std::string &FieldId::denotation() const
+{
+    return m_denotation;
 }
 
 struct FieldScope
 {
     FieldScope(KnownField field = KnownField::Invalid, TagType tagType = TagType::Unspecified, TagTarget tagTarget = TagTarget());
     bool operator ==(const FieldScope &other) const;
+    bool isTrack() const;
+
     FieldId field;
     TagType tagType;
     TagTarget tagTarget;
+    bool allTracks;
+    std::vector<uint64> trackIds;
 };
 
 inline FieldScope::FieldScope(KnownField field, TagType tagType, TagTarget tagTarget) :
     field(field),
     tagType(tagType),
-    tagTarget(tagTarget)
+    tagTarget(tagTarget),
+    allTracks(false)
 {}
 
 inline bool FieldScope::operator ==(const FieldScope &other) const
 {
     return field == other.field && tagType == other.tagType && tagTarget == other.tagTarget;
+}
+
+inline bool FieldScope::isTrack() const
+{
+    return allTracks || !trackIds.empty();
 }
 
 struct FieldValue
@@ -181,7 +201,7 @@ template <> struct hash<TagTarget>
     {
         using std::hash;
         return ((hash<uint64>()(target.level())
-                 ^ (hash<TagTarget::IdContainerType>()(target.tracks()) << 1)) >> 1)
+                ^ (hash<TagTarget::IdContainerType>()(target.tracks()) << 1)) >> 1)
                 ^ (hash<TagTarget::IdContainerType>()(target.attachments()) << 1);
     }
 };
@@ -191,8 +211,8 @@ template <> struct hash<FieldId>
     std::size_t operator()(const FieldId &id) const
     {
         using std::hash;
-        return (hash<KnownField>()(id.knownField())
-                 ^ (hash<const char *>()(id.nativeField()) << 1));
+        return ((id.knownField() != KnownField::Invalid) ? hash<KnownField>()(id.knownField()) : hash<string>()(id.denotation()))
+                 ^ (hash<string>()(id.m_nativeField) << 1);
     }
 };
 
@@ -201,9 +221,10 @@ template <> struct hash<FieldScope>
     std::size_t operator()(const FieldScope &scope) const
     {
         using std::hash;
-        return ((hash<FieldId>()(scope.field)
-                 ^ (hash<TagType>()(scope.tagType) << 1)) >> 1)
-                ^ (hash<TagTarget>()(scope.tagTarget) << 1);
+        return (hash<FieldId>()(scope.field)
+                ^ (hash<TagType>()(scope.tagType) << 1) >> 1)
+                ^ (hash<TagTarget>()(scope.tagTarget) ^ (static_cast<unsigned long>(scope.allTracks) << 4)
+                ^ (hash<vector<uint64>>()(scope.trackIds) << 1) >> 1);
     }
 };
 
@@ -211,7 +232,11 @@ template <> struct hash<FieldScope>
 
 namespace Cli {
 
-typedef std::vector<FieldValue> FieldValues;
+struct FieldValues
+{
+    std::vector<FieldValue> allValues;
+    std::vector<FieldValue *> relevantValues;
+};
 typedef std::unordered_map<FieldScope, FieldValues> FieldDenotations;
 
 // declare/define actual helpers
@@ -265,6 +290,7 @@ TagTarget::IdContainerType parseIds(const std::string &concatenatedIds);
 bool applyTargetConfiguration(TagTarget &target, const std::string &configStr);
 FieldDenotations parseFieldDenotations(const ApplicationUtilities::Argument &fieldsArg, bool readOnly);
 std::string tagName(const Tag *tag);
+bool stringToBool(const std::string &str);
 
 }
 
