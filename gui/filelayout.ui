@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QtGui::FileLayoutPage</class>
  <widget class="QWidget" name="QtGui::FileLayoutPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>315</width>
-    <height>544</height>
-   </rect>
-  </property>
   <property name="sizePolicy">
    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
     <horstretch>0</horstretch>
@@ -213,7 +205,7 @@ another position would prevent rewriting the entire file</string>
       <item>
        <widget class="QCheckBox" name="indexPosForceCheckBox">
         <property name="text">
-         <string>Use preferred position even if putting the tags at
+         <string>Use preferred position even if putting the index at
 another position would prevent rewriting the entire file</string>
         </property>
        </widget>
