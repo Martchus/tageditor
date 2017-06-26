@@ -562,7 +562,10 @@ public:
             }
         }
         if(track->sampleCount()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sample count"), QString::number(track->sampleCount()));
+            rowMaker.mkRow(track->mediaType() == MediaType::Video
+                           ? QCoreApplication::translate("HtmlInfo", "Frame count")
+                           : QCoreApplication::translate("HtmlInfo", "Sample count"),
+                           QString::number(track->sampleCount()));
         }
         if(track->bitsPerSample()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Bits per sample"), QString::number(track->bitsPerSample()));

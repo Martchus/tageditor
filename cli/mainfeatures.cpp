@@ -188,7 +188,10 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                         printProperty("Bits per sample", track->bitsPerSample());
                         printProperty("Sampling frequency", track->samplingFrequency(), "Hz");
                         printProperty("Extension sampling frequency", track->extensionSamplingFrequency(), "Hz");
-                        printProperty("Sample count", track->sampleCount());
+                        printProperty(track->mediaType() == MediaType::Video
+                                      ? "Frame count"
+                                      : "Sample count",
+                                      track->sampleCount());
                         printProperty("Creation time", track->creationTime());
                         printProperty("Modification time", track->modificationTime());
                         vector<string> labels;

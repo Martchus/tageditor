@@ -396,7 +396,9 @@ void FileInfoModel::updateCache()
                                               ? QString::number(track->extensionSamplingFrequency()) % QStringLiteral(" Hz / ") % QString::number(track->samplingFrequency()) % QStringLiteral(" Hz")
                                               : QString::number(track->samplingFrequency()) + QStringLiteral(" Hz"));
                     }
-                    trackHelper.appendRow(tr("Sample count"), track->sampleCount());
+                    trackHelper.appendRow(track->mediaType() == MediaType::Video
+                                          ? tr("Frame count")
+                                          : tr("Sample count"), track->sampleCount());
                     trackHelper.appendRow(tr("Bits per sample"), track->bitsPerSample());
                     trackHelper.appendRow(tr("Quality"), track->quality());
                     trackHelper.appendRow(tr("Pixel size"), track->pixelSize());
