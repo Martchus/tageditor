@@ -181,7 +181,9 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
     url.setQuery(query);
 
     // make request
-    return new MusicBrainzResultsModel(move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
+    QNetworkRequest request(url);
+    request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("Mozilla/5.0 (X11; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0"));
+    return new MusicBrainzResultsModel(move(songDescription), Utility::networkAccessManager().get(request));
 }
 
 QNetworkReply *queryCoverArtArchive(const QString &albumId)
