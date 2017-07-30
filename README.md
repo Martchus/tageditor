@@ -68,19 +68,21 @@ See the release section on GitHub.
 
 ### Packages and binaries
 * Arch Linux
-  * for PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs) or
-    [the AUR](https://aur.archlinux.org/packages?SeB=m&K=Martchus)
-  * for binary repository checkout [my website](http://martchus.no-ip.biz/website/page.php?name=programming)
+    * for PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs) or
+      [the AUR](https://aur.archlinux.org/packages?SeB=m&K=Martchus)
+    * for binary repository checkout [my website](http://martchus.no-ip.biz/website/page.php?name=programming)
 * Tumbleweed
-  * for RPM \*.spec files and binary repository checkout
-    [openSUSE Build Servide](https://build.opensuse.org/project/show/home:mkittler)
+    * for RPM \*.spec files and binary repository checkout
+      [openSUSE Build Servide](https://build.opensuse.org/project/show/home:mkittler)
+    * packages are available for x86_64, aarch64 and armv7l
+    * since GCC provided by Leap is too old, only Tumbleweed packages are up-to-date
 * Gentoo
-  * packages are provided by perfect7gentleman; checkout his
-    [repository](https://github.com/perfect7gentleman/pg_overlay)
+    * packages are provided by perfect7gentleman; checkout his
+      [repository](https://github.com/perfect7gentleman/pg_overlay)
 * Windows
-  * for mingw-w64 PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs)
-  * for binaries checkout [my website](http://martchus.no-ip.biz/website/page.php?name=programming) and the
-    release section on GitHub
+    * for mingw-w64 PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs)
+    * for binaries checkout [my website](http://martchus.no-ip.biz/website/page.php?name=programming) and the
+      release section on GitHub
 
 ## Usage
 The Tag Editor has a GUI (Qt 5) and a command line interface. For a C++ library
