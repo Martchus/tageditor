@@ -7,7 +7,9 @@
 #include <QFontMetrics>
 #include <QBrush>
 #include <QConicalGradient>
-#include <QDebug>
+#include <QMessageBox>
+#include <QCoreApplication>
+#include <QStringBuilder>
 
 #include <cmath>
 
@@ -65,6 +67,14 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
     }
 }
 
+void NotificationLabel::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    if(m_type == NotificationType::Progress) {
+        return;
+    }
+    showMessageBox();
+}
+
 void NotificationLabel::updateAnimation()
 {
     switch(m_type) {
@@ -75,6 +85,15 @@ void NotificationLabel::updateAnimation()
         ;
     }
     update(iconRect());
+}
+
+void NotificationLabel::showMessageBox() const
+{
+    QMessageBox msgbox;
+    msgbox.setWindowTitle((m_context.isEmpty() ? tr("Notifications") : m_context) % QStringLiteral(" - ") % QCoreApplication::applicationName());
+    msgbox.setIconPixmap(m_mainPixmap);
+    msgbox.setText(m_text);
+    msgbox.exec();
 }
 
 QRect NotificationLabel::iconRect() const

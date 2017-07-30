@@ -26,6 +26,7 @@ class NotificationLabel : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QString text READ text WRITE setText)
+    Q_PROPERTY(QString context READ context WRITE setContext)
     Q_PROPERTY(NotificationType notificationType READ notificationType WRITE setNotificationType)
     Q_PROPERTY(NotificationSubject notificationSubject READ notificationSubject WRITE setNotificationSubject)
     Q_PROPERTY(int percentage READ percentage WRITE setPercentage)
@@ -35,6 +36,7 @@ public:
     explicit NotificationLabel(QWidget *parent = nullptr);
 
     const QString &text() const;
+    const QString &context() const;
     NotificationType notificationType() const;
     NotificationSubject notificationSubject() const;
     int percentage() const;
@@ -46,6 +48,7 @@ public:
 
 public slots:
     void setText(const QString &text);
+    void setContext(const QString &context);
     void clearText();
     void appendLine(const QString &line);
     void setNotificationType(NotificationType value);
@@ -55,19 +58,21 @@ public slots:
     void setMaxIconSize(int size);
 
 protected:
-    virtual void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
     
 private slots:
     void updateAnimation();
+    void showMessageBox() const;
 
 private:
     QRect iconRect() const;
     QRect textRect() const;
     void setupPixmaps(const QSize &size);
     void drawProgressIndicator(QPainter &painter, QRect rect, const QColor &color, int angle);
-    static void toGrayPixmap(const QPixmap &original, QPixmap grayed);
 
     QString m_text;
+    QString m_context;
     NotificationType m_type;
     NotificationSubject m_subject;
     int m_percentage;
@@ -76,8 +81,6 @@ private:
     bool m_pixmapsInvalidated;
     QPixmap m_mainPixmap;
     QPixmap m_smallPixmap;
-    QPixmap m_mainPixmapDisabled;
-    QPixmap m_smallPixmapDisabled;
     QTimer m_updateTimer;
     int m_animationStep;
 };
@@ -85,6 +88,16 @@ private:
 inline const QString &NotificationLabel::text() const
 {
     return m_text;
+}
+
+inline const QString &NotificationLabel::context() const
+{
+    return m_context;
+}
+
+inline void NotificationLabel::setContext(const QString &context)
+{
+    m_context = context;
 }
 
 inline NotificationType NotificationLabel::notificationType() const

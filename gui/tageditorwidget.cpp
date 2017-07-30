@@ -130,6 +130,8 @@ TagEditorWidget::TagEditorWidget(QWidget *parent) :
     // other widgets
     updateFileStatusStatus();
     m_ui->abortButton->setVisible(false);
+    m_ui->parsingNotificationWidget->setContext(tr("Parsing notifications"));
+    m_ui->makingNotificationWidget->setContext(tr("Applying notifications"));
     // connect signals and slots, install event filter
     //  buttons: save, delete, next, close
     connect(m_ui->saveButton, &QPushButton::clicked, this, &TagEditorWidget::applyEntriesAndSaveChangings);
