@@ -22,6 +22,8 @@ SongDescription::SongDescription() :
     cover(nullptr)
 {}
 
+map<QString, QByteArray> QueryResultsModel::m_coverData = map<QString, QByteArray>();
+
 QueryResultsModel::QueryResultsModel(QObject *parent) :
     QAbstractTableModel(parent),
     m_resultsAvailable(false),
@@ -282,7 +284,7 @@ QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByt
     m_replies.removeAll(reply);
 
     if(reply->error() == QNetworkReply::NoError) {
-        QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+        const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
         if(!redirectionTarget.isNull()) {
             // there's a redirection available
             // -> resolve new URL
@@ -326,6 +328,35 @@ void HttpResultsModel::abort()
         m_errorList << tr("Aborted by user.");
         setResultsAvailable(true);
     }
+}
+
+void HttpResultsModel::handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row)
+{
+    QByteArray data;
+    if(auto *newReply = evaluateReplyResults(reply, data, true)) {
+        addReply(newReply, bind(&HttpResultsModel::handleCoverReplyFinished, this, newReply, albumId, row));
+    } else {
+        if(!data.isEmpty()) {
+            parseCoverResults(albumId, row, data);
+        }
+        setResultsAvailable(true);
+    }
+}
+
+void HttpResultsModel::parseCoverResults(const QString &albumId, int row, const QByteArray &data)
+{
+    // add cover -> determine album ID and row
+    if(!albumId.isEmpty() && row < m_results.size()) {
+        if(!data.isEmpty()) {
+            m_coverData[albumId] = data;
+            m_results[row].cover = data;
+            emit coverAvailable(index(row, 0));
+        }
+    } else {
+        m_errorList << tr("Internal error: context for cover reply invalid");
+        setResultsAvailable(true);
+    }
+    setFetchingCover(false);
 }
 
 }

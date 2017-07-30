@@ -35,6 +35,7 @@ struct SongDescription
     int32 disk;
     QByteArray cover;
     QString lyrics;
+    QString coverUrl;
 };
 
 class QueryResultsModel : public QAbstractTableModel
@@ -83,6 +84,7 @@ protected:
     QStringList m_errorList;
     bool m_resultsAvailable;
     bool m_fetchingCover;
+    static std::map<QString, QByteArray> m_coverData;
 };
 
 inline const QList<SongDescription> &QueryResultsModel::results() const
@@ -118,6 +120,9 @@ protected:
     template<class Function> void addReply(QNetworkReply *reply, Function handler);
     virtual void parseInitialResults(const QByteArray &data) = 0;
     QNetworkReply *evaluateReplyResults(QNetworkReply *reply, QByteArray &data, bool alwaysFollowRedirection = false);
+
+    void handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row);
+    void parseCoverResults(const QString &albumId, int row, const QByteArray &data);
 
 private slots:
     void handleInitialReplyFinished();

@@ -18,8 +18,6 @@ using namespace Utility;
 
 namespace QtGui {
 
-map<QString, QByteArray> MusicBrainzResultsModel::m_coverData = map<QString, QByteArray>();
-
 MusicBrainzResultsModel::MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply) :
     HttpResultsModel(move(initialSongDescription), reply)
 {}
@@ -153,35 +151,6 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
 
     // promote changes
     endResetModel();
-}
-
-void MusicBrainzResultsModel::handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row)
-{
-    QByteArray data;
-    if(auto *newReply = evaluateReplyResults(reply, data, true)) {
-        addReply(newReply, bind(&MusicBrainzResultsModel::handleCoverReplyFinished, this, newReply, albumId, row));
-    } else {
-        if(!data.isEmpty()) {
-            parseCoverResults(albumId, row, data);
-        }
-        setResultsAvailable(true);
-    }
-}
-
-void MusicBrainzResultsModel::parseCoverResults(const QString &albumId, int row, const QByteArray &data)
-{
-    // add cover -> determine album ID and row
-    if(!albumId.isEmpty() && row < m_results.size()) {
-        if(!data.isEmpty()) {
-            m_coverData[albumId] = data;
-            m_results[row].cover = data;
-            emit coverAvailable(index(row, 0));
-        }
-    } else {
-        m_errorList << tr("Internal error: context for cover reply invalid");
-        setResultsAvailable(true);
-    }
-    setFetchingCover(false);
 }
 
 QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)

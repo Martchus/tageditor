@@ -26,11 +26,6 @@ protected:
     void parseInitialResults(const QByteArray &data);
 
 private:
-    void handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row);
-    void parseCoverResults(const QString &albumId, int row, const QByteArray &data);
-
-private:
-    static std::map<QString, QByteArray> m_coverData;
     What m_what;
 };
 
