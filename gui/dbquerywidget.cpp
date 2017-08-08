@@ -21,6 +21,7 @@
 #include <QGraphicsView>
 #include <QGraphicsItem>
 #include <QTextBrowser>
+#include <QDesktopServices>
 
 #include <functional>
 
@@ -431,8 +432,12 @@ void DbQueryWidget::showResultsContextMenu()
                 contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
             }
             if(m_model && m_model->areResultsAvailable()) {
+                if(!contextMenu.isEmpty()) {
+                    contextMenu.addSeparator();
+                }
                 contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
                 contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, &DbQueryWidget::fetchAndShowLyricsForSelection);
+                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
             }
             contextMenu.exec(QCursor::pos());
         }
@@ -492,6 +497,22 @@ void DbQueryWidget::fetchAndShowLyricsForSelection()
             m_ui->notificationLabel->setText(tr("Retrieving lyrics ..."));
             setStatus(false);
         }
+    }
+}
+
+void DbQueryWidget::openSelectionInBrowser()
+{
+    const QModelIndex selectedIndex = this->selectedIndex();
+    if(!selectedIndex.isValid()) {
+        return;
+    }
+    const QUrl url(m_model->webUrl(selectedIndex));
+    if(url.isEmpty()) {
+        m_ui->notificationLabel->appendLine(tr("No web URL available."));
+        return;
+    }
+    if(!QDesktopServices::openUrl(url)) {
+        m_ui->notificationLabel->appendLine(tr("Unable to open URL: ") + url.toString());
     }
 }
 

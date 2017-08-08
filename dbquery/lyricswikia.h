@@ -15,6 +15,7 @@ public:
     LyricsWikiaResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
     bool fetchCover(const QModelIndex &index);
     bool fetchLyrics(const QModelIndex &index);
+    QUrl webUrl(const QModelIndex &index);
 
 protected:
     void parseInitialResults(const QByteArray &data);

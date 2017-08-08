@@ -22,8 +22,9 @@ namespace QtGui {
 
 struct SongDescription
 {
-    SongDescription();
+    SongDescription(const QString &songId = QString());
 
+    QString songId;
     QString title;
     QString album;
     QString albumId;
@@ -50,7 +51,7 @@ public:
         GenreCol,
         YearCol,
         TrackCol,
-        TotalTracksCol
+        TotalTracksCol,
     };
 
     const QList<SongDescription> &results() const;
@@ -69,6 +70,7 @@ public:
     const QString *lyrics(const QModelIndex &index) const;
     virtual bool fetchLyrics(const QModelIndex &index);
     virtual void abort();
+    virtual QUrl webUrl(const QModelIndex &index);
 
 signals:
     void resultsAvailable();

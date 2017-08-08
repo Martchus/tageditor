@@ -47,6 +47,14 @@ bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
     return true;
 }
 
+QUrl MusicBrainzResultsModel::webUrl(const QModelIndex &index)
+{
+    if(index.parent().isValid() || index.row() >= results().size()) {
+        return QUrl();
+    }
+    return QUrl(QStringLiteral("https://musicbrainz.org/recording/") + results().at(index.row()).songId);
+}
+
 void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
 {
     // prepare parsing MusicBrainz meta data
@@ -62,7 +70,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                 iftag("recording-list") {
                     children {
                         iftag("recording") {
-                            SongDescription currentDescription;
+                            SongDescription currentDescription(attribute("id").toString());
                             children {
                                 iftag("title") {
                                     currentDescription.title = text;

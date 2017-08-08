@@ -21,6 +21,7 @@ private:
 public:
     MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
     bool fetchCover(const QModelIndex &index);
+    QUrl webUrl(const QModelIndex &index);
 
 protected:
     void parseInitialResults(const QByteArray &data);

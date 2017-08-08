@@ -15,7 +15,8 @@ using namespace Media;
 
 namespace QtGui {
 
-SongDescription::SongDescription() :
+SongDescription::SongDescription(const QString &songId) :
+    songId(songId),
     track(0),
     totalTracks(0),
     disk(0),
@@ -44,6 +45,12 @@ void QueryResultsModel::setFetchingCover(bool fetchingCover)
 
 void QueryResultsModel::abort()
 {}
+
+QUrl QueryResultsModel::webUrl(const QModelIndex &index)
+{
+    Q_UNUSED(index)
+    return QUrl();
+}
 
 #define returnValue(field) return qstringToTagValue(res.field, TagTextEncoding::Utf16LittleEndian)
 

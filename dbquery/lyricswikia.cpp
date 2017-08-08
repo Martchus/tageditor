@@ -356,6 +356,25 @@ void LyricsWikiaResultsModel::parseAlbumDetailsAndFetchCover(int row, const QByt
     addReply(reply, bind(&LyricsWikiaResultsModel::handleCoverReplyFinished, this, reply, assocDesc.albumId, row));
 }
 
+QUrl LyricsWikiaResultsModel::webUrl(const QModelIndex &index)
+{
+    if(index.parent().isValid() || index.row() >= results().size()) {
+        return QUrl();
+    }
+
+    SongDescription &desc = m_results[index.row()];
+
+    // lazy initialize song ID
+    if(desc.songId.isEmpty()) {
+        desc.songId = desc.artist % QChar(':') % desc.title;
+        desc.songId.replace(QChar(' '), QChar('_'));
+    }
+    // return URL
+    QUrl url(lyricsWikiaApiUrl());
+    url.setPath(QStringLiteral("/wiki/") + desc.songId);
+    return url;
+}
+
 QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription)
 {
     // compose URL

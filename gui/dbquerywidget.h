@@ -54,6 +54,7 @@ private slots:
     void showResultsContextMenu();
     void fetchAndShowCoverForSelection();
     void fetchAndShowLyricsForSelection();
+    void openSelectionInBrowser();
     void showCover(const QByteArray &data);
     void showCoverFromIndex(const QModelIndex &index);
     void showLyrics(const QString &data);
