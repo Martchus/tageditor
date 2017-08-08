@@ -131,7 +131,7 @@ SongDescription DbQueryWidget::currentSongDescription() const
     desc.title = m_ui->titleLineEdit->text();
     desc.album = m_ui->albumLineEdit->text();
     desc.artist = m_ui->artistLineEdit->text();
-    desc.track = static_cast<unsigned int>(m_ui->trackSpinBox->value());
+    desc.track = m_ui->trackSpinBox->value();
     return desc;
 }
 
@@ -154,9 +154,7 @@ void DbQueryWidget::searchMusicBrainz()
     setStatus(false);
 
     // do actual query
-    m_ui->resultsTreeView->setModel(m_model = queryMusicBrainz(currentSongDescription()));
-    connect(m_model, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
-    connect(m_model, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
+    useQueryResults(queryMusicBrainz(currentSongDescription()));
 }
 
 void DbQueryWidget::searchLyricsWikia()
@@ -178,9 +176,7 @@ void DbQueryWidget::searchLyricsWikia()
     setStatus(false);
 
     // do actual query
-    m_ui->resultsTreeView->setModel(m_model = queryLyricsWikia(currentSongDescription()));
-    connect(m_model, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
-    connect(m_model, &QueryResultsModel::lyricsAvailable, this, &DbQueryWidget::showLyricsFromIndex);
+    useQueryResults(queryLyricsWikia(currentSongDescription()));
 }
 
 void DbQueryWidget::abortSearch()
@@ -457,7 +453,7 @@ void DbQueryWidget::fetchAndShowCoverForSelection()
                         if(const QByteArray *cover = m_model->cover(selectedIndex)) {
                             showCover(*cover);
                         } else {
-                            // cover couldn't be fetched, error tracks via resultsAvailable() signal so nothing to do
+                            // cover couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
                         }
                     } else {
                         // cover is fetched asynchronously
@@ -488,7 +484,7 @@ void DbQueryWidget::fetchAndShowLyricsForSelection()
                         if(const QByteArray *cover = m_model->cover(selectedIndex)) {
                             showLyrics(*cover);
                         } else {
-                            // lyrics couldn't be fetched, error tracks via resultsAvailable() signal so nothing to do
+                            // lyrics couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
                         }
                     } else {
                         // lyrics are fetched asynchronously
@@ -579,6 +575,14 @@ bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)
         }
     }
     return QWidget::eventFilter(obj, event);
+}
+
+void DbQueryWidget::useQueryResults(QueryResultsModel *queryResults)
+{
+    m_ui->resultsTreeView->setModel(m_model = queryResults);
+    connect(queryResults, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
+    connect(queryResults, &QueryResultsModel::lyricsAvailable, this, &DbQueryWidget::showLyricsFromIndex);
+    connect(queryResults, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
 }
 
 }

@@ -63,6 +63,8 @@ protected:
     bool eventFilter(QObject *obj, QEvent *event);
 
 private:
+    void useQueryResults(QueryResultsModel *queryResults);
+
     std::unique_ptr<Ui::DbQueryWidget> m_ui;
     TagEditorWidget *m_tagEditorWidget;
     QueryResultsModel *m_model;
