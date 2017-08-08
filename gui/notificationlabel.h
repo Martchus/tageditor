@@ -5,6 +5,8 @@
 #include <QPixmap>
 #include <QTimer>
 
+#include <limits>
+
 namespace QtGui {
 
 enum class NotificationType
@@ -32,6 +34,9 @@ class NotificationLabel : public QWidget
     Q_PROPERTY(int percentage READ percentage WRITE setPercentage)
     Q_PROPERTY(int minIconSize READ minIconSize WRITE setMinIconSize)
     Q_PROPERTY(int maxIconSize READ maxIconSize WRITE setMaxIconSize)
+    Q_PROPERTY(std::size_t maxLineCount READ maxLineCount WRITE setMaxLineCount)
+    Q_PROPERTY(std::size_t currentLineCount READ currentLineCount)
+
 public:
     explicit NotificationLabel(QWidget *parent = nullptr);
 
@@ -42,6 +47,8 @@ public:
     int percentage() const;
     int minIconSize() const;
     int maxIconSize() const;
+    std::size_t maxLineCount() const;
+    std::size_t currentLineCount() const;
 
     virtual QSize sizeHint() const;
     virtual QSize minimumSizeHint() const;
@@ -56,6 +63,7 @@ public slots:
     void setPercentage(int percentage);
     void setMinIconSize(int size);
     void setMaxIconSize(int size);
+    void setMaxLineCount(std::size_t maxLineCount);
 
 protected:
     void paintEvent(QPaintEvent *event);
@@ -70,7 +78,12 @@ private:
     QRect textRect() const;
     void setupPixmaps(const QSize &size);
     void drawProgressIndicator(QPainter &painter, QRect rect, const QColor &color, int angle);
+    void applyMaxLineCount();
 
+public:
+    static constexpr std::size_t infiniteLines = std::numeric_limits<std::size_t>::max();
+
+private:
     QString m_text;
     QString m_context;
     NotificationType m_type;
@@ -83,6 +96,10 @@ private:
     QPixmap m_smallPixmap;
     QTimer m_updateTimer;
     int m_animationStep;
+    std::size_t m_maxLineCount;
+    std::size_t m_currentLineCount;
+    static const QChar s_bulletPoint;
+    static const QString s_bulletLine;
 };
 
 inline const QString &NotificationLabel::text() const
@@ -123,6 +140,16 @@ inline int NotificationLabel::minIconSize() const
 inline int NotificationLabel::maxIconSize() const
 {
     return m_maxIconSize;
+}
+
+inline std::size_t NotificationLabel::maxLineCount() const
+{
+    return m_maxLineCount;
+}
+
+inline std::size_t NotificationLabel::currentLineCount() const
+{
+    return m_currentLineCount;
 }
 
 }

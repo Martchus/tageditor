@@ -15,6 +15,9 @@
 
 namespace QtGui {
 
+const QChar NotificationLabel::s_bulletPoint(0x2022);
+const QString NotificationLabel::s_bulletLine(QStringLiteral("\n• "));
+
 NotificationLabel::NotificationLabel(QWidget *parent) :
     QWidget(parent),
     m_type(NotificationType::Information),
@@ -23,7 +26,9 @@ NotificationLabel::NotificationLabel(QWidget *parent) :
     m_minIconSize(25),
     m_maxIconSize(25),
     m_pixmapsInvalidated(true),
-    m_animationStep(0)
+    m_animationStep(0),
+    m_maxLineCount(infiniteLines),
+    m_currentLineCount(0)
 {
     connect(&m_updateTimer, &QTimer::timeout, this, &NotificationLabel::updateAnimation);
     m_updateTimer.setInterval(80);
@@ -174,6 +179,25 @@ void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, con
     }
 }
 
+void NotificationLabel::applyMaxLineCount()
+{
+    if(m_maxLineCount == infiniteLines || m_currentLineCount < 2) {
+        return;
+    }
+
+    int newStart = 0;
+    for(; m_currentLineCount > m_maxLineCount; --m_currentLineCount) {
+        const int nextBullet = m_text.indexOf(s_bulletLine, newStart);
+        if(nextBullet < 0) {
+            break;
+        }
+        newStart = nextBullet;
+    }
+    if(newStart) {
+        m_text.remove(0, newStart + 1);
+    }
+}
+
 QSize NotificationLabel::sizeHint() const
 {
     const QFontMetrics fm(fontMetrics());
@@ -195,6 +219,7 @@ void NotificationLabel::setText(const QString &text)
 {
     const bool updateTooltip = toolTip().isEmpty() || toolTip() == m_text;
     m_text = text;
+    m_currentLineCount = 1;
     updateGeometry();
     update(textRect());
     if(updateTooltip) {
@@ -208,6 +233,7 @@ void NotificationLabel::clearText()
         setToolTip(QString());
     }
     m_text.clear();
+    m_currentLineCount = 0;
     updateGeometry();
     update(textRect());
 }
@@ -217,13 +243,16 @@ void NotificationLabel::appendLine(const QString &line)
     const bool updateTooltip = toolTip().isEmpty() || toolTip() == m_text;
     if(m_text.isEmpty()) {
         m_text = line;
+        m_currentLineCount = 1;
     } else {
-        if(!m_text.startsWith(QStringLiteral("•"))) {
-            m_text.insert(0, QStringLiteral("• "));
+        if(!m_text.startsWith(s_bulletPoint)) {
+            m_text = s_bulletPoint % QChar(' ') % m_text % s_bulletLine % line;
+        } else {
+            m_text = m_text % s_bulletLine % line;
         }
-        m_text.append(QStringLiteral("\n• "));
-        m_text.append(line);
+        ++m_currentLineCount;
     }
+    applyMaxLineCount();
     updateGeometry();
     update(textRect());
     if(updateTooltip) {
@@ -269,6 +298,12 @@ void NotificationLabel::setMaxIconSize(int size)
     }
     m_pixmapsInvalidated = true;
     updateGeometry();
+}
+
+void NotificationLabel::setMaxLineCount(std::size_t maxLineCount)
+{
+    m_maxLineCount = maxLineCount;
+    applyMaxLineCount();
 }
 
 void NotificationLabel::setMinIconSize(int size)

@@ -53,6 +53,7 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
 
     m_ui->notificationLabel->setText(tr("Search hasn't been started"));
     m_ui->notificationLabel->setContext(tr("MusicBrainz/LyricsWikia notifications"));
+    m_ui->notificationLabel->setMaxLineCount(5);
     m_ui->searchGroupBox->installEventFilter(this);
 
     // initialize buttons
