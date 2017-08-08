@@ -287,7 +287,7 @@ void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data
 
     // parse lyrics from HTML
     const int lyricsStart = html.indexOf(QLatin1String("<div class='lyricbox'>"));
-    if(lyricsStart > 0) {
+    if(lyricsStart < 0) {
         m_errorList << tr("Song details requested for %1/%2 do not contain lyrics").arg(assocDesc.artist, assocDesc.title);
         setResultsAvailable(true);
         return;
