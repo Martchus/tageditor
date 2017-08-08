@@ -441,62 +441,56 @@ void DbQueryWidget::showResultsContextMenu()
 
 void DbQueryWidget::fetchAndShowCoverForSelection()
 {
-    if(m_model) {
-        if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
-            const QModelIndexList selection = selectionModel->selection().indexes();
-            if(!selection.isEmpty()) {
-                const QModelIndex &selectedIndex = selection.at(0);
-                if(const QByteArray *cover = m_model->cover(selectedIndex)) {
-                    showCover(*cover);
-                } else {
-                    if(m_model->fetchCover(selectedIndex)) {
-                        if(const QByteArray *cover = m_model->cover(selectedIndex)) {
-                            showCover(*cover);
-                        } else {
-                            // cover couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
-                        }
-                    } else {
-                        // cover is fetched asynchronously
-                        // -> memorize index to be shown
-                        m_coverIndex = selectedIndex.row();
-                        // -> show status
-                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                        m_ui->notificationLabel->setText(tr("Retrieving cover art ..."));
-                        setStatus(false);
-                    }
-                }
+    const QModelIndex selectedIndex = this->selectedIndex();
+    if(!selectedIndex.isValid()) {
+        return;
+    }
+
+    if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+        showCover(*cover);
+    } else {
+        if(m_model->fetchCover(selectedIndex)) {
+            if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+                showCover(*cover);
+            } else {
+                // cover couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
             }
+        } else {
+            // cover is fetched asynchronously
+            // -> memorize index to be shown
+            m_coverIndex = selectedIndex.row();
+            // -> show status
+            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+            m_ui->notificationLabel->setText(tr("Retrieving cover art ..."));
+            setStatus(false);
         }
     }
 }
 
 void DbQueryWidget::fetchAndShowLyricsForSelection()
 {
-    if(m_model) {
-        if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
-            const QModelIndexList selection = selectionModel->selection().indexes();
-            if(!selection.isEmpty()) {
-                const QModelIndex &selectedIndex = selection.at(0);
-                if(const QString *lyrics = m_model->lyrics(selectedIndex)) {
-                    showLyrics(*lyrics);
-                } else {
-                    if(m_model->fetchLyrics(selectedIndex)) {
-                        if(const QByteArray *cover = m_model->cover(selectedIndex)) {
-                            showLyrics(*cover);
-                        } else {
-                            // lyrics couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
-                        }
-                    } else {
-                        // lyrics are fetched asynchronously
-                        // -> memorize index to be shown
-                        m_lyricsIndex = selectedIndex.row();
-                        // -> show status
-                        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                        m_ui->notificationLabel->setText(tr("Retrieving lyrics ..."));
-                        setStatus(false);
-                    }
-                }
+    const QModelIndex selectedIndex = this->selectedIndex();
+    if(!selectedIndex.isValid()) {
+        return;
+    }
+
+    if(const QString *lyrics = m_model->lyrics(selectedIndex)) {
+        showLyrics(*lyrics);
+    } else {
+        if(m_model->fetchLyrics(selectedIndex)) {
+            if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+                showLyrics(*cover);
+            } else {
+                // lyrics couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
             }
+        } else {
+            // lyrics are fetched asynchronously
+            // -> memorize index to be shown
+            m_lyricsIndex = selectedIndex.row();
+            // -> show status
+            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+            m_ui->notificationLabel->setText(tr("Retrieving lyrics ..."));
+            setStatus(false);
         }
     }
 }
@@ -583,6 +577,22 @@ void DbQueryWidget::useQueryResults(QueryResultsModel *queryResults)
     connect(queryResults, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
     connect(queryResults, &QueryResultsModel::lyricsAvailable, this, &DbQueryWidget::showLyricsFromIndex);
     connect(queryResults, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
+}
+
+QModelIndex DbQueryWidget::selectedIndex() const
+{
+    if(!m_model) {
+        return QModelIndex();
+    }
+    const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel();
+    if(!selectionModel) {
+        return QModelIndex();
+    }
+    const QModelIndexList selection = selectionModel->selectedRows();
+    if(selection.size() != 1) {
+        return QModelIndex();
+    }
+    return selection.at(0);
 }
 
 }

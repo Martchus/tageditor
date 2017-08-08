@@ -64,6 +64,7 @@ protected:
 
 private:
     void useQueryResults(QueryResultsModel *queryResults);
+    QModelIndex selectedIndex() const;
 
     std::unique_ptr<Ui::DbQueryWidget> m_ui;
     TagEditorWidget *m_tagEditorWidget;
