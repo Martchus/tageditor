@@ -41,7 +41,7 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
     QPainter painter(this);
 
     if(event->rect().contains(textRect)) {
-        style->drawItemText(&painter, textRect, QStyle::visualAlignment(layoutDirection(), Qt::AlignVCenter | Qt::AlignLeft | Qt::AlignJustify), option.palette, isEnabled(), m_text, foregroundRole());
+        style->drawItemText(&painter, textRect, static_cast<int>(QStyle::visualAlignment(layoutDirection(), Qt::AlignVCenter | Qt::AlignLeft | Qt::AlignJustify)), option.palette, isEnabled(), m_text, foregroundRole());
     }
     if(event->rect().contains(pixmapRect)) {
         setupPixmaps(pixmapRect.size());
@@ -69,6 +69,7 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
 
 void NotificationLabel::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    Q_UNUSED(event)
     if(m_type == NotificationType::Progress) {
         return;
     }
@@ -114,11 +115,11 @@ QRect NotificationLabel::textRect() const
 
 void NotificationLabel::setupPixmaps(const QSize &size)
 {
-    QStyle *style = QWidget::style();
+    const QStyle *const style = QWidget::style();
     if(m_pixmapsInvalidated) {
         m_mainPixmap = QPixmap();
         m_smallPixmap = QPixmap();
-        QStyle::StandardPixmap icon = static_cast<QStyle::StandardPixmap>(QStyle::SP_CustomBase + 1);
+        QStyle::StandardPixmap icon;
         switch(m_type) {
         case NotificationType::Information:
             icon = QStyle::SP_MessageBoxInformation;
@@ -133,7 +134,7 @@ void NotificationLabel::setupPixmaps(const QSize &size)
             icon = QStyle::SP_DialogApplyButton;
             break;
         default:
-            ;
+            icon = static_cast<QStyle::StandardPixmap>(QStyle::SP_CustomBase + 1);
         }
         switch(m_subject) {
         case NotificationSubject::None:
@@ -154,10 +155,10 @@ void NotificationLabel::setupPixmaps(const QSize &size)
 
 void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, const QColor &color, int angle)
 {
-    qreal circleWidth = 6;
-    qreal halfCircleWidth = circleWidth * 0.5;
+    constexpr int circleWidth = 6;
+    constexpr int halfCircleWidth = circleWidth / 2;
     rect.adjust(halfCircleWidth + 1, halfCircleWidth + 1, -halfCircleWidth - 1, -halfCircleWidth - 1);
-    QPointF center = rect.center();
+    const QPointF center = rect.center();
     painter.setRenderHint(QPainter::Antialiasing, true);
     QConicalGradient linearGrad(center, angle);
     linearGrad.setColorAt(0, color);
@@ -166,7 +167,7 @@ void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, con
     painter.drawArc(rect, angle * 16 + 25 * 16, 16 * 310);
     if(m_percentage > 0 && m_percentage <= 100) {
         QFont font = this->font();
-        font.setPixelSize(rect.width() * 0.5);
+        font.setPixelSize(rect.width() / 2);
         painter.setFont(font);
         painter.setPen(color);
         painter.drawText(rect, Qt::AlignCenter, QString::number(m_percentage));
