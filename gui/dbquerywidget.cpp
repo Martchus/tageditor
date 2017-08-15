@@ -81,6 +81,9 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     connect(clearSearchCriteria, &QAction::triggered, this, &DbQueryWidget::clearSearchCriteria);
     m_ui->menuPushButton->setMenu(m_menu);
 
+    // ensure fieldsGroupBox takes only minimal space (initially)
+    m_ui->splitter->setSizes({1000, 1});
+
     // connect signals and slots
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
     connect(m_ui->searchMusicBrainzPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchMusicBrainz);
