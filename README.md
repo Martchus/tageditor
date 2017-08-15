@@ -96,7 +96,12 @@ information like album name or artist for all files in an album again and again.
 
 #### Screenshots
 ##### Main window under Openbox/qt5ct with Breeze theme/icons
-![main window/Openbox/qt5ct/Breeze](/resources/screenshots/mainwindow.png?raw=true)
+![main window/Openbox/qt5ct/Breeze theme](/resources/screenshots/mainwindow.png?raw=true)
+
+##### Main window under Plasma 5 with dark Breeze theme/icons
+This screenshot shows the experimental MusicBrainz/LyricsWikia search.
+
+![main window/Plasma 5/dark Breeze theme](/resources/screenshots/mainwindow-1366x768.png?raw=true)
 
 #### Settings
 Checkout the settings dialog. You can:
