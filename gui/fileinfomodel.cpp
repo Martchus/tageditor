@@ -355,7 +355,12 @@ void FileInfoModel::updateCache()
             if(!tracks.empty()) {
                 auto *tracksItem = defaultItem(tr("Tracks"));
                 setItem(++currentRow, tracksItem);
-                setItem(currentRow, 1, defaultItem(tr("%1 track(s) contained", 0, tracks.size()).arg(tracks.size())));
+                const string summary(m_file->technicalSummary());
+                if(summary.empty()) {
+                    setItem(currentRow, 1, defaultItem(tr("%1 track(s) contained", 0, tracks.size()).arg(tracks.size())));
+                } else {
+                    setItem(currentRow, 1, defaultItem(tr("%1 track(s): ", 0, tracks.size()).arg(tracks.size()) + QString::fromUtf8(summary.data(), summary.size())));
+                }
 
                 size_t number = 0;
                 for(const AbstractTrack *track : tracks) {
@@ -381,7 +386,9 @@ void FileInfoModel::updateCache()
                         }
                     }
                     fmtName = track->format().extensionName();
-                    trackHelper.appendRow(tr("Extension"), fmtName);
+                    if(*fmtName) {
+                        trackHelper.appendRow(tr("Extension"), fmtName);
+                    }
                     trackHelper.appendRow(tr("Format/codec ID"), track->formatId());
                     trackHelper.appendRow(tr("Size"), track->size());
                     trackHelper.appendRow(tr("Duration"), track->duration());
@@ -574,6 +581,7 @@ void FileInfoModel::updateCache()
                 ;
             }
             setItem(++currentRow, structureItem);
+            setItem(currentRow, 1, defaultItem(QString()));
         }
             break;
         default:

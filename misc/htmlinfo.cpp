@@ -485,6 +485,12 @@ public:
         m_writer.writeCharacters(QStringLiteral(" "));
     }
 
+    void mkBreak()
+    {
+        m_writer.writeStartElement(QStringLiteral("br"));
+        m_writer.writeEndElement();
+    }
+
     void mkDetailsLink(const QString &id, const QString &text)
     {
         m_writer.writeStartElement(QStringLiteral("a"));
@@ -881,7 +887,6 @@ public:
         m_rowMaker.endRow();
         m_writer.writeEndElement();
 
-
         // container
         if(container || m_file.paddingSize()) {
             startExtendedTableSection(QStringLiteral("containerMore"));
@@ -955,6 +960,12 @@ public:
             const QString moreId(QStringLiteral("tracksMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Tracks"));
             m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 track(s)", 0, tracks.size()).arg(tracks.size()));
+            const string summary(m_file.technicalSummary());
+            if(!summary.empty()) {
+                m_writer.writeCharacters(QStringLiteral(": "));
+                m_writer.writeCharacters(QString::fromUtf8(summary.data(), summary.size()));
+                mkBreak();
+            }
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
             m_rowMaker.endRow();
