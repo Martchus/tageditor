@@ -9,6 +9,7 @@
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>
+#include <tagparser/abstracttrack.h>
 #include <tagparser/exceptions.h>
 
 #include <qtutilities/misc/conversion.h>
@@ -27,6 +28,7 @@ using namespace std;
 
 namespace RenamingUtility {
 
+/// \brief Adds notifications from \a statusProvider to \a notificationsObject.
 TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &notificationsObject, const StatusProvider &statusProvider)
 {
     quint32 counter = 0;
@@ -40,9 +42,10 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &notificationsObject, const S
     return notificationsObject;
 }
 
+/// \brief Add fields and notifications from \a tag to \a tagObject.
 TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
 {
-    // text fields
+    // add text fields
     static const char *fieldNames[] = {"title", "artist", "album", "year", "comment", "genre", "encoder", "language",
                                        "description", nullptr};
     static const KnownField fields[] = {KnownField::Title, KnownField::Artist, KnownField::Album, KnownField::Year,
@@ -56,7 +59,7 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
         } catch(const ConversionException &) {}
     }
 
-    // numeric fields
+    // add numeric fields
     try {
         tagObject.setProperty("partNumber", tag.value(KnownField::PartNumber).toInteger() TAGEDITOR_JS_READONLY);
     } catch(const ConversionException &) {}
@@ -76,7 +79,7 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
     tagObject.setProperty("diskPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("diskTotal", pos.total() TAGEDITOR_JS_READONLY);
 
-    // notifications
+    // add notifications
     tagObject.setProperty("hasCriticalNotifications", tag.hasCriticalNotifications() TAGEDITOR_JS_READONLY);
     return tagObject;
 }
@@ -137,6 +140,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
 {
     MediaFileInfo fileInfo(toNativeFileName(fileName).data());
 
+    // add basic file information
     auto fileInfoObject = m_engine->newObject();
     fileInfoObject.setProperty(QStringLiteral("currentName"), QString::fromUtf8(fileInfo.fileName(false).data()));
     fileInfoObject.setProperty(QStringLiteral("currentBaseName"), QString::fromUtf8(fileInfo.fileName(true).data()));
@@ -145,40 +149,44 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
         suffix.remove(0, 1);
     }
     fileInfoObject.setProperty(QStringLiteral("currentSuffix"), suffix TAGEDITOR_JS_READONLY);
-    bool critical = false;
+
+    // parse further file information
+    bool criticalParseingErrorOccured = false;
     try {
         fileInfo.parseEverything();
     } catch(const Failure &) {
         // parsing notifications will be addded anyways
-        critical = true;
+        criticalParseingErrorOccured = true;
     } catch(...) {
         ::IoUtilities::catchIoFailure();
-        critical = true;
+        criticalParseingErrorOccured = true;
     }
 
-    auto mainNotificationObject = m_engine->newArray(fileInfo.notifications().size());
+    // gather notifications
+    auto mainNotificationObject = m_engine->newArray(static_cast<uint>(fileInfo.notifications().size()));
     mainNotificationObject << fileInfo;
-    critical |= fileInfo.hasCriticalNotifications();
-    fileInfoObject.setProperty(QStringLiteral("hasCriticalNotifications"), critical);
+    criticalParseingErrorOccured |= fileInfo.hasCriticalNotifications();
+    fileInfoObject.setProperty(QStringLiteral("hasCriticalNotifications"), criticalParseingErrorOccured);
     fileInfoObject.setProperty(QStringLiteral("notifications"), mainNotificationObject);
 
+    // add MIME-type, suitable suffix and technical summary
     fileInfoObject.setProperty(QStringLiteral("mimeType"), QString::fromUtf8(fileInfo.mimeType()) TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("suitableSuffix"), QString::fromUtf8(fileInfo.containerFormatAbbreviation()) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("technicalSummary"), QString::fromUtf8(fileInfo.technicalSummary().data()) TAGEDITOR_JS_READONLY);
 
-    vector<Tag *> tags;
-    fileInfo.tags(tags);
+    // gather tag information
+    const vector<Tag *> tags = fileInfo.tags();
     auto combinedTagObject = m_engine->newObject();
     auto combinedTagNotifications = m_engine->newArray();
-    auto tagsObject = m_engine->newArray(tags.size());
+    auto tagsObject = m_engine->newArray(static_cast<uint>(tags.size()));
     uint32 tagIndex = 0;
-
     for(auto tagIterator = tags.cbegin(), end = tags.cend(); tagIterator != end; ++tagIterator, ++tagIndex) {
         const Tag &tag = **tagIterator;
         auto tagObject = m_engine->newObject();
         combinedTagObject << tag;
         combinedTagNotifications << tag;
         tagObject << tag;
-        auto tagNotificationsObject = m_engine->newArray(tag.notifications().size());
+        auto tagNotificationsObject = m_engine->newArray(static_cast<uint>(tag.notifications().size()));
         tagNotificationsObject << tag;
         tagObject.setProperty(QStringLiteral("notifications"), tagNotificationsObject TAGEDITOR_JS_READONLY);
         tagsObject.setProperty(tagIndex, tagObject TAGEDITOR_JS_READONLY);
@@ -186,6 +194,24 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     combinedTagObject.setProperty(QStringLiteral("notifications"), combinedTagNotifications TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("tag"), combinedTagObject TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("tags"), tagsObject TAGEDITOR_JS_READONLY);
+
+    // gather track information
+    const vector<AbstractTrack *> tracks = fileInfo.tracks();
+    auto tracksObject = m_engine->newArray(static_cast<uint>(tracks.size()));
+    uint32 trackIndex = 0;
+    for(auto trackIterator = tracks.cbegin(), end = tracks.cend(); trackIterator != end; ++trackIterator, ++trackIndex) {
+        const AbstractTrack &track = **trackIterator;
+        auto trackObject = m_engine->newObject();
+        trackObject.setProperty(QStringLiteral("mediaType"), QString::fromUtf8(track.mediaTypeName()));
+        trackObject.setProperty(QStringLiteral("format"), QString::fromUtf8(track.formatName()));
+        trackObject.setProperty(QStringLiteral("formatAbbreviation"), QString::fromUtf8(track.formatAbbreviation()));
+        trackObject.setProperty(QStringLiteral("description"), QString::fromUtf8(track.description().data()));
+        auto trackNotificationsObject = m_engine->newArray(static_cast<uint>(track.notifications().size()));
+        trackNotificationsObject << track;
+        trackObject.setProperty(QStringLiteral("notifications"), trackNotificationsObject TAGEDITOR_JS_READONLY);
+        tracksObject.setProperty(trackIndex, trackObject TAGEDITOR_JS_READONLY);
+    }
+
     return fileInfoObject;
 }
 
