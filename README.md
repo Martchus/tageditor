@@ -240,6 +240,10 @@ Here are some Bash examples which illustrate getting and setting tag information
     prevent pipes/redirections to function. One can use MSYS2 terminal to work around this.
   * All UTF-16 encoded arguments as provided by WinAPI are converted to UTF-8 so *2.*
     shouldn't cause any trouble.
+  * A workaround to support filenames containing non-ASCII characters (despite the lack of an UTF-8
+    supporting `std::fstream` under Windows) can be enabled by adding `-DUSE_NATIVE_FILE_BUFFER=ON`
+    to the CMake arguments **when building `c++utilities`**. It is *not* sufficient to specify this
+    option only when building `tagparser` or Tag Editor.
 
 
 ## Build instructions
