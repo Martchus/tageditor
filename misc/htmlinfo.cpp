@@ -122,7 +122,7 @@ public:
         endRow();
     }
 
-    void startSubTab(const QString &subLabel, unsigned int index, unsigned int level = 0)
+    void startSubTab(const QString &subLabel, size_t index, unsigned int level = 0)
     {
         writer.writeStartElement(QStringLiteral("tr"));
         if((m_even = !m_even)) {
@@ -270,11 +270,13 @@ template<> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element)
         const uint64 seekId = element->readUInteger();
         writer.writeCharacters(QStringLiteral(", denoted type: 0x"));
         writer.writeCharacters(QString::number(seekId, 16));
-        const char *seekIdName = matroskaIdName(seekId);
-        if(*seekIdName) {
-            writer.writeCharacters(QStringLiteral(" \""));
-            writer.writeCharacters(QString::fromLatin1(seekIdName));
-            writer.writeCharacters(QStringLiteral("\""));
+        if(seekId <= numeric_limits<uint32>::max()) {
+            const char *const seekIdName = matroskaIdName(static_cast<uint32>(seekId));
+            if(*seekIdName) {
+                writer.writeCharacters(QStringLiteral(" \""));
+                writer.writeCharacters(QString::fromLatin1(seekIdName));
+                writer.writeCharacters(QStringLiteral("\""));
+            }
         }
         break;
     } case MatroskaIds::SeekPosition: {
@@ -287,6 +289,7 @@ template<> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element)
         writer.writeAttribute(QStringLiteral("data-hex"), QString::number(seekPos, 16));
         writer.writeCharacters(seekPosStr);
         writer.writeEndElement();
+        break;
     } default:
         ;
     }
@@ -519,7 +522,7 @@ public:
         if(track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr));
         }
-        if(track->version()) {
+        if(track->version() != 0.0) {
             switch(track->format().general) {
             case GeneralMediaFormat::Mpeg4Video:
             case GeneralMediaFormat::Avc:
@@ -542,10 +545,10 @@ public:
         if(!track->duration().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(track->duration().toString(TimeSpanOutputFormat::WithMeasures)) % QStringLiteral(" (") % QString::number(track->duration().totalTicks()) % QChar(')'));
         }
-        if(track->bitrate()) {
+        if(track->bitrate() != 0.0) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Avg. bitrate"), qstr(bitrateToString(track->bitrate())));
         }
-        if(track->maxBitrate()) {
+        if(track->maxBitrate() != 0.0) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Maximum bitrate"), qstr(bitrateToString(track->maxBitrate())));
         }
         if(!track->creationTime().isNull()) {
@@ -648,7 +651,7 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(attachment->name()));
         }
         if(attachment->data()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(attachment->data()->size(), true)));
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(static_cast<uint64>(attachment->data()->size()), true)));
         }
         if(!attachment->mimeType().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Mime-type"), qstr(attachment->mimeType()));
@@ -659,7 +662,7 @@ public:
         rowMaker.endSubTab();
     }
 
-    void mkChapter(const AbstractChapter &chapter, unsigned int chapterNumber, unsigned int level = 0)
+    void mkChapter(const AbstractChapter &chapter, size_t chapterNumber, unsigned int level = 0)
     {
         RowMaker rowMaker(m_writer);
         rowMaker.startSubTab(QCoreApplication::translate("HtmlInfo", "Chapter"), chapterNumber + 1, level);
@@ -722,7 +725,7 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), labels.join(QStringLiteral(", ")));
         }
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chapters"),
-                                  QCoreApplication::translate("HtmlInfo", "edition contains %1 chapter(s)", nullptr, edition.chapters().size()).arg(edition.chapters().size()));
+                                  QCoreApplication::translate("HtmlInfo", "edition contains %1 chapter(s)", nullptr, static_cast<int>(edition.chapters().size())).arg(edition.chapters().size()));
         rowMaker.endSubTab();
         unsigned int chapterNumber = 0;
         for(const auto &chapter : edition.chapters()) {
@@ -745,7 +748,7 @@ public:
                 }
                 string idString = element->idToString();
                 if(!idString.empty()) {
-                    m_writer.writeTextElement(QStringLiteral("em"), QString::fromLatin1(idString.data(), idString.size()));
+                    m_writer.writeTextElement(QStringLiteral("em"), QString::fromLatin1(idString.data(), static_cast<int>(idString.size())));
                 }
 
                 m_writer.writeCharacters(QStringLiteral(" @"));
@@ -802,7 +805,7 @@ public:
             startTableSection();
             const QString moreId(reparsing ? QStringLiteral("notificationsReparsingMore") : QStringLiteral("notificationsMore"));
             m_rowMaker.startRow(reparsing ? QCoreApplication::translate("HtmlInfo", "Notifications (reparsing after saving)") : QCoreApplication::translate("HtmlInfo", "Notifications"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 notification(s) available", 0, notifications.size()).arg(notifications.size()));
+            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 notification(s) available", 0, static_cast<int>(notifications.size())).arg(notifications.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show notifications"));
             m_rowMaker.endRow();
@@ -930,7 +933,7 @@ public:
             startTableSection();
             const QString moreId(QStringLiteral("tagsMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Tags"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 tag(s) assigned", 0, tags.size()).arg(tags.size()));
+            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 tag(s) assigned", 0, static_cast<int>(tags.size())).arg(tags.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
             m_rowMaker.endRow();
@@ -959,11 +962,11 @@ public:
             startTableSection();
             const QString moreId(QStringLiteral("tracksMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Tracks"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 track(s)", 0, tracks.size()).arg(tracks.size()));
+            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 track(s)", 0, static_cast<int>(tracks.size())).arg(tracks.size()));
             const string summary(m_file.technicalSummary());
             if(!summary.empty()) {
                 m_writer.writeCharacters(QStringLiteral(": "));
-                m_writer.writeCharacters(QString::fromUtf8(summary.data(), summary.size()));
+                m_writer.writeCharacters(QString::fromUtf8(summary.data(), static_cast<int>(summary.size())));
                 mkBreak();
             }
             mkSpace();
@@ -986,7 +989,7 @@ public:
             startTableSection();
             const QString moreId(QStringLiteral("attachmentsMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Attachments"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 attachment(s) assigned", 0, attachments.size()).arg(attachments.size()));
+            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 attachment(s) assigned", 0, static_cast<int>(attachments.size())).arg(attachments.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
             m_rowMaker.endRow();
@@ -1009,7 +1012,7 @@ public:
                     startTableSection();
                     const QString moreId(QStringLiteral("editionsMore"));
                     m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Editions/chapters"));
-                    m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", 0, editionEntries.size()).arg(editionEntries.size()));
+                    m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", 0, static_cast<int>(editionEntries.size())).arg(editionEntries.size()));
                     mkSpace();
                     mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
                     m_rowMaker.endRow();
@@ -1027,7 +1030,7 @@ public:
                 startTableSection();
                 const QString moreId(QStringLiteral("chaptersMore"));
                 m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "chapters"));
-                m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 chapter(s)", 0, chapterCount).arg(chapterCount));
+                m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 chapter(s)", 0, static_cast<int>(chapterCount)).arg(chapterCount));
                 mkSpace();
                 mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
                 m_rowMaker.endRow();
@@ -1090,14 +1093,15 @@ public:
             }
             m_rowMaker.endRow();
             m_writer.writeEndElement();
+            break;
         default:
             ;
         }
 
         // notifications
         auto currentNotifications = m_file.gatherRelatedNotifications();
-        mkNotifications(currentNotifications, originalNotifications.size());
-        if(originalNotifications.size()) {
+        mkNotifications(currentNotifications, !originalNotifications.empty());
+        if(!originalNotifications.empty()) {
             mkNotifications(originalNotifications);
         }
 

@@ -717,7 +717,7 @@ TagEdit *TagEditorWidget::activeTagEdit()
 bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
 {
     // check if file is current file
-    bool sameFile = m_currentPath == path;
+    const bool sameFile = m_currentPath == path;
     if(!forceRefresh && sameFile) {
         return true;
     }
