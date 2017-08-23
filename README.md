@@ -135,76 +135,68 @@ Checkout the available operations and options with `--help`.
 Here are some Bash examples which illustrate getting and setting tag information:
 
 ##### Reading tags
-* *Displays* title, album and artist of all *.m4a files in the specified directory:
+* Displays title, album and artist of all \*.m4a files in the specified directory:
   ```
   tageditor get title album artist --files /some/dir/*.m4a
   ```
 
-* *Displays* all supported fields of all *.mkv files in the specified directory:
-    ```
-    tageditor get --files /some/dir/*.mkv
-    ```
+* Displays all supported fields of all \*.mkv files in the specified directory:
+  ```
+  tageditor get --files /some/dir/*.mkv
+  ```
 
 
-* *Displays* technical information about all *.m4a files in the specified directory:
-    ```
-    tageditor info --files /some/dir/*.m4a
-    ```
-
-* *Displays* technical information about all *.m4a files in the specified directory:
+* Displays technical information about all \*.m4a files in the specified directory:
   ```
   tageditor info --files /some/dir/*.m4a
   ```
 
 ##### Writing tags
-* *Sets* title, album, artist, cover and track number of all *.m4a files in the specified directory:
-
+* Sets title, album, artist, cover and track number of all \*.m4a files in the specified directory:
   ```
   tageditor set title="Title of "{1st,2nd,3rd}" file" title="Title of "{4..16}"th file" \
     album="The Album" artist="The Artist" \
     cover=/path/to/image track={1..16}/16 --files /some/dir/*.m4a
   ```
 
-  - The first file will get the title *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
-  - The 16th and following files will all get the title *Title of the 16th file*.
-  - The same scheme is used for the track numbers.
-  - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
+    - The first file will get the title *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
+    - The 16th and following files will all get the title *Title of the 16th file*.
+    - The same scheme is used for the track numbers.
+    - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
 
-* *Sets* title of both specified files and the album of the second specified file:
-    ```
-    tageditor set title0="Title for both files" album1="Album for 2nd file" \
-      --files file1.ogg file2.mp3
-    ```
-    The number after the field name specifies the index of the first file to use the value for. The first index is 0.
+* Sets title of both specified files and the album of the second specified file:
+  ```
+  tageditor set title0="Title for both files" album1="Album for 2nd file" \
+    --files file1.ogg file2.mp3
+  ```
+  The number after the field name specifies the index of the first file to use the value for. The first index is 0.
 
-* *Sets* the title specificly for the track with the ID ``3134325680`` and removes
+* Sets the title specificly for the track with the ID ``3134325680`` and removes
   the tags targeting the song/track and the album/movie/episode in general:
-    ```
-    tageditor set target-level=30 target-tracks=3134325680 title="Title for track 3134325680" \
-      --remove-targets target-level=50 , target-level=30 \
-      --files file.mka
-    ```
-    For more information checkout the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).
+  ```
+  tageditor set target-level=30 target-tracks=3134325680 title="Title for track 3134325680" \
+    --remove-targets target-level=50 , target-level=30 \
+    --files file.mka
+  ```
+  For more information checkout the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).
 
-* *Sets* custom fields:
-    ```
-    tageditor set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a
-    ```
+* Sets custom fields:
+  ```
+  tageditor set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a
+  ```
 
-  In particular, the custom field `FOO` is set to `bar1` in test.mkv and the custom field `©foo`
-  is set to `bar2` in test.m4a. So the prefixes tell the tag editor that the specified field
-  ID is a native field ID of a particular tag format rather than a generic identifier. Native
-  fields are only applied to the corresponding format of course.
-
-  The following prefixes are supported:
-    * `mp4`: iTune-style MP4/M4A ID (must be exactly 4 characters)
-    * `mkv`: Matroska ID
-    * `id3`: ID3v2 ID (must be exactly 3 or 4 characters depending on the tag version)
-    * `vorbis`: Vorbis comment ID
+    - In particular, the custom field `FOO` is set to `bar1` in test.mkv and the custom field `©foo`
+      is set to `bar2` in test.m4a. So the prefixes tell the tag editor that the specified field
+      ID is a native field ID of a particular tag format rather than a generic identifier. Native
+      fields are only applied to the corresponding format of course.
+    - The following prefixes are supported:
+        - `mp4`: iTune-style MP4/M4A ID (must be exactly 4 characters)
+        - `mkv`: Matroska ID
+        - `id3`: ID3v2 ID (must be exactly 3 or 4 characters depending on the tag version)
+        - `vorbis`: Vorbis comment ID
 
 
 * Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
-
   ```
   cd some/dir
   # create an empty array
@@ -219,7 +211,6 @@ Here are some Bash examples which illustrate getting and setting tag information
   # now set the titles and other tag information
   tageditor set "${titles[@]}" album="Some Album" track+=1/25 disk=1/1 -f *.m4a
   ```
-
   **Note**: The *+* sign after the field name *track* which indicates that the field value should be increased after
   a file has been processed.
 
