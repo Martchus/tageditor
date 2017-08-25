@@ -257,6 +257,27 @@ To build without GUI, add the following parameters to the CMake call:
 -DWIDGETS_GUI=OFF -DQUICK_GUI=OFF
 ```
 
+### Building this straight
+0. Install (preferably the latest version of) g++ or clang, the required Qt 5 modules and CMake.
+1. Get the sources. For the lastest version from Git clone the following repositories:
+   ```
+   cd $SOURCES
+   git clone https://github.com/Martchus/cpp-utilities.git c++utilities
+   git clone https://github.com/Martchus/qtutilities.git
+   git clone https://github.com/Martchus/tagparser.git
+   git clone https://github.com/Martchus/tageditor.git
+   git clone https://github.com/Martchus/subdirs.git
+   ```
+2. Build and install everything in one step:
+   ```
+   cd $BUILD_DIR
+   cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="/install/prefix" \
+    $SOURCES/subdirs/tageditor
+   make install -j$(nproc)
+   ```
+
 ## TODO
 - Support more formats (EXIF, PDF metadata, Theora in Ogg, ...)
 - Allow adding tags to specific streams when dealing with Ogg
