@@ -130,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->actionSave, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::applyEntriesAndSaveChangings);
     connect(m_ui->actionSave_as, &QAction::triggered, this, &MainWindow::showSaveAsDlg);
     connect(m_ui->actionDelete_all_tags, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::deleteAllTagsAndSave);
-    connect(m_ui->actionSave_file_information, &QAction::triggered, this, &MainWindow::saveFileInformation);
+    connect(m_ui->actionSave_file_information, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::saveFileInfo);
     connect(m_ui->actionClose, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::closeFile);
     connect(m_ui->actionReload, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::reparseFile);
     connect(m_ui->actionExternalPlayer, &QAction::triggered, this, &MainWindow::spawnExternalPlayer);
@@ -506,49 +506,6 @@ void MainWindow::showSaveAsDlg()
     if(!path.isEmpty()) {
         m_ui->tagEditorWidget->fileInfo().setSaveFilePath(toNativeFileName(path).data());
         m_ui->tagEditorWidget->applyEntriesAndSaveChangings();
-    }
-}
-
-/*!
- * \brief Saves the file information generated to be displayed in the info web view in a file.
- */
-void MainWindow::saveFileInformation()
-{
-    if(fileOperationOngoing()) {
-        m_ui->statusBar->showMessage(tr("Unable to save file information because the current process hasn't been finished yet."));
-        return;
-    }
-    if(!fileInfo().isOpen()) {
-        QMessageBox::information(this, QApplication::applicationName(), tr("No file is opened."));
-        return;
-    }
-
-    const QByteArray htmlData =
-        #ifndef TAGEDITOR_NO_WEBVIEW
-            !m_ui->tagEditorWidget->fileInfoHtml().isEmpty() ?
-                m_ui->tagEditorWidget->fileInfoHtml() :
-            #endif
-                HtmlInfo::generateInfo(fileInfo(), m_ui->tagEditorWidget->originalNotifications());
-    if(htmlData.isEmpty()) {
-        QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
-        return;
-    }
-
-    const QString path = QFileDialog::getSaveFileName(this, tr("Save file information - ") + QCoreApplication::applicationName());
-    if(path.isEmpty()) {
-        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
-        return;
-    }
-
-    QFile file(path);
-    if(file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        QTextStream stream(&file);
-        stream.setCodec(QTextCodec::codecForName("UTF-8"));
-        stream << htmlData;
-        file.close();
-        if(file.error() != QFileDevice::NoError) {
-            QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file.\n%1").arg(file.errorString()));
-        }
     }
 }
 

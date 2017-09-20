@@ -64,7 +64,6 @@ private slots:
     void showNextFileNotFound();
     void showOpenFileDlg();
     void showSaveAsDlg();
-    void saveFileInformation();
     void handleFileStatusChange(bool opened, bool hasTag);
     void handleCurrentPathChanged(const QString &newPath);
 

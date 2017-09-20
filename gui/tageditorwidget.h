@@ -14,6 +14,8 @@
 QT_FORWARD_DECLARE_CLASS(QFileSystemWatcher)
 QT_FORWARD_DECLARE_CLASS(QMenu)
 QT_FORWARD_DECLARE_CLASS(QTreeView)
+QT_FORWARD_DECLARE_CLASS(QFile)
+QT_FORWARD_DECLARE_CLASS(QTemporaryFile)
 
 namespace Media {
 DECLARE_ENUM_CLASS(TagType, unsigned int);
@@ -50,6 +52,7 @@ public:
     Media::NotificationList &originalNotifications();
     bool isTagEditShown() const;
     const QByteArray &fileInfoHtml() const;
+    const QByteArray &generateFileInfoHtml();
     bool isFileNameVisible() const;
     void setFileNameVisible(bool visible);
     bool areButtonsVisible() const;
@@ -66,6 +69,8 @@ public slots:
     bool applyEntriesAndSaveChangings();
     bool deleteAllTagsAndSave();
     void closeFile();
+    void saveFileInfo();
+    void openFileInfoInBrowser();
     // misc
     void applySettingsFromDialog();
 
@@ -108,6 +113,8 @@ private slots:
 #ifndef TAGEDITOR_NO_WEBVIEW
     void showInfoWebViewContextMenu(const QPoint &);
 #endif
+    bool handleFileInfoUnavailable();
+    bool writeFileInfoToFile(QFile &file);
 
 private:
     void updateDocumentTitleEdits();
@@ -130,6 +137,7 @@ private:
 #endif
     FileInfoModel *m_infoModel;
     QTreeView *m_infoTreeView;
+    std::unique_ptr<QTemporaryFile> m_temporaryInfoFile;
     // tag, file, directory management
     QString m_currentPath;
     QFileSystemWatcher *m_fileWatcher;
@@ -192,6 +200,8 @@ inline Media::NotificationList &TagEditorWidget::originalNotifications()
 
 /*!
  * \brief Returns the HTML source of the info website.
+ * \remarks Returns an empty string if no file info has been generated yet. See generateFileInfoHtml() for a method which will ensure
+ *          the file info has been generated.
  */
 inline const QByteArray &TagEditorWidget::fileInfoHtml() const
 {

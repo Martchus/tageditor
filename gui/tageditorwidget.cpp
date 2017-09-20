@@ -12,6 +12,7 @@
 #include "../misc/utility.h"
 
 #include "ui_tageditorwidget.h"
+#include "resources/config.h"
 
 #include <tagparser/exceptions.h>
 #include <tagparser/signature.h>
@@ -30,13 +31,17 @@
 #include <c++utilities/io/path.h>
 #include <c++utilities/io/catchiofailure.h>
 
+#include <QDesktopServices>
 #include <QMessageBox>
 #include <QKeyEvent>
 #include <QClipboard>
 #include <QFileSystemModel>
 #include <QFileInfo>
+#include <QTemporaryFile>
+#include <QDir>
 #include <QPlainTextEdit>
 #include <QMimeData>
+#include <QFileDialog>
 #include <QFileSystemWatcher>
 #include <QMenu>
 #include <QCheckBox>
@@ -151,6 +156,18 @@ TagEditorWidget::TagEditorWidget(QWidget *parent) :
  */
 TagEditorWidget::~TagEditorWidget()
 {}
+
+/*!
+ * \brief Returns the HTML source of the info website.
+ * \remarks In contrast to fileInfoHtml(), this method will generate file info if not available yet.
+ */
+const QByteArray &TagEditorWidget::generateFileInfoHtml()
+{
+    if(m_fileInfoHtml.isEmpty()) {
+        m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
+    }
+    return m_fileInfoHtml;
+}
 
 /*!
  * \brief Returns whether the file name is visible at the top of the widget.
@@ -621,21 +638,25 @@ void TagEditorWidget::initInfoView()
 }
 
 /*!
- * \brief Updates the info web view to show information about the
- *        currently opened file.
+ * \brief Updates the info web view to show information about the currently opened file.
  */
 void TagEditorWidget::updateInfoView()
 {
+    // ensure previous file info HTML is cleared in any case
+    m_fileInfoHtml.clear();
+
+    // update webview if present
 #ifndef TAGEDITOR_NO_WEBVIEW
     if(m_infoWebView) {
         if(m_fileInfo.isOpen()) {
-            m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
-            m_infoWebView->setContent(m_fileInfoHtml, QStringLiteral("application/xhtml+xml"));
+            m_infoWebView->setContent(generateFileInfoHtml(), QStringLiteral("application/xhtml+xml"));
         } else {
             m_infoWebView->setUrl(QStringLiteral("about:blank"));
         }
     }
 #endif
+
+    // update info model if present
     if(m_infoModel) {
         m_infoModel->setFileInfo(m_fileInfo.isOpen() ? &m_fileInfo : nullptr); // resets the model
     }
@@ -680,8 +701,16 @@ void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &)
     connect(&copyAction, &QAction::triggered, [this] {
         QApplication::clipboard()->setText(m_infoWebView->selectedText());
     });
+    QAction saveAction(QIcon::fromTheme(QStringLiteral("document-save")), tr("Save ..."), nullptr);
+    saveAction.setDisabled(m_fileInfoHtml.isEmpty());
+    connect(&saveAction, &QAction::triggered, this, &TagEditorWidget::saveFileInfo);
+    QAction openAction(QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Open in browser"), nullptr);
+    openAction.setDisabled(m_fileInfoHtml.isEmpty());
+    connect(&openAction, &QAction::triggered, this, &TagEditorWidget::openFileInfoInBrowser);
     QMenu menu;
     menu.addAction(&copyAction);
+    menu.addAction(&saveAction);
+    menu.addAction(&openAction);
     menu.exec(QCursor::pos());
 }
 #endif
@@ -1231,6 +1260,75 @@ void TagEditorWidget::closeFile()
     // update ui
     emit statusMessage("The file has been closed.");
     updateFileStatusStatus();
+}
+
+bool TagEditorWidget::handleFileInfoUnavailable()
+{
+    if(fileOperationOngoing()) {
+        emit statusMessage(tr("Unable to save file information because the current process hasn't been finished yet."));
+        return true;
+    }
+    if(!fileInfo().isOpen()) {
+        QMessageBox::information(this, QApplication::applicationName(), tr("No file is opened."));
+        return true;
+    }
+
+    if(generateFileInfoHtml().isEmpty()) {
+        QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
+        return true;
+    }
+    return false;
+}
+
+bool TagEditorWidget::writeFileInfoToFile(QFile &file)
+{
+    if(!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file \"%1\".").arg(file.fileName()));
+        return false;
+    }
+    QTextStream stream(&file);
+    stream.setCodec(QTextCodec::codecForName("UTF-8"));
+    stream << fileInfoHtml();
+    file.close();
+
+    if(file.error() != QFileDevice::NoError) {
+        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to write to file \"%1\".\n%2").arg(file.fileName(), file.errorString()));
+        return false;
+    }
+    return true;
+}
+
+/*!
+ * \brief Saves the file information generated to be displayed in the info web view in a file.
+ */
+void TagEditorWidget::saveFileInfo()
+{
+    if(handleFileInfoUnavailable()) {
+        return;
+    }
+
+    const QString path(QFileDialog::getSaveFileName(this, tr("Save file information - ") + QCoreApplication::applicationName()));
+    if(path.isEmpty()) {
+        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
+        return;
+    }
+
+    QFile file(path);
+    writeFileInfoToFile(file);
+}
+
+void TagEditorWidget::openFileInfoInBrowser()
+{
+    if(handleFileInfoUnavailable()) {
+        return;
+    }
+
+    m_temporaryInfoFile = make_unique<QTemporaryFile>(QDir::tempPath() + QStringLiteral("/" PROJECT_NAME "-fileinfo-XXXXXX.xhtml"));
+    if(!writeFileInfoToFile(*m_temporaryInfoFile)) {
+        return;
+    }
+
+    QDesktopServices::openUrl(QStringLiteral("file://") + m_temporaryInfoFile->fileName());
 }
 
 /*!
