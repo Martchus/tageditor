@@ -86,7 +86,16 @@ void CliTests::tearDown()
 template <typename StringType, bool negateErrorCond = false>
 bool testContainsSubstrings(const StringType &str, std::initializer_list<const typename StringType::value_type *> substrings)
 {
-    bool res = containsSubstrings(str, substrings);
+    vector<const typename StringType::value_type *> failedSubstrings;
+    typename StringType::size_type currentPos = 0;
+    for (const auto *substr : substrings) {
+        if ((currentPos = str.find(substr, currentPos)) == StringType::npos) {
+            failedSubstrings.emplace_back(substr);
+        }
+        currentPos += std::strlen(substr);
+    }
+
+    bool res = failedSubstrings.empty();
     if(negateErrorCond) {
         res = !res;
     }
@@ -97,8 +106,8 @@ bool testContainsSubstrings(const StringType &str, std::initializer_list<const t
             cout << "  - test failed: output DOES contain substrings it shouldn't\n";
         }
         cout << "Output:\n" << str;
-        cout << "Substrings:\n";
-        for(const auto &substr : substrings) {
+        cout << "Failed substrings:\n";
+        for(const auto &substr : failedSubstrings) {
             cout << substr << "\n";
         }
     }
@@ -268,64 +277,68 @@ void CliTests::testId3SpecificOptions()
     // verify both ID3 tags are detected
     const char *const args1[] = {"tageditor", "get", "-f", mp3File1.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(stdout.find("ID3v1 tag\n"
-                               " Title             Cohesion\n"
-                               " Album             Double Nickels On The Dime\n"
-                               " Artist            Minutemen\n"
-                               " Genre             Punk Rock\n"
-                               " Year              1984\n"
-                               " Comment           ExactAudioCopy v0.95b4\n"
-                               " Track             4\n"
-                               "ID3v2 tag (version 2.3.0)\n"
-                               " Title             Cohesion\n"
-                               " Album             Double Nickels On The Dime\n"
-                               " Artist            Minutemen\n"
-                               " Genre             Punk Rock\n"
-                               " Year              1984\n"
-                               " Comment           ExactAudioCopy v0.95b4\n"
-                               " Track             4/43\n"
-                               " Duration          00:00:00\n"
-                               " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                               " - \e[1mID3v1 tag\e[0m\n"
+                               "    Title             Cohesion\n"
+                               "    Album             Double Nickels On The Dime\n"
+                               "    Artist            Minutemen\n"
+                               "    Genre             Punk Rock\n"
+                               "    Year              1984\n"
+                               "    Comment           ExactAudioCopy v0.95b4\n"
+                               "    Track             4\n",
+                               " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n"
+                               "    Title             Cohesion\n"
+                               "    Album             Double Nickels On The Dime\n"
+                               "    Artist            Minutemen\n"
+                               "    Genre             Punk Rock\n"
+                               "    Year              1984\n"
+                               "    Comment           ExactAudioCopy v0.95b4\n"
+                               "    Track             4/43\n"
+                               "    Duration          00:00:00\n"
+                               "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)"
+                              }));
 
     // remove ID3v1 tag, convert ID3v2 tag to version 4
     const char *const args2[] = {"tageditor", "set", "--id3v1-usage", "never", "--id3v2-version", "4", "-f", mp3File1.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(stdout.find("ID3v1 tag") == string::npos);
-    CPPUNIT_ASSERT(stdout.find("ID3v2 tag (version 2.4.0)\n"
-                               " Title             Cohesion\n"
-                               " Album             Double Nickels On The Dime\n"
-                               " Artist            Minutemen\n"
-                               " Genre             Punk Rock\n"
-                               " Year              1984\n"
-                               " Comment           ExactAudioCopy v0.95b4\n"
-                               " Track             4/43\n"
-                               " Duration          00:00:00\n"
-                               " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                                             " - \e[1mID3v2 tag (version 2.4.0)\e[0m\n"
+                                             "    Title             Cohesion\n"
+                                             "    Album             Double Nickels On The Dime\n"
+                                             "    Artist            Minutemen\n"
+                                             "    Genre             Punk Rock\n"
+                                             "    Year              1984\n"
+                                             "    Comment           ExactAudioCopy v0.95b4\n"
+                                             "    Track             4/43\n"
+                                             "    Duration          00:00:00\n"
+                                             "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)"
+                                          }));
     remove(mp3File1Backup.data());
 
     // convert remaining ID3v2 tag to version 2, add an ID3v1 tag again and set a field with unicode char by the way
     const char *const args3[] = {"tageditor", "set", "album=Dóuble Nickels On The Dime", "--id3v1-usage", "always", "--id3v2-version", "2", "--id3-init-on-create", "-f", mp3File1.data(), nullptr};
     CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
-    CPPUNIT_ASSERT(stdout.find("ID3v1 tag\n"
-                               " Title             Cohesion\n"
-                               " Album             Dóuble Nickels On The Dime\n"
-                               " Artist            Minutemen\n"
-                               " Genre             Punk Rock\n"
-                               " Year              1984\n"
-                               " Comment           ExactAudioCopy v0.95b4\n"
-                               " Track             4\n"
-                               "ID3v2 tag (version 2.2.0)\n"
-                               " Title             Cohesion\n"
-                               " Album             Dóuble Nickels On The Dime\n"
-                               " Artist            Minutemen\n"
-                               " Genre             Punk Rock\n"
-                               " Year              1984\n"
-                               " Comment           ExactAudioCopy v0.95b4\n"
-                               " Track             4/43\n"
-                               " Duration          00:00:00\n"
-                               " Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)") != string::npos);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                               " - \e[1mID3v1 tag\e[0m\n"
+                               "    Title             Cohesion\n"
+                               "    Album             Dóuble Nickels On The Dime\n"
+                               "    Artist            Minutemen\n"
+                               "    Genre             Punk Rock\n"
+                               "    Year              1984\n"
+                               "    Comment           ExactAudioCopy v0.95b4\n"
+                               "    Track             4\n",
+                               " - \e[1mID3v2 tag (version 2.2.0)\e[0m\n"
+                               "    Title             Cohesion\n"
+                               "    Album             Dóuble Nickels On The Dime\n"
+                               "    Artist            Minutemen\n"
+                               "    Genre             Punk Rock\n"
+                               "    Year              1984\n"
+                               "    Comment           ExactAudioCopy v0.95b4\n"
+                               "    Track             4/43\n"
+                               "    Duration          00:00:00\n"
+                               "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)"}));
     remove(mp3File1.data());
     remove(mp3File1Backup.data());
 }
@@ -411,30 +424,30 @@ void CliTests::testMultipleFiles()
     TESTUTILS_ASSERT_EXEC(args2);
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                                          "Matroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\n"
-                                          " Title             MKV testfiles\n"
-                                          " Year              2010\n"
-                                          " Comment           Matroska Validation File1, basic MPEG4.2 and MP3 with only SimpleBlock\n"
-                                          " Total parts       3\n"
-                                          "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
-                                          " Title             test1\n"
-                                          " Part              1",
-                                          "Matroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\n"
-                                          " Title             MKV testfiles\n"
-                                          " Year              2010\n"
-                                          " Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC\n"
-                                          " Total parts       3\n"
-                                          "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
-                                          " Title             test2\n"
-                                          " Part              2",
-                                          "Matroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\n"
-                                          " Title             MKV testfiles\n"
-                                          " Year              2010\n"
-                                          " Comment           Matroska Validation File 3, header stripping on the video track and no SimpleBlock\n"
-                                          " Total parts       3\n"
-                                          "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
-                                          " Title             test3\n"
-                                          " Part              3"
+                                          " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+                                          "    Title             MKV testfiles\n"
+                                          "    Year              2010\n"
+                                          "    Comment           Matroska Validation File1, basic MPEG4.2 and MP3 with only SimpleBlock\n"
+                                          "    Total parts       3\n"
+                                          " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+                                          "    Title             test1\n"
+                                          "    Part              1",
+                                          " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+                                          "    Title             MKV testfiles\n"
+                                          "    Year              2010\n"
+                                          "    Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC\n"
+                                          "    Total parts       3\n"
+                                          " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+                                          "    Title             test2\n"
+                                          "    Part              2",
+                                          " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+                                          "    Title             MKV testfiles\n"
+                                          "    Year              2010\n"
+                                          "    Comment           Matroska Validation File 3, header stripping on the video track and no SimpleBlock\n"
+                                          "    Total parts       3",
+                                          " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+                                          "    Title             test3\n"
+                                          "    Part              3"
                                       }));
 
     // clear working copies if all tests have been
@@ -466,10 +479,10 @@ void CliTests::testOutputFile()
     const char *const args3[] = {"tageditor", "get", "-f", "/tmp/test1.mkv", "/tmp/test2.mkv", nullptr};
     TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                                          "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
-                                          " Title             test1\n",
-                                          "Matroska tag targeting \"level 30 'track, song, chapter'\"\n"
-                                          " Title             test2\n"
+                                          " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+                                          "    Title             test1\n",
+                                          " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+                                          "    Title             test2\n"
                                       }));
 
     remove(mkvFile1.data()), remove(mkvFile2.data());
@@ -586,7 +599,7 @@ void CliTests::testDisplayingInfo()
     const char *const args1[] = {"tageditor", "info", "-f", mkvFile.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                                          "  Container format: Matroska\n"
+                                          " - \e[1mContainer format: Matroska\e[0m\n"
                                           "    Document type                 matroska\n"
                                           "    Read version                  1\n"
                                           "    Version                       1\n"
@@ -595,7 +608,7 @@ void CliTests::testDisplayingInfo()
                                           "    Duration                      47 s 509 ms\n"
                                           "    Tag position                  before data\n"
                                           "    Index position                before data\n",
-                                          "  Tracks:\n"
+                                          " - \e[1mTracks: H.264-576p / AAC-LC-2ch\e[0m\n"
                                           "    ID                            1863976627\n"
                                           "    Type                          Video\n"
                                           "    Format                        Advanced Video Coding Main Profile\n"
@@ -615,12 +628,12 @@ void CliTests::testDisplayingInfo()
     const char *const args2[] = {"tageditor", "info", "-f", mp4File.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                                          "  Container format: MPEG-4 Part 14\n"
+                                          " - \e[1mContainer format: MPEG-4 Part 14\e[0m\n"
                                           "    Document type                 mp42\n"
                                           "    Duration                      3 min\n"
                                           "    Creation time                 2014-12-10 16:22:41\n"
                                           "    Modification time             2014-12-10 16:22:41\n",
-                                          "  Tracks:\n"
+                                          " - \e[1mTracks: HE-AAC-2ch\e[0m\n"
                                           "    ID                            1\n"
                                           "    Name                          soun\n"
                                           "    Type                          Audio\n"
@@ -663,7 +676,7 @@ void CliTests::testSettingTrackMetaData()
     TESTUTILS_ASSERT_EXEC(args1);
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                                          "  Container format: Matroska\n"
+                                          " - \e[1mContainer format: Matroska\e[0m\n"
                                           "    Document type                 matroska\n"
                                           "    Read version                  1\n"
                                           "    Version                       1\n"
@@ -672,7 +685,7 @@ void CliTests::testSettingTrackMetaData()
                                           "    Duration                      47 s 509 ms\n"
                                           "    Tag position                  before data\n"
                                           "    Index position                before data\n",
-                                          "  Tracks:\n"
+                                          " - \e[1mTracks: H.264-576p / AAC-LC-2ch-ger\e[0m\n"
                                           "    ID                            1863976627\n"
                                           "    Name                          video track\n"
                                           "    Type                          Video\n"
@@ -692,22 +705,22 @@ void CliTests::testSettingTrackMetaData()
                                           "    Labeled as                    default, forced"}));
     TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                                          "Matroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\n"
-                                          " Title             title of tag\n"
-                                          " Artist            setting tag value again\n"
-                                          " Year              2010\n"
-                                          " Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC"
+                                          " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+                                          "    Title             title of tag\n"
+                                          "    Artist            setting tag value again\n"
+                                          "    Year              2010\n"
+                                          "    Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC"
                                           }));
 
     const char *const args4[] = {"tageditor", "info", "-f", mp4File.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args4);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                                          "  Container format: MPEG-4 Part 14\n"
+                                          " - \e[1mContainer format: MPEG-4 Part 14\e[0m\n"
                                           "    Document type                 mp42\n"
                                           "    Duration                      3 min\n"
                                           "    Creation time                 2014-12-10 16:22:41\n"
                                           "    Modification time             2014-12-10 16:22:41\n",
-                                          "  Tracks:\n"
+                                          " - \e[1mTracks: HE-AAC-2ch-eng\e[0m\n"
                                           "    ID                            1\n"
                                           "    Name                          sbr and ps\n"
                                           "    Type                          Audio\n"
@@ -815,15 +828,15 @@ void CliTests::testFileLayoutOptions()
 
     const char *const args5[] = {"tageditor", "get", "-f", mp4File2.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args5);
-    CPPUNIT_ASSERT(stdout.find("MP4/iTunes tag\n"
-                               " Title             You Shook Me All Night Long\n"
-                               " Album             Who Made Who\n"
-                               " Artist            ACDC\n"
-                               " Genre             Rock\n"
-                               " Year              1986\n"
-                               " Track             2/9\n"
-                               " Encoder           Nero AAC codec / 1.5.3.0, remuxed with Lavf57.56.100\n"
-                               " Encoder settings  ndaudio 1.5.3.0 / -q 0.34") != string::npos);
+    CPPUNIT_ASSERT(stdout.find(" - \e[1mMP4/iTunes tag\e[0m\n"
+                               "    Title             You Shook Me All Night Long\n"
+                               "    Album             Who Made Who\n"
+                               "    Artist            ACDC\n"
+                               "    Genre             Rock\n"
+                               "    Year              1986\n"
+                               "    Track             2/9\n"
+                               "    Encoder           Nero AAC codec / 1.5.3.0, remuxed with Lavf57.56.100\n"
+                               "    Encoder settings  ndaudio 1.5.3.0 / -q 0.34") != string::npos);
     remove((mp4File2 + ".bak").data());
 
     const char *const args6[] = {"tageditor", "set", "--index-pos", "front", "--force", "-f", mp4File2.data(), nullptr};

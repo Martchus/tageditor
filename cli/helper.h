@@ -9,10 +9,12 @@
 #include <c++utilities/chrono/datetime.h>
 #include <c++utilities/chrono/timespan.h>
 #include <c++utilities/conversion/stringconversion.h>
+#include <c++utilities/misc/traits.h>
 
 #include <vector>
 #include <unordered_map>
 #include <functional>
+#include <type_traits>
 
 namespace ApplicationUtilities {
 class Argument;
@@ -272,11 +274,11 @@ inline void printProperty(const char *propName, ChronoUtilities::DateTime dateTi
     }
 }
 
-template<typename intType>
-inline void printProperty(const char *propName, const intType value, const char *suffix = nullptr, bool force = false, ApplicationUtilities::Indentation indentation = 4)
+template<typename NumberType, Traits::EnableIfAny<std::is_integral<NumberType>, std::is_floating_point<NumberType>>...>
+inline void printProperty(const char *propName, const NumberType value, const char *suffix = nullptr, bool force = false, ApplicationUtilities::Indentation indentation = 4)
 {
     if(value != 0 || force) {
-        printProperty(propName, ConversionUtilities::numberToString<intType>(value), suffix, indentation);
+        printProperty(propName, ConversionUtilities::numberToString<NumberType>(value), suffix, indentation);
     }
 }
 
@@ -291,6 +293,16 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr);
 FieldDenotations parseFieldDenotations(const ApplicationUtilities::Argument &fieldsArg, bool readOnly);
 std::string tagName(const Tag *tag);
 bool stringToBool(const std::string &str);
+extern bool logLineFinalized;
+void logStatus(const StatusProvider &statusProvider);
+void finalizeLog();
+
+enum class Phrases {
+    Error,
+    Warning,
+    End,
+};
+std::ostream &operator<<(std::ostream &stream, Phrases phrase);
 
 }
 

@@ -30,6 +30,7 @@
 #endif
 
 #include <iostream>
+#include <iomanip>
 #include <cstring>
 #include <algorithm>
 #include <memory>
@@ -89,22 +90,22 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
             if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
                 cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
             } else {
-                cerr << "Error: An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << endl;
+                cerr << Phrases::Error << "An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << Phrases::End;
             }
         } else {
             cout << HtmlInfo::generateInfo(inputFileInfo, origNotify).data() << endl;
         }
     } catch(const ApplicationUtilities::Failure &) {
-        cerr << "Error: A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
+        cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::End;
     } catch(...) {
         ::IoUtilities::catchIoFailure();
-        cerr << "Error: An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << endl;
+        cerr << Phrases::Error << "An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::End;
     }
 #else
     VAR_UNUSED(inputFileArg);
     VAR_UNUSED(outputFileArg);
     VAR_UNUSED(validateArg);
-    cerr << "Error: Generating HTML info is only available if built with Qt support." << endl;
+    cerr << Phrases::Error << "Generating HTML info is only available if built with Qt support." << endl;
 #endif
 }
 
@@ -112,7 +113,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.isPresent() || filesArg.values().empty()) {
-        cerr << "Error: No files have been specified." << endl;
+        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
         return;
     }
     MediaFileInfo fileInfo;
@@ -125,145 +126,147 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             fileInfo.parseTracks();
             fileInfo.parseAttachments();
             fileInfo.parseChapters();
-            cout << "Technical information for \"" << file << "\":" << endl;
-            cout << "  Container format: " << fileInfo.containerFormatName() << endl;
-            {
-                if(const auto container = fileInfo.container()) {
-                    size_t segmentIndex = 0;
-                    for(const auto &title : container->titles()) {
-                        if(segmentIndex) {
-                            printProperty("Title", title % " (segment " % ++segmentIndex + ")");
-                        } else {
-                            ++segmentIndex;
-                            printProperty("Title", title);
-                        }
-                    }
-                    printProperty("Document type", container->documentType());
-                    printProperty("Read version", container->readVersion());
-                    printProperty("Version", container->version());
-                    printProperty("Document read version", container->doctypeReadVersion());
-                    printProperty("Document version", container->doctypeVersion());
-                    printProperty("Duration", container->duration());
-                    printProperty("Creation time", container->creationTime());
-                    printProperty("Modification time", container->modificationTime());
-                    printProperty("Tag position", container->determineTagPosition());
-                    printProperty("Index position", container->determineIndexPosition());
-                }
-                if(fileInfo.paddingSize()) {
-                    printProperty("Padding", dataSizeToString(fileInfo.paddingSize()));
-                }
-            }
-            { // tracks
-                const auto tracks = fileInfo.tracks();
-                if(!tracks.empty()) {
-                    cout << "  Tracks:" << endl;
-                    for(const auto *track : tracks) {
-                        printProperty("ID", track->id(), nullptr, true);
-                        printProperty("Name", track->name());
-                        printProperty("Type", track->mediaTypeName());
-                        if(track->language() != "und") {
-                            printProperty("Language", track->language());
-                        }
-                        const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
-                        printProperty("Format", fmtName);
-                        if(strcmp(fmtName, fmtAbbr)) {
-                            printProperty("Abbreviation", fmtAbbr);
-                        }
-                        printProperty("Extensions", track->format().extensionName());
-                        printProperty("Raw format ID", track->formatId());
-                        if(track->size()) {
-                            printProperty("Size", dataSizeToString(track->size(), true));
-                        }
-                        printProperty("Duration", track->duration());
-                        printProperty("FPS", track->fps());
-                        if(track->channelConfigString()) {
-                            printProperty("Channel config", track->channelConfigString());
-                        } else {
-                            printProperty("Channel count", track->channelCount());
-                        }
-                        if(track->extensionChannelConfigString()) {
-                            printProperty("Extension channel config", track->extensionChannelConfigString());
-                        }
-                        printProperty("Bitrate", track->bitrate(), "kbit/s");
-                        printProperty("Bits per sample", track->bitsPerSample());
-                        printProperty("Sampling frequency", track->samplingFrequency(), "Hz");
-                        printProperty("Extension sampling frequency", track->extensionSamplingFrequency(), "Hz");
-                        printProperty(track->mediaType() == MediaType::Video
-                                      ? "Frame count"
-                                      : "Sample count",
-                                      track->sampleCount());
-                        printProperty("Creation time", track->creationTime());
-                        printProperty("Modification time", track->modificationTime());
-                        vector<string> labels;
-                        labels.reserve(7);
-                        if(track->isInterlaced()) {
-                            labels.emplace_back("interlaced");
-                        }
-                        if(!track->isEnabled()) {
-                            labels.emplace_back("disabled");
-                        }
-                        if(track->isDefault()) {
-                            labels.emplace_back("default");
-                        }
-                        if(track->isForced()) {
-                            labels.emplace_back("forced");
-                        }
-                        if(track->hasLacing()) {
-                            labels.emplace_back("has lacing");
-                        }
-                        if(track->isEncrypted()) {
-                            labels.emplace_back("encrypted");
-                        }
-                        if(!labels.empty()) {
-                            printProperty("Labeled as", joinStrings(labels, ", "));
-                        }
-                        cout << endl;
-                    }
-                } else {
-                    cout << " File has no (supported) tracks." << endl;
-                }
-            }
-            { // attachments
-                const auto attachments = fileInfo.attachments();
-                if(!attachments.empty()) {
-                    cout << "Attachments:" << endl;
-                    for(const auto *attachment : attachments) {
-                        printProperty("ID", attachment->id());
-                        printProperty("Name", attachment->name());
-                        printProperty("MIME-type", attachment->mimeType());
-                        printProperty("Description", attachment->description());
-                        if(attachment->data()) {
-                            printProperty("Size", dataSizeToString(attachment->data()->size(), true));
-                        }
-                        cout << endl;
+
+            // print general/container-related info
+            cout << "Technical information for \"" << file << "\":\n";
+            cout << " - " << TextAttribute::Bold << "Container format: " << fileInfo.containerFormatName() << Phrases::End;
+            if(const auto container = fileInfo.container()) {
+                size_t segmentIndex = 0;
+                for(const auto &title : container->titles()) {
+                    if(segmentIndex) {
+                        printProperty("Title", title % " (segment " % ++segmentIndex + ")");
+                    } else {
+                        ++segmentIndex;
+                        printProperty("Title", title);
                     }
                 }
+                printProperty("Document type", container->documentType());
+                printProperty("Read version", container->readVersion());
+                printProperty("Version", container->version());
+                printProperty("Document read version", container->doctypeReadVersion());
+                printProperty("Document version", container->doctypeVersion());
+                printProperty("Duration", container->duration());
+                printProperty("Creation time", container->creationTime());
+                printProperty("Modification time", container->modificationTime());
+                printProperty("Tag position", container->determineTagPosition());
+                printProperty("Index position", container->determineIndexPosition());
             }
-            { // chapters
-                const auto chapters = fileInfo.chapters();
-                if(!chapters.empty()) {
-                    cout << "Chapters:" << endl;
-                    for(const auto *chapter : chapters) {
-                        printProperty("ID", chapter->id());
-                        if(!chapter->names().empty()) {
-                            printProperty("Name", static_cast<string>(chapter->names().front()));
-                        }
-                        if(!chapter->startTime().isNegative()) {
-                            printProperty("Start time", chapter->startTime().toString());
-                        }
-                        if(!chapter->endTime().isNegative()) {
-                            printProperty("End time", chapter->endTime().toString());
-                        }
-                        cout << endl;
+            if(fileInfo.paddingSize()) {
+                printProperty("Padding", dataSizeToString(fileInfo.paddingSize()));
+            }
+
+            // print tracks
+            const auto tracks = fileInfo.tracks();
+            if(!tracks.empty()) {
+                cout << " - " << TextAttribute::Bold << "Tracks: " << fileInfo.technicalSummary() << Phrases::End;
+                for(const auto *track : tracks) {
+                    printProperty("ID", track->id(), nullptr, true);
+                    printProperty("Name", track->name());
+                    printProperty("Type", track->mediaTypeName());
+                    if(track->language() != "und") {
+                        printProperty("Language", track->language());
                     }
+                    const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
+                    printProperty("Format", fmtName);
+                    if(strcmp(fmtName, fmtAbbr)) {
+                        printProperty("Abbreviation", fmtAbbr);
+                    }
+                    printProperty("Extensions", track->format().extensionName());
+                    printProperty("Raw format ID", track->formatId());
+                    if(track->size()) {
+                        printProperty("Size", dataSizeToString(track->size(), true));
+                    }
+                    printProperty("Duration", track->duration());
+                    printProperty("FPS", track->fps());
+                    if(track->channelConfigString()) {
+                        printProperty("Channel config", track->channelConfigString());
+                    } else {
+                        printProperty("Channel count", track->channelCount());
+                    }
+                    if(track->extensionChannelConfigString()) {
+                        printProperty("Extension channel config", track->extensionChannelConfigString());
+                    }
+                    printProperty("Bitrate", track->bitrate(), "kbit/s");
+                    printProperty("Bits per sample", track->bitsPerSample());
+                    printProperty("Sampling frequency", track->samplingFrequency(), "Hz");
+                    printProperty("Extension sampling frequency", track->extensionSamplingFrequency(), "Hz");
+                    printProperty(track->mediaType() == MediaType::Video
+                                  ? "Frame count"
+                                  : "Sample count",
+                                  track->sampleCount());
+                    printProperty("Creation time", track->creationTime());
+                    printProperty("Modification time", track->modificationTime());
+                    vector<string> labels;
+                    labels.reserve(7);
+                    if(track->isInterlaced()) {
+                        labels.emplace_back("interlaced");
+                    }
+                    if(!track->isEnabled()) {
+                        labels.emplace_back("disabled");
+                    }
+                    if(track->isDefault()) {
+                        labels.emplace_back("default");
+                    }
+                    if(track->isForced()) {
+                        labels.emplace_back("forced");
+                    }
+                    if(track->hasLacing()) {
+                        labels.emplace_back("has lacing");
+                    }
+                    if(track->isEncrypted()) {
+                        labels.emplace_back("encrypted");
+                    }
+                    if(!labels.empty()) {
+                        printProperty("Labeled as", joinStrings(labels, ", "));
+                    }
+                    cout << '\n';
+                }
+            } else {
+                cout << " - File has no (supported) tracks.\n";
+            }
+
+            // print attachments
+            const auto attachments = fileInfo.attachments();
+            if(!attachments.empty()) {
+                cout << " - " << TextAttribute::Bold << "Attachments:" << TextAttribute::Reset << '\n';
+                for(const auto *attachment : attachments) {
+                    printProperty("ID", attachment->id());
+                    printProperty("Name", attachment->name());
+                    printProperty("MIME-type", attachment->mimeType());
+                    printProperty("Description", attachment->description());
+                    if(attachment->data()) {
+                        printProperty("Size", dataSizeToString(static_cast<uint64>(attachment->data()->size()), true));
+                    }
+                    cout << '\n';
                 }
             }
+
+            // print chapters
+            const auto chapters = fileInfo.chapters();
+            if(!chapters.empty()) {
+                cout << " - " << TextAttribute::Bold << "Chapters:" << TextAttribute::Reset << '\n';
+                for(const auto *chapter : chapters) {
+                    printProperty("ID", chapter->id());
+                    if(!chapter->names().empty()) {
+                        printProperty("Name", static_cast<string>(chapter->names().front()));
+                    }
+                    if(!chapter->startTime().isNegative()) {
+                        printProperty("Start time", chapter->startTime().toString());
+                    }
+                    if(!chapter->endTime().isNegative()) {
+                        printProperty("End time", chapter->endTime().toString());
+                    }
+                    cout << '\n';
+                }
+            }
+
         } catch(const ApplicationUtilities::Failure &) {
-            cerr << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
-            cerr << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
+            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::End;
         }
+
         printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
         cout << endl;
     }
@@ -273,7 +276,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
 {
     CMD_UTILS_START_CONSOLE;
     if(!filesArg.isPresent() || filesArg.values().empty()) {
-        cerr << "Error: No files have been specified." << endl;
+        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
         return;
     }
     const auto fields = parseFieldDenotations(fieldsArg, true);
@@ -285,8 +288,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
             fileInfo.open(true);
             fileInfo.parseContainerFormat();
             fileInfo.parseTags();
-            cout << file << endl;
-            cout << "Tag information for \"" << file << "\":" << endl;
+            cout << "Tag information for \"" << file << "\":\n";
             const auto tags = fileInfo.tags();
             if(!tags.empty()) {
                 // iterate through all tags
@@ -294,7 +296,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                     // determine tag type
                     const TagType tagType = tag->type();
                     // write tag name and target, eg. MP4/iTunes tag
-                    cout << tagName(tag) << endl;
+                    cout << " - " << TextAttribute::Bold << tagName(tag) << TextAttribute::Reset << '\n';
                     // iterate through fields specified by the user
                     if(fields.empty()) {
                         for(auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
@@ -310,13 +312,13 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                     }
                 }
             } else {
-                cout << " File has no (supported) tag information." << endl;
+                cout << " - File has no (supported) tag information.\n";
             }
         } catch(const ApplicationUtilities::Failure &) {
-            cerr << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
-            cerr << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
+            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::End;
         }
         printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
         cout << endl;
@@ -327,11 +329,11 @@ void setTagInfo(const SetTagInfoArgs &args)
 {
     CMD_UTILS_START_CONSOLE;
     if(!args.filesArg.isPresent() || args.filesArg.values().empty()) {
-        cerr << "Error: No files have been specified." << endl;
+        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
         return;
     }
     if(args.outputFilesArg.isPresent() && args.outputFilesArg.values().size() != args.filesArg.values().size()) {
-        cerr << "Error: The number of output files does not match the number of input files." << endl;
+        cerr << Phrases::Error << "The number of output files does not match the number of input files." << Phrases::End;
         return;
     }
     auto &outputFiles = args.outputFilesArg.isPresent() ? args.outputFilesArg.values() : vector<const char *>();
@@ -346,7 +348,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             && !args.id3v1UsageArg.isPresent()
             && !args.id3v2UsageArg.isPresent()
             && !args.id3v2VersionArg.isPresent()) {
-        cerr << "Warning: No fields/attachments have been specified." << endl;
+        cerr << Phrases::Warning << "No fields/attachments have been specified." << Phrases::End;
     }
     // determine required targets
     vector<TagTarget> requiredTargets;
@@ -369,7 +371,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             } else if(applyTargetConfiguration(targetsToRemove.back(), targetDenotation)) {
                 validRemoveTargetsSpecified = true;
             } else {
-                cerr << "Warning: The given target specification \"" << targetDenotation << "\" is invalid and will be ignored." << endl;
+                cerr << Phrases::Warning << "The given target specification \"" << targetDenotation << "\" is invalid and will be ignored." << Phrases::End;
             }
         }
     }
@@ -383,7 +385,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
         } catch (const ConversionException &) {
             id3v2Version = 3;
-            cerr << "Warning: The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << endl;
+            cerr << Phrases::Warning << "The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << Phrases::End;
         }
     }
     const TagTextEncoding denotedEncoding = parseEncodingDenotation(args.encodingArg, TagTextEncoding::Utf8);
@@ -405,7 +407,7 @@ void setTagInfo(const SetTagInfoArgs &args)
     for(const char *file : args.filesArg.values()) {
         try {
             // parse tags
-            cout << "Setting tag information for \"" << file << "\" ..." << endl;
+            cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << TextAttribute::Reset << endl;
             notifications.clear();
             fileInfo.setPath(file);
             fileInfo.parseContainerFormat();
@@ -432,12 +434,12 @@ void setTagInfo(const SetTagInfoArgs &args)
                         if(segmentIndex < segmentCount) {
                             container->setTitle(newTitle, segmentIndex);
                         } else {
-                            cerr << "Warning: The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments." << endl;
+                            cerr << Phrases::Warning << "The specified document title \"" << newTitle << "\" can not be set because the file has not that many segments." << Phrases::End;
                         }
                         ++segmentIndex;
                     }
                 } else {
-                    cerr << "Warning: Setting the document title is not supported for the file." << endl;
+                    cerr << Phrases::Warning << "Setting the document title is not supported for the file." << Phrases::End;
                 }
             }
             // select the relevant values for the current file index
@@ -619,17 +621,22 @@ void setTagInfo(const SetTagInfoArgs &args)
                 fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
                 fileInfo.gatherRelatedNotifications(notifications);
                 fileInfo.invalidateNotifications();
+                fileInfo.registerCallback(logStatus);
                 fileInfo.applyChanges();
                 fileInfo.gatherRelatedNotifications(notifications);
-                cout << "Changes have been applied." << endl;
+                finalizeLog();
+                cout << " - Changes have been applied." << endl;
             } catch(const ApplicationUtilities::Failure &) {
-                cerr << "Error: Failed to apply changes." << endl;
+                finalizeLog();
+                cerr << " - " << Phrases::Error << "Failed to apply changes." << endl;
             }
         } catch(const ApplicationUtilities::Failure &) {
-            cerr << "Error: A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
+            finalizeLog();
+            cerr << " - " << Phrases::Error << "A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
-            cerr << "Error: An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
+            finalizeLog();
+            cerr << " - " << Phrases::Error << "An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
         }
         printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
 
@@ -652,11 +659,11 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
     }
     if(((fieldDenotations.size() != 1) || (!attachmentInfo.hasId && !attachmentInfo.name))
             && ((fieldDenotations.size() == 1) && (attachmentInfo.hasId || attachmentInfo.name))) {
-        cerr << "Error: Excactly one field or attachment needs to be specified." << endl;
+        cerr << Phrases::Error << "Excactly one field or attachment needs to be specified." << Phrases::End;
         return;
     }
     if(!inputFilesArg.isPresent() || inputFilesArg.values().empty()) {
-        cerr << "Error: No files have been specified." << endl;
+        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
         return;
     }
 
@@ -688,7 +695,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                     }
                 }
                 if(values.empty()) {
-                    cerr << " None of the specified files has a (supported) " << fieldArg.values().front() << " field." << endl;
+                    cerr << " - " << Phrases::Error << "None of the specified files has a (supported) " << fieldArg.values().front() << " field." << Phrases::End;
                 } else if(outputFileArg.isPresent()) {
                     string outputFilePathWithoutExtension, outputFileExtension;
                     if(values.size() > 1) {
@@ -703,10 +710,10 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                             outputFileStream.open(path, ios_base::out | ios_base::binary);
                             outputFileStream.write(value.first->dataPointer(), value.first->dataSize());
                             outputFileStream.flush();
-                            cout << "Value has been saved to \"" << path << "\"." << endl;
+                            cout << " - Value has been saved to \"" << path << "\"." << endl;
                         } catch(...) {
                             ::IoUtilities::catchIoFailure();
-                            cerr << "Error: An IO error occured when writing the file \"" << path << "\"." << endl;
+                            cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\"." << Phrases::End;
                         }
                     }
                 } else {
@@ -736,7 +743,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                     }
                 }
                 if(attachments.empty()) {
-                    cerr << " None of the specified files has a (supported) attachment with the specified ID/name." << endl;
+                    cerr << " - " << Phrases::Error << "None of the specified files has a (supported) attachment with the specified ID/name." << Phrases::End;
                 } else if(outputFileArg.isPresent()) {
                     string outputFilePathWithoutExtension, outputFileExtension;
                     if(attachments.size() > 1) {
@@ -751,10 +758,10 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                             outputFileStream.open(path, ios_base::out | ios_base::binary);
                             attachment.first->data()->copyTo(outputFileStream);
                             outputFileStream.flush();
-                            cout << "Value has been saved to \"" << path << "\"." << endl;
+                            cout << " - Value has been saved to \"" << path << "\"." << endl;
                         } catch(...) {
                             ::IoUtilities::catchIoFailure();
-                            cerr << "Error: An IO error occured when writing the file \"" << path << "\"." << endl;
+                            cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\"." << Phrases::End;
                         }
                     }
                 } else {
@@ -765,10 +772,10 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
             }
 
         } catch(const ApplicationUtilities::Failure &) {
-            cerr << "Error: A parsing failure occured when reading the file \"" << file << "\"." << endl;
+            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
-            cerr << "Error: An IO failure occured when reading the file \"" << file << "\"." << endl;
+            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::End;
         }
         printNotifications(inputFileInfo, "Parsing notifications:", verboseArg.isPresent());
     }

@@ -8,6 +8,7 @@
 
 #include <c++utilities/application/argumentparser.h>
 #include <c++utilities/conversion/stringbuilder.h>
+#include <c++utilities/io/ansiescapecodes.h>
 
 #include <iostream>
 #include <cstring>
@@ -64,37 +65,37 @@ void printNotifications(NotificationList &notifications, const char *head, bool 
     if(!notifications.empty()) {
 printNotifications:
         if(head) {
-            cout << head << endl;
+            cout << " - " << head << endl;
         }
         Notification::sortByTime(notifications);
         for(const auto &notification : notifications) {
             switch(notification.type()) {
             case NotificationType::Debug:
                 if(beVerbose) {
-                    cout << "Debug        ";
+                    cout << "    Debug        ";
                     break;
                 } else {
                     continue;
                 }
             case NotificationType::Information:
                 if(beVerbose) {
-                    cout << "Information  ";
+                    cout << "    Information  ";
                     break;
                 } else {
                     continue;
                 }
             case NotificationType::Warning:
-                cout << "Warning      ";
+                cout << "    Warning      ";
                 break;
             case NotificationType::Critical:
-                cout << "Error        ";
+                cout << "    Error        ";
                 break;
             default:
                 ;
             }
             cout << notification.creationTime().toString(DateTimeOutputFormat::TimeOnly) << "   ";
             cout << notification.context() << ": ";
-            cout << notification.message() << endl;
+            cout << notification.message() << '\n';
         }
     }
 }
@@ -137,7 +138,7 @@ void printProperty(const char *propName, ElementPosition elementPosition, const 
 
 void printFieldName(const char *fieldName, size_t fieldNameLen)
 {
-    cout << ' ' << fieldName;
+    cout << "    " << fieldName;
     // also write padding
     for(auto i = fieldNameLen; i < 18; ++i) {
         cout << ' ';
@@ -151,30 +152,35 @@ void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool s
     const auto fieldNameLen = strlen(fieldName);
 
     try {
+        // parse field denotation
         const auto &values = scope.field.values(tag, tagType);
-        if(!skipEmpty || !values.empty()) {
-            // write value
-            if(values.empty()) {
-                printFieldName(fieldName, fieldNameLen);
-                cout << "none\n";
-            } else {
-                for(const auto &value : values) {
-                    printFieldName(fieldName, fieldNameLen);
-                    try {
-                        const auto textValue = value->toString(TagTextEncoding::Utf8);
-                        if(textValue.empty()) {
-                            cout << "can't display here (see --extract)";
-                        } else {
-                            cout << textValue;
-                        }
-                    } catch(const ConversionException &) {
-                        cout << "conversion error";
-                    }
-                    cout << '\n';
-                }
-            }
+
+        // skip empty values (unless prevented)
+        if(skipEmpty && values.empty()) {
+            return;
         }
+
+        // print empty value (if not prevented)
+        if(values.empty()) {
+            printFieldName(fieldName, fieldNameLen);
+            cout << "none\n";
+            return;
+        }
+
+        // print values
+        for(const auto &value : values) {
+            printFieldName(fieldName, fieldNameLen);
+            try {
+                cout << value->toString(TagTextEncoding::Utf8);
+            } catch(const ConversionException &) {
+                // handle case when value can not be displayed as string
+                cout << "can't display as string (see --extract)";
+            }
+            cout << '\n';
+        }
+
     } catch(const ConversionException &e) {
+        // handle conversion error which might happen when parsing field denotation
         printFieldName(fieldName, fieldNameLen);
         cout << "unable to parse - " << e.what() << '\n';
     }
@@ -583,6 +589,65 @@ bool stringToBool(const string &str)
         return false;
     }
     throw ConversionException(argsToString('\"', str, " is not yes or no"));
+}
+
+bool logLineFinalized = true;
+void logStatus(const StatusProvider &statusProvider)
+{
+    static string lastStatus;
+
+    if(statusProvider.currentStatus() != lastStatus) {
+        // the ongoing operation ("status") has changed
+        //  -> finalize previous line and make new line
+        if(!logLineFinalized) {
+            cout << "\r - [100%] " << lastStatus << endl;
+            logLineFinalized = true;
+        }
+        // -> update lastStatus
+        lastStatus = statusProvider.currentStatus();
+    }
+
+    // update current line if an operation is ongoing (status is not empty)
+    if(!lastStatus.empty()) {
+        int percentage = static_cast<int>(statusProvider.currentPercentage() * 100);
+        if(percentage < 0) {
+            percentage = 0;
+        }
+        cout << "\r - [" << setw(3) << percentage << "%] " << lastStatus << flush;
+        logLineFinalized = false;
+    }
+}
+
+void finalizeLog()
+{
+    if(!logLineFinalized) {
+        cout << '\n';
+        logLineFinalized = true;
+    }
+}
+
+std::ostream &operator<< (std::ostream &stream, Phrases phrase)
+{
+    using namespace EscapeCodes;
+    switch(phrase) {
+    case Phrases::Error:
+        setStyle(stream, Color::Red, ColorContext::Foreground, TextAttribute::Bold);
+        stream << "Error: ";
+        setStyle(stream, TextAttribute::Reset);
+        setStyle(stream, TextAttribute::Bold);
+        break;
+    case Phrases::Warning:
+        setStyle(stream, Color::Yellow, ColorContext::Foreground, TextAttribute::Bold);
+        stream << "Warning: ";
+        setStyle(stream, TextAttribute::Reset);
+        setStyle(stream, TextAttribute::Bold);
+        break;
+    case Phrases::End:
+        setStyle(stream, TextAttribute::Reset);
+        stream << '\n';
+        break;
+    }
+    return stream;
 }
 
 }
