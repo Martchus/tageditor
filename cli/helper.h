@@ -297,13 +297,6 @@ extern bool logLineFinalized;
 void logStatus(const StatusProvider &statusProvider);
 void finalizeLog();
 
-enum class Phrases {
-    Error,
-    Warning,
-    End,
-};
-std::ostream &operator<<(std::ostream &stream, Phrases phrase);
-
 }
 
 #endif // CLI_HELPER
