@@ -223,19 +223,14 @@ int main(int argc, char *argv[])
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&renamingUtilityArg);
     parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &helpArg});
     // parse given arguments
-    try {
-        parser.parseArgs(argc, argv);
-        if(qtConfigArgs.areQtGuiArgsPresent()) {
+    parser.parseArgsOrExit(argc, argv);
+    if(qtConfigArgs.areQtGuiArgsPresent()) {
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
-            return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? ConversionUtilities::fromNativeFileName(defaultFileArg.values().front()) : QString(), renamingUtilityArg.isPresent());
+        return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? ConversionUtilities::fromNativeFileName(defaultFileArg.values().front()) : QString(), renamingUtilityArg.isPresent());
 #else
-            CMD_UTILS_START_CONSOLE;
-            cerr << "Application has not been build with Qt widgets GUI support." << endl;
-#endif
-        }
-    } catch(const Failure &ex) {
         CMD_UTILS_START_CONSOLE;
-        cerr << "Unable to parse arguments. " << ex.what() << "\nSee --help for available commands." << endl;
+        cerr << "Application has not been build with Qt widgets GUI support." << endl;
+#endif
     }
     return 0;
 }
