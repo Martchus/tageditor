@@ -43,16 +43,16 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     updateAttachmentArg("update-attachment", '\0', "updates an existing attachment"),
     removeAttachmentArg("remove-attachment", '\0', "removes an existing attachment"),
     removeExistingAttachmentsArg("remove-existing-attachments", 'r', "removes ALL existing attachments (to remove a specific attachment use --remove-attachment)"),
-    minPaddingArg("min-padding", '\0', "specifies the minimum padding before the media data"),
-    maxPaddingArg("max-padding", '\0', "specifies the maximum padding before the media data"),
-    prefPaddingArg("preferred-padding", '\0', "specifies the preferred padding before the media data"),
+    minPaddingArg("min-padding", '\0', "specifies the minimum padding before the media data (enforces rewriting the file is the padding would be less)"),
+    maxPaddingArg("max-padding", '\0', "specifies the maximum padding before the media data (enforces rewriting the file is the padding would be more)"),
+    prefPaddingArg("preferred-padding", '\0', "specifies the preferred padding before the media data (used when the file is rewritten)"),
     tagPosValueArg("value", '\0', "specifies the position, either front, back or current"),
-    forceTagPosArg("force", '\0', "forces the specified position even if the file to be rewritten"),
+    forceTagPosArg("force", '\0', "forces the specified position even if the file needs to be rewritten"),
     tagPosArg("tag-pos", '\0', "specifies the preferred tag position"),
     indexPosValueArg("value", '\0', "specifies the position, either front, back or current"),
-    forceIndexPosArg("force", '\0', "forces the specified position even if the file to be rewritten"),
+    forceIndexPosArg("force", '\0', "forces the specified position even if the file needs to be rewritten"),
     indexPosArg("index-pos", '\0', "specifies the preferred index position"),
-    forceRewriteArg("force-rewrite", '\0', "forces the file to rewritten from the scratch"),
+    forceRewriteArg("force-rewrite", '\0', "forces the file to rewritten from the scratch which ensures a backup is created and the preferred padding is used"),
     valuesArg("values", 'n', "specifies the values to be set"),
     outputFilesArg("output-files", 'o', "specifies the output files; if present, the files specified with --files will not be modified"),
     setTagInfoArg("set", 's', "sets the specified tag information and attachments")
@@ -128,6 +128,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     indexPosValueArg.setImplicit(true);
     indexPosValueArg.setRequired(true);
     indexPosArg.setCombinable(true);
+    indexPosArg.setExample(PROJECT_NAME " set comment=\"with faststart (enforced)\" --index-pos front --force -f /some/dir/*.m4a");
     indexPosArg.setSubArguments({&indexPosValueArg, &forceIndexPosArg});
     forceRewriteArg.setCombinable(true);
     valuesArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
@@ -140,6 +141,12 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     outputFilesArg.setCombinable(true);
     setTagInfoArg.setDenotesOperation(true);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
+    setTagInfoArg.setExample(PROJECT_NAME " set title=\"Title of \"{1st,2nd,3rd}\" file\" title=\"Title of \"{4..16}\"th file\" album=\"The Album\" -f /some/dir/*.m4a\n"
+                             PROJECT_NAME " set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a\n"
+                             PROJECT_NAME " set title0=\"Title for both files\" album1=\"Album for 2nd file\" -f file1.ogg file2.mp3\n"
+                             PROJECT_NAME " set target-level=30 target-tracks=3134325680 title=\"Title for track 3134325680\" \\\n"
+                                          "             --remove-targets target-level=50 , target-level=30 -f file.mka\n"
+                             "For more examples and detailed descriptions see " APP_URL "#writing-tags");
     setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg,
                                          &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg,
                                          &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg, &prefPaddingArg, &tagPosArg,
@@ -181,6 +188,7 @@ int main(int argc, char *argv[])
     // display general file info
     Argument displayFileInfoArg("info", 'i', "displays general file information");
     displayFileInfoArg.setDenotesOperation(true);
+    displayFileInfoArg.setExample(PROJECT_NAME " info -f /some/dir/*.m4a");
     displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg)));
     displayFileInfoArg.setSubArguments({&filesArg, &verboseArg});
     // display tag info
@@ -192,6 +200,7 @@ int main(int argc, char *argv[])
     Argument displayTagInfoArg("get", 'g', "displays the values of all specified tag fields (displays all fields if none specified)");
     displayTagInfoArg.setDenotesOperation(true);
     displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, std::cref(fieldsArg), std::cref(filesArg), std::cref(verboseArg)));
+    displayTagInfoArg.setExample(PROJECT_NAME " get title album artist -f /some/dir/*.m4a");
     displayTagInfoArg.setSubArguments({&fieldsArg, &filesArg, &verboseArg});
     // set tag info
     Cli::SetTagInfoArgs setTagInfoArgs(filesArg, verboseArg);
