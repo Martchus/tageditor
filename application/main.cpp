@@ -58,7 +58,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setCombinable(true);
-    docTitleArg.setRequiredValueCount(-1);
+    docTitleArg.setRequiredValueCount(Argument::varValueCount);
     docTitleArg.setValueNames({"title of first segment", "title of second segment"});
     removeOtherFieldsArg.setCombinable(true);
     treatUnknownFilesAsMp3FilesArg.setCombinable(true);
@@ -81,26 +81,26 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     encodingArg.setValueNames({"latin1/utf8/utf16le/utf16be"});
     encodingArg.setPreDefinedCompletionValues("latin1 utf8 utf16le utf16be");
     encodingArg.setCombinable(true);
-    removeTargetArg.setRequiredValueCount(-1);
+    removeTargetArg.setRequiredValueCount(Argument::varValueCount);
     removeTargetArg.setValueNames({});
     removeTargetArg.setCombinable(true);
-    removeTargetArg.setConstraints(0, -1);
-    addAttachmentArg.setRequiredValueCount(-1);
+    removeTargetArg.setConstraints(0, Argument::varValueCount);
+    addAttachmentArg.setRequiredValueCount(Argument::varValueCount);
     addAttachmentArg.setValueNames({"path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type"});
     addAttachmentArg.setCombinable(true);
-    addAttachmentArg.setConstraints(0, -1);
+    addAttachmentArg.setConstraints(0, Argument::varValueCount);
     addAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     addAttachmentArg.setPreDefinedCompletionValues("name id path desc mime");
-    updateAttachmentArg.setRequiredValueCount(-1);
+    updateAttachmentArg.setRequiredValueCount(Argument::varValueCount);
     updateAttachmentArg.setValueNames({"path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type"});
     updateAttachmentArg.setCombinable(true);
-    updateAttachmentArg.setConstraints(0, -1);
+    updateAttachmentArg.setConstraints(0, Argument::varValueCount);
     updateAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     updateAttachmentArg.setPreDefinedCompletionValues("name id path desc mime");
     removeAttachmentArg.setRequiredValueCount(1);
     removeAttachmentArg.setValueNames({"name=to_remove"});
     removeAttachmentArg.setCombinable(true);
-    removeAttachmentArg.setConstraints(0, -1);
+    removeAttachmentArg.setConstraints(0, Argument::varValueCount);
     removeAttachmentArg.setPreDefinedCompletionValues("name id");
     removeAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     removeExistingAttachmentsArg.setCombinable(true);
@@ -131,12 +131,12 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     indexPosArg.setSubArguments({&indexPosValueArg, &forceIndexPosArg});
     forceRewriteArg.setCombinable(true);
     valuesArg.setValueNames({"title=foo", "album=bar", "cover=/path/to/file"});
-    valuesArg.setRequiredValueCount(-1);
+    valuesArg.setRequiredValueCount(Argument::varValueCount);
     valuesArg.setImplicit(true);
     valuesArg.setPreDefinedCompletionValues(Cli::fieldNamesForSet);
     valuesArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     outputFilesArg.setValueNames({"path 1", "path 2"});
-    outputFilesArg.setRequiredValueCount(-1);
+    outputFilesArg.setRequiredValueCount(Argument::varValueCount);
     outputFilesArg.setCombinable(true);
     setTagInfoArg.setDenotesOperation(true);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
     fileArg.setRequired(true);
     Argument filesArg("files", 'f', "specifies the path of the file(s) to be opened");
     filesArg.setValueNames({"path 1", "path 2"});
-    filesArg.setRequiredValueCount(-1);
+    filesArg.setRequiredValueCount(Argument::varValueCount);
     filesArg.setCombinable(true);
     Argument outputFileArg("output-file", 'o', "specifies the path of the output file");
     outputFileArg.setValueNames({"path"});
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     // display tag info
     Argument fieldsArg("fields", 'n', "specifies the field names to be displayed");
     fieldsArg.setValueNames({"title", "album", "artist", "trackpos"});
-    fieldsArg.setRequiredValueCount(-1);
+    fieldsArg.setRequiredValueCount(Argument::varValueCount);
     fieldsArg.setPreDefinedCompletionValues(Cli::fieldNames);
     fieldsArg.setImplicit(true);
     Argument displayTagInfoArg("get", 'g', "displays the values of all specified tag fields (displays all fields if none specified)");
