@@ -162,7 +162,7 @@ void printProperty(const char *propName, const char *value, const char *suffix, 
 
 void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix, Indentation indentation)
 {
-    const char *pos;
+    const char *pos = nullptr;
     switch(elementPosition) {
     case ElementPosition::BeforeData:
         pos = "before data";
