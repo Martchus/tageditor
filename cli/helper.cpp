@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <csignal>
 
 using namespace std;
 using namespace std::placeholders;
@@ -20,8 +21,47 @@ using namespace ConversionUtilities;
 using namespace ChronoUtilities;
 using namespace Media;
 using namespace Settings;
+using namespace EscapeCodes;
 
 namespace Cli {
+
+std::function<void()> InterruptHandler::s_handler;
+bool InterruptHandler::s_handlerRegistered = false;
+
+InterruptHandler::InterruptHandler(std::function<void ()> handler)
+{
+    // set handler function or throw if an instance has already been created
+    if(s_handler) {
+        throw runtime_error("Only one instance of InterruptHandler can exist at a time.");
+    }
+    s_handler = handler;
+
+    // register handler if not registered yet
+    if(!s_handlerRegistered) {
+        s_handlerRegistered = true;
+        signal(SIGINT, &InterruptHandler::handler);
+    }
+}
+
+InterruptHandler::~InterruptHandler()
+{
+    s_handler = function<void()>();
+}
+
+void InterruptHandler::handler(int signum)
+{
+    // just exit if no custom handler has been defined
+    if(!s_handler) {
+        exit(signum);
+    }
+
+    // print warning
+    finalizeLog();
+    cout << Phrases::Warning << "Interrupt received, trying to abort ongoing process ..." << Phrases::End << flush;
+
+    // call custom handler
+    s_handler();
+}
 
 string incremented(const string &str, unsigned int toIncrement)
 {

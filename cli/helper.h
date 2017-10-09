@@ -158,6 +158,19 @@ inline FieldValue::FieldValue(DenotationType type, unsigned int fileIndex, const
     value(value)
 {}
 
+class InterruptHandler
+{
+public:
+    InterruptHandler(std::function<void()> handler);
+    ~InterruptHandler();
+
+private:
+    static void handler(int signum);
+
+    static std::function<void()> s_handler;
+    static bool s_handlerRegistered;
+};
+
 }
 
 // define hash functions for custom data types

@@ -400,6 +400,9 @@ void setTagInfo(const SetTagInfoArgs &args)
     fileInfo.setIndexPosition(parsePositionDenotation(args.indexPosArg, args.indexPosValueArg, ElementPosition::BeforeData));
     fileInfo.setForceIndexPosition(args.forceIndexPosArg.isPresent());
     fileInfo.setForceRewrite(args.forceRewriteArg.isPresent());
+    InterruptHandler handler([&fileInfo] {
+        fileInfo.tryToAbort();
+    });
     // iterate through all specified files
     unsigned int fileIndex = 0;
     static const string context("setting tags");
@@ -626,6 +629,10 @@ void setTagInfo(const SetTagInfoArgs &args)
                 fileInfo.gatherRelatedNotifications(notifications);
                 finalizeLog();
                 cout << " - Changes have been applied." << endl;
+            } catch(const Media::OperationAbortedException &) {
+                finalizeLog();
+                cerr << Phrases::Warning << "The operation has been aborted." << endl;
+                return;
             } catch(const Media::Failure &) {
                 finalizeLog();
                 cerr << " - " << Phrases::Error << "Failed to apply changes." << endl;
