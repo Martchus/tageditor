@@ -95,7 +95,7 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         } else {
             cout << HtmlInfo::generateInfo(inputFileInfo, origNotify).data() << endl;
         }
-    } catch(const ApplicationUtilities::Failure &) {
+    } catch(const Media::Failure &) {
         cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::End;
     } catch(...) {
         ::IoUtilities::catchIoFailure();
@@ -260,7 +260,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                 }
             }
 
-        } catch(const ApplicationUtilities::Failure &) {
+        } catch(const Media::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
@@ -314,7 +314,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
             } else {
                 cout << " - File has no (supported) tag information.\n";
             }
-        } catch(const ApplicationUtilities::Failure &) {
+        } catch(const Media::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
@@ -626,11 +626,11 @@ void setTagInfo(const SetTagInfoArgs &args)
                 fileInfo.gatherRelatedNotifications(notifications);
                 finalizeLog();
                 cout << " - Changes have been applied." << endl;
-            } catch(const ApplicationUtilities::Failure &) {
+            } catch(const Media::Failure &) {
                 finalizeLog();
                 cerr << " - " << Phrases::Error << "Failed to apply changes." << endl;
             }
-        } catch(const ApplicationUtilities::Failure &) {
+        } catch(const Media::Failure &) {
             finalizeLog();
             cerr << " - " << Phrases::Error << "A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
         } catch(...) {
@@ -771,7 +771,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                 }
             }
 
-        } catch(const ApplicationUtilities::Failure &) {
+        } catch(const Media::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
