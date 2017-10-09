@@ -64,11 +64,11 @@ namespace Cli {
 const char *const fieldNames = FIELD_NAMES;
 const char *const fieldNamesForSet = FIELD_NAMES " " TAG_MODIFIER " " TARGET_MODIFIER;
 
-void printFieldNames(const ArgumentOccurrence &occurrence)
+void printFieldNames(const ArgumentOccurrence &)
 {
     CMD_UTILS_START_CONSOLE;
-    VAR_UNUSED(occurrence)
-            cout << fieldNames;
+
+    cout << fieldNames;
     cout << "\nTag modifier: " << TAG_MODIFIER;
     cout << "\nTarget modifier: " << TARGET_MODIFIER << endl;
 }
@@ -76,6 +76,7 @@ void printFieldNames(const ArgumentOccurrence &occurrence)
 void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
+
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
     try {
         // parse tags
@@ -90,32 +91,35 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
             if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
                 cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
             } else {
-                cerr << Phrases::Error << "An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << Phrases::End;
+                cerr << Phrases::Error << "An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << Phrases::EndFlush;
             }
         } else {
             cout << HtmlInfo::generateInfo(inputFileInfo, origNotify).data() << endl;
         }
     } catch(const Media::Failure &) {
-        cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::End;
+        cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
     } catch(...) {
         ::IoUtilities::catchIoFailure();
-        cerr << Phrases::Error << "An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::End;
+        cerr << Phrases::Error << "An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
     }
 #else
     VAR_UNUSED(inputFileArg);
     VAR_UNUSED(outputFileArg);
     VAR_UNUSED(validateArg);
-    cerr << Phrases::Error << "Generating HTML info is only available if built with Qt support." << endl;
+    cerr << Phrases::Error << "Generating HTML info is only available if built with Qt support." << Phrases::EndFlush;
 #endif
 }
 
 void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
+
+    // check whether files have been specified
     if(!filesArg.isPresent() || filesArg.values().empty()) {
         cerr << Phrases::Error << "No files have been specified." << Phrases::End;
         return;
     }
+
     MediaFileInfo fileInfo;
     for(const char *file : filesArg.values()) {
         try {
@@ -261,10 +265,10 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             }
 
         } catch(const Media::Failure &) {
-            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
+            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
-            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::End;
+            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
 
         printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
@@ -275,11 +279,16 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
 void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
+
+    // check whether files have been specified
     if(!filesArg.isPresent() || filesArg.values().empty()) {
         cerr << Phrases::Error << "No files have been specified." << Phrases::End;
         return;
     }
+
+    // parse specified fields
     const auto fields = parseFieldDenotations(fieldsArg, true);
+
     MediaFileInfo fileInfo;
     for(const char *file : filesArg.values()) {
         try {
@@ -315,10 +324,10 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
                 cout << " - File has no (supported) tag information.\n";
             }
         } catch(const Media::Failure &) {
-            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
+            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
-            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::End;
+            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
         printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
         cout << endl;
@@ -328,16 +337,22 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
 void setTagInfo(const SetTagInfoArgs &args)
 {
     CMD_UTILS_START_CONSOLE;
+
+    // check whether files have been specified
     if(!args.filesArg.isPresent() || args.filesArg.values().empty()) {
-        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
+        cerr << Phrases::Error << "No files have been specified." << Phrases::EndFlush;
         return;
     }
     if(args.outputFilesArg.isPresent() && args.outputFilesArg.values().size() != args.filesArg.values().size()) {
-        cerr << Phrases::Error << "The number of output files does not match the number of input files." << Phrases::End;
+        cerr << Phrases::Error << "The number of output files does not match the number of input files." << Phrases::EndFlush;
         return;
     }
+
+    // get output files
     auto &outputFiles = args.outputFilesArg.isPresent() ? args.outputFilesArg.values() : vector<const char *>();
     auto currentOutputFile = outputFiles.cbegin(), noMoreOutputFiles = outputFiles.cend();
+
+    // parse field denotations and check whether there's an operation to be done (changing fields or some other settings)
     auto fields = parseFieldDenotations(args.valuesArg, false);
     if(fields.empty()
             && (!args.removeTargetArg.isPresent() || args.removeTargetArg.values().empty())
@@ -350,6 +365,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             && !args.id3v2VersionArg.isPresent()) {
         cerr << Phrases::Warning << "No fields/attachments have been specified." << Phrases::End;
     }
+
     // determine required targets
     vector<TagTarget> requiredTargets;
     for(const auto &fieldDenotation : fields) {
@@ -358,6 +374,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             requiredTargets.push_back(scope.tagTarget);
         }
     }
+
     // determine targets to remove
     vector<TagTarget> targetsToRemove;
     bool validRemoveTargetsSpecified = false;
@@ -375,7 +392,8 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
         }
     }
-    // parse other settings
+
+    // parse ID3v2 version
     uint32 id3v2Version = 3;
     if(args.id3v2VersionArg.isPresent()) {
         try {
@@ -388,9 +406,13 @@ void setTagInfo(const SetTagInfoArgs &args)
             cerr << Phrases::Warning << "The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid and will be ingored." << Phrases::End;
         }
     }
+
+    // parse other settings
     const TagTextEncoding denotedEncoding = parseEncodingDenotation(args.encodingArg, TagTextEncoding::Utf8);
     const TagUsage id3v1Usage = parseUsageDenotation(args.id3v1UsageArg, TagUsage::KeepExisting);
     const TagUsage id3v2Usage = parseUsageDenotation(args.id3v2UsageArg, TagUsage::Always);
+
+    // setup media file info
     MediaFileInfo fileInfo;
     fileInfo.setMinPadding(parseUInt64(args.minPaddingArg, 0));
     fileInfo.setMaxPadding(parseUInt64(args.maxPaddingArg, 0));
@@ -400,23 +422,22 @@ void setTagInfo(const SetTagInfoArgs &args)
     fileInfo.setIndexPosition(parsePositionDenotation(args.indexPosArg, args.indexPosValueArg, ElementPosition::BeforeData));
     fileInfo.setForceIndexPosition(args.forceIndexPosArg.isPresent());
     fileInfo.setForceRewrite(args.forceRewriteArg.isPresent());
-    InterruptHandler handler([&fileInfo] {
-        fileInfo.tryToAbort();
-    });
+
     // iterate through all specified files
     unsigned int fileIndex = 0;
     static const string context("setting tags");
     NotificationList notifications;
     for(const char *file : args.filesArg.values()) {
         try {
-            // parse tags
-            cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << TextAttribute::Reset << endl;
+            // parse tags and tracks (tracks are relevent because track meta-data such as language can be changed as well)
+            cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
             notifications.clear();
             fileInfo.setPath(file);
             fileInfo.parseContainerFormat();
             fileInfo.parseTags();
             fileInfo.parseTracks();
             vector<Tag *> tags;
+
             // remove tags with the specified targets
             if(validRemoveTargetsSpecified) {
                 fileInfo.tags(tags);
@@ -427,6 +448,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                 }
                 tags.clear();
             }
+
             // create new tags according to settings
             fileInfo.createAppropriateTags(args.treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage, args.id3InitOnCreateArg.isPresent(), args.id3TransferOnRemovalArg.isPresent(), args.mergeMultipleSuccessiveTagsArg.isPresent(), !args.id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
             auto container = fileInfo.container();
@@ -445,6 +467,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                     cerr << Phrases::Warning << "Setting the document title is not supported for the file." << Phrases::End;
                 }
             }
+
             // select the relevant values for the current file index
             for(auto &fieldDenotation : fields) {
                 FieldValues &denotedValues = fieldDenotation.second;
@@ -464,6 +487,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                 }
             }
 
+            // alter tags
             fileInfo.tags(tags);
             if(tags.empty()) {
                 fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
@@ -534,6 +558,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                     }
                 }
             }
+
+            // alter tracks
             for(AbstractTrack *track : fileInfo.tracks()) {
                 for(const auto &fieldDenotation : fields) {
                     const auto &values = fieldDenotation.second.relevantValues;
@@ -568,6 +594,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                     }
                 }
             }
+
             // increment relevant values
             for(auto &fieldDenotation : fields) {
                 for(FieldValue *relevantDenotedValue : fieldDenotation.second.relevantValues) {
@@ -576,6 +603,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                     }
                 }
             }
+
+            // alter attachments
             bool attachmentsModified = false;
             if(args.addAttachmentArg.isPresent() || args.updateAttachmentArg.isPresent() || args.removeAttachmentArg.isPresent() || args.removeExistingAttachmentsArg.isPresent()) {
                 static const string context("setting attachments");
@@ -619,34 +648,49 @@ void setTagInfo(const SetTagInfoArgs &args)
                     // notification will be added by the file info automatically
                 }
             }
+
+            // apply changes
             try {
                 // save parsing notifications because notifications of sub objects like tags, tracks, ... will be gone after applying changes
                 fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
                 fileInfo.gatherRelatedNotifications(notifications);
                 fileInfo.invalidateNotifications();
+
+                // register handler for logging status
                 fileInfo.registerCallback(logStatus);
+
+                // register interrupt handler
+                const InterruptHandler handler([&fileInfo] {
+                    fileInfo.tryToAbort();
+                });
+
+                // apply changes and gather notifications
                 fileInfo.applyChanges();
                 fileInfo.gatherRelatedNotifications(notifications);
+
+                // notify about completion
                 finalizeLog();
                 cout << " - Changes have been applied." << endl;
             } catch(const Media::OperationAbortedException &) {
                 finalizeLog();
-                cerr << Phrases::Warning << "The operation has been aborted." << endl;
+                cerr << Phrases::Warning << "The operation has been aborted." << Phrases::EndFlush;
                 return;
             } catch(const Media::Failure &) {
                 finalizeLog();
-                cerr << " - " << Phrases::Error << "Failed to apply changes." << endl;
+                cerr << " - " << Phrases::Error << "Failed to apply changes." << Phrases::EndFlush;
             }
         } catch(const Media::Failure &) {
             finalizeLog();
-            cerr << " - " << Phrases::Error << "A parsing failure occured when reading/writing the file \"" << file << "\"." << endl;
+            cerr << " - " << Phrases::Error << "A parsing failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
             finalizeLog();
-            cerr << " - " << Phrases::Error << "An IO failure occured when reading/writing the file \"" << file << "\"." << endl;
+            cerr << " - " << Phrases::Error << "An IO failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
         }
+
         printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
 
+        // continue with next file
         ++fileIndex;
         if(currentOutputFile != noMoreOutputFiles) {
             ++currentOutputFile;
@@ -677,10 +721,11 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
     MediaFileInfo inputFileInfo;
     for(const char *file : inputFilesArg.values()) {
         try {
-            // parse tags
+            // setup media file info
             inputFileInfo.setPath(file);
             inputFileInfo.open(true);
 
+            // extract either tag field or attachment
             if(!fieldDenotations.empty()) {
                 // extract tag field
                 (outputFileArg.isPresent() ? cout : cerr) << "Extracting field " << fieldArg.values().front() << " of \"" << file << "\" ..." << endl;
@@ -768,7 +813,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                             cout << " - Value has been saved to \"" << path << "\"." << endl;
                         } catch(...) {
                             ::IoUtilities::catchIoFailure();
-                            cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\"." << Phrases::End;
+                            cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\"." << Phrases::EndFlush;
                         }
                     }
                 } else {

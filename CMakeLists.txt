@@ -204,7 +204,7 @@ set(REQUIRED_ICONS
 )
 
 # find c++utilities
-find_package(c++utilities 4.10.0 REQUIRED)
+find_package(c++utilities 4.11.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
