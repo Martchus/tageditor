@@ -592,28 +592,27 @@ bool stringToBool(const string &str)
 }
 
 bool logLineFinalized = true;
+static string lastLoggedStatus;
 void logStatus(const StatusProvider &statusProvider)
 {
-    static string lastStatus;
-
-    if(statusProvider.currentStatus() != lastStatus) {
+    if(statusProvider.currentStatus() != lastLoggedStatus) {
         // the ongoing operation ("status") has changed
         //  -> finalize previous line and make new line
         if(!logLineFinalized) {
-            cout << "\r - [100%] " << lastStatus << endl;
+            cout << "\r - [100%] " << lastLoggedStatus << endl;
             logLineFinalized = true;
         }
         // -> update lastStatus
-        lastStatus = statusProvider.currentStatus();
+        lastLoggedStatus = statusProvider.currentStatus();
     }
 
     // update current line if an operation is ongoing (status is not empty)
-    if(!lastStatus.empty()) {
+    if(!lastLoggedStatus.empty()) {
         int percentage = static_cast<int>(statusProvider.currentPercentage() * 100);
         if(percentage < 0) {
             percentage = 0;
         }
-        cout << "\r - [" << setw(3) << percentage << "%] " << lastStatus << flush;
+        cout << "\r - [" << setw(3) << percentage << "%] " << lastLoggedStatus << flush;
         logLineFinalized = false;
     }
 }
@@ -623,6 +622,7 @@ void finalizeLog()
     if(!logLineFinalized) {
         cout << '\n';
         logLineFinalized = true;
+        lastLoggedStatus.clear();
     }
 }
 
