@@ -197,7 +197,7 @@ TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)
         } else if(!strcmp(val, "always")) {
             return TagUsage::Always;
         } else {
-            cerr << "Warning: The specified tag usage \"" << val << "\" is invalid and will be ignored." << endl;
+            cerr << Phrases::Warning << "The specified tag usage \"" << val << "\" is invalid and will be ignored." << Phrases::End << endl;
         }
     }
     return defaultUsage;
@@ -217,7 +217,7 @@ TagTextEncoding parseEncodingDenotation(const Argument &encodingArg, TagTextEnco
             return TagTextEncoding::Utf16LittleEndian;
         } else if(!strcmp(val, "auto")) {
         } else {
-            cerr << "Warning: The specified encoding \"" << val << "\" is invalid and will be ignored." << endl;
+            cerr << Phrases::Warning << "The specified encoding \"" << val << "\" is invalid and will be ignored." << Phrases::End << endl;
         }
     }
     return defaultEncoding;
@@ -234,7 +234,7 @@ ElementPosition parsePositionDenotation(const Argument &posArg, const Argument &
         } else if(!strcmp(val, "keep")) {
             return ElementPosition::Keep;
         } else {
-            cerr << "Warning: The specified position \"" << val << "\" is invalid and will be ignored." << endl;
+            cerr << Phrases::Warning << "The specified position \"" << val << "\" is invalid and will be ignored." << Phrases::End << endl;
         }
     }
     return defaultPos;
@@ -250,7 +250,7 @@ uint64 parseUInt64(const Argument &arg, uint64 defaultValue)
                 return stringToNumber<uint64>(arg.values().front());
             }
         } catch(const ConversionException &) {
-            cerr << "Warning: The specified value \"" << arg.values().front() << "\" is no valid unsigned integer and will be ignored." << endl;
+            cerr << Phrases::Warning << "The specified value \"" << arg.values().front() << "\" is no valid unsigned integer and will be ignored." << Phrases::End << endl;
         }
     }
     return defaultValue;
@@ -265,7 +265,7 @@ TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
         try {
             convertedIds.push_back(stringToNumber<TagTarget::IdType>(id));
         } catch(const ConversionException &) {
-            cerr << "Warning: The specified ID \"" << id << "\" is invalid and will be ignored." << endl;
+            cerr << Phrases::Warning << "The specified ID \"" << id << "\" is invalid and will be ignored." << Phrases::End << endl;
         }
     }
     return convertedIds;
@@ -278,7 +278,7 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
             try {
                 target.setLevel(stringToNumber<uint64>(configStr.substr(13)));
             } catch (const ConversionException &) {
-                cerr << "Warning: The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored." << endl;
+                cerr << Phrases::Warning << "The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored." << Phrases::End << endl;
             }
         } else if(configStr.compare(0, 17, "target-levelname=") == 0) {
             target.setLevelName(configStr.substr(17));
@@ -292,7 +292,7 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
             target.attachments() = parseIds(configStr.substr(17));
         } else if(configStr.compare(0, 13, "target-reset=") == 0) {
             if(*(configStr.data() + 13)) {
-                cerr << "Warning: Invalid assignment " << (configStr.data() + 13) << " for target-reset will be ignored." << endl;
+                cerr << Phrases::Warning << "Invalid assignment " << (configStr.data() + 13) << " for target-reset will be ignored." << Phrases::End << endl;
             }
             target.clear();
         } else if(configStr == "target-reset") {
@@ -317,7 +317,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             const auto fieldDenotationLen = strlen(fieldDenotationString);
             if(!strncmp(fieldDenotationString, "tag=", 4)) {
                 if(fieldDenotationLen == 4) {
-                    cerr << "Warning: The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
+                    cerr << Phrases::Warning << "The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << Phrases::End << endl;
                 } else {
                     TagType tagType = TagType::Unspecified;
                     bool error = false;
@@ -338,7 +338,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                             tagType = TagType::Unspecified;
                             break;
                         } else {
-                            cerr << "Warning: The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << endl;
+                            cerr << Phrases::Warning << "The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: id3,id3v1,id3v2,itunes,vorbis,matroska,all" << Phrases::End << endl;
                             error = true;
                             break;
                         }
@@ -366,7 +366,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                         try {
                             trackIds.emplace_back(stringToNumber<uint64>(part));
                         } catch(const ConversionException &) {
-                            cerr << "Warning: The value provided with the \"track\"-specifier is invalid and will be ignored. It must be a comma-separated list of track IDs." << endl;
+                            cerr << Phrases::Warning << "The value provided with the \"track\"-specifier is invalid and will be ignored. It must be a comma-separated list of track IDs." << Phrases::End << endl;
                             error = true;
                             break;
                         }
@@ -408,7 +408,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                 fileIndex += static_cast<unsigned int>(*digitPos - '0') * mult;
             }
             if(!fieldNameLen) {
-                cerr << "Warning: Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified." << endl;
+                cerr << Phrases::Warning << "Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified." << Phrases::End << endl;
                 continue;
             }
             // parse the denoted field ID
@@ -420,7 +420,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                 }
             } catch(const ConversionException &e) {
                 // unable to parse field ID denotation -> discard the field denotation
-                cerr << "Warning: The field denotation \"" << string(fieldDenotationString, fieldNameLen) << "\" could not be parsed and will be ignored: " << e.what() << endl;
+                cerr << Phrases::Warning << "The field denotation \"" << string(fieldDenotationString, fieldNameLen) << "\" could not be parsed and will be ignored: " << e.what() << Phrases::End << endl;
                 continue;
             }
             // read cover always from file
@@ -433,7 +433,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             // add value to the scope (if present)
             if(equationPos) {
                 if(readOnly) {
-                    cerr << "Warning: Specified value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << endl;
+                    cerr << Phrases::Warning << "Specified value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << Phrases::End << endl;
                 } else {
                     // file index might have been specified explicitely
                     // if not (mult == 1) use the index of the last value and increase it by one if the value is not an additional one
@@ -442,7 +442,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                 }
             }
             if(additionalValue && readOnly) {
-                cerr << "Warning: Indication of an additional value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << endl;
+                cerr << Phrases::Warning << "Indication of an additional value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored." << Phrases::End << endl;
             }
         }
     }
