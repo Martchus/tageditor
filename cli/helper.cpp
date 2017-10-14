@@ -10,6 +10,8 @@
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/io/ansiescapecodes.h>
 
+#include <unistd.h>
+
 #include <iostream>
 #include <cstring>
 #include <csignal>
@@ -28,6 +30,18 @@ namespace Cli {
 std::function<void()> InterruptHandler::s_handler;
 bool InterruptHandler::s_handlerRegistered = false;
 
+/*!
+ * \class InterruptHandler
+ * \brief The InterruptHandler class allows to register an interrupt handler within a scope.
+ * \remarks Only one instance of the class can exist at a time.
+ */
+
+/*!
+ * \brief Registers the specified \a handler for SIGINT as long as this object is alive.
+ * \remarks The specified \a handler should only call functions which are permitted to be used in signal handlers
+ *          (eg. use POSIX write() instread of std::cout).
+ * \throws Throws std::runtime_error when attempting to create a 2nd instance.
+ */
 InterruptHandler::InterruptHandler(std::function<void ()> handler)
 {
     // set handler function or throw if an instance has already been created
@@ -43,21 +57,30 @@ InterruptHandler::InterruptHandler(std::function<void ()> handler)
     }
 }
 
+/*!
+ * \brief Unregisters the handler.
+ */
 InterruptHandler::~InterruptHandler()
 {
     s_handler = function<void()>();
 }
 
+/*!
+ * \brief Internal handler method.
+ */
 void InterruptHandler::handler(int signum)
 {
     // just exit if no custom handler has been defined
     if(!s_handler) {
-        exit(signum);
+        _exit(signum);
     }
 
-    // print warning
-    finalizeLog();
-    cout << Phrases::Warning << "Interrupt received, trying to abort ongoing process ..." << Phrases::End << flush;
+    // finalize log and print warning, prevent using std::cout which could lead to undefined behaviour
+    if(!logLineFinalized) {
+        logLineFinalized = true;
+        write(STDOUT_FILENO, "\n", 1);
+    }
+    write(STDOUT_FILENO, "\e[1;33mWarning:\e[0m \e[1mInterrupt received, trying to abort ongoing process ...\e[0m\n", 84);
 
     // call custom handler
     s_handler();
