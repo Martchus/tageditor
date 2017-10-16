@@ -80,7 +80,11 @@ void InterruptHandler::handler(int signum)
         logLineFinalized = true;
         write(STDOUT_FILENO, "\n", 1);
     }
-    write(STDOUT_FILENO, "\e[1;33mWarning:\e[0m \e[1mInterrupt received, trying to abort ongoing process ...\e[0m\n", 84);
+    if(EscapeCodes::enabled) {
+        write(STDOUT_FILENO, "\e[1;33mWarning:\e[0m \e[1mInterrupt received, trying to abort ongoing process ...\e[0m\n", 84);
+    } else {
+        write(STDOUT_FILENO, "Warning: Interrupt received, trying to abort ongoing process ...\n", 65);
+    }
 
     // call custom handler
     s_handler();

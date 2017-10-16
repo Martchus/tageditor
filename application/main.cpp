@@ -163,6 +163,7 @@ int main(int argc, char *argv[])
     SET_APPLICATION_INFO;
     QT_CONFIG_ARGUMENTS qtConfigArgs;
     HelpArgument helpArg(parser);
+    NoColorArgument noColorArg;
     // verbose option
     Argument verboseArg("verbose", 'v', "be verbose");
     verboseArg.setCombinable(true);
@@ -230,7 +231,7 @@ int main(int argc, char *argv[])
     qtConfigArgs.qtWidgetsGuiArg().setAbbreviation('\0');
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&defaultFileArg);
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&renamingUtilityArg);
-    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &helpArg});
+    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &noColorArg, &helpArg});
     // parse given arguments
     parser.parseArgsOrExit(argc, argv);
     if(qtConfigArgs.areQtGuiArgsPresent()) {
