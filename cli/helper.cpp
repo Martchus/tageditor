@@ -27,14 +27,16 @@ using namespace EscapeCodes;
 
 namespace Cli {
 
-std::function<void()> InterruptHandler::s_handler;
-bool InterruptHandler::s_handlerRegistered = false;
+ChronoUtilities::TimeSpanOutputFormat timeSpanOutputFormat = TimeSpanOutputFormat::WithMeasures;
 
 /*!
  * \class InterruptHandler
  * \brief The InterruptHandler class allows to register an interrupt handler within a scope.
  * \remarks Only one instance of the class can exist at a time.
  */
+
+std::function<void()> InterruptHandler::s_handler;
+bool InterruptHandler::s_handlerRegistered = false;
 
 /*!
  * \brief Registers the specified \a handler for SIGINT as long as this object is alive.
@@ -253,6 +255,23 @@ void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool s
         printFieldName(fieldName, fieldNameLen);
         cout << "unable to parse - " << e.what() << '\n';
     }
+}
+
+TimeSpanOutputFormat parseTimeSpanOutputFormat(const Argument &timeSpanFormatArg, TimeSpanOutputFormat defaultFormat)
+{
+    if(timeSpanFormatArg.isPresent()) {
+        const auto &val = timeSpanFormatArg.values().front();
+        if(!strcmp(val, "measures")) {
+            return TimeSpanOutputFormat::WithMeasures;
+        } else if(!strcmp(val, "colons")) {
+            return TimeSpanOutputFormat::Normal;
+        } else if(!strcmp(val, "seconds")) {
+            return TimeSpanOutputFormat::TotalSeconds;
+        } else {
+            cerr << Phrases::Warning << "The specified time span format \"" << val << "\" is invalid and will be ignored." << Phrases::EndFlush;
+        }
+    }
+    return defaultFormat;
 }
 
 TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)

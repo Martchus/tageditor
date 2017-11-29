@@ -46,6 +46,7 @@ struct SetTagInfoArgs
 
 extern const char *const fieldNames;
 extern const char *const fieldNamesForSet;
+void applyGeneralConfig(const ApplicationUtilities::Argument &timeSapnFormatArg);
 void printFieldNames(const ApplicationUtilities::ArgumentOccurrence &occurrence);
 void displayFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
 void generateFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);

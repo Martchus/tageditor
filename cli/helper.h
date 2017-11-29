@@ -273,10 +273,12 @@ inline void printProperty(const char *propName, const std::string &value, const 
     printProperty(propName, value.data(), suffix, indentation);
 }
 
+extern ChronoUtilities::TimeSpanOutputFormat timeSpanOutputFormat;
+
 inline void printProperty(const char *propName, ChronoUtilities::TimeSpan timeSpan, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4)
 {
     if(!timeSpan.isNull()) {
-        printProperty(propName, timeSpan.toString(ChronoUtilities::TimeSpanOutputFormat::WithMeasures), suffix, indentation);
+        printProperty(propName, timeSpan.toString(timeSpanOutputFormat), suffix, indentation);
     }
 }
 
@@ -297,6 +299,7 @@ inline void printProperty(const char *propName, const NumberType value, const ch
 
 void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool skipEmpty);
 
+ChronoUtilities::TimeSpanOutputFormat parseTimeSpanOutputFormat(const ApplicationUtilities::Argument &usageArg, ChronoUtilities::TimeSpanOutputFormat defaultFormat);
 TagUsage parseUsageDenotation(const ApplicationUtilities::Argument &usageArg, TagUsage defaultUsage);
 TagTextEncoding parseEncodingDenotation(const ApplicationUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);
 ElementPosition parsePositionDenotation(const ApplicationUtilities::Argument &posArg, const ApplicationUtilities::Argument &valueArg, ElementPosition defaultPos);

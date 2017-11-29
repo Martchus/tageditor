@@ -164,6 +164,8 @@ int main(int argc, char *argv[])
     QT_CONFIG_ARGUMENTS qtConfigArgs;
     HelpArgument helpArg(parser);
     NoColorArgument noColorArg;
+    ConfigValueArgument timeSpanFormatArg("time-span-format", '\0', "specifies the output format for time spans", {"measures/colons/seconds"});
+    timeSpanFormatArg.setPreDefinedCompletionValues("measures colons seconds");
     // verbose option
     Argument verboseArg("verbose", 'v', "be verbose");
     verboseArg.setCombinable(true);
@@ -231,9 +233,11 @@ int main(int argc, char *argv[])
     qtConfigArgs.qtWidgetsGuiArg().setAbbreviation('\0');
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&defaultFileArg);
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&renamingUtilityArg);
-    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &noColorArg, &helpArg});
+    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &timeSpanFormatArg, &noColorArg, &helpArg});
     // parse given arguments
-    parser.parseArgsOrExit(argc, argv);
+    parser.parseArgsExt(argc, argv, ParseArgumentBehavior::CheckConstraints | ParseArgumentBehavior::ExitOnFailure);
+
+    // start GUI/CLI
     if(qtConfigArgs.areQtGuiArgsPresent()) {
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
         return QtGui::runWidgetsGui(argc, argv, qtConfigArgs, defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? ConversionUtilities::fromNativeFileName(defaultFileArg.values().front()) : QString(), renamingUtilityArg.isPresent());
@@ -241,6 +245,11 @@ int main(int argc, char *argv[])
         CMD_UTILS_START_CONSOLE;
         cerr << "Application has not been build with Qt widgets GUI support." << endl;
 #endif
+    } else {
+        // apply general CLI config (concerns currently only the default time span output format)
+        Cli::applyGeneralConfig(timeSpanFormatArg);
+        // invoke specified CLI operation via callbacks
+        parser.invokeCallbacks();
     }
     return 0;
 }
