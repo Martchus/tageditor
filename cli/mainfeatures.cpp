@@ -50,27 +50,37 @@ using namespace Utility;
 namespace Cli {
 
 #define FIELD_NAMES \
-    "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n" \
-    "recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n" \
-    "recordlabel cover composer rating description"
+    "title album artist genre year comment bpm bps lyricist disk part totalparts encoder\n" \
+    "      recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n" \
+    "      recordlabel cover composer rating description"
+
+#define TRACK_ATTRIBUTE_NAMES \
+    "name tracknumber enabled=yes enabled=no forced=yes forced=no default=yes default=no"
 
 #define TAG_MODIFIER \
     "tag=id3v1 tag=id3v2 tag=id3 tag=itunes tag=vorbis tag=matroska tag=all"
 
+#define TRACK_MODIFIER \
+    "track= track=all"
+
 #define TARGET_MODIFIER \
     "target-level target-levelname target-tracks target-tracks\n" \
-    "target-chapters target-editions target-attachments target-reset"
+    "      target-chapters target-editions target-attachments target-reset"
 
 const char *const fieldNames = FIELD_NAMES;
-const char *const fieldNamesForSet = FIELD_NAMES " " TAG_MODIFIER " " TARGET_MODIFIER;
+const char *const fieldNamesForSet = TAG_MODIFIER " " FIELD_NAMES " " TRACK_MODIFIER " " TRACK_ATTRIBUTE_NAMES " " TARGET_MODIFIER;
 
 void printFieldNames(const ArgumentOccurrence &)
 {
     CMD_UTILS_START_CONSOLE;
 
-    cout << fieldNames;
-    cout << "\nTag modifier: " << TAG_MODIFIER;
-    cout << "\nTarget modifier: " << TARGET_MODIFIER << endl;
+    cout << "Field and track attribute names allow referring to a field or track attribute in a format-independent way.\n"
+            " - Field names:\n      " FIELD_NAMES "\n"
+            " - Track attribute names: " TRACK_ATTRIBUTE_NAMES "\n\n"
+            "Modifier specify to which tags and tracks the subsequent values should be applied.\n"
+            " - Tag modifier: " TAG_MODIFIER "\n"
+            " - Track modifier: track=id1,id2,id3,... track=all\n"
+            " - Target modifier:\n      " TARGET_MODIFIER "\n" << flush;
 }
 
 void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, const Argument &outputFileArg, const Argument &validateArg)

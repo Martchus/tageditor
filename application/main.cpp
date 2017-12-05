@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     outputFileArg.setRequiredValueCount(1);
     outputFileArg.setCombinable(true);
     // print field names
-    Argument printFieldNamesArg("print-field-names", '\0', "prints available field names");
+    Argument printFieldNamesArg("print-field-names", '\0', "lists available field names, track attribute names and modifier");
     printFieldNamesArg.setCallback(Cli::printFieldNames);
     // display general file info
     Argument displayFileInfoArg("info", 'i', "displays general file information");
