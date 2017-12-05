@@ -679,9 +679,9 @@ string tagName(const Tag *tag)
 
 bool stringToBool(const string &str)
 {
-    if(str == "yes" || str == "true" || str == "1") {
+    if(str == "yes" || str == "true" || str == "on" || str == "1") {
         return true;
-    } else if(str == "no" || str == "false" || str == "0") {
+    } else if(str == "no" || str == "false" || str == "off" || str == "0") {
         return false;
     }
     throw ConversionException(argsToString('\"', str, "\" is not yes or no"));
