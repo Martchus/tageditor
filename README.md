@@ -129,30 +129,31 @@ However, this feature is still experimental.
 ```
 tageditor <operation> [options]
 ```
-Checkout the available operations and options with `--help`.
+Checkout the available operations and options with `--help`. For a list of all available field names, track
+attribute names and modifier, use the CLI option `--print-field-names`.
 
 #### Examples
 Here are some Bash examples which illustrate getting and setting tag information:
 
 ##### Reading tags
-* Displays title, album and artist of all \*.m4a files in the specified directory:
+* Displays title, album and artist of all \*.m4a files in the specified directory:  
   ```
   tageditor get title album artist --files /some/dir/*.m4a
   ```
 
-* Displays all supported fields of all \*.mkv files in the specified directory:
+* Displays all supported fields of all \*.mkv files in the specified directory:  
   ```
   tageditor get --files /some/dir/*.mkv
   ```
 
 
-* Displays technical information about all \*.m4a files in the specified directory:
+* Displays technical information about all \*.m4a files in the specified directory:  
   ```
   tageditor info --files /some/dir/*.m4a
   ```
 
-##### Writing tags
-* Sets title, album, artist, cover and track number of all \*.m4a files in the specified directory:
+##### Modifying tags and track attributes
+* Sets title, album, artist, cover and track number of all \*.m4a files in the specified directory:  
   ```
   tageditor set title="Title of "{1st,2nd,3rd}" file" title="Title of "{4..16}"th file" \
     album="The Album" artist="The Artist" \
@@ -164,7 +165,7 @@ Here are some Bash examples which illustrate getting and setting tag information
     - The same scheme is used for the track numbers.
     - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
 
-* Sets title of both specified files and the album of the second specified file:
+* Sets title of both specified files and the album of the second specified file:  
   ```
   tageditor set title0="Title for both files" album1="Album for 2nd file" \
     --files file1.ogg file2.mp3
@@ -172,7 +173,7 @@ Here are some Bash examples which illustrate getting and setting tag information
   The number after the field name specifies the index of the first file to use the value for. The first index is 0.
 
 * Sets the title specificly for the track with the ID ``3134325680`` and removes
-  the tags targeting the song/track and the album/movie/episode in general:
+  the tags targeting the song/track and the album/movie/episode in general:  
   ```
   tageditor set target-level=30 target-tracks=3134325680 title="Title for track 3134325680" \
     --remove-targets target-level=50 , target-level=30 \
@@ -180,7 +181,7 @@ Here are some Bash examples which illustrate getting and setting tag information
   ```
   For more information checkout the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).
 
-* Sets custom fields:
+* Sets custom fields:  
   ```
   tageditor set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a
   ```
@@ -195,8 +196,15 @@ Here are some Bash examples which illustrate getting and setting tag information
         - `id3`: ID3v2 ID (must be exactly 3 or 4 characters depending on the tag version)
         - `vorbis`: Vorbis comment ID
 
+* Removes the "forced" flag from all tracks, flags the track with the ID 2 as "default" and sets its language to "ger":  
+  ```
+  tageditor set track=all forced=no track=2 default=yes language=ger
+  ```
 
-* Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:
+    - So modifying track attributes is possible as well and it works like setting tag fields.
+    - Specific tracks can currently only be referred by ID.
+
+* Here is another example, demonstrating the use of arrays and the syntax to auto-increase numeric fields such as the track number:  
   ```
   cd some/dir
   # create an empty array
@@ -210,7 +218,7 @@ Here are some Bash examples which illustrate getting and setting tag information
   done
   # now set the titles and other tag information
   tageditor set "${titles[@]}" album="Some Album" track+=1/25 disk=1/1 -f *.m4a
-  ```
+  ```  
   **Note**: The *+* sign after the field name *track* which indicates that the field value should be increased after
   a file has been processed.
 
