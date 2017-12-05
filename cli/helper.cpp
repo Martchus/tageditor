@@ -446,7 +446,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             continue;
         } else if(!strncmp(fieldDenotationString, "track=", 6)) {
             const vector<string> parts = splitString<vector<string>>(fieldDenotationString + 6, ",", EmptyPartsTreat::Omit);
-            bool allTracks = scope.allTracks;
+            bool allTracks = false;
             vector<uint64> trackIds;
             trackIds.reserve(parts.size());
             bool error = false;
