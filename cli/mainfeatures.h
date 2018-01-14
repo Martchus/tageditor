@@ -53,6 +53,7 @@ void generateFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const Ap
 void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
 void extractField(const ApplicationUtilities::Argument &fieldArg, const ApplicationUtilities::Argument &attachmentArg, const ApplicationUtilities::Argument &inputFilesArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &verboseArg);
+void exportToJson(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg);
 
 }
 

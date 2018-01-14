@@ -18,6 +18,7 @@ set(META_NO_TIDY ON)
 # add project files
 set(HEADER_FILES
     cli/attachmentinfo.h
+    cli/fieldmapping.h
     cli/helper.h
     cli/mainfeatures.h
     application/knownfieldmodel.h
@@ -25,6 +26,7 @@ set(HEADER_FILES
 set(SRC_FILES
     application/main.cpp
     cli/attachmentinfo.cpp
+    cli/fieldmapping.cpp
     cli/helper.cpp
     cli/mainfeatures.cpp
     application/knownfieldmodel.cpp
@@ -218,6 +220,38 @@ endif()
 find_package(tagparser 6.4.0 REQUIRED)
 use_tag_parser()
 list(APPEND TEST_LIBRARIES ${TAG_PARSER_SHARED_LIB})
+
+# enable experimental JSON export
+option(ENABLE_JSON_EXPORT "enable JSON export" OFF)
+if(ENABLE_JSON_EXPORT)
+    # find reflective-rapidjson
+    find_package(reflective_rapidjson REQUIRED)
+    use_reflective_rapidjson()
+
+    # add additional source files
+    list(APPEND HEADER_FILES
+        cli/json.h
+    )
+    list(APPEND SRC_FILES
+        cli/json.cpp
+    )
+
+    # add generator invocation
+    include(ReflectionGenerator)
+    add_reflection_generator_invocation(
+        INPUT_FILES
+            cli/json.h
+        GENERATORS
+            json
+        OUTPUT_LISTS
+            HEADER_FILES
+        CLANG_OPTIONS_FROM_TARGETS
+            tageditor
+    )
+
+    # add compile definitions
+    list(APPEND META_PRIVATE_COMPILE_DEFINITIONS ${META_PROJECT_VARNAME_UPPER}_JSON_EXPORT)
+endif()
 
 # add Qt modules which can currently not be detected automatically
 list(APPEND ADDITIONAL_QT_MODULES Concurrent Network)

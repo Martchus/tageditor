@@ -1,6 +1,9 @@
 #include "./mainfeatures.h"
 #include "./helper.h"
 #include "./attachmentinfo.h"
+#ifdef TAGEDITOR_JSON_EXPORT
+#include "./json.h"
+#endif
 
 #include "../application/knownfieldmodel.h"
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
@@ -15,6 +18,8 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
 
+#include <reflective-rapidjson/lib/json/reflector.h>
+
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/conversion/stringconversion.h>
@@ -27,6 +32,11 @@
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 # include <QDir>
 # include <qtutilities/misc/conversion.h>
+#endif
+
+#ifdef TAGEDITOR_JSON_EXPORT
+#include <rapidjson/ostreamwrapper.h>
+#include <rapidjson/writer.h>
 #endif
 
 #include <iostream>
@@ -841,6 +851,52 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
         }
         printNotifications(inputFileInfo, "Parsing notifications:", verboseArg.isPresent());
     }
+}
+
+void exportToJson(const ArgumentOccurrence &, const Argument &filesArg)
+{
+    CMD_UTILS_START_CONSOLE;
+
+#ifdef TAGEDITOR_JSON_EXPORT
+    // check whether files have been specified
+    if(!filesArg.isPresent() || filesArg.values().empty()) {
+        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
+        return;
+    }
+
+    RAPIDJSON_NAMESPACE::Document document(RAPIDJSON_NAMESPACE::kArrayType);
+    std::vector<Json::FileInfo> jsonData;
+    MediaFileInfo fileInfo;
+
+    // gather tags for each file
+    for(const char *file : filesArg.values()) {
+        try {
+            // parse tags
+            fileInfo.setPath(file);
+            fileInfo.open(true);
+            fileInfo.parseContainerFormat();
+            fileInfo.parseTags();
+            fileInfo.parseTracks();
+            jsonData.emplace_back(fileInfo, document.GetAllocator());
+        } catch(const Media::Failure &) {
+            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
+        } catch(...) {
+            ::IoUtilities::catchIoFailure();
+            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
+        }
+    }
+
+    // print the gathered data as JSON document
+    ReflectiveRapidJSON::JsonReflector::push(jsonData, document, document.GetAllocator());
+    RAPIDJSON_NAMESPACE::OStreamWrapper osw(cout);
+    RAPIDJSON_NAMESPACE::Writer<RAPIDJSON_NAMESPACE::OStreamWrapper> writer(osw);
+    document.Accept(writer);
+    cout << endl;
+
+#else
+    VAR_UNUSED(filesArg);
+    cerr << Phrases::Error << "JSON export has not been enabled when building the tag editor." << Phrases::EndFlush;
+#endif
 }
 
 void applyGeneralConfig(const Argument &timeSapnFormatArg)

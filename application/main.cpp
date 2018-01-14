@@ -219,6 +219,11 @@ int main(int argc, char *argv[])
     extractFieldArg.setSubArguments({&fieldArg, &attachmentArg, &fileArg, &outputFileArg, &verboseArg});
     extractFieldArg.setDenotesOperation(true);
     extractFieldArg.setCallback(std::bind(Cli::extractField, std::cref(fieldArg), std::cref(attachmentArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
+    // export to JSON
+    Argument exportArg("export", 'j', "exports the tag information for the specified files to JSON");
+    exportArg.setSubArguments({&filesArg});
+    exportArg.setDenotesOperation(true);
+    exportArg.setCallback(std::bind(Cli::exportToJson, _1, std::cref(filesArg)));
     // file info
     Argument validateArg("validate", 'c', "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     validateArg.setCombinable(true);
@@ -233,7 +238,7 @@ int main(int argc, char *argv[])
     qtConfigArgs.qtWidgetsGuiArg().setAbbreviation('\0');
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&defaultFileArg);
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&renamingUtilityArg);
-    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &genInfoArg, &timeSpanFormatArg, &noColorArg, &helpArg});
+    parser.setMainArguments({&qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg, &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &exportArg, &genInfoArg, &timeSpanFormatArg, &noColorArg, &helpArg});
     // parse given arguments
     parser.parseArgsExt(argc, argv, ParseArgumentBehavior::CheckConstraints | ParseArgumentBehavior::ExitOnFailure);
 

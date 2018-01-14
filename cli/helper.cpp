@@ -1,4 +1,5 @@
 #include "./helper.h"
+#include "./fieldmapping.h"
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/matroska/matroskatag.h>
@@ -598,44 +599,11 @@ FieldId FieldId::fromTagDenotation(const char *denotation, size_t denotationSize
     }
 
     // determine KnownField for generic denotation
-    static const struct {
-        const char *knownDenotation;
-        KnownField knownField;
-    } fieldMapping[] = {
-        {"title", KnownField::Title},
-        {"album", KnownField::Album},
-        {"artist", KnownField::Artist},
-        {"genre", KnownField::Genre},
-        {"year", KnownField::Year},
-        {"comment", KnownField::Comment},
-        {"bpm", KnownField::Bpm},
-        {"bps", KnownField::Bps},
-        {"lyricist", KnownField::Lyricist},
-        {"track", KnownField::TrackPosition},
-        {"disk", KnownField::DiskPosition},
-        {"part", KnownField::PartNumber},
-        {"totalparts", KnownField::TotalParts},
-        {"encoder", KnownField::Encoder},
-        {"recorddate", KnownField::RecordDate},
-        {"performers", KnownField::Performers},
-        {"duration", KnownField::Length},
-        {"language", KnownField::Language},
-        {"encodersettings", KnownField::EncoderSettings},
-        {"lyrics", KnownField::Lyrics},
-        {"synchronizedlyrics", KnownField::SynchronizedLyrics},
-        {"grouping", KnownField::Grouping},
-        {"recordlabel", KnownField::RecordLabel},
-        {"cover", KnownField::Cover},
-        {"composer", KnownField::Composer},
-        {"rating", KnownField::Rating},
-        {"description", KnownField::Description},
-    };
-    for(const auto &mapping : fieldMapping) {
-        if(!strncmp(denotation, mapping.knownDenotation, denotationSize)) {
-            return FieldId(mapping.knownField, nullptr, 0);
-        }
+    const auto knownField(FieldMapping::knownField(denotation, denotationSize));
+    if (knownField == KnownField::Invalid) {
+        throw ConversionException("generic field name is unknown");
     }
-    throw ConversionException("generic field name is unknown");
+    return FieldId(knownField, nullptr, 0);
 }
 
 FieldId FieldId::fromTrackDenotation(const char *denotation, size_t denotationSize)
