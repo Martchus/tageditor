@@ -90,7 +90,7 @@ TagValue::TagValue(const Media::TagValue &tagValue, RAPIDJSON_NAMESPACE::Documen
             value.SetNull();
         }
     } catch (const ConversionUtilities::ConversionException &e) {
-        ReflectiveRapidJSON::JsonReflector::push(e.what(), value, allocator);
+        ReflectiveRapidJSON::JsonReflector::push(string(e.what()), value, allocator);
         kind = "error";
     }
 }
