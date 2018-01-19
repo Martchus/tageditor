@@ -33,6 +33,9 @@ inline void push<Cli::Json::TagValue::ValueAllowedToMove>(
 namespace Cli {
 namespace Json {
 
+/*!
+ * \brief Converts the specified Media::TagValue to an object suitable for JSON serialization.
+ */
 TagValue::TagValue(const Media::TagValue &tagValue, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : mimeType(tagValue.mimeType())
 {
@@ -92,9 +95,27 @@ TagValue::TagValue(const Media::TagValue &tagValue, RAPIDJSON_NAMESPACE::Documen
     }
 }
 
+/*!
+ * \brief Copies a Media::TagTarget for serialization.
+ * \remarks Due to the lack of getter/setter support in Reflective RapidJSON we can't use Media::TagTarget directly.
+ */
+TargetInfo::TargetInfo(const TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
+    : level(tagTarget.level())
+    , levelName(tagTarget.levelName())
+    , tracks(tagTarget.tracks())
+    , chapters(tagTarget.chapters())
+    , editions(tagTarget.editions())
+    , attachments(tagTarget.attachments())
+{
+    VAR_UNUSED(allocator)
+}
+
+/*!
+ * \brief Copies relevant information from Medai::Tag for serialization (especially the fields).
+ */
 TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : format(tag.typeName())
-    , target(tag.targetString())
+    , target(tag.target(), allocator)
 {
     for (auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
         const auto &tagValues(tag.values(field));
@@ -110,6 +131,10 @@ TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &a
     }
 }
 
+/*!
+ * \brief Copies relevant information from Medai::MediaFileInfo for serialization.
+ * \remarks The \a mediaFileInfo must have been parsed before.
+ */
 FileInfo::FileInfo(const Media::MediaFileInfo &mediaFileInfo, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : fileName(mediaFileInfo.fileName())
     , size(mediaFileInfo.size())

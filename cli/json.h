@@ -3,6 +3,8 @@
 
 #include <reflective-rapidjson/lib/json/serializable.h>
 
+#include <tagparser/tagtarget.h>
+
 #include <c++utilities/chrono/timespan.h>
 
 #include <unordered_map>
@@ -25,11 +27,23 @@ struct TagValue : ReflectiveRapidJSON::JsonSerializable<TagValue> {
     } value;
 };
 
+struct TargetInfo : ReflectiveRapidJSON::JsonSerializable<TargetInfo> {
+    using IdContainerType = Media::TagTarget::IdContainerType;
+    TargetInfo(const Media::TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
+
+    uint64 level;
+    std::string levelName;
+    IdContainerType tracks;
+    IdContainerType chapters;
+    IdContainerType editions;
+    IdContainerType attachments;
+};
+
 struct TagInfo : ReflectiveRapidJSON::JsonSerializable<TagInfo> {
     TagInfo(const Media::Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
 
     const char *format = nullptr;
-    std::string target;
+    TargetInfo target;
     std::unordered_map<std::string, std::vector<TagValue>> fields;
 };
 
