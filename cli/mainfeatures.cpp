@@ -18,7 +18,7 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
 
-#include <reflective-rapidjson/lib/json/reflector.h>
+#include <reflective_rapidjson/json/reflector.h>
 
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/commandlineutils.h>

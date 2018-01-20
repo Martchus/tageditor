@@ -1,7 +1,7 @@
 #include "./json.h"
 #include "./fieldmapping.h"
 
-#include <reflective-rapidjson/lib/json/reflector-chronoutilities.h>
+#include <reflective_rapidjson/json/reflector-chronoutilities.h>
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>

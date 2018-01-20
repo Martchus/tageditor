@@ -1,7 +1,7 @@
 #ifndef CLI_JSON
 #define CLI_JSON
 
-#include <reflective-rapidjson/lib/json/serializable.h>
+#include <reflective_rapidjson/json/serializable.h>
 
 #include <tagparser/tagtarget.h>
 
