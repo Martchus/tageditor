@@ -265,18 +265,25 @@ To build without GUI, add the following parameters to the CMake call:
 -DWIDGETS_GUI=OFF -DQUICK_GUI=OFF
 ```
 
+### JSON export
+As a small demo for [Reflective RapidJSON](https://github.com/Martchus/reflective-rapidjson), the tag editor features an optional
+JSON export. To enable it, add `-DENABLE_JSON_EXPORT` to the CMake arguments.
+
+When enabled, the following additional dependencies are required (only at built-time): rapidjson, reflective-rapidjson and llvm/clang
+
 ### Building this straight
 0. Install (preferably the latest version of) g++ or clang, the required Qt 5 modules and CMake.
-1. Get the sources. For the lastest version from Git clone the following repositories:
+1. Get the sources. For the lastest version from Git clone the following repositories:  
    ```
    cd $SOURCES
    git clone https://github.com/Martchus/cpp-utilities.git c++utilities
-   git clone https://github.com/Martchus/qtutilities.git
    git clone https://github.com/Martchus/tagparser.git
+   git clone https://github.com/Martchus/qtutilities.git                  # only required for Qt GUI
+   git clone https://github.com/Martchus/reflective-rapidjson.git         # only required for JSON export
    git clone https://github.com/Martchus/tageditor.git
    git clone https://github.com/Martchus/subdirs.git
    ```
-2. Build and install everything in one step:
+2. Build and install everything in one step:  
    ```
    cd $BUILD_DIR
    cmake \
