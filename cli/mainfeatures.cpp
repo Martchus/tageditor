@@ -18,7 +18,9 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
 
-#include <reflective_rapidjson/json/reflector.h>
+#ifdef TAGEDITOR_JSON_EXPORT
+# include <reflective_rapidjson/json/reflector.h>
+#endif
 
 #include <c++utilities/application/failure.h>
 #include <c++utilities/application/commandlineutils.h>
