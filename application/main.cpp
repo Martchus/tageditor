@@ -220,10 +220,11 @@ int main(int argc, char *argv[])
     extractFieldArg.setDenotesOperation(true);
     extractFieldArg.setCallback(std::bind(Cli::extractField, std::cref(fieldArg), std::cref(attachmentArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
     // export to JSON
+    ConfigValueArgument prettyArg("pretty", '\0', "prints with indentation and spacing");
     Argument exportArg("export", 'j', "exports the tag information for the specified files to JSON");
-    exportArg.setSubArguments({&filesArg});
+    exportArg.setSubArguments({&filesArg, &prettyArg});
     exportArg.setDenotesOperation(true);
-    exportArg.setCallback(std::bind(Cli::exportToJson, _1, std::cref(filesArg)));
+    exportArg.setCallback(std::bind(Cli::exportToJson, _1, std::cref(filesArg), std::cref(prettyArg)));
     // file info
     Argument validateArg("validate", 'c', "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     validateArg.setCombinable(true);

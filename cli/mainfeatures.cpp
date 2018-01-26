@@ -39,6 +39,7 @@
 #ifdef TAGEDITOR_JSON_EXPORT
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/writer.h>
+#include <rapidjson/prettywriter.h>
 #endif
 
 #include <iostream>
@@ -855,7 +856,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
     }
 }
 
-void exportToJson(const ArgumentOccurrence &, const Argument &filesArg)
+void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Argument &prettyArg)
 {
     CMD_UTILS_START_CONSOLE;
 
@@ -891,8 +892,13 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg)
     // print the gathered data as JSON document
     ReflectiveRapidJSON::JsonReflector::push(jsonData, document, document.GetAllocator());
     RAPIDJSON_NAMESPACE::OStreamWrapper osw(cout);
-    RAPIDJSON_NAMESPACE::Writer<RAPIDJSON_NAMESPACE::OStreamWrapper> writer(osw);
-    document.Accept(writer);
+    if (prettyArg.isPresent()) {
+        RAPIDJSON_NAMESPACE::PrettyWriter<RAPIDJSON_NAMESPACE::OStreamWrapper> writer(osw);
+        document.Accept(writer);
+    } else {
+        RAPIDJSON_NAMESPACE::Writer<RAPIDJSON_NAMESPACE::OStreamWrapper> writer(osw);
+        document.Accept(writer);
+    }
     cout << endl;
 
 #else
