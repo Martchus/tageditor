@@ -798,7 +798,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         const QPixmap pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")).pixmap(16));
         QString text;
         if(conversionError) {
-            text = tr("The value of this field could not be read from the file because it couldn't be converted proberly.");
+            text = tr("The value of this field could not be read from the file because it couldn't be converted properly.");
             if(!canApply) {
                 text += QChar('\n');
             }
