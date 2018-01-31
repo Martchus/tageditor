@@ -1204,7 +1204,7 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         static const QString processingErrorMsg(tr("The tags couldn't be saved. See the info box for detail."));
         static const QString ioErrorMsg(tr("The tags couldn't be saved because an IO error occured."));
         const auto &errorMsg = ioError ? ioErrorMsg : processingErrorMsg;
-        QMessageBox::warning(this, QApplication::applicationName(), errorMsg);
+        QMessageBox::critical(this, QApplication::applicationName(), errorMsg);
         emit statusMessage(errorMsg);
         m_ui->makingNotificationWidget->setText(errorMsg);
         m_ui->makingNotificationWidget->setNotificationType(NotificationType::Critical);
