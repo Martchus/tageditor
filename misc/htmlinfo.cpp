@@ -1,4 +1,5 @@
 #include "./htmlinfo.h"
+#include "./utility.h"
 
 #include <tagparser/signature.h>
 #include <tagparser/mediafileinfo.h>
@@ -113,6 +114,14 @@ public:
         startRow(label, head);
         writer.writeCharacters(text);
         endRow();
+    }
+
+    void mkRow(const QString &label, ElementPosition elementPosition, bool head = true)
+    {
+        const auto asString(Utility::elementPositionToQString(elementPosition));
+        if (!asString.isEmpty()) {
+            mkRow(label, asString, head);
+        }
     }
 
     void mkRow(const QString &label, const QString &helpText, const QString &text)
@@ -923,6 +932,8 @@ public:
             if(m_file.paddingSize()) {
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"), QStringLiteral("%1 (%2 %)").arg(qstr(dataSizeToString(m_file.paddingSize(), true))).arg(static_cast<double>(m_file.paddingSize()) / m_file.size() * 100.0, 0, 'g', 2));
             }
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tag position"), container->determineTagPosition());
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Index position"), container->determineIndexPosition());
 
             m_writer.writeEndElement();
         }

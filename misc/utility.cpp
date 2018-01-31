@@ -11,6 +11,7 @@
 
 #include <c++utilities/io/path.h>
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QDirIterator>
@@ -40,9 +41,8 @@ const char *textEncodingToCodecName(TagTextEncoding textEncoding)
         return "UTF-16LE";
     case TagTextEncoding::Unspecified:
         return "ISO 8859-1"; // assumption
-    default:
-        return nullptr;
     }
+    return nullptr;
 }
 
 QString tagValueToQString(const TagValue &value)
@@ -107,6 +107,19 @@ string qstringToString(const QString &value, TagTextEncoding textEncoding)
 TagValue qstringToTagValue(const QString &value, TagTextEncoding textEncoding)
 {
     return value.isEmpty() ? TagValue() : TagValue(qstringToString(value, textEncoding), textEncoding);
+}
+
+QString elementPositionToQString(ElementPosition elementPosition)
+{
+    switch(elementPosition) {
+    case ElementPosition::BeforeData:
+        return QCoreApplication::translate("Utility", "before data");
+    case ElementPosition::AfterData:
+        return QCoreApplication::translate("Utility", "after data");
+    case ElementPosition::Keep:
+        ;
+    }
+    return QString();
 }
 
 QString formatName(const QString &str, bool underscoreToWhitespace)

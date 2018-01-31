@@ -1,4 +1,5 @@
 #include "./fileinfomodel.h"
+#include "../misc/utility.h"
 
 #include <qtutilities/misc/conversion.h>
 
@@ -326,6 +327,8 @@ void FileInfoModel::updateCache()
             containerHelper.appendRow(tr("Document type"), container->documentType());
             containerHelper.appendRow(tr("Document version"), container->doctypeVersion());
             containerHelper.appendRow(tr("Document read version"), container->doctypeReadVersion());
+            containerHelper.appendRow(tr("Tag position"), Utility::elementPositionToQString(container->determineTagPosition()));
+            containerHelper.appendRow(tr("Index position"), Utility::elementPositionToQString(container->determineIndexPosition()));
         }
         containerHelper.appendRow(tr("Padding size"), m_file->paddingSize());
 
