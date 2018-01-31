@@ -933,7 +933,7 @@ public:
             startTableSection();
             const QString moreId(QStringLiteral("tagsMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Tags"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 tag(s) assigned", 0, static_cast<int>(tags.size())).arg(tags.size()));
+            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 tag(s) assigned", nullptr, static_cast<int>(tags.size())).arg(tags.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
             m_rowMaker.endRow();
@@ -962,7 +962,7 @@ public:
             startTableSection();
             const QString moreId(QStringLiteral("tracksMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Tracks"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 track(s)", 0, static_cast<int>(tracks.size())).arg(tracks.size()));
+            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 track(s)", nullptr, static_cast<int>(tracks.size())).arg(tracks.size()));
             const string summary(m_file.technicalSummary());
             if(!summary.empty()) {
                 m_writer.writeCharacters(QStringLiteral(": "));
@@ -989,7 +989,7 @@ public:
             startTableSection();
             const QString moreId(QStringLiteral("attachmentsMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Attachments"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 attachment(s) assigned", 0, static_cast<int>(attachments.size())).arg(attachments.size()));
+            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 attachment(s) assigned", nullptr, static_cast<int>(attachments.size())).arg(attachments.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
             m_rowMaker.endRow();
@@ -1012,7 +1012,7 @@ public:
                     startTableSection();
                     const QString moreId(QStringLiteral("editionsMore"));
                     m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Editions/chapters"));
-                    m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", 0, static_cast<int>(editionEntries.size())).arg(editionEntries.size()));
+                    m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", nullptr, static_cast<int>(editionEntries.size())).arg(editionEntries.size()));
                     mkSpace();
                     mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
                     m_rowMaker.endRow();
@@ -1030,7 +1030,7 @@ public:
                 startTableSection();
                 const QString moreId(QStringLiteral("chaptersMore"));
                 m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "chapters"));
-                m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 chapter(s)", 0, static_cast<int>(chapterCount)).arg(chapterCount));
+                m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 chapter(s)", nullptr, static_cast<int>(chapterCount)).arg(chapterCount));
                 mkSpace();
                 mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
                 m_rowMaker.endRow();

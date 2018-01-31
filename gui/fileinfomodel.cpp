@@ -146,7 +146,7 @@ void addNotifications(Media::NotificationList *notifications, QStandardItem *par
 
 }
 
-template<class ElementType, bool isAdditional = false> void addElementNode(ElementType *element, QStandardItem *parent)
+template<class ElementType, bool isAdditional = false> void addElementNode(const ElementType *element, QStandardItem *parent)
 {
     while(element) {
         if(element->isParsed()) {
@@ -335,7 +335,7 @@ void FileInfoModel::updateCache()
             if(!tags.empty()) {
                 auto *tagsItem = defaultItem(tr("Tags"));
                 setItem(++currentRow, tagsItem);
-                setItem(currentRow, 1, defaultItem(tr("%1 tag(s) assigned", 0, tags.size()).arg(tags.size())));
+                setItem(currentRow, 1, defaultItem(tr("%1 tag(s) assigned", nullptr, static_cast<int>(tags.size())).arg(tags.size())));
 
                 for(const Tag *tag : tags) {
                     auto *tagItem = defaultItem(tag->typeName());
@@ -357,9 +357,9 @@ void FileInfoModel::updateCache()
                 setItem(++currentRow, tracksItem);
                 const string summary(m_file->technicalSummary());
                 if(summary.empty()) {
-                    setItem(currentRow, 1, defaultItem(tr("%1 track(s) contained", 0, tracks.size()).arg(tracks.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 track(s) contained", nullptr, static_cast<int>(tracks.size())).arg(tracks.size())));
                 } else {
-                    setItem(currentRow, 1, defaultItem(tr("%1 track(s): ", 0, tracks.size()).arg(tracks.size()) + QString::fromUtf8(summary.data(), summary.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 track(s): ", nullptr, static_cast<int>(tracks.size())).arg(tracks.size()) + QString::fromUtf8(summary.data(), summary.size())));
                 }
 
                 size_t number = 0;
@@ -375,7 +375,7 @@ void FileInfoModel::updateCache()
                     if(track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
                         trackHelper.appendRow(tr("Abbreviation"), fmtAbbr);
                     }
-                    if(track->version()) {
+                    if(track->version() > 0) {
                         switch(track->format().general) {
                         case GeneralMediaFormat::Mpeg4Video:
                         case GeneralMediaFormat::Avc:
@@ -458,7 +458,7 @@ void FileInfoModel::updateCache()
             if(!attachments.empty()) {
                 auto *attachmentsItem = defaultItem(tr("Attachments"));
                 setItem(++currentRow, attachmentsItem);
-                setItem(currentRow, 1, defaultItem(tr("%1 attachment(s) present", 0, attachments.size()).arg(attachments.size())));
+                setItem(currentRow, 1, defaultItem(tr("%1 attachment(s) present", nullptr, attachments.size()).arg(attachments.size())));
 
                 size_t number = 0;
                 for(const AbstractAttachment *attachment : attachments) {
@@ -521,7 +521,7 @@ void FileInfoModel::updateCache()
                 if(!editionEntries.empty()) {
                     auto *editionsItem = defaultItem(tr("Editions"));
                     setItem(++currentRow, editionsItem);
-                    setItem(currentRow, 1, defaultItem(tr("%1 edition(s) present", 0, editionEntries.size()).arg(editionEntries.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 edition(s) present", nullptr, editionEntries.size()).arg(editionEntries.size())));
                     size_t editionNumber = 0;
                     for(const auto &edition : editionEntries) {
                         auto *editionItem = defaultItem(tr("Edition #%1").arg(++editionNumber));
@@ -551,7 +551,7 @@ void FileInfoModel::updateCache()
                 if(!chapters.empty()) {
                     auto *chaptersItem = defaultItem(tr("Chapters"));
                     setItem(++currentRow, chaptersItem);
-                    setItem(currentRow, 1, defaultItem(tr("%1 chapter(s) present", 0, chapters.size()).arg(chapters.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 chapter(s) present", nullptr, chapters.size()).arg(chapters.size())));
                     for(const AbstractChapter *chapter : chapters) {
                         addChapter(chapter, chaptersItem);
                     }
@@ -570,12 +570,12 @@ void FileInfoModel::updateCache()
             switch(m_file->containerFormat()) {
             case ContainerFormat::Mp4:
             case ContainerFormat::QuickTime:
-                addElementNode(static_cast<Mp4Container *>(container)->firstElement(), structureItem);
+                addElementNode(static_cast<const Mp4Container *>(container)->firstElement(), structureItem);
                 break;
             case ContainerFormat::Matroska:
             case ContainerFormat::Webm:
             case ContainerFormat::Ebml:
-                addElementNode(static_cast<MatroskaContainer *>(container)->firstElement(), structureItem);
+                addElementNode(static_cast<const MatroskaContainer *>(container)->firstElement(), structureItem);
                 break;
             default:
                 ;

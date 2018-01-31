@@ -99,7 +99,7 @@ string qstringToString(const QString &value, TagTextEncoding textEncoding)
             codec = QTextCodec::codecForLocale();
         }
         const auto encodedString = codec->fromUnicode(value);
-        return string(encodedString.data(), encodedString.size());
+        return string(encodedString.data(), static_cast<string::size_type>(encodedString.size()));
     }
     return string();
 }

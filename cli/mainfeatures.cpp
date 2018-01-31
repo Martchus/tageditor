@@ -903,6 +903,7 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
 
 #else
     VAR_UNUSED(filesArg);
+    VAR_UNUSED(prettyArg);
     cerr << Phrases::Error << "JSON export has not been enabled when building the tag editor." << Phrases::EndFlush;
 #endif
 }

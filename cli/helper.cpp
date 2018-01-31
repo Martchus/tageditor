@@ -181,13 +181,15 @@ void printNotifications(const MediaFileInfo &fileInfo, const char *head, bool be
 
 void printProperty(const char *propName, const char *value, const char *suffix, Indentation indentation)
 {
-    if(*value) {
-        cout << indentation << propName << Indentation(30 - strlen(propName)) << value;
-        if(suffix) {
-            cout << ' ' << suffix;
-        }
-        cout << '\n';
+    if(!*value) {
+        return;
     }
+    const auto propLen(strlen(propName));
+    cout << indentation << propName << Indentation(static_cast<unsigned char>(propLen < 30 ? 30 - propLen : 1)) << value;
+    if(suffix) {
+        cout << ' ' << suffix;
+    }
+    cout << '\n';
 }
 
 void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix, Indentation indentation)
