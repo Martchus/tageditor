@@ -1,5 +1,6 @@
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/catchiofailure.h>
+#include <c++utilities/io/misc.h>
 #include <c++utilities/tests/testutils.h>
 
 #include <tagparser/mediafileinfo.h>
@@ -46,6 +47,7 @@ class CliTests : public TestFixture
     CPPUNIT_TEST(testExtraction);
     CPPUNIT_TEST(testReadingAndWritingDocumentTitle);
     CPPUNIT_TEST(testFileLayoutOptions);
+    CPPUNIT_TEST(testJsonExport);
 #endif
     CPPUNIT_TEST_SUITE_END();
 
@@ -68,6 +70,7 @@ public:
     void testExtraction();
     void testReadingAndWritingDocumentTitle();
     void testFileLayoutOptions();
+    void testJsonExport();
 #endif
 
 private:
@@ -847,5 +850,20 @@ void CliTests::testFileLayoutOptions()
 
     remove(mp4File2.data());
     remove((mp4File2 + ".bak").data());
+}
+
+/*!
+ * \brief Tests the JSON export.
+ */
+void CliTests::testJsonExport()
+{
+    cout << "\nJSON export" <<  endl;
+    string stdout, stderr;
+
+    const auto file(testFilePath("matroska_wave1/test3.mkv"));
+    const auto expectedJson(IoUtilities::readFile(testFilePath("matroska_wave1-test3.json"), 2048));
+    const char *const args[] = {"tageditor", "export", "--pretty", "-f", file.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args);
+    CPPUNIT_ASSERT_EQUAL(expectedJson, stdout);
 }
 #endif

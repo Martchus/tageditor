@@ -1,0 +1,45 @@
+[
+    {
+        "fileName": "test3.mkv",
+        "size": 21061472,
+        "mimeType": "video/x-matroska",
+        "tags": [
+            {
+                "format": "Matroska tag",
+                "target": {
+                    "level": 50,
+                    "levelName": "",
+                    "tracks": [],
+                    "chapters": [],
+                    "editions": [],
+                    "attachments": []
+                },
+                "fields": {
+                    "comment": [
+                        {
+                            "kind": "text",
+                            "mimeType": "",
+                            "value": "Matroska Validation File 3, header stripping on the video track and no SimpleBlock"
+                        }
+                    ],
+                    "title": [
+                        {
+                            "kind": "text",
+                            "mimeType": "",
+                            "value": "Elephant Dream - test 3"
+                        }
+                    ],
+                    "year": [
+                        {
+                            "kind": "text",
+                            "mimeType": "",
+                            "value": "2010"
+                        }
+                    ]
+                }
+            }
+        ],
+        "formatSummary": "H.264-576p / MP3-2ch-eng",
+        "duration": "00:00:00"
+    }
+]
