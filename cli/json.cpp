@@ -111,7 +111,7 @@ TargetInfo::TargetInfo(const TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document
 }
 
 /*!
- * \brief Copies relevant information from Medai::Tag for serialization (especially the fields).
+ * \brief Copies relevant information from Media::Tag for serialization (especially the fields).
  */
 TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : format(tag.typeName())
@@ -132,7 +132,7 @@ TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &a
 }
 
 /*!
- * \brief Copies relevant information from Medai::MediaFileInfo for serialization.
+ * \brief Copies relevant information from Media::MediaFileInfo for serialization.
  * \remarks The \a mediaFileInfo must have been parsed before.
  */
 FileInfo::FileInfo(const Media::MediaFileInfo &mediaFileInfo, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
