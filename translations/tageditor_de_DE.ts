@@ -17,488 +17,498 @@
 <context>
     <name>HtmlInfo</name>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="428"/>
+        <location filename="../misc/htmlinfo.cpp" line="437"/>
         <source>hide</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="509"/>
+        <location filename="../misc/htmlinfo.cpp" line="518"/>
         <source>Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="511"/>
-        <location filename="../misc/htmlinfo.cpp" line="648"/>
-        <location filename="../misc/htmlinfo.cpp" line="670"/>
-        <location filename="../misc/htmlinfo.cpp" line="712"/>
+        <location filename="../misc/htmlinfo.cpp" line="520"/>
+        <location filename="../misc/htmlinfo.cpp" line="657"/>
+        <location filename="../misc/htmlinfo.cpp" line="679"/>
+        <location filename="../misc/htmlinfo.cpp" line="721"/>
         <source>ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="511"/>
+        <location filename="../misc/htmlinfo.cpp" line="520"/>
         <source>The unique number used to identify the track in the container file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="514"/>
+        <location filename="../misc/htmlinfo.cpp" line="523"/>
         <source>Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="514"/>
+        <location filename="../misc/htmlinfo.cpp" line="523"/>
         <source>The index of the track in the container file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="517"/>
-        <location filename="../misc/htmlinfo.cpp" line="651"/>
+        <location filename="../misc/htmlinfo.cpp" line="526"/>
+        <location filename="../misc/htmlinfo.cpp" line="660"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="519"/>
+        <location filename="../misc/htmlinfo.cpp" line="528"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="521"/>
+        <location filename="../misc/htmlinfo.cpp" line="530"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="521"/>
+        <location filename="../misc/htmlinfo.cpp" line="530"/>
         <source>The unabbreviated name of the track&apos;s format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="523"/>
+        <location filename="../misc/htmlinfo.cpp" line="532"/>
         <source>Abbreviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="523"/>
+        <location filename="../misc/htmlinfo.cpp" line="532"/>
         <source>The abbreviated name of the track&apos;s format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="529"/>
+        <location filename="../misc/htmlinfo.cpp" line="538"/>
         <source>Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="529"/>
-        <location filename="../misc/htmlinfo.cpp" line="532"/>
+        <location filename="../misc/htmlinfo.cpp" line="538"/>
+        <location filename="../misc/htmlinfo.cpp" line="541"/>
         <source>The version/level of the track&apos;s format.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="532"/>
-        <location filename="../misc/htmlinfo.cpp" line="908"/>
-        <location filename="../misc/htmlinfo.cpp" line="947"/>
+        <location filename="../misc/htmlinfo.cpp" line="541"/>
+        <location filename="../misc/htmlinfo.cpp" line="917"/>
+        <location filename="../misc/htmlinfo.cpp" line="958"/>
         <source>Version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="537"/>
+        <location filename="../misc/htmlinfo.cpp" line="546"/>
         <source>Extension</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="537"/>
+        <location filename="../misc/htmlinfo.cpp" line="546"/>
         <source>Used format extensions.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="540"/>
+        <location filename="../misc/htmlinfo.cpp" line="549"/>
         <source>Format/codec ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="540"/>
+        <location filename="../misc/htmlinfo.cpp" line="549"/>
         <source>The raw format/codec identifier extracted from the container.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="543"/>
-        <location filename="../misc/htmlinfo.cpp" line="654"/>
-        <location filename="../misc/htmlinfo.cpp" line="868"/>
-        <location filename="../misc/htmlinfo.cpp" line="952"/>
+        <location filename="../misc/htmlinfo.cpp" line="552"/>
+        <location filename="../misc/htmlinfo.cpp" line="663"/>
+        <location filename="../misc/htmlinfo.cpp" line="877"/>
+        <location filename="../misc/htmlinfo.cpp" line="963"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="546"/>
-        <location filename="../misc/htmlinfo.cpp" line="871"/>
+        <location filename="../misc/htmlinfo.cpp" line="555"/>
+        <location filename="../misc/htmlinfo.cpp" line="880"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="549"/>
+        <location filename="../misc/htmlinfo.cpp" line="558"/>
         <source>Avg. bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="552"/>
+        <location filename="../misc/htmlinfo.cpp" line="561"/>
         <source>Maximum bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="555"/>
+        <location filename="../misc/htmlinfo.cpp" line="564"/>
         <source>Creation time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="558"/>
+        <location filename="../misc/htmlinfo.cpp" line="567"/>
         <source>Modification time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="561"/>
+        <location filename="../misc/htmlinfo.cpp" line="570"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="564"/>
+        <location filename="../misc/htmlinfo.cpp" line="573"/>
         <source>Compressor name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="568"/>
-        <location filename="../misc/htmlinfo.cpp" line="570"/>
+        <location filename="../misc/htmlinfo.cpp" line="577"/>
+        <location filename="../misc/htmlinfo.cpp" line="579"/>
         <source>Sampling frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="575"/>
+        <location filename="../misc/htmlinfo.cpp" line="584"/>
         <source>Frame count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="576"/>
+        <location filename="../misc/htmlinfo.cpp" line="585"/>
         <source>Sample count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="580"/>
+        <location filename="../misc/htmlinfo.cpp" line="589"/>
         <source>Bits per sample</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="583"/>
+        <location filename="../misc/htmlinfo.cpp" line="592"/>
         <source>Quality</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="586"/>
+        <location filename="../misc/htmlinfo.cpp" line="595"/>
         <source>Pixel size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="589"/>
+        <location filename="../misc/htmlinfo.cpp" line="598"/>
         <source>Display size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="592"/>
+        <location filename="../misc/htmlinfo.cpp" line="601"/>
         <source>Pixel Aspect Ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="595"/>
+        <location filename="../misc/htmlinfo.cpp" line="604"/>
         <source>Cropping</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="598"/>
+        <location filename="../misc/htmlinfo.cpp" line="607"/>
         <source>Resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="602"/>
-        <location filename="../misc/htmlinfo.cpp" line="604"/>
+        <location filename="../misc/htmlinfo.cpp" line="611"/>
+        <location filename="../misc/htmlinfo.cpp" line="613"/>
         <source>Channel config</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="602"/>
-        <location filename="../misc/htmlinfo.cpp" line="604"/>
+        <location filename="../misc/htmlinfo.cpp" line="611"/>
+        <location filename="../misc/htmlinfo.cpp" line="613"/>
         <source>Channel configuration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="607"/>
+        <location filename="../misc/htmlinfo.cpp" line="616"/>
         <source>Channel count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="610"/>
+        <location filename="../misc/htmlinfo.cpp" line="619"/>
         <source>Bit depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="613"/>
+        <location filename="../misc/htmlinfo.cpp" line="622"/>
         <source>Frames per second</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="616"/>
+        <location filename="../misc/htmlinfo.cpp" line="625"/>
         <source>Chroma format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="620"/>
+        <location filename="../misc/htmlinfo.cpp" line="629"/>
         <source>interlaced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="623"/>
-        <location filename="../misc/htmlinfo.cpp" line="688"/>
+        <location filename="../misc/htmlinfo.cpp" line="632"/>
+        <location filename="../misc/htmlinfo.cpp" line="697"/>
         <source>disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="626"/>
-        <location filename="../misc/htmlinfo.cpp" line="719"/>
+        <location filename="../misc/htmlinfo.cpp" line="635"/>
+        <location filename="../misc/htmlinfo.cpp" line="728"/>
         <source>default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="629"/>
+        <location filename="../misc/htmlinfo.cpp" line="638"/>
         <source>forced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="632"/>
+        <location filename="../misc/htmlinfo.cpp" line="641"/>
         <source>has lacing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="635"/>
+        <location filename="../misc/htmlinfo.cpp" line="644"/>
         <source>encrypted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="638"/>
-        <location filename="../misc/htmlinfo.cpp" line="691"/>
-        <location filename="../misc/htmlinfo.cpp" line="725"/>
+        <location filename="../misc/htmlinfo.cpp" line="647"/>
+        <location filename="../misc/htmlinfo.cpp" line="700"/>
+        <location filename="../misc/htmlinfo.cpp" line="734"/>
         <source>Labeled as</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="646"/>
+        <location filename="../misc/htmlinfo.cpp" line="655"/>
         <source>Attachment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="657"/>
-        <location filename="../misc/htmlinfo.cpp" line="876"/>
+        <location filename="../misc/htmlinfo.cpp" line="666"/>
+        <location filename="../misc/htmlinfo.cpp" line="885"/>
         <source>Mime-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="660"/>
+        <location filename="../misc/htmlinfo.cpp" line="669"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="668"/>
+        <location filename="../misc/htmlinfo.cpp" line="677"/>
         <source>Chapter</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="675"/>
+        <location filename="../misc/htmlinfo.cpp" line="684"/>
         <source>Name (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="678"/>
+        <location filename="../misc/htmlinfo.cpp" line="687"/>
         <source>Start time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="681"/>
+        <location filename="../misc/htmlinfo.cpp" line="690"/>
         <source>End time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="685"/>
-        <location filename="../misc/htmlinfo.cpp" line="716"/>
+        <location filename="../misc/htmlinfo.cpp" line="694"/>
+        <location filename="../misc/htmlinfo.cpp" line="725"/>
         <source>hidden</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="698"/>
-        <location filename="../misc/htmlinfo.cpp" line="964"/>
+        <location filename="../misc/htmlinfo.cpp" line="707"/>
+        <location filename="../misc/htmlinfo.cpp" line="975"/>
         <source>Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="710"/>
+        <location filename="../misc/htmlinfo.cpp" line="719"/>
         <source>Edition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="722"/>
+        <location filename="../misc/htmlinfo.cpp" line="731"/>
         <source>ordered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="727"/>
+        <location filename="../misc/htmlinfo.cpp" line="736"/>
         <source>Chapters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="763"/>
+        <location filename="../misc/htmlinfo.cpp" line="772"/>
         <source>, size: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="785"/>
+        <location filename="../misc/htmlinfo.cpp" line="794"/>
         <source>section has not been analyzed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="807"/>
+        <location filename="../misc/htmlinfo.cpp" line="816"/>
         <source>Notifications (reparsing after saving)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="807"/>
+        <location filename="../misc/htmlinfo.cpp" line="816"/>
         <source>Notifications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="810"/>
+        <location filename="../misc/htmlinfo.cpp" line="819"/>
         <source>show notifications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="815"/>
+        <location filename="../misc/htmlinfo.cpp" line="824"/>
         <source>Context</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="815"/>
+        <location filename="../misc/htmlinfo.cpp" line="824"/>
         <source>Message</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="815"/>
+        <location filename="../misc/htmlinfo.cpp" line="824"/>
         <source>Time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="844"/>
+        <location filename="../misc/htmlinfo.cpp" line="853"/>
         <source>Info for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="867"/>
+        <location filename="../misc/htmlinfo.cpp" line="876"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="872"/>
+        <location filename="../misc/htmlinfo.cpp" line="881"/>
         <source>Overall avg. bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="878"/>
+        <location filename="../misc/htmlinfo.cpp" line="887"/>
         <source>Container</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="888"/>
-        <location filename="../misc/htmlinfo.cpp" line="938"/>
-        <location filename="../misc/htmlinfo.cpp" line="973"/>
-        <location filename="../misc/htmlinfo.cpp" line="994"/>
-        <location filename="../misc/htmlinfo.cpp" line="1017"/>
-        <location filename="../misc/htmlinfo.cpp" line="1035"/>
+        <location filename="../misc/htmlinfo.cpp" line="897"/>
+        <location filename="../misc/htmlinfo.cpp" line="949"/>
+        <location filename="../misc/htmlinfo.cpp" line="984"/>
+        <location filename="../misc/htmlinfo.cpp" line="1005"/>
+        <location filename="../misc/htmlinfo.cpp" line="1028"/>
+        <location filename="../misc/htmlinfo.cpp" line="1046"/>
         <source>show details</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="901"/>
+        <location filename="../misc/htmlinfo.cpp" line="910"/>
         <source>Title (segment %1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="904"/>
+        <location filename="../misc/htmlinfo.cpp" line="913"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="911"/>
+        <location filename="../misc/htmlinfo.cpp" line="920"/>
         <source>Read version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="914"/>
+        <location filename="../misc/htmlinfo.cpp" line="923"/>
         <source>Document type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="917"/>
+        <location filename="../misc/htmlinfo.cpp" line="926"/>
         <source>Document version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="920"/>
+        <location filename="../misc/htmlinfo.cpp" line="929"/>
         <source>Document read version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="924"/>
+        <location filename="../misc/htmlinfo.cpp" line="933"/>
         <source>Padding size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../misc/htmlinfo.cpp" line="935"/>
+        <source>Tag position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../misc/htmlinfo.cpp" line="936"/>
+        <source>Index position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../misc/htmlinfo.cpp" line="946"/>
         <source>Tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="950"/>
+        <location filename="../misc/htmlinfo.cpp" line="961"/>
         <source>Target level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="953"/>
+        <location filename="../misc/htmlinfo.cpp" line="964"/>
         <source>Field count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="991"/>
+        <location filename="../misc/htmlinfo.cpp" line="1002"/>
         <source>Attachments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="1014"/>
+        <location filename="../misc/htmlinfo.cpp" line="1025"/>
         <source>Editions/chapters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="1032"/>
+        <location filename="../misc/htmlinfo.cpp" line="1043"/>
         <source>chapters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="1055"/>
+        <location filename="../misc/htmlinfo.cpp" line="1066"/>
         <source>Structure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="1062"/>
+        <location filename="../misc/htmlinfo.cpp" line="1073"/>
         <source>expand all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="1067"/>
+        <location filename="../misc/htmlinfo.cpp" line="1078"/>
         <source>collapse all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../misc/htmlinfo.cpp" line="1073"/>
+        <location filename="../misc/htmlinfo.cpp" line="1084"/>
         <source>hex</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1079,99 +1089,109 @@ Remarks
 <context>
     <name>QtGui::FileInfoModel</name>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="206"/>
+        <location filename="../gui/fileinfomodel.cpp" line="207"/>
         <source>Property</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="208"/>
+        <location filename="../gui/fileinfomodel.cpp" line="209"/>
         <source>Value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="281"/>
+        <location filename="../gui/fileinfomodel.cpp" line="282"/>
         <source>Path</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="282"/>
-        <location filename="../gui/fileinfomodel.cpp" line="345"/>
-        <location filename="../gui/fileinfomodel.cpp" line="393"/>
-        <location filename="../gui/fileinfomodel.cpp" line="469"/>
+        <location filename="../gui/fileinfomodel.cpp" line="283"/>
+        <location filename="../gui/fileinfomodel.cpp" line="348"/>
+        <location filename="../gui/fileinfomodel.cpp" line="396"/>
+        <location filename="../gui/fileinfomodel.cpp" line="472"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="285"/>
-        <location filename="../gui/fileinfomodel.cpp" line="394"/>
+        <location filename="../gui/fileinfomodel.cpp" line="286"/>
+        <location filename="../gui/fileinfomodel.cpp" line="397"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="286"/>
+        <location filename="../gui/fileinfomodel.cpp" line="287"/>
         <source>Overall avg. bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="290"/>
-        <location filename="../gui/fileinfomodel.cpp" line="470"/>
+        <location filename="../gui/fileinfomodel.cpp" line="291"/>
+        <location filename="../gui/fileinfomodel.cpp" line="473"/>
         <source>Mime-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="299"/>
+        <location filename="../gui/fileinfomodel.cpp" line="300"/>
         <source>Container</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="318"/>
+        <location filename="../gui/fileinfomodel.cpp" line="319"/>
         <source>Title (segment %1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="321"/>
+        <location filename="../gui/fileinfomodel.cpp" line="322"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="324"/>
-        <location filename="../gui/fileinfomodel.cpp" line="343"/>
-        <location filename="../gui/fileinfomodel.cpp" line="385"/>
+        <location filename="../gui/fileinfomodel.cpp" line="325"/>
+        <location filename="../gui/fileinfomodel.cpp" line="346"/>
+        <location filename="../gui/fileinfomodel.cpp" line="388"/>
         <source>Version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="325"/>
+        <location filename="../gui/fileinfomodel.cpp" line="326"/>
         <source>Read version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="326"/>
+        <location filename="../gui/fileinfomodel.cpp" line="327"/>
         <source>Document type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="327"/>
+        <location filename="../gui/fileinfomodel.cpp" line="328"/>
         <source>Document version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="328"/>
+        <location filename="../gui/fileinfomodel.cpp" line="329"/>
         <source>Document read version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/fileinfomodel.cpp" line="330"/>
+        <source>Tag position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/fileinfomodel.cpp" line="331"/>
+        <source>Index position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/fileinfomodel.cpp" line="333"/>
         <source>Padding size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="336"/>
+        <location filename="../gui/fileinfomodel.cpp" line="339"/>
         <source>Tags</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="338"/>
+        <location filename="../gui/fileinfomodel.cpp" line="341"/>
         <source>%1 tag(s) assigned</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1179,23 +1199,23 @@ Remarks
         </translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="344"/>
+        <location filename="../gui/fileinfomodel.cpp" line="347"/>
         <source>Target level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="346"/>
+        <location filename="../gui/fileinfomodel.cpp" line="349"/>
         <source>Field count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="356"/>
-        <location filename="../gui/fileinfomodel.cpp" line="511"/>
+        <location filename="../gui/fileinfomodel.cpp" line="359"/>
+        <location filename="../gui/fileinfomodel.cpp" line="514"/>
         <source>Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="360"/>
+        <location filename="../gui/fileinfomodel.cpp" line="363"/>
         <source>%1 track(s) contained</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1203,7 +1223,7 @@ Remarks
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="362"/>
+        <location filename="../gui/fileinfomodel.cpp" line="365"/>
         <source>%1 track(s): </source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1211,210 +1231,210 @@ Remarks
         </translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="367"/>
+        <location filename="../gui/fileinfomodel.cpp" line="370"/>
         <source>Track #%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="369"/>
-        <location filename="../gui/fileinfomodel.cpp" line="467"/>
-        <location filename="../gui/fileinfomodel.cpp" line="484"/>
-        <location filename="../gui/fileinfomodel.cpp" line="529"/>
+        <location filename="../gui/fileinfomodel.cpp" line="372"/>
+        <location filename="../gui/fileinfomodel.cpp" line="470"/>
+        <location filename="../gui/fileinfomodel.cpp" line="487"/>
+        <location filename="../gui/fileinfomodel.cpp" line="532"/>
         <source>ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="370"/>
+        <location filename="../gui/fileinfomodel.cpp" line="373"/>
         <source>Number</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="371"/>
-        <location filename="../gui/fileinfomodel.cpp" line="468"/>
+        <location filename="../gui/fileinfomodel.cpp" line="374"/>
+        <location filename="../gui/fileinfomodel.cpp" line="471"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="372"/>
+        <location filename="../gui/fileinfomodel.cpp" line="375"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="374"/>
+        <location filename="../gui/fileinfomodel.cpp" line="377"/>
         <source>Format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="376"/>
+        <location filename="../gui/fileinfomodel.cpp" line="379"/>
         <source>Abbreviation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="382"/>
+        <location filename="../gui/fileinfomodel.cpp" line="385"/>
         <source>Level</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="390"/>
+        <location filename="../gui/fileinfomodel.cpp" line="393"/>
         <source>Extension</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="392"/>
+        <location filename="../gui/fileinfomodel.cpp" line="395"/>
         <source>Format/codec ID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="395"/>
+        <location filename="../gui/fileinfomodel.cpp" line="398"/>
         <source>Avg. bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="396"/>
+        <location filename="../gui/fileinfomodel.cpp" line="399"/>
         <source>Max. bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="397"/>
+        <location filename="../gui/fileinfomodel.cpp" line="400"/>
         <source>Creation time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="398"/>
+        <location filename="../gui/fileinfomodel.cpp" line="401"/>
         <source>Modification time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="399"/>
+        <location filename="../gui/fileinfomodel.cpp" line="402"/>
         <source>Language</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="400"/>
+        <location filename="../gui/fileinfomodel.cpp" line="403"/>
         <source>Compressor name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="402"/>
+        <location filename="../gui/fileinfomodel.cpp" line="405"/>
         <source>Sampling frequency</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="407"/>
+        <location filename="../gui/fileinfomodel.cpp" line="410"/>
         <source>Frame count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="408"/>
+        <location filename="../gui/fileinfomodel.cpp" line="411"/>
         <source>Sample count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="409"/>
+        <location filename="../gui/fileinfomodel.cpp" line="412"/>
         <source>Bits per sample</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="410"/>
+        <location filename="../gui/fileinfomodel.cpp" line="413"/>
         <source>Quality</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="411"/>
+        <location filename="../gui/fileinfomodel.cpp" line="414"/>
         <source>Pixel size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="412"/>
+        <location filename="../gui/fileinfomodel.cpp" line="415"/>
         <source>Display size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="414"/>
+        <location filename="../gui/fileinfomodel.cpp" line="417"/>
         <source>Pixel Aspect Ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="416"/>
+        <location filename="../gui/fileinfomodel.cpp" line="419"/>
         <source>Cropping</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="417"/>
+        <location filename="../gui/fileinfomodel.cpp" line="420"/>
         <source>Resolution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="419"/>
+        <location filename="../gui/fileinfomodel.cpp" line="422"/>
         <source>Channel config</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="423"/>
+        <location filename="../gui/fileinfomodel.cpp" line="426"/>
         <source>Channel count</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="425"/>
+        <location filename="../gui/fileinfomodel.cpp" line="428"/>
         <source>Bit depth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="426"/>
+        <location filename="../gui/fileinfomodel.cpp" line="429"/>
         <source>Frames per second</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="427"/>
+        <location filename="../gui/fileinfomodel.cpp" line="430"/>
         <source>Chroma format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="430"/>
+        <location filename="../gui/fileinfomodel.cpp" line="433"/>
         <source>interlaced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="433"/>
-        <location filename="../gui/fileinfomodel.cpp" line="501"/>
+        <location filename="../gui/fileinfomodel.cpp" line="436"/>
+        <location filename="../gui/fileinfomodel.cpp" line="504"/>
         <source>disabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="436"/>
-        <location filename="../gui/fileinfomodel.cpp" line="535"/>
+        <location filename="../gui/fileinfomodel.cpp" line="439"/>
+        <location filename="../gui/fileinfomodel.cpp" line="538"/>
         <source>default</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="439"/>
+        <location filename="../gui/fileinfomodel.cpp" line="442"/>
         <source>forced</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="442"/>
+        <location filename="../gui/fileinfomodel.cpp" line="445"/>
         <source>has lacing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="445"/>
+        <location filename="../gui/fileinfomodel.cpp" line="448"/>
         <source>encrypted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="448"/>
-        <location filename="../gui/fileinfomodel.cpp" line="504"/>
-        <location filename="../gui/fileinfomodel.cpp" line="541"/>
+        <location filename="../gui/fileinfomodel.cpp" line="451"/>
+        <location filename="../gui/fileinfomodel.cpp" line="507"/>
+        <location filename="../gui/fileinfomodel.cpp" line="544"/>
         <source>Labeled as</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="459"/>
+        <location filename="../gui/fileinfomodel.cpp" line="462"/>
         <source>Attachments</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="461"/>
+        <location filename="../gui/fileinfomodel.cpp" line="464"/>
         <source>%1 attachment(s) present</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1422,48 +1442,48 @@ Remarks
         </translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="465"/>
+        <location filename="../gui/fileinfomodel.cpp" line="468"/>
         <source>Attachment #%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="471"/>
+        <location filename="../gui/fileinfomodel.cpp" line="474"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="482"/>
+        <location filename="../gui/fileinfomodel.cpp" line="485"/>
         <source>Chapter #%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="488"/>
+        <location filename="../gui/fileinfomodel.cpp" line="491"/>
         <source>Name (%1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="491"/>
+        <location filename="../gui/fileinfomodel.cpp" line="494"/>
         <source>Start time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="494"/>
+        <location filename="../gui/fileinfomodel.cpp" line="497"/>
         <source>End time</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="498"/>
-        <location filename="../gui/fileinfomodel.cpp" line="532"/>
+        <location filename="../gui/fileinfomodel.cpp" line="501"/>
+        <location filename="../gui/fileinfomodel.cpp" line="535"/>
         <source>hidden</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="522"/>
+        <location filename="../gui/fileinfomodel.cpp" line="525"/>
         <source>Editions</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="524"/>
+        <location filename="../gui/fileinfomodel.cpp" line="527"/>
         <source>%1 edition(s) present</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1471,22 +1491,22 @@ Remarks
         </translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="527"/>
+        <location filename="../gui/fileinfomodel.cpp" line="530"/>
         <source>Edition #%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="538"/>
+        <location filename="../gui/fileinfomodel.cpp" line="541"/>
         <source>ordered</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="552"/>
+        <location filename="../gui/fileinfomodel.cpp" line="555"/>
         <source>Chapters</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/fileinfomodel.cpp" line="554"/>
+        <location filename="../gui/fileinfomodel.cpp" line="557"/>
         <source>%1 chapter(s) present</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -1494,18 +1514,18 @@ Remarks
         </translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="569"/>
+        <location filename="../gui/fileinfomodel.cpp" line="572"/>
         <source>Structure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="594"/>
+        <location filename="../gui/fileinfomodel.cpp" line="597"/>
         <source>Notifications (reparsing after saving)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/fileinfomodel.cpp" line="594"/>
-        <location filename="../gui/fileinfomodel.cpp" line="599"/>
+        <location filename="../gui/fileinfomodel.cpp" line="597"/>
+        <location filename="../gui/fileinfomodel.cpp" line="602"/>
         <source>Notifications</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4150,7 +4170,7 @@ currently shown tag.</source>
     </message>
     <message>
         <location filename="../gui/tagfieldedit.cpp" line="801"/>
-        <source>The value of this field could not be read from the file because it couldn&apos;t be converted proberly.</source>
+        <source>The value of this field could not be read from the file because it couldn&apos;t be converted properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4629,6 +4649,19 @@ Remarks
     <message>
         <location filename="../application/targetlevelmodel.cpp" line="80"/>
         <source>Target level</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>Utility</name>
+    <message>
+        <location filename="../misc/utility.cpp" line="116"/>
+        <source>before data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../misc/utility.cpp" line="118"/>
+        <source>after data</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
