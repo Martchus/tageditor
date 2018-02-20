@@ -12,7 +12,7 @@ set(META_GUI_OPTIONAL true)
 set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 2)
 set(META_VERSION_MINOR 3)
-set(META_VERSION_PATCH 3)
+set(META_VERSION_PATCH 4)
 set(META_NO_TIDY ON)
 
 # add project files

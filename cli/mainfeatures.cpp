@@ -689,7 +689,6 @@ void setTagInfo(const SetTagInfoArgs &args)
 
                 // apply changes and gather notifications
                 fileInfo.applyChanges();
-                fileInfo.gatherRelatedNotifications(notifications);
 
                 // notify about completion
                 finalizeLog();
@@ -711,6 +710,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             cerr << " - " << Phrases::Error << "An IO failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
         }
 
+        fileInfo.gatherRelatedNotifications(notifications);
         printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
 
         // continue with next file
