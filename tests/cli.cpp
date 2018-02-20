@@ -1,6 +1,7 @@
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/misc.h>
+#include <c++utilities/io/path.h>
 #include <c++utilities/tests/testutils.h>
 
 #include <tagparser/mediafileinfo.h>
@@ -40,6 +41,7 @@ class CliTests : public TestFixture
     CPPUNIT_TEST(testEncodingOption);
     CPPUNIT_TEST(testMultipleFiles);
     CPPUNIT_TEST(testOutputFile);
+    CPPUNIT_TEST(testBackupDir);
     CPPUNIT_TEST(testMultipleValuesPerField);
     CPPUNIT_TEST(testHandlingAttachments);
     CPPUNIT_TEST(testDisplayingInfo);
@@ -63,6 +65,7 @@ public:
     void testEncodingOption();
     void testMultipleFiles();
     void testOutputFile();
+    void testBackupDir();
     void testMultipleValuesPerField();
     void testHandlingAttachments();
     void testDisplayingInfo();
@@ -490,6 +493,34 @@ void CliTests::testOutputFile()
 
     remove(mkvFile1.data()), remove(mkvFile2.data());
     remove("/tmp/test1.mkv"), remove("/tmp/test2.mkv");
+}
+
+/*!
+ * \brief Tests the "--temp-dir /some/path" option of the set operation.
+ */
+void CliTests::testBackupDir()
+{
+    cout << "\nSpecifying a backup/temp dir for set operation" << endl;
+    string stdout, stderr;
+    const string mkvFileName("matroska_wave1/test1.mkv");
+    const auto mkvFile(workingCopyPath(mkvFileName));
+    CPPUNIT_ASSERT(mkvFile.size() >= mkvFileName.size());
+    const auto backupDir(mkvFile.substr(0, mkvFile.size() - mkvFileName.size()));
+
+    const char *const args1[] = {"tageditor", "set", "target-level=30", "title=test1","-f", mkvFile.data(), "--temp-dir", "..", nullptr};
+    TESTUTILS_ASSERT_EXEC(args1);
+
+    // specified output file contains new title
+    const char *const args2[] = {"tageditor", "get", "-f", mkvFile.data(), nullptr};
+    TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                                          " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+                                          "    Title             test1\n",
+                                      }));
+
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((backupDir + "test1.mkv").data()));
+    CPPUNIT_ASSERT(remove((mkvFile + ".bak").c_str()));
 }
 
 /*!

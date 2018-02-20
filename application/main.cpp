@@ -55,6 +55,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     forceRewriteArg("force-rewrite", '\0', "forces the file to rewritten from the scratch which ensures a backup is created and the preferred padding is used"),
     valuesArg("values", 'n', "specifies the values to be set"),
     outputFilesArg("output-files", 'o', "specifies the output files; if present, the files specified with --files will not be modified"),
+    backupDirArg("temp-dir", '\0', "specifies the directory for temporary/backup files", {"path"}),
     setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setCombinable(true);
@@ -150,7 +151,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg) :
     setTagInfoArg.setSubArguments({&valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg,
                                          &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg,
                                          &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg, &prefPaddingArg, &tagPosArg,
-                                         &indexPosArg, &forceRewriteArg, &verboseArg, &outputFilesArg});
+                                         &indexPosArg, &forceRewriteArg, &backupDirArg, &verboseArg, &outputFilesArg});
 }
 
 }

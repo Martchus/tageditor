@@ -17,6 +17,7 @@
 #include <tagparser/abstracttrack.h>
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
+#include <tagparser/backuphelper.h>
 
 #ifdef TAGEDITOR_JSON_EXPORT
 # include <reflective_rapidjson/json/reflector.h>
@@ -446,6 +447,11 @@ void setTagInfo(const SetTagInfoArgs &args)
     fileInfo.setForceIndexPosition(args.forceIndexPosArg.isPresent());
     fileInfo.setForceRewrite(args.forceRewriteArg.isPresent());
 
+    // set backup path
+    if(args.backupDirArg.isPresent()) {
+        BackupHelper::backupDirectory() = args.backupDirArg.values().front();
+    }
+
     // iterate through all specified files
     unsigned int fileIndex = 0;
     static const string context("setting tags");
@@ -498,14 +504,12 @@ void setTagInfo(const SetTagInfoArgs &args)
                 denotedValues.relevantValues.clear();
                 unsigned int currentFileIndex = 0;
                 for(FieldValue &denotatedValue : denotedValues.allValues) {
-                    if(denotatedValue.fileIndex <= fileIndex) {
-                        if(relevantDenotedValues.empty() || (denotatedValue.fileIndex >= currentFileIndex)) {
-                            if(currentFileIndex != denotatedValue.fileIndex) {
-                                currentFileIndex = denotatedValue.fileIndex;
-                                relevantDenotedValues.clear();
-                            }
-                            relevantDenotedValues.push_back(&denotatedValue);
+                    if((denotatedValue.fileIndex <= fileIndex) && (relevantDenotedValues.empty() || (denotatedValue.fileIndex >= currentFileIndex))) {
+                        if(currentFileIndex != denotatedValue.fileIndex) {
+                            currentFileIndex = denotatedValue.fileIndex;
+                            relevantDenotedValues.clear();
                         }
+                        relevantDenotedValues.push_back(&denotatedValue);
                     }
                 }
             }
