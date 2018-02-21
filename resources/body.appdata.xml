@@ -1,0 +1,27 @@
+<description>
+​  <p>​A tag editor with Qt GUI and command-line interface.</p>
+​  <p>Supports:</p>
+​  <ul>
+    ​<li>iTunes-style MP4/M4A tags (MP4-DASH is supported)</li>
+    <li>ID3v1 and ID3v2 tags (conversion between ID3v1 and different versions of ID3v2 is possible)</li>
+    <li>Vorbis, Opus and FLAC comments in Ogg streams (cover art via "METADATA_BLOCK_PICTURE" is supported)</li>
+    <li>Vorbis comments and "METADATA_BLOCK_PICTURE" in raw FLAC streams</li>
+    <li>Matroska/WebM tags and attachments</li>
+​  </ul>
+​  <p>Additional features:</p>
+​  <ul>
+    ​<li>extensive options regarding the file layout (padding, position of tags)</li>
+    ​<li>displaying technical information such as the ID, format, language, bitrate, duration, size, timestamps, sampling frequency, FPS and other information of the tracks</li>
+    ​<li>allows inspecting and validating the element structure of MP4 and Matroska files</li>
+  </ul>
+</description>
+<screenshots>
+  <screenshot type="default">
+    <caption>Main window, dark theme under Plasma 5</caption>
+    <image>@META_APP_URL@/blob/master/resources/screenshots/mainwindow-1366x768.png</image>
+  </screenshot>
+  <screenshot>
+      <caption>Main window, under Openbox/qt5ct with Breeze theme</caption>
+      <image>@META_APP_URL@/blob/master/resources/screenshots/mainwindow.png</image>
+  </screenshot>
+</screenshots>
