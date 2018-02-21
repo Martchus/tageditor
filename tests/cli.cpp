@@ -184,8 +184,8 @@ void CliTests::testBasicReadingAndWriting()
     CPPUNIT_ASSERT(stdout.find("Comment") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Genre") == string::npos);
 
-    remove(mkvFile.data());
-    remove(mkvFileBackup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFileBackup.data()));
 }
 
 /*!
@@ -223,8 +223,10 @@ void CliTests::testSpecifyingNativeFieldIds()
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"©foo             bar"}));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, {"invalid           unable to parse - MP4 ID must be exactly 4 chars"}));
 
-    remove(mkvFile.data()), remove(mkvFileBackup.data());
-    remove(mp4File.data()), remove(mp4FileBackup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFileBackup.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp4File.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp4FileBackup.data()));
 }
 
 /*!
@@ -266,8 +268,9 @@ void CliTests::testHandlingOfTargets()
                                           "Title             The audio track",
                                           "Encoder           likely some AAC encoder"
                                       }));
-    remove(mkvFileBackup.data());
-    remove(mkvFile.c_str());
+
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFileBackup.data()));
 }
 
 /*!
@@ -320,7 +323,7 @@ void CliTests::testId3SpecificOptions()
                                              "    Duration          00:00:00\n"
                                              "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)"
                                           }));
-    remove(mp3File1Backup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 
     // convert remaining ID3v2 tag to version 2, add an ID3v1 tag again and set a field with unicode char by the way
     const char *const args3[] = {"tageditor", "set", "album=Dóuble Nickels On The Dime", "--id3v1-usage", "always", "--id3v2-version", "2", "--id3-init-on-create", "-f", mp3File1.data(), nullptr};
@@ -345,8 +348,8 @@ void CliTests::testId3SpecificOptions()
                                "    Track             4/43\n"
                                "    Duration          00:00:00\n"
                                "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)"}));
-    remove(mp3File1.data());
-    remove(mp3File1Backup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 }
 
 bool bufferContains(const char *buffer, size_t bufferSize, const char *needle, size_t needleSize)
@@ -399,8 +402,8 @@ void CliTests::testEncodingOption()
     // check whether encoding is UTF-8
     CPPUNIT_ASSERT(fileHeadContains<1024>(mp3File1, "\x03\x54\xc3\xa4\x73\x74\x00", 7));
 
-    remove(mp3File1.data());
-    remove(mp3File1Backup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 }
 
 /*!
@@ -457,8 +460,12 @@ void CliTests::testMultipleFiles()
                                       }));
 
     // clear working copies if all tests have been
-    remove(mkvFile1.c_str()), remove(mkvFile2.c_str()), remove(mkvFile3.c_str());
-    remove((mkvFile1 + ".bak").c_str()), remove((mkvFile2 + ".bak").c_str()), remove((mkvFile3 + ".bak").c_str());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile2.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile3.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile1 + ".bak").data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile2 + ".bak").data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile3 + ".bak").data()));
 }
 
 /*!
@@ -491,8 +498,10 @@ void CliTests::testOutputFile()
                                           "    Title             test2\n"
                                       }));
 
-    remove(mkvFile1.data()), remove(mkvFile2.data());
-    remove("/tmp/test1.mkv"), remove("/tmp/test2.mkv");
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile2.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/test1.mkv"));
+    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/test2.mkv"));
 }
 
 /*!
@@ -520,7 +529,7 @@ void CliTests::testBackupDir()
 
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove((backupDir + "test1.mkv").data()));
-    CPPUNIT_ASSERT(remove((mkvFile + ".bak").c_str()));
+    CPPUNIT_ASSERT(remove((mkvFile + ".bak").data()));
 }
 
 /*!
@@ -551,8 +560,10 @@ void CliTests::testMultipleValuesPerField()
     CPPUNIT_ASSERT(stdout.find("Artist            test3") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Artist            test4") != string::npos);
 
-    remove(mkvFile1.c_str()), remove((mkvFile1 + ".bak").c_str());
-    remove(mkvFile2.c_str()), remove((mkvFile2 + ".bak").c_str());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile2.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile1 + ".bak").data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile2 + ".bak").data()));
 }
 
 /*!
@@ -579,7 +590,7 @@ void CliTests::testHandlingAttachments()
                                           "Size                          20.16 MiB (21142764 byte)"
                                       }));
     // clear backup file
-    remove(mkvFile1Backup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1Backup.data()));
 
     // update attachment
     const char *const args3[] = {"tageditor", "set", "--update-attachment", "name=test2.mkv", "desc=Updated test attachment", "-f", mkvFile1.data(), nullptr};
@@ -593,7 +604,7 @@ void CliTests::testHandlingAttachments()
                                           "Size                          20.16 MiB (21142764 byte)"
                                       }));
     // clear backup file
-    remove(mkvFile1Backup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1Backup.data()));
 
     // extract assigned attachment again
     const char *const args4[] = {"tageditor", "extract", "--attachment", "name=test2.mkv", "-f", mkvFile1.data(), "-o", "/tmp/extracted.mkv", nullptr};
@@ -616,8 +627,8 @@ void CliTests::testHandlingAttachments()
     CPPUNIT_ASSERT(stdout.find("Attachments:") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Name                          test2.mkv") == string::npos);
 
-    remove(mkvFile1.data());
-    remove(mkvFile1Backup.data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1Backup.data()));
 }
 
 /*!
@@ -774,6 +785,10 @@ void CliTests::testSettingTrackMetaData()
                                           "    Sample count                  4222\n"
                                           "    Creation time                 2014-12-10 16:22:41\n"
                                           "    Modification time             2014-12-10 16:22:41"}));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp4File.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile + ".bak").data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mp4File + ".bak").data()));
 }
 
 /*!
@@ -801,15 +816,15 @@ void CliTests::testExtraction()
     const char *const args2[] = {"tageditor", "set", "cover=/tmp/extracted.jpeg", "-f", mp4File2.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args2);
     const char *const args3[] = {"tageditor", "extract", "cover", "-f", mp4File2.data(), "-o", "/tmp/extracted.jpeg", nullptr};
-    remove("/tmp/extracted.jpeg");
+    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
     TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat();
     CPPUNIT_ASSERT_EQUAL(22771_st, extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
-    remove("/tmp/extracted.jpeg");
-    remove(mp4File2.data());
-    remove((mp4File2 + ".bak").data());
+    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp4File2.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mp4File2 + ".bak").data()));
 }
 
 /*!
@@ -829,8 +844,8 @@ void CliTests::testReadingAndWritingDocumentTitle()
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stdout.find("Title                         Foo") != string::npos);
 
-    remove(mkvFile.data());
-    remove((mkvFile + ".bak").data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile + ".bak").data()));
 }
 
 /*!
@@ -849,8 +864,8 @@ void CliTests::testFileLayoutOptions()
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stdout.find("Tag position                  after data") != string::npos);
 
-    remove(mp4File1.data());
-    remove((mp4File1 + ".bak").data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp4File1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mp4File1 + ".bak").data()));
 
     const string mp4File2(workingCopyPath("mp4/test1.m4a"));
     const char *const args3[] = {"tageditor", "set", "genre=Rock", "--index-pos", "back", "--force", "-f", mp4File2.data(), nullptr};
@@ -879,8 +894,8 @@ void CliTests::testFileLayoutOptions()
     TESTUTILS_ASSERT_EXEC(args4);
     CPPUNIT_ASSERT(stdout.find("Tag position                  before data") != string::npos);
 
-    remove(mp4File2.data());
-    remove((mp4File2 + ".bak").data());
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp4File2.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mp4File2 + ".bak").data()));
 }
 
 /*!
