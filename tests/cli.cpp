@@ -903,6 +903,9 @@ void CliTests::testFileLayoutOptions()
  */
 void CliTests::testJsonExport()
 {
+#ifndef TAGEDITOR_JSON_EXPORT
+    cout << "\nSkipping JSON export (feature not enabled)" <<  endl;
+#else
     cout << "\nJSON export" <<  endl;
     string stdout, stderr;
 
@@ -911,5 +914,7 @@ void CliTests::testJsonExport()
     const char *const args[] = {"tageditor", "export", "--pretty", "-f", file.data(), nullptr};
     TESTUTILS_ASSERT_EXEC(args);
     CPPUNIT_ASSERT_EQUAL(expectedJson, stdout);
+#endif // TAGEDITOR_JSON_EXPORT
 }
-#endif
+
+#endif // PLATFORM_UNIX
