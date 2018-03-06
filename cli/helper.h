@@ -22,6 +22,8 @@ class Argument;
 
 namespace Media {
 class MediaFileInfo;
+class Diagnostics;
+class AbortableProgressFeedback;
 enum class TagUsage;
 enum class ElementPosition;
 }
@@ -263,8 +265,7 @@ constexpr bool isDigit(char c)
 
 std::string incremented(const std::string &str, unsigned int toIncrement = 1);
 
-void printNotifications(NotificationList &notifications, const char *head = nullptr, bool beVerbose = false);
-void printNotifications(const MediaFileInfo &fileInfo, const char *head = nullptr, bool beVerbose = false);
+void printDiagMessages(const Media::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false);
 void printProperty(const char *propName, const char *value, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4);
 void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4);
 
@@ -310,7 +311,8 @@ FieldDenotations parseFieldDenotations(const ApplicationUtilities::Argument &fie
 std::string tagName(const Tag *tag);
 bool stringToBool(const std::string &str);
 extern bool logLineFinalized;
-void logStatus(const StatusProvider &statusProvider);
+void logNextStep(const Media::AbortableProgressFeedback &progress);
+void logStepPercentage(const Media::AbortableProgressFeedback &progress);
 void finalizeLog();
 
 }

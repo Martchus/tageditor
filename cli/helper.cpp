@@ -2,6 +2,8 @@
 #include "./fieldmapping.h"
 
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/diagnostics.h>
+#include <tagparser/progressfeedback.h>
 #include <tagparser/matroska/matroskatag.h>
 #include <tagparser/mp4/mp4tag.h>
 #include <tagparser/vorbis/vorbiscomment.h>
@@ -118,16 +120,16 @@ string incremented(const string &str, unsigned int toIncrement)
     return res;
 }
 
-void printNotifications(NotificationList &notifications, const char *head, bool beVerbose)
+void printDiagMessages(const Diagnostics &diag, const char *head, bool beVerbose)
 {
-    if(notifications.empty()) {
+    if(diag.empty()) {
         return;
     }
     if(!beVerbose) {
-        for(const auto &notification : notifications) {
-            switch(notification.type()) {
-            case NotificationType::Debug:
-            case NotificationType::Information:
+        for(const auto &message : diag) {
+            switch(message.level()) {
+            case DiagLevel::Debug:
+            case DiagLevel::Information:
                 break;
             default:
                 goto printNotifications;
@@ -140,43 +142,35 @@ printNotifications:
     if(head) {
         cout << " - " << head << endl;
     }
-    Notification::sortByTime(notifications);
-    for(const auto &notification : notifications) {
-        switch(notification.type()) {
-        case NotificationType::Debug:
+    for(const auto &message : diag) {
+        switch(message.level()) {
+        case DiagLevel::Debug:
             if(beVerbose) {
                 cout << "    Debug        ";
                 break;
             } else {
                 continue;
             }
-        case NotificationType::Information:
+        case DiagLevel::Information:
             if(beVerbose) {
                 cout << "    Information  ";
                 break;
             } else {
                 continue;
             }
-        case NotificationType::Warning:
+        case DiagLevel::Warning:
             cout << "    Warning      ";
             break;
-        case NotificationType::Critical:
+        case DiagLevel::Critical:
             cout << "    Error        ";
             break;
         default:
             ;
         }
-        cout << notification.creationTime().toString(DateTimeOutputFormat::TimeOnly) << "   ";
-        cout << notification.context() << ": ";
-        cout << notification.message() << '\n';
+        cout << message.creationTime().toString(DateTimeOutputFormat::TimeOnly) << "   ";
+        cout << message.context() << ": ";
+        cout << message.message() << '\n';
     }
-}
-
-void printNotifications(const MediaFileInfo &fileInfo, const char *head, bool beVerbose)
-{
-    NotificationList notifications;
-    fileInfo.gatherRelatedNotifications(notifications);
-    printNotifications(notifications, head, beVerbose);
 }
 
 void printProperty(const char *propName, const char *value, const char *suffix, Indentation indentation)
@@ -658,29 +652,23 @@ bool stringToBool(const string &str)
 }
 
 bool logLineFinalized = true;
-static string lastLoggedStatus;
-void logStatus(const StatusProvider &statusProvider)
+static string lastStep;
+void logNextStep(const AbortableProgressFeedback &progress)
 {
-    if(statusProvider.currentStatus() != lastLoggedStatus) {
-        // the ongoing operation ("status") has changed
-        //  -> finalize previous line and make new line
-        if(!logLineFinalized) {
-            cout << "\r - [100%] " << lastLoggedStatus << endl;
-            logLineFinalized = true;
-        }
-        // -> update lastStatus
-        lastLoggedStatus = statusProvider.currentStatus();
+    // finalize previous step
+    if(!logLineFinalized) {
+        cout << "\r - [100%] " << lastStep << endl;
+        logLineFinalized = true;
     }
+    // print line for next step
+    lastStep = progress.step();
+    cout << "\r - [" << setw(3) << static_cast<unsigned int>(progress.stepPercentage()) << "%] " << lastStep << flush;
+    logLineFinalized = false;
+}
 
-    // update current line if an operation is ongoing (status is not empty)
-    if(!lastLoggedStatus.empty()) {
-        int percentage = static_cast<int>(statusProvider.currentPercentage() * 100);
-        if(percentage < 0) {
-            percentage = 0;
-        }
-        cout << "\r - [" << setw(3) << percentage << "%] " << lastLoggedStatus << flush;
-        logLineFinalized = false;
-    }
+void logStepPercentage(const Media::AbortableProgressFeedback &progress)
+{
+    cout << "\r - [" << setw(3) << static_cast<unsigned int>(progress.stepPercentage()) << "%] " << lastStep << flush;
 }
 
 void finalizeLog()
@@ -688,9 +676,9 @@ void finalizeLog()
     if(logLineFinalized) {
         return;
     }
-    cout << '\n';
+    cout << "\r - [100%] " << lastStep << '\n';
     logLineFinalized = true;
-    lastLoggedStatus.clear();
+    lastStep.clear();
 }
 
 }

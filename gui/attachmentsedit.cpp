@@ -6,6 +6,7 @@
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/abstractattachment.h>
+#include <tagparser/diagnostics.h>
 
 #include <qtutilities/misc/conversion.h>
 
@@ -91,16 +92,17 @@ void AttachmentsEdit::invalidate()
 
 void AttachmentsEdit::addFile(const QString &path)
 {
-    if(fileInfo() && fileInfo()->attachmentsParsingStatus() == ParsingStatus::Ok && fileInfo()->container()) {
-        // create and add attachment
-        auto *attachment = fileInfo()->container()->createAttachment();
-        attachment->setIgnored(true);
-        attachment->setFile(toNativeFileName(path).data());
-        m_addedAttachments << attachment;
-        m_model->addAttachment(-1, attachment, true, path);
-    } else {
+    if(!fileInfo() || fileInfo()->attachmentsParsingStatus() != ParsingStatus::Ok || !fileInfo()->container()) {
         throw Failure();
     }
+    // create and add attachment
+    auto *const attachment = fileInfo()->container()->createAttachment();
+    attachment->setIgnored(true);
+    Diagnostics diag;
+    attachment->setFile(toNativeFileName(path).data(), diag);
+    // TODO: show diag messages
+    m_addedAttachments << attachment;
+    m_model->addAttachment(-1, attachment, true, path);
 }
 
 void AttachmentsEdit::showFileSelection()

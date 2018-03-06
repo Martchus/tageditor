@@ -29,17 +29,17 @@ using namespace std;
 namespace RenamingUtility {
 
 /// \brief Adds notifications from \a statusProvider to \a notificationsObject.
-TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &notificationsObject, const StatusProvider &statusProvider)
+TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &diagObject, const Diagnostics &diag)
 {
     quint32 counter = 0;
-    for(const auto &notification : statusProvider.notifications()) {
+    for(const auto &msg : diag) {
         TAGEDITOR_JS_VALUE val;
-        val.setProperty("msg", QString::fromUtf8(notification.message().data()) TAGEDITOR_JS_READONLY);
-        val.setProperty("critical", notification.type() == NotificationType::Critical TAGEDITOR_JS_READONLY);
-        notificationsObject.setProperty(counter, val);
+        val.setProperty("msg", QString::fromUtf8(msg.message().data()) TAGEDITOR_JS_READONLY);
+        val.setProperty("critical", msg.level() >= DiagLevel::Critical TAGEDITOR_JS_READONLY);
+        diagObject.setProperty(counter, val);
         ++counter;
     }
-    return notificationsObject;
+    return diagObject;
 }
 
 /// \brief Add fields and notifications from \a tag to \a tagObject.
@@ -79,8 +79,6 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
     tagObject.setProperty("diskPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("diskTotal", pos.total() TAGEDITOR_JS_READONLY);
 
-    // add notifications
-    tagObject.setProperty("hasCriticalNotifications", tag.hasCriticalNotifications() TAGEDITOR_JS_READONLY);
     return tagObject;
 }
 
@@ -138,6 +136,7 @@ const QString &TagEditorObject::newRelativeDirectory() const
 
 TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
 {
+    Diagnostics diag;
     MediaFileInfo fileInfo(toNativeFileName(fileName).data());
 
     // add basic file information
@@ -153,7 +152,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     // parse further file information
     bool criticalParseingErrorOccured = false;
     try {
-        fileInfo.parseEverything();
+        fileInfo.parseEverything(diag);
     } catch(const Failure &) {
         // parsing notifications will be addded anyways
         criticalParseingErrorOccured = true;
@@ -163,11 +162,11 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     }
 
     // gather notifications
-    auto mainNotificationObject = m_engine->newArray(static_cast<uint>(fileInfo.notifications().size()));
-    mainNotificationObject << fileInfo;
-    criticalParseingErrorOccured |= fileInfo.hasCriticalNotifications();
-    fileInfoObject.setProperty(QStringLiteral("hasCriticalNotifications"), criticalParseingErrorOccured);
-    fileInfoObject.setProperty(QStringLiteral("notifications"), mainNotificationObject);
+    auto diagObj = m_engine->newArray(static_cast<uint>(diag.size()));
+    diagObj << diag;
+    criticalParseingErrorOccured |= diag.level() >= DiagLevel::Critical;
+    fileInfoObject.setProperty(QStringLiteral("hasCriticalMessages"), criticalParseingErrorOccured);
+    fileInfoObject.setProperty(QStringLiteral("diagMessages"), diagObj);
 
     // add MIME-type, suitable suffix and technical summary
     fileInfoObject.setProperty(QStringLiteral("mimeType"), QString::fromUtf8(fileInfo.mimeType()) TAGEDITOR_JS_READONLY);
@@ -186,9 +185,6 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
         combinedTagObject << tag;
         combinedTagNotifications << tag;
         tagObject << tag;
-        auto tagNotificationsObject = m_engine->newArray(static_cast<uint>(tag.notifications().size()));
-        tagNotificationsObject << tag;
-        tagObject.setProperty(QStringLiteral("notifications"), tagNotificationsObject TAGEDITOR_JS_READONLY);
         tagsObject.setProperty(tagIndex, tagObject TAGEDITOR_JS_READONLY);
     }
     combinedTagObject.setProperty(QStringLiteral("notifications"), combinedTagNotifications TAGEDITOR_JS_READONLY);
@@ -206,9 +202,6 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
         trackObject.setProperty(QStringLiteral("format"), QString::fromUtf8(track.formatName()));
         trackObject.setProperty(QStringLiteral("formatAbbreviation"), QString::fromUtf8(track.formatAbbreviation()));
         trackObject.setProperty(QStringLiteral("description"), QString::fromUtf8(track.description().data()));
-        auto trackNotificationsObject = m_engine->newArray(static_cast<uint>(track.notifications().size()));
-        trackNotificationsObject << track;
-        trackObject.setProperty(QStringLiteral("notifications"), trackNotificationsObject TAGEDITOR_JS_READONLY);
         tracksObject.setProperty(trackIndex, trackObject TAGEDITOR_JS_READONLY);
     }
 
@@ -228,12 +221,12 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileName(const QString &fileName)
 
 TAGEDITOR_JS_VALUE TagEditorObject::allFiles(const QString &dirName)
 {
-    QDir dir(dirName);
+    const QDir dir(dirName);
     if(dir.exists()) {
-        QStringList files = dir.entryList(QDir::Files);
-        auto entriesObj = m_engine->newArray(files.length());
+        const auto files(dir.entryList(QDir::Files));
+        auto entriesObj = m_engine->newArray(static_cast<uint>(files.size()));
         quint32 counter = 0;
-        for(const QString &file : files) {
+        for(const auto &file : files) {
             entriesObj.setProperty(counter, file TAGEDITOR_JS_READONLY);
             ++counter;
         }
@@ -245,9 +238,9 @@ TAGEDITOR_JS_VALUE TagEditorObject::allFiles(const QString &dirName)
 
 TAGEDITOR_JS_VALUE TagEditorObject::firstFile(const QString &dirName)
 {
-    QDir dir(dirName);
+    const QDir dir(dirName);
     if(dir.exists()) {
-        QStringList files = dir.entryList(QDir::Files);
+        const auto files(dir.entryList(QDir::Files));
         if(!files.empty()) {
             return TAGEDITOR_JS_VALUE(files.first());
         }

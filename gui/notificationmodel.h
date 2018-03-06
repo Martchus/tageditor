@@ -1,17 +1,17 @@
 #ifndef NOTIFICATIONMODEL_H
 #define NOTIFICATIONMODEL_H
 
-#include <tagparser/notification.h>
+#include <tagparser/diagnostics.h>
 
 #include <QAbstractListModel>
 
 namespace QtGui {
 
-class NotificationModel : public QAbstractListModel
+class DiagModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit NotificationModel(QObject *parent = nullptr);
+    explicit DiagModel(QObject *parent = nullptr);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     int columnCount(const QModelIndex &parent) const;
@@ -19,9 +19,8 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-    const QList<Media::Notification> &notifications() const;
-    void setNotifications(const QList<Media::Notification> &notifications);
-    void setNotifications(const Media::NotificationList &notifications);
+    const Media::Diagnostics &diagnostics() const;
+    void setDiagnostics(const Media::Diagnostics &diagnostics);
 
     static const QIcon &informationIcon();
     static const QIcon &warningIcon();
@@ -33,7 +32,7 @@ signals:
 public slots:
 
 private:
-    QList<Media::Notification> m_notifications;
+    Media::Diagnostics m_diag;
 
 };
 

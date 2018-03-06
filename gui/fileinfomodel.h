@@ -7,8 +7,7 @@
 
 namespace Media {
 class MediaFileInfo;
-class Notification;
-typedef std::list<Notification> NotificationList;
+class Diagnostics;
 }
 
 namespace QtGui {
@@ -17,12 +16,12 @@ class FileInfoModel : public QStandardItemModel
 {
     Q_OBJECT
 public:
-    explicit FileInfoModel(Media::MediaFileInfo *fileInfo = nullptr, QObject *parent = nullptr);
+    explicit FileInfoModel(QObject *parent = nullptr);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     const Media::MediaFileInfo *fileInfo() const;
-    void setFileInfo(Media::MediaFileInfo *fileInfo, Media::NotificationList *originalNotifications = nullptr);
+    void setFileInfo(Media::MediaFileInfo &fileInfo, Media::Diagnostics &diag, Media::Diagnostics *diagReparsing = nullptr);
 
 #if defined(GUI_QTWIDGETS)
     static const QIcon &informationIcon();
@@ -36,7 +35,8 @@ private:
 
 private:
     Media::MediaFileInfo *m_file;
-    Media::NotificationList *m_originalNotifications;
+    Media::Diagnostics *m_diag;
+    Media::Diagnostics *m_diagReparsing;
 };
 
 }

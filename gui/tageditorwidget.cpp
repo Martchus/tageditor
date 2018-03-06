@@ -164,7 +164,7 @@ TagEditorWidget::~TagEditorWidget()
 const QByteArray &TagEditorWidget::generateFileInfoHtml()
 {
     if(m_fileInfoHtml.isEmpty()) {
-        m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_originalNotifications);
+        m_fileInfoHtml = HtmlInfo::generateInfo(m_fileInfo, m_diag, m_diagReparsing);
     }
     return m_fileInfoHtml;
 }
@@ -627,7 +627,8 @@ void TagEditorWidget::initInfoView()
             m_ui->tagSplitter->addWidget(m_infoTreeView);
         }
         if(!m_infoModel) {
-            m_infoModel = new FileInfoModel(m_fileInfo.isOpen() ? &m_fileInfo : nullptr, this);
+            m_infoModel = new FileInfoModel(this);
+            m_infoModel->setFileInfo(m_fileInfo, m_diag, m_makingResultsAvailable ? &m_diagReparsing : nullptr);
             m_infoTreeView->setModel(m_infoModel);
             m_infoTreeView->setHeaderHidden(true);
             m_infoTreeView->header()->setSectionResizeMode(QHeaderView::ResizeToContents);
@@ -658,7 +659,7 @@ void TagEditorWidget::updateInfoView()
 
     // update info model if present
     if(m_infoModel) {
-        m_infoModel->setFileInfo(m_fileInfo.isOpen() ? &m_fileInfo : nullptr); // resets the model
+        m_infoModel->setFileInfo(m_fileInfo, m_diag, m_makingResultsAvailable ? &m_diagReparsing : nullptr); // resets the model
     }
 }
 
@@ -758,8 +759,6 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     // clear previous results and status
     m_tags.clear();
     m_fileInfo.clearParsingResults();
-    m_fileInfo.invalidateStatus();
-    m_fileInfo.invalidateNotifications();
     if(!sameFile) {
         // close last file if possibly open
         m_fileInfo.close();
@@ -768,25 +767,26 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         m_fileInfo.setSaveFilePath(string());
         m_fileInfo.setPath(toNativeFileName(path).data());
         // update file name and directory
-        QFileInfo fileInfo(path);
+        const QFileInfo fileInfo(path);
         m_lastDir = m_currentDir;
         m_currentDir = fileInfo.absolutePath();
         m_fileName = fileInfo.fileName();
     }
-    // update availability of making results
+    // write diagnostics to m_diagReparsing if making results are avalable
     m_makingResultsAvailable &= sameFile;
-    if(!m_makingResultsAvailable) {
-        m_originalNotifications.clear();
-    }
+    Diagnostics &diag = m_makingResultsAvailable ? m_diagReparsing : m_diag;
+    // clear diagnostics
+    diag.clear();
+    m_diagReparsing.clear();
     // show filename
     m_ui->fileNameLabel->setText(m_fileName);
     // define function to parse the file
-    auto startThread = [this] {
+    const auto startThread = [this, &diag] {
         char result;
         try { // credits for this nesting go to GCC regression 66145
             try {
+                // try to open with write access
                 try {
-                    // try to open with write access
                     m_fileInfo.reopen(false);
                 } catch(...) {
                     ::IoUtilities::catchIoFailure();
@@ -794,7 +794,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                     m_fileInfo.reopen(true);
                 }
                 m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
-                m_fileInfo.parseEverything();
+                m_fileInfo.parseEverything(diag);
                 result = ParsingSuccessful;
             } catch(const Failure &) {
                 // the file has been opened; parsing notifications will be shown in the info box
@@ -806,21 +806,19 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                 result = IoError;
             }
         } catch(const exception &e) {
-            m_fileInfo.addNotification(Media::NotificationType::Critical, string("Something completely unexpected happened: ") + e.what(), "parsing");
+            diag.emplace_back(Media::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", + e.what()), "parsing");
             result = FatalParsingError;
         } catch(...) {
-            m_fileInfo.addNotification(Media::NotificationType::Critical, "Something completely unexpected happened", "parsing");
+            diag.emplace_back(Media::DiagLevel::Critical, "Something completely unexpected happened", "parsing");
             result = FatalParsingError;
         }
-        m_fileInfo.unregisterAllCallbacks();
         QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
     };
-    m_fileInfo.unregisterAllCallbacks();
     m_fileOperationOngoing = true;
     // perform the operation concurrently
     QtConcurrent::run(startThread);
     // inform user
-    static const QString statusMsg(tr("The file is beeing parsed ..."));
+    static const auto statusMsg(tr("The file is beeing parsed ..."));
     m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Progress);
     m_ui->parsingNotificationWidget->setText(statusMsg);
     m_ui->parsingNotificationWidget->setVisible(true); // ensure widget is visible!
@@ -899,10 +897,13 @@ void TagEditorWidget::showFile(char result)
         }
 
         // show parsing status/result using parsing notification widget
-        auto worstNotificationType = m_fileInfo.worstNotificationTypeIncludingRelatedObjects();
-        if(worstNotificationType >= Media::NotificationType::Critical) {
-            // we catched no exception, but there are critical notifications
-            // -> treat critical notifications as fatal parsing errors
+        auto diagLevel = m_diag.level();
+        if (diagLevel < worstDiagLevel) {
+            diagLevel |= m_diagReparsing.level();
+        }
+        if(diagLevel >= DiagLevel::Critical) {
+            // we catched no exception, but there are critical diag messages
+            // -> treat those as fatal parsing errors
             result = LoadingResult::FatalParsingError;
         }
         switch(result) {
@@ -915,12 +916,12 @@ void TagEditorWidget::showFile(char result)
             m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
         }
         bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount() > 1;
-        if(worstNotificationType >= Media::NotificationType::Critical) {
+        if(diagLevel >= Media::DiagLevel::Critical) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
-            m_ui->parsingNotificationWidget->appendLine(tr("There are critical parsing notifications."));
-        } else if(worstNotificationType == Media::NotificationType::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported() || multipleSegmentsNotTested) {
+            m_ui->parsingNotificationWidget->appendLine(tr("Errors occured."));
+        } else if(diagLevel == Media::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported() || multipleSegmentsNotTested) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
-            if(worstNotificationType == Media::NotificationType::Warning) {
+            if(diagLevel == Media::DiagLevel::Warning) {
                 m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
             }
         }
@@ -1099,21 +1100,26 @@ bool TagEditorWidget::startSaving()
     m_fileInfo.setMinPadding(settings.minPadding);
     m_fileInfo.setMaxPadding(settings.maxPadding);
     m_fileInfo.setPreferredPadding(settings.preferredPadding);
-    // define functions to show the saving progress and to actually applying the changes
-    auto showProgress = [this] (StatusProvider &sender) -> void {
-        QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, static_cast<int>(sender.currentPercentage() * 100.0)));
-        if(m_abortClicked) {
-            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, tr("Cancelling ...")));
-            m_fileInfo.tryToAbort();
-        } else {
-            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(sender.currentStatus())));
-        }
-    };
-    auto startThread = [this] {
+    const auto startThread = [this] {
+        // define functions to show the saving progress and to actually applying the changes
+        const auto showPercentage([this] (const AbortableProgressFeedback &progress) {
+            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, progress.stepPercentage()));
+        });
+        const auto showStep([this] (AbortableProgressFeedback &progress) {
+            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, progress.stepPercentage()));
+            if(m_abortClicked) {
+                progress.tryToAbort();
+                QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, tr("Cancelling ...")));
+            } else {
+                QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(progress.step())));
+            }
+        });
+        AbortableProgressFeedback progress(std::move(showStep), std::move(showPercentage));
+
         bool processingError = false, ioError = false;
         try {
             try {
-                m_fileInfo.applyChanges();
+                m_fileInfo.applyChanges(m_diag, progress);
             } catch(const Failure &) {
                 processingError = true;
             } catch(...) {
@@ -1121,17 +1127,14 @@ bool TagEditorWidget::startSaving()
                 ioError = true;
             }
         } catch(const exception &e) {
-            m_fileInfo.addNotification(Media::NotificationType::Critical, string("Something completely unexpected happened: ") + e.what(), "making");
+            m_diag.emplace_back(Media::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", e.what()), "making");
             processingError = true;
         } catch(...) {
-            m_fileInfo.addNotification(Media::NotificationType::Critical, "Something completely unexpected happened", "making");
+            m_diag.emplace_back(Media::DiagLevel::Critical, "Something completely unexpected happened", "making");
             processingError = true;
         }
-        m_fileInfo.unregisterAllCallbacks();
         QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
     };
-    m_fileInfo.unregisterAllCallbacks();
-    m_fileInfo.registerCallback(showProgress);
     m_fileOperationOngoing = true;
     // use another thread to perform the operation
     QtConcurrent::run(startThread);
@@ -1155,17 +1158,17 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
     m_ui->makingNotificationWidget->setPercentage(-1);
     m_ui->makingNotificationWidget->setHidden(false);
     m_makingResultsAvailable = true;
-    m_originalNotifications = m_fileInfo.gatherRelatedNotifications();
     if(!processingError && !ioError) {
         // display status messages
         QString statusMsg;
         size_t critical = 0, warnings = 0;
-        for(const Notification &notification : m_originalNotifications) {
-            switch(notification.type()) {
-            case Media::NotificationType::Critical:
+        for(const auto &msg : m_diag) {
+            switch(msg.level()) {
+            case Media::DiagLevel::Fatal:
+            case Media::DiagLevel::Critical:
                 ++critical;
                 break;
-            case Media::NotificationType::Warning:
+            case Media::DiagLevel::Warning:
                 ++warnings;
                 break;
             default:
@@ -1174,12 +1177,12 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         }
         if(warnings || critical) {
             if(critical) {
-                statusMsg = tr("The tags have been saved, but there is/are %1 warning(s) ", 0, warnings).arg(warnings);
-                statusMsg.append(tr("and %1 error(s).", 0, critical).arg(critical));
+                statusMsg = tr("The tags have been saved, but there is/are %1 warning(s) ", nullptr, trQuandity(warnings)).arg(warnings);
+                statusMsg.append(tr("and %1 error(s).", nullptr, trQuandity(critical)).arg(critical));
             } else {
-                statusMsg = tr("The tags have been saved, but there is/are %1 warning(s).", 0, warnings).arg(warnings);
+                statusMsg = tr("The tags have been saved, but there is/are %1 warning(s).", nullptr, trQuandity(warnings)).arg(warnings);
             }
-            m_ui->makingNotificationWidget->setNotificationType(critical > 0 ? NotificationType::Critical : NotificationType::Warning);
+            m_ui->makingNotificationWidget->setNotificationType(critical ? NotificationType::Critical : NotificationType::Warning);
 
         } else {
             statusMsg = tr("The tags have been saved.");

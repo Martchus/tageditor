@@ -1,6 +1,8 @@
 #ifndef CLI_ATTACHMENT_INFO
 #define CLI_ATTACHMENT_INFO
 
+#include <tagparser/diagnostics.h>
+
 #include <c++utilities/conversion/types.h>
 
 namespace Media {
@@ -21,10 +23,10 @@ class AttachmentInfo
 public:
     AttachmentInfo();
     void parseDenotation(const char *denotation);
-    void apply(Media::AbstractContainer *container);
-    void apply(Media::AbstractAttachment *attachment);
+    void apply(Media::AbstractContainer *container, Media::Diagnostics &diag);
+    void apply(Media::AbstractAttachment *attachment, Media::Diagnostics &diag);
     void reset();
-    bool next(Media::AbstractContainer *container);
+    bool next(Media::AbstractContainer *container, Media::Diagnostics &diag);
 
     AttachmentAction action;
     uint64 id;

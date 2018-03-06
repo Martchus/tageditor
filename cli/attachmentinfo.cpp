@@ -5,6 +5,7 @@
 
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/conversion/stringconversion.h>
+#include <c++utilities/conversion/stringbuilder.h>
 
 #include <cstring>
 #include <iostream>
@@ -37,7 +38,7 @@ void AttachmentInfo::parseDenotation(const char *denotation)
     }
 }
 
-void AttachmentInfo::apply(AbstractContainer *container)
+void AttachmentInfo::apply(AbstractContainer *container, Media::Diagnostics &diag)
 {
     static const string context("applying specified attachments");
     AbstractAttachment *attachment = nullptr;
@@ -48,30 +49,30 @@ void AttachmentInfo::apply(AbstractContainer *container)
             cerr << "Argument --update-argument specified but no name/path provided." << endl;
             return;
         }
-        apply(container->createAttachment());
+        apply(container->createAttachment(), diag);
         break;
     case AttachmentAction::Update:
         if(hasId) {
             for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
                 attachment = container->attachment(i);
                 if(attachment->id() == id) {
-                    apply(attachment);
+                    apply(attachment, diag);
                     attachmentFound = true;
                 }
             }
             if(!attachmentFound) {
-                container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be updated.", context);
+                diag.emplace_back(DiagLevel::Critical, argsToString("Attachment with the specified ID \"", id, "\" does not exist and hence can't be updated."), context);
             }
         } else if(name) {
             for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
                 attachment = container->attachment(i);
                 if(attachment->name() == name) {
-                    apply(attachment);
+                    apply(attachment, diag);
                     attachmentFound = true;
                 }
             }
             if(!attachmentFound) {
-                container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + string(name) + "\" does not exist and hence can't be updated.", context);
+                diag.emplace_back(DiagLevel::Critical, argsToString("Attachment with the specified name \"", name, "\" does not exist and hence can't be updated."), context);
             }
         } else {
             cerr << "Argument --update-argument specified but no ID/name provided." << endl;
@@ -87,7 +88,7 @@ void AttachmentInfo::apply(AbstractContainer *container)
                 }
             }
             if(!attachmentFound) {
-                container->addNotification(NotificationType::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be removed.", context);
+                diag.emplace_back(DiagLevel::Critical, "Attachment with the specified ID \"" + numberToString(id) + "\" does not exist and hence can't be removed.", context);
             }
         } else if(name) {
             for(size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
@@ -98,7 +99,7 @@ void AttachmentInfo::apply(AbstractContainer *container)
                 }
             }
             if(!attachmentFound) {
-                container->addNotification(NotificationType::Critical, "Attachment with the specified name \"" + string(name) + "\" does not exist and hence can't be removed.", context);
+                diag.emplace_back(DiagLevel::Critical, "Attachment with the specified name \"" + string(name) + "\" does not exist and hence can't be removed.", context);
             }
         } else {
             cerr << "Argument --remove-argument specified but no ID/name provided." << endl;
@@ -107,13 +108,13 @@ void AttachmentInfo::apply(AbstractContainer *container)
     }
 }
 
-void AttachmentInfo::apply(AbstractAttachment *attachment)
+void AttachmentInfo::apply(AbstractAttachment *attachment, Media::Diagnostics &diag)
 {
     if(hasId) {
         attachment->setId(id);
     }
     if(path) {
-        attachment->setFile(path);
+        attachment->setFile(path, diag);
     }
     if(name) {
         attachment->setName(name);
@@ -134,13 +135,13 @@ void AttachmentInfo::reset()
     path = name = mime = desc = nullptr;
 }
 
-bool AttachmentInfo::next(AbstractContainer *container)
+bool AttachmentInfo::next(AbstractContainer *container, Media::Diagnostics &diag)
 {
     if(!id && !path && !name && !mime && !desc) {
         // skip empty attachment infos
         return false;
     }
-    apply(container);
+    apply(container, diag);
     reset();
     return true;
 }

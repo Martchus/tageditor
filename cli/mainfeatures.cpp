@@ -18,6 +18,8 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
 #include <tagparser/backuphelper.h>
+#include <tagparser/diagnostics.h>
+#include <tagparser/progressfeedback.h>
 
 #ifdef TAGEDITOR_JSON_EXPORT
 # include <reflective_rapidjson/json/reflector.h>
@@ -107,18 +109,21 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         MediaFileInfo inputFileInfo(inputFileArg.values().front());
         inputFileInfo.setForceFullParse(validateArg.isPresent());
         inputFileInfo.open(true);
-        inputFileInfo.parseEverything();
+        Diagnostics diag;
+        inputFileInfo.parseEverything(diag);
+
+        // generate and save info
+        Diagnostics diagReparsing;
         (outputFileArg.isPresent() ? cout : cerr) << "Saving file info for \"" << inputFileArg.values().front() << "\" ..." << endl;
-        NotificationList origNotify;
-        if(outputFileArg.isPresent()) {
-            QFile file(fromNativeFileName(outputFileArg.values().front()));
-            if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, origNotify)) && file.flush()) {
-                cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
-            } else {
-                cerr << Phrases::Error << "An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << Phrases::EndFlush;
-            }
+        if(!outputFileArg.isPresent()) {
+            cout << HtmlInfo::generateInfo(inputFileInfo, diag, diagReparsing).data() << endl;
+            return;
+        }
+        QFile file(fromNativeFileName(outputFileArg.values().front()));
+        if(file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, diag, diagReparsing)) && file.flush()) {
+            cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
         } else {
-            cout << HtmlInfo::generateInfo(inputFileInfo, origNotify).data() << endl;
+            cerr << Phrases::Error << "An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << Phrases::EndFlush;
         }
     } catch(const Media::Failure &) {
         cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
@@ -146,14 +151,15 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
 
     MediaFileInfo fileInfo;
     for(const char *file : filesArg.values()) {
+        Diagnostics diag;
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
-            fileInfo.parseContainerFormat();
-            fileInfo.parseTracks();
-            fileInfo.parseAttachments();
-            fileInfo.parseChapters();
+            fileInfo.parseContainerFormat(diag);
+            fileInfo.parseTracks(diag);
+            fileInfo.parseAttachments(diag);
+            fileInfo.parseChapters(diag);
 
             // print general/container-related info
             cout << "Technical information for \"" << file << "\":\n";
@@ -176,8 +182,8 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                 printProperty("Duration", container->duration());
                 printProperty("Creation time", container->creationTime());
                 printProperty("Modification time", container->modificationTime());
-                printProperty("Tag position", container->determineTagPosition());
-                printProperty("Index position", container->determineIndexPosition());
+                printProperty("Tag position", container->determineTagPosition(diag));
+                printProperty("Index position", container->determineIndexPosition(diag));
             }
             if(fileInfo.paddingSize()) {
                 printProperty("Padding", dataSizeToString(fileInfo.paddingSize()));
@@ -295,7 +301,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
 
-        printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
+        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
         cout << endl;
     }
 }
@@ -315,12 +321,13 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
 
     MediaFileInfo fileInfo;
     for(const char *file : filesArg.values()) {
+        Diagnostics diag;
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
-            fileInfo.parseContainerFormat();
-            fileInfo.parseTags();
+            fileInfo.parseContainerFormat(diag);
+            fileInfo.parseTags(diag);
             cout << "Tag information for \"" << file << "\":\n";
             const auto tags = fileInfo.tags();
             if(!tags.empty()) {
@@ -353,7 +360,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
             ::IoUtilities::catchIoFailure();
             cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
-        printNotifications(fileInfo, "Parsing notifications:", verboseArg.isPresent());
+        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
         cout << endl;
     }
 }
@@ -454,17 +461,16 @@ void setTagInfo(const SetTagInfoArgs &args)
 
     // iterate through all specified files
     unsigned int fileIndex = 0;
-    static const string context("setting tags");
-    NotificationList notifications;
+    static string context("setting tags");
     for(const char *file : args.filesArg.values()) {
+        Diagnostics diag;
         try {
             // parse tags and tracks (tracks are relevent because track meta-data such as language can be changed as well)
             cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
-            notifications.clear();
             fileInfo.setPath(file);
-            fileInfo.parseContainerFormat();
-            fileInfo.parseTags();
-            fileInfo.parseTracks();
+            fileInfo.parseContainerFormat(diag);
+            fileInfo.parseTags(diag);
+            fileInfo.parseTracks(diag);
             vector<Tag *> tags;
 
             // remove tags with the specified targets
@@ -517,7 +523,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             // alter tags
             fileInfo.tags(tags);
             if(tags.empty()) {
-                fileInfo.addNotification(NotificationType::Critical, "Can not create appropriate tags for file.", context);
+                diag.emplace_back(DiagLevel::Critical, "Can not create appropriate tags for file.", context);
             } else {
                 // iterate through all tags
                 for(auto *tag : tags) {
@@ -534,7 +540,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                     if(!tag->canEncodingBeUsed(denotedEncoding)) {
                         usedEncoding = tag->proposedTextEncoding();
                         if(args.encodingArg.isPresent()) {
-                            fileInfo.addNotification(NotificationType::Warning, argsToString("Can't use specified encoding \"", args.encodingArg.values().front(), "\" in ", tagName(tag), " because the tag format/version doesn't support it."), context);
+                            diag.emplace_back(DiagLevel::Warning, argsToString("Can't use specified encoding \"", args.encodingArg.values().front(), "\" in ", tagName(tag), " because the tag format/version doesn't support it."), context);
                         }
                     }
                     // iterate through all denoted field values
@@ -553,8 +559,9 @@ void setTagInfo(const SetTagInfoArgs &args)
                                         try {
                                             // assume the file refers to a picture
                                             MediaFileInfo fileInfo(relevantDenotedValue->value);
+                                            Diagnostics diag;
                                             fileInfo.open(true);
-                                            fileInfo.parseContainerFormat();
+                                            fileInfo.parseContainerFormat(diag);
                                             auto buff = make_unique<char []>(fileInfo.size());
                                             fileInfo.stream().seekg(0);
                                             fileInfo.stream().read(buff.get(), fileInfo.size());
@@ -562,10 +569,10 @@ void setTagInfo(const SetTagInfoArgs &args)
                                             value.setMimeType(fileInfo.mimeType());
                                             convertedValues.emplace_back(move(value));
                                         } catch(const Media::Failure &) {
-                                            fileInfo.addNotification(NotificationType::Critical, "Unable to parse specified cover file.", context);
+                                            diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
                                         } catch(...) {
                                             ::IoUtilities::catchIoFailure();
-                                            fileInfo.addNotification(NotificationType::Critical, "An IO error occured when parsing the specified cover file.", context);
+                                            diag.emplace_back(DiagLevel::Critical, "An IO error occured when parsing the specified cover file.", context);
                                         }
                                     } else {
                                         convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
@@ -579,7 +586,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                             try {
                                 denotedScope.field.setValues(tag, tagType, convertedValues);
                             } catch(const ConversionException &e) {
-                                fileInfo.addNotification(NotificationType::Critical, argsToString("Unable to parse denoted field ID \"", denotedScope.field.name(), "\": ", e.what()), context);
+                                diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse denoted field ID \"", denotedScope.field.name(), "\": ", e.what()), context);
                             }
                         }
                     }
@@ -613,10 +620,10 @@ void setTagInfo(const SetTagInfoArgs &args)
                             } else if(field.denotes("default")) {
                                 track->setDefault(stringToBool(value));
                             } else {
-                                fileInfo.addNotification(NotificationType::Critical, argsToString("Denoted track property name \"", field.denotation(), "\" is invalid"), argsToString("setting meta-data of track ", track->id()));
+                                diag.emplace_back(DiagLevel::Critical, argsToString("Denoted track property name \"", field.denotation(), "\" is invalid"), argsToString("setting meta-data of track ", track->id()));
                             }
                         } catch(const ConversionException &e) {
-                            fileInfo.addNotification(NotificationType::Critical, argsToString("Unable to parse value for track property \"", field.denotation(), "\": ", e.what()), argsToString("setting meta-data of track ", track->id()));
+                            diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse value for track property \"", field.denotation(), "\": ", e.what()), argsToString("setting meta-data of track ", track->id()));
                         }
                     }
                 }
@@ -635,7 +642,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             bool attachmentsModified = false;
             if(args.addAttachmentArg.isPresent() || args.updateAttachmentArg.isPresent() || args.removeAttachmentArg.isPresent() || args.removeExistingAttachmentsArg.isPresent()) {
                 static const string context("setting attachments");
-                fileInfo.parseAttachments();
+                fileInfo.parseAttachments(diag);
                 if(fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok) {
                     if(container) {
                         // ignore all existing attachments if argument is specified
@@ -652,24 +659,24 @@ void setTagInfo(const SetTagInfoArgs &args)
                             for(const char *value : args.addAttachmentArg.values(i)) {
                                 currentInfo.parseDenotation(value);
                             }
-                            attachmentsModified |= currentInfo.next(container);
+                            attachmentsModified |= currentInfo.next(container, diag);
                         }
                         currentInfo.action = AttachmentAction::Update;
                         for(size_t i = 0, occurrences = args.updateAttachmentArg.occurrences(); i != occurrences; ++i) {
                             for(const char *value : args.updateAttachmentArg.values(i)) {
                                 currentInfo.parseDenotation(value);
                             }
-                            attachmentsModified |= currentInfo.next(container);
+                            attachmentsModified |= currentInfo.next(container, diag);
                         }
                         currentInfo.action = AttachmentAction::Remove;
                         for(size_t i = 0, occurrences = args.removeAttachmentArg.occurrences(); i != occurrences; ++i) {
                             for(const char *value : args.removeAttachmentArg.values(i)) {
                                 currentInfo.parseDenotation(value);
                             }
-                            attachmentsModified |= currentInfo.next(container);
+                            attachmentsModified |= currentInfo.next(container, diag);
                         }
                     } else {
-                        fileInfo.addNotification(NotificationType::Critical, "Unable to assign attachments because the container object has not been initialized.", context);
+                        diag.emplace_back(DiagLevel::Critical, "Unable to assign attachments because the container object has not been initialized.", context);
                     }
                 } else {
                     // notification will be added by the file info automatically
@@ -677,22 +684,14 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
 
             // apply changes
+            fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
             try {
-                // save parsing notifications because notifications of sub objects like tags, tracks, ... will be gone after applying changes
-                fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
-                fileInfo.gatherRelatedNotifications(notifications);
-                fileInfo.invalidateNotifications();
+                // create handler for progress updates and aborting
+                AbortableProgressFeedback progress(logNextStep, logStepPercentage);
+                const InterruptHandler handler(bind(&AbortableProgressFeedback::tryToAbort, ref(progress)));
 
-                // register handler for logging status
-                fileInfo.registerCallback(logStatus);
-
-                // register interrupt handler
-                const InterruptHandler handler([&fileInfo] {
-                    fileInfo.tryToAbort();
-                });
-
-                // apply changes and gather notifications
-                fileInfo.applyChanges();
+                // apply changes
+                fileInfo.applyChanges(diag, progress);
 
                 // notify about completion
                 finalizeLog();
@@ -714,8 +713,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             cerr << " - " << Phrases::Error << "An IO failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
         }
 
-        fileInfo.gatherRelatedNotifications(notifications);
-        printNotifications(notifications, "Notifications:", args.verboseArg.isPresent());
+        printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent());
 
         // continue with next file
         ++fileIndex;
@@ -747,6 +745,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
 
     MediaFileInfo inputFileInfo;
     for(const char *file : inputFilesArg.values()) {
+        Diagnostics diag;
         try {
             // setup media file info
             inputFileInfo.setPath(file);
@@ -756,8 +755,8 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
             if(!fieldDenotations.empty()) {
                 // extract tag field
                 (outputFileArg.isPresent() ? cout : cerr) << "Extracting field " << fieldArg.values().front() << " of \"" << file << "\" ..." << endl;
-                inputFileInfo.parseContainerFormat();
-                inputFileInfo.parseTags();
+                inputFileInfo.parseContainerFormat(diag);
+                inputFileInfo.parseTags(diag);
                 auto tags = inputFileInfo.tags();
                 vector<pair<const TagValue *, string> > values;
                 // iterate through all tags
@@ -769,7 +768,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                                 values.emplace_back(value, joinStrings({tag->typeName(), numberToString(values.size())}, "-", true));
                             }
                         } catch(const ConversionException &e) {
-                            inputFileInfo.addNotification(NotificationType::Critical, "Unable to parse denoted field ID \"" % string(fieldDenotation.first.field.name()) % "\": " + e.what(), "extracting field");
+                            diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse denoted field ID \"", fieldDenotation.first.field.name(), "\": ", e.what()), "extracting field");
                         }
                     }
                 }
@@ -812,8 +811,8 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                 }
                 logStream << " of \"" << file << "\" ..." << endl;
 
-                inputFileInfo.parseContainerFormat();
-                inputFileInfo.parseAttachments();
+                inputFileInfo.parseContainerFormat(diag);
+                inputFileInfo.parseAttachments(diag);
                 vector<pair<const AbstractAttachment *, string> > attachments;
                 // iterate through all attachments
                 for(const AbstractAttachment *attachment : inputFileInfo.attachments()) {
@@ -856,7 +855,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
             ::IoUtilities::catchIoFailure();
             cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::End;
         }
-        printNotifications(inputFileInfo, "Parsing notifications:", verboseArg.isPresent());
+        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
     }
 }
 
@@ -877,13 +876,14 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
 
     // gather tags for each file
     for(const char *file : filesArg.values()) {
+        Diagnostics diag;
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
-            fileInfo.parseContainerFormat();
-            fileInfo.parseTags();
-            fileInfo.parseTracks();
+            fileInfo.parseContainerFormat(diag);
+            fileInfo.parseTags(diag);
+            fileInfo.parseTracks(diag);
             jsonData.emplace_back(fileInfo, document.GetAllocator());
         } catch(const Media::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
@@ -892,6 +892,8 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
             cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
     }
+
+    // TODO: serialize diag messages
 
     // print the gathered data as JSON document
     ReflectiveRapidJSON::JsonReflector::push(jsonData, document, document.GetAllocator());

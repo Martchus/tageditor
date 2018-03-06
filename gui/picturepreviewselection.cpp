@@ -11,6 +11,7 @@
 #include <tagparser/id3/id3v2frame.h>
 #include <tagparser/vorbis/vorbiscomment.h>
 #include <tagparser/vorbis/vorbiscommentfield.h>
+#include <tagparser/diagnostics.h>
 
 #include <qtutilities/misc/conversion.h>
 
@@ -318,8 +319,10 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     try {
         MediaFileInfo fileInfo(toNativeFileName(path).constData());
+        Diagnostics diag;
         fileInfo.open(true);
-        fileInfo.parseContainerFormat();
+        fileInfo.parseContainerFormat(diag);
+        // TODO: show diagnostic messages
         auto mimeType = QString::fromUtf8(fileInfo.mimeType());
         bool ok;
         mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);

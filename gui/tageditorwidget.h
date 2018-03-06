@@ -5,6 +5,7 @@
 #include "./webviewdefs.h"
 
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/diagnostics.h>
 
 #include <QWidget>
 #include <QByteArray>
@@ -49,7 +50,7 @@ public:
     const QString &currentPath() const;
     const QString &currentDir() const;
     Media::MediaFileInfo &fileInfo();
-    Media::NotificationList &originalNotifications();
+    const Media::Diagnostics &diagnostics() const;
     bool isTagEditShown() const;
     const QByteArray &fileInfoHtml() const;
     const QByteArray &generateFileInfoHtml();
@@ -150,9 +151,10 @@ private:
     QString m_lastDir;
     QString m_saveFilePath;
     // status
+    Media::Diagnostics m_diag;
+    Media::Diagnostics m_diagReparsing;
     bool m_nextFileAfterSaving;
     bool m_makingResultsAvailable;
-    Media::NotificationList m_originalNotifications;
     bool m_abortClicked;
     bool m_fileOperationOngoing;
 };
@@ -191,11 +193,11 @@ inline Media::MediaFileInfo &TagEditorWidget::fileInfo()
 }
 
 /*!
- * \brief Returns the original notifications.
+ * \brief Returns the diagnostic messages.
  */
-inline Media::NotificationList &TagEditorWidget::originalNotifications()
+inline const Media::Diagnostics &TagEditorWidget::diagnostics() const
 {
-    return m_originalNotifications;
+    return m_diag;
 }
 
 /*!

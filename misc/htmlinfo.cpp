@@ -9,7 +9,6 @@
 #include <tagparser/mp4/mp4container.h>
 #include <tagparser/abstracttrack.h>
 #include <tagparser/abstractattachment.h>
-#include <tagparser/notification.h>
 
 #include <qtutilities/resources/resources.h>
 
@@ -56,6 +55,7 @@ using namespace std;
 using namespace ConversionUtilities;
 using namespace ChronoUtilities;
 using namespace Media;
+using namespace Utility;
 
 namespace HtmlInfo {
 
@@ -308,11 +308,12 @@ class Generator
 {
 public:
 
-    Generator(const MediaFileInfo &file, NotificationList &originalNotifications) :
+    Generator(const MediaFileInfo &file, Diagnostics &diag, Diagnostics &diagReparsing) :
         m_writer(&m_res),
         m_rowMaker(m_writer),
         m_file(file),
-        originalNotifications(originalNotifications)
+        m_diag(diag),
+        m_diagReparsing(diagReparsing)
     {}
 
     QString mkStyle()
@@ -808,33 +809,33 @@ public:
         }
     }
 
-    void mkNotifications(NotificationList &notifications, bool reparsing = false)
+    void mkNotifications(Diagnostics &diag, bool reparsing = false)
     {
-        if(notifications.size()) {
-            startTableSection();
-            const QString moreId(reparsing ? QStringLiteral("notificationsReparsingMore") : QStringLiteral("notificationsMore"));
-            m_rowMaker.startRow(reparsing ? QCoreApplication::translate("HtmlInfo", "Notifications (reparsing after saving)") : QCoreApplication::translate("HtmlInfo", "Notifications"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 notification(s) available", 0, static_cast<int>(notifications.size())).arg(notifications.size()));
-            mkSpace();
-            mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show notifications"));
-            m_rowMaker.endRow();
-            m_writer.writeEndElement();
+        if (diag.empty()) {
+            return;
+        }
+        startTableSection();
+        const QString moreId(reparsing ? QStringLiteral("notificationsReparsingMore") : QStringLiteral("notificationsMore"));
+        m_rowMaker.startRow(reparsing ? QCoreApplication::translate("HtmlInfo", "Notifications (reparsing after saving)") : QCoreApplication::translate("HtmlInfo", "Notifications"));
+        m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 notification(s) available", nullptr, trQuandity(diag.size())).arg(diag.size()));
+        mkSpace();
+        mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show notifications"));
+        m_rowMaker.endRow();
+        m_writer.writeEndElement();
 
-            startExtendedTableSection(moreId);
-            m_rowMaker.startHorizontalSubTab(QString(), QStringList() << QString() << QCoreApplication::translate("HtmlInfo", "Context") << QCoreApplication::translate("HtmlInfo", "Message") << QCoreApplication::translate("HtmlInfo", "Time"));
-            Notification::sortByTime(notifications);
-            for(const Notification &notification : notifications) {
-                m_writer.writeStartElement(QStringLiteral("tr"));
-                m_writer.writeEmptyElement(QStringLiteral("td"));
-                m_writer.writeAttribute(QStringLiteral("class"), qstr(notification.typeName()));
-                m_writer.writeTextElement(QStringLiteral("td"), qstr(notification.context()));
-                m_writer.writeTextElement(QStringLiteral("td"), qstr(notification.message()));
-                m_writer.writeTextElement(QStringLiteral("td"), qstr(notification.creationTime().toString(DateTimeOutputFormat::DateAndTime, false)));
-                m_writer.writeEndElement();
-            }
-            m_rowMaker.endSubTab();
+        startExtendedTableSection(moreId);
+        m_rowMaker.startHorizontalSubTab(QString(), QStringList({QString(), QCoreApplication::translate("HtmlInfo", "Context"), QCoreApplication::translate("HtmlInfo", "Message"), QCoreApplication::translate("HtmlInfo", "Time")}));
+        for(const auto &msg : diag) {
+            m_writer.writeStartElement(QStringLiteral("tr"));
+            m_writer.writeEmptyElement(QStringLiteral("td"));
+            m_writer.writeAttribute(QStringLiteral("class"), qstr(msg.levelName()));
+            m_writer.writeTextElement(QStringLiteral("td"), qstr(msg.context()));
+            m_writer.writeTextElement(QStringLiteral("td"), qstr(msg.message()));
+            m_writer.writeTextElement(QStringLiteral("td"), qstr(msg.creationTime().toString(DateTimeOutputFormat::DateAndTime, false)));
             m_writer.writeEndElement();
         }
+        m_rowMaker.endSubTab();
+        m_writer.writeEndElement();
     }
 
     void mkDoc()
@@ -932,8 +933,8 @@ public:
             if(m_file.paddingSize()) {
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"), QStringLiteral("%1 (%2 %)").arg(qstr(dataSizeToString(m_file.paddingSize(), true))).arg(static_cast<double>(m_file.paddingSize()) / m_file.size() * 100.0, 0, 'g', 2));
             }
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tag position"), container->determineTagPosition());
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Index position"), container->determineIndexPosition());
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tag position"), container->determineTagPosition(m_diagReparsing));
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Index position"), container->determineIndexPosition(m_diagReparsing));
 
             m_writer.writeEndElement();
         }
@@ -1110,11 +1111,8 @@ public:
         }
 
         // notifications
-        auto currentNotifications = m_file.gatherRelatedNotifications();
-        mkNotifications(currentNotifications, !originalNotifications.empty());
-        if(!originalNotifications.empty()) {
-            mkNotifications(originalNotifications);
-        }
+        mkNotifications(m_diag);
+        mkNotifications(m_diagReparsing, true);
 
         // </table> </body> </html>
 
@@ -1132,7 +1130,8 @@ private:
     QByteArray m_res;
     RowMaker m_rowMaker;
     const MediaFileInfo &m_file;
-    NotificationList &originalNotifications;
+    Diagnostics &m_diag;
+    Diagnostics &m_diagReparsing;
 };
 
 /*!
@@ -1143,9 +1142,9 @@ private:
  * A QGuiApplication instance should be available for setting fonts.
  * A QApplication instance should be available for standard icons.
  */
-QByteArray generateInfo(const MediaFileInfo &file, NotificationList &originalNotifications)
+QByteArray generateInfo(const MediaFileInfo &file, Diagnostics &diag, Diagnostics &diagReparsing)
 {
-    Generator gen(file, originalNotifications);
+    Generator gen(file, diag, diagReparsing);
     gen.mkDoc();
 #ifdef QT_DEBUG
     QFile test(QStringLiteral("/tmp/test.xhtml"));

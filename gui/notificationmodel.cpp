@@ -1,5 +1,7 @@
 #include "./notificationmodel.h"
 
+#include "../misc/utility.h"
+
 #include <c++utilities/chrono/datetime.h>
 
 #include <QApplication>
@@ -9,14 +11,15 @@
 using namespace std;
 using namespace ChronoUtilities;
 using namespace Media;
+using namespace Utility;
 
 namespace QtGui {
 
-NotificationModel::NotificationModel(QObject *parent) :
+DiagModel::DiagModel(QObject *parent) :
     QAbstractListModel(parent)
 {}
 
-QVariant NotificationModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant DiagModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch(orientation) {
     case Qt::Horizontal:
@@ -41,7 +44,7 @@ QVariant NotificationModel::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
-int NotificationModel::columnCount(const QModelIndex &parent) const
+int DiagModel::columnCount(const QModelIndex &parent) const
 {
     if(!parent.isValid()) {
         return 3;
@@ -49,27 +52,27 @@ int NotificationModel::columnCount(const QModelIndex &parent) const
     return 0;
 }
 
-int NotificationModel::rowCount(const QModelIndex &parent) const
+int DiagModel::rowCount(const QModelIndex &parent) const
 {
     if(!parent.isValid()) {
-        return m_notifications.size();
+        return sizeToInt(m_diag.size());
     }
     return 0;
 }
 
-Qt::ItemFlags NotificationModel::flags(const QModelIndex &index) const
+Qt::ItemFlags DiagModel::flags(const QModelIndex &index) const
 {
     return QAbstractListModel::flags(index);
 }
 
-QVariant NotificationModel::data(const QModelIndex &index, int role) const
+QVariant DiagModel::data(const QModelIndex &index, int role) const
 {
-    if(index.isValid() && index.row() < m_notifications.size()) {
+    if(index.isValid() && index.row() >= 0 && static_cast<std::size_t>(index.row()) < m_diag.size()) {
         switch(role) {
         case Qt::DisplayRole:
             switch(index.column()) {
             case 0: {
-                const string &context = m_notifications.at(index.row()).context();
+                const string &context = m_diag[static_cast<std::size_t>(index.row())].context();
                 if(context.empty()) {
                     return tr("unspecified");
                 } else {
@@ -77,9 +80,9 @@ QVariant NotificationModel::data(const QModelIndex &index, int role) const
                 }
             }
             case 1:
-                return QString::fromUtf8(m_notifications.at(index.row()).message().c_str());
+                return QString::fromUtf8(m_diag[static_cast<std::size_t>(index.row())].message().c_str());
             case 2:
-                return QString::fromUtf8(m_notifications.at(index.row()).creationTime().toString(DateTimeOutputFormat::DateAndTime, true).c_str());
+                return QString::fromUtf8(m_diag[static_cast<std::size_t>(index.row())].creationTime().toString(DateTimeOutputFormat::DateAndTime, true).c_str());
             default:
                 ;
             }
@@ -87,18 +90,19 @@ QVariant NotificationModel::data(const QModelIndex &index, int role) const
         case Qt::DecorationRole:
             switch(index.column()) {
             case 0:
-                switch(m_notifications.at(index.row()).type()) {
-                case NotificationType::Information:
-                    return informationIcon();
-                case NotificationType::Warning:
-                    return warningIcon();
-                case NotificationType::Critical:
-                    return errorIcon();
-                case NotificationType::Debug:
+                switch(m_diag[static_cast<std::size_t>(index.row())].level()) {
+                case DiagLevel::None:
+                case DiagLevel::Debug:
                     return debugIcon();
-                default:
-                    ;
+                case DiagLevel::Information:
+                    return informationIcon();
+                case DiagLevel::Warning:
+                    return warningIcon();
+                case DiagLevel::Critical:
+                case DiagLevel::Fatal:
+                    return errorIcon();
                 }
+                break;
             default:
                 ;
             }
@@ -110,42 +114,37 @@ QVariant NotificationModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-const QList<Notification> &NotificationModel::notifications() const
+const Diagnostics &DiagModel::diagnostics() const
 {
-    return m_notifications;
+    return m_diag;
 }
 
-void NotificationModel::setNotifications(const QList<Notification> &notifications)
+void DiagModel::setDiagnostics(const Media::Diagnostics &notifications)
 {
     beginResetModel();
-    m_notifications = notifications;
+    m_diag = notifications;
     endResetModel();
 }
 
-void NotificationModel::setNotifications(const NotificationList &notifications)
-{
-    setNotifications(QList<Notification>::fromStdList(notifications));
-}
-
-const QIcon &NotificationModel::informationIcon()
+const QIcon &DiagModel::informationIcon()
 {
     static const QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
     return icon;
 }
 
-const QIcon &NotificationModel::warningIcon()
+const QIcon &DiagModel::warningIcon()
 {
     static const QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning);
     return icon;
 }
 
-const QIcon &NotificationModel::errorIcon()
+const QIcon &DiagModel::errorIcon()
 {
     static const QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
     return icon;
 }
 
-const QIcon &NotificationModel::debugIcon()
+const QIcon &DiagModel::debugIcon()
 {
     static const QIcon icon = QIcon(QStringLiteral("/images/bug"));
     return icon;

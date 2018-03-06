@@ -11,7 +11,7 @@
 #include <tagparser/mp4/mp4container.h>
 #include <tagparser/abstracttrack.h>
 #include <tagparser/abstractattachment.h>
-#include <tagparser/notification.h>
+#include <tagparser/diagnostics.h>
 
 #include <c++utilities/chrono/datetime.h>
 #include <c++utilities/conversion/stringconversion.h>
@@ -30,6 +30,7 @@ using namespace std;
 using namespace ChronoUtilities;
 using namespace ConversionUtilities;
 using namespace Media;
+using namespace Utility;
 
 namespace QtGui {
 
@@ -115,34 +116,33 @@ private:
     QStandardItem *m_item;
 };
 
-void addNotifications(Media::NotificationList *notifications, QStandardItem *parent)
+void addDiagMessages(Media::Diagnostics *diag, QStandardItem *parent)
 {
-    Notification::sortByTime(*notifications);
-    for(Notification &notification : *notifications) {
+    for(const auto &msg : *diag) {
         QList<QStandardItem *> notificationRow;
         notificationRow.reserve(3);
 
-        auto *firstItem = defaultItem(QString::fromUtf8(notification.creationTime().toString().data()));
-        switch(notification.type()) {
-        case NotificationType::None:
-            break;
-        case NotificationType::Debug:
+        auto *firstItem = defaultItem(QString::fromUtf8(msg.creationTime().toString().data()));
+        switch(msg.level()) {
+        case DiagLevel::None:
+        case DiagLevel::Debug:
             firstItem->setIcon(FileInfoModel::debugIcon());
             break;
-        case NotificationType::Information:
+        case DiagLevel::Information:
             firstItem->setIcon(FileInfoModel::informationIcon());
             break;
-        case NotificationType::Warning:
+        case DiagLevel::Warning:
             firstItem->setIcon(FileInfoModel::warningIcon());
             break;
-        case NotificationType::Critical:
+        case DiagLevel::Critical:
+        case DiagLevel::Fatal:
             firstItem->setIcon(FileInfoModel::errorIcon());
             break;
         }
         parent->appendRow(QList<QStandardItem *>()
                           << firstItem
-                          << defaultItem(QString::fromUtf8(notification.message().data()))
-                          << defaultItem(QString::fromUtf8(notification.context().data())));
+                          << defaultItem(QString::fromUtf8(msg.message().data()))
+                          << defaultItem(QString::fromUtf8(msg.context().data())));
     }
 
 }
@@ -190,10 +190,9 @@ template<class ElementType, bool isAdditional = false> void addElementNode(const
 /*!
  * \brief Constructs a new instance with the specified \a fileInfo which might be nullptr.
  */
-FileInfoModel::FileInfoModel(Media::MediaFileInfo *fileInfo, QObject *parent) :
+FileInfoModel::FileInfoModel(QObject *parent) :
     QStandardItemModel(parent)
 {
-    setFileInfo(fileInfo);
 }
 
 QVariant FileInfoModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -231,10 +230,11 @@ const MediaFileInfo *FileInfoModel::fileInfo() const
  * \brief Assigns a Media::MediaFileInfo.
  * \remarks Causes updating the internal cache and resets the model.
  */
-void FileInfoModel::setFileInfo(MediaFileInfo *fileInfo, Media::NotificationList *originalNotifications)
+void FileInfoModel::setFileInfo(MediaFileInfo &fileInfo, Diagnostics &diag, Diagnostics *diagReparsing)
 {
-    m_file = fileInfo;
-    m_originalNotifications = originalNotifications;
+    m_file = &fileInfo;
+    m_diag = &diag;
+    m_diagReparsing = diagReparsing;
     updateCache();
 }
 
@@ -271,6 +271,9 @@ void FileInfoModel::updateCache()
     beginResetModel();
     clear();
     if(m_file) {
+        // get diag
+        Diagnostics &diag = m_diagReparsing ? *m_diagReparsing : *m_diag;
+
         // get container
         AbstractContainer *container = m_file->container();
 
@@ -327,8 +330,8 @@ void FileInfoModel::updateCache()
             containerHelper.appendRow(tr("Document type"), container->documentType());
             containerHelper.appendRow(tr("Document version"), container->doctypeVersion());
             containerHelper.appendRow(tr("Document read version"), container->doctypeReadVersion());
-            containerHelper.appendRow(tr("Tag position"), Utility::elementPositionToQString(container->determineTagPosition()));
-            containerHelper.appendRow(tr("Index position"), Utility::elementPositionToQString(container->determineIndexPosition()));
+            containerHelper.appendRow(tr("Tag position"), Utility::elementPositionToQString(container->determineTagPosition(diag)));
+            containerHelper.appendRow(tr("Index position"), Utility::elementPositionToQString(container->determineIndexPosition(diag)));
         }
         containerHelper.appendRow(tr("Padding size"), m_file->paddingSize());
 
@@ -338,7 +341,7 @@ void FileInfoModel::updateCache()
             if(!tags.empty()) {
                 auto *tagsItem = defaultItem(tr("Tags"));
                 setItem(++currentRow, tagsItem);
-                setItem(currentRow, 1, defaultItem(tr("%1 tag(s) assigned", nullptr, static_cast<int>(tags.size())).arg(tags.size())));
+                setItem(currentRow, 1, defaultItem(tr("%1 tag(s) assigned", nullptr, trQuandity(tags.size())).arg(tags.size())));
 
                 for(const Tag *tag : tags) {
                     auto *tagItem = defaultItem(tag->typeName());
@@ -360,9 +363,9 @@ void FileInfoModel::updateCache()
                 setItem(++currentRow, tracksItem);
                 const string summary(m_file->technicalSummary());
                 if(summary.empty()) {
-                    setItem(currentRow, 1, defaultItem(tr("%1 track(s) contained", nullptr, static_cast<int>(tracks.size())).arg(tracks.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 track(s) contained", nullptr, trQuandity(tracks.size())).arg(tracks.size())));
                 } else {
-                    setItem(currentRow, 1, defaultItem(tr("%1 track(s): ", nullptr, static_cast<int>(tracks.size())).arg(tracks.size()) + QString::fromUtf8(summary.data(), summary.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 track(s): ", nullptr, trQuandity(tracks.size())).arg(tracks.size()) + QString::fromUtf8(summary.data(), summary.size())));
                 }
 
                 size_t number = 0;
@@ -461,7 +464,7 @@ void FileInfoModel::updateCache()
             if(!attachments.empty()) {
                 auto *attachmentsItem = defaultItem(tr("Attachments"));
                 setItem(++currentRow, attachmentsItem);
-                setItem(currentRow, 1, defaultItem(tr("%1 attachment(s) present", nullptr, attachments.size()).arg(attachments.size())));
+                setItem(currentRow, 1, defaultItem(tr("%1 attachment(s) present", nullptr, trQuandity(attachments.size())).arg(attachments.size())));
 
                 size_t number = 0;
                 for(const AbstractAttachment *attachment : attachments) {
@@ -524,7 +527,7 @@ void FileInfoModel::updateCache()
                 if(!editionEntries.empty()) {
                     auto *editionsItem = defaultItem(tr("Editions"));
                     setItem(++currentRow, editionsItem);
-                    setItem(currentRow, 1, defaultItem(tr("%1 edition(s) present", nullptr, editionEntries.size()).arg(editionEntries.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 edition(s) present", nullptr, trQuandity(editionEntries.size())).arg(editionEntries.size())));
                     size_t editionNumber = 0;
                     for(const auto &edition : editionEntries) {
                         auto *editionItem = defaultItem(tr("Edition #%1").arg(++editionNumber));
@@ -554,7 +557,7 @@ void FileInfoModel::updateCache()
                 if(!chapters.empty()) {
                     auto *chaptersItem = defaultItem(tr("Chapters"));
                     setItem(++currentRow, chaptersItem);
-                    setItem(currentRow, 1, defaultItem(tr("%1 chapter(s) present", nullptr, chapters.size()).arg(chapters.size())));
+                    setItem(currentRow, 1, defaultItem(tr("%1 chapter(s) present", nullptr, trQuandity(chapters.size())).arg(chapters.size())));
                     for(const AbstractChapter *chapter : chapters) {
                         addChapter(chapter, chaptersItem);
                     }
@@ -592,18 +595,14 @@ void FileInfoModel::updateCache()
         }
 
         // notifications
-        auto currentNotifications = m_file->gatherRelatedNotifications();
-        if(!currentNotifications.empty()) {
-             auto *notificationsItem= defaultItem(m_originalNotifications ? tr("Notifications (reparsing after saving)") : tr("Notifications"));
-            addNotifications(&currentNotifications, notificationsItem);
-            setItem(++currentRow, notificationsItem);
+        auto *const diagItem = defaultItem(tr("Diagnostic messages"));
+        addDiagMessages(m_diag, diagItem);
+        setItem(++currentRow, diagItem);
+        if (m_diagReparsing) {
+            auto *diagReparsingItem = defaultItem(tr("Diagnostic messages from reparsing"));
+            addDiagMessages(m_diagReparsing, diagReparsingItem);
+            setItem(++currentRow, diagReparsingItem);
         }
-        if(m_originalNotifications && !m_originalNotifications->empty()) {
-            auto *notificationsItem = defaultItem(tr("Notifications"));
-            addNotifications(m_originalNotifications, notificationsItem);
-            setItem(++currentRow, notificationsItem);
-        }
-
     }
     endResetModel();
 }

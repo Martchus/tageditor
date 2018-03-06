@@ -7,13 +7,12 @@
 
 namespace Media {
 class MediaFileInfo;
-class Notification;
-typedef std::list<Notification> NotificationList;
+class Diagnostics;
 }
 
 namespace HtmlInfo {
 
-QByteArray generateInfo(const Media::MediaFileInfo &file, Media::NotificationList &originalNotifications);
+QByteArray generateInfo(const Media::MediaFileInfo &file, Media::Diagnostics &diag, Media::Diagnostics &diagReparsing);
 
 }
 

@@ -2,9 +2,27 @@
 #include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/misc.h>
 #include <c++utilities/io/path.h>
-#include <c++utilities/tests/testutils.h>
+
+// order of includes and definition of operator << matters for C++ to resolve the correct overload
 
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/diagnostics.h>
+
+namespace TestUtilities {
+
+/*!
+ * \brief Prints a DiagMessage to enable using it in CPPUNIT_ASSERT_EQUAL.
+ */
+inline std::ostream &operator <<(std::ostream &os, const Media::DiagMessage &diagMessage)
+{
+    return os << diagMessage.levelName() << ':' << ' ' << diagMessage.message() << ' ' << '(' << diagMessage.context() << ')';
+}
+
+}
+
+using namespace TestUtilities;
+
+#include <c++utilities/tests/testutils.h>
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/TestFixture.h>
@@ -804,9 +822,10 @@ void CliTests::testExtraction()
     // test extraction of cover
     const char *const args1[] = {"tageditor", "extract", "cover", "-f", mp4File1.data(), "-o", "/tmp/extracted.jpeg", nullptr};
     TESTUTILS_ASSERT_EXEC(args1);
+    Diagnostics diag;
     MediaFileInfo extractedInfo("/tmp/extracted.jpeg");
     extractedInfo.open(true);
-    extractedInfo.parseContainerFormat();
+    extractedInfo.parseContainerFormat(diag);
     CPPUNIT_ASSERT_EQUAL(22771_st, extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     extractedInfo.invalidate();
@@ -819,12 +838,13 @@ void CliTests::testExtraction()
     CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
     TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
-    extractedInfo.parseContainerFormat();
+    extractedInfo.parseContainerFormat(diag);
     CPPUNIT_ASSERT_EQUAL(22771_st, extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp4File2.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove((mp4File2 + ".bak").data()));
+    CPPUNIT_ASSERT_EQUAL(Diagnostics(), diag);
 }
 
 /*!
