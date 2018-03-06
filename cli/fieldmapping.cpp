@@ -2,7 +2,7 @@
 
 #include <tagparser/tag.h>
 
-using namespace Media;
+using namespace TagParser;
 
 namespace Cli {
 namespace FieldMapping {
@@ -40,7 +40,7 @@ static constexpr struct {
     {"description", KnownField::Description},
 };
 
-const char *fieldDenotation(Media::KnownField knownField)
+const char *fieldDenotation(TagParser::KnownField knownField)
 {
     for(const auto &mapping : fieldMapping) {
         if(mapping.knownField == knownField) {
@@ -50,7 +50,7 @@ const char *fieldDenotation(Media::KnownField knownField)
     return nullptr;
 }
 
-Media::KnownField knownField(const char *fieldDenotation, std::size_t fieldDenotationSize)
+TagParser::KnownField knownField(const char *fieldDenotation, std::size_t fieldDenotationSize)
 {
     for(const auto &mapping : fieldMapping) {
         if(!strncmp(fieldDenotation, mapping.knownDenotation, fieldDenotationSize)) {

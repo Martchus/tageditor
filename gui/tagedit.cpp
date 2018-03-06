@@ -16,7 +16,7 @@
 using namespace std;
 using namespace std::placeholders;
 using namespace ConversionUtilities;
-using namespace Media;
+using namespace TagParser;
 
 namespace QtGui {
 
@@ -100,7 +100,7 @@ void TagEdit::setTags(const QList<Tag *> &tags, bool updateUi)
 /*!
  * \brief Sets the \a value for the specified \a field manually applying the specified \a previousValueHandling.
  */
-bool TagEdit::setValue(KnownField field, const Media::TagValue &value, PreviousValueHandling previousValueHandling)
+bool TagEdit::setValue(KnownField field, const TagParser::TagValue &value, PreviousValueHandling previousValueHandling)
 {
     if(TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
         return edit->setValue(value, previousValueHandling);

@@ -19,8 +19,8 @@ public:
     Qt::ItemFlags flags(const QModelIndex &index) const;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
-    const Media::Diagnostics &diagnostics() const;
-    void setDiagnostics(const Media::Diagnostics &diagnostics);
+    const TagParser::Diagnostics &diagnostics() const;
+    void setDiagnostics(const TagParser::Diagnostics &diagnostics);
 
     static const QIcon &informationIcon();
     static const QIcon &warningIcon();
@@ -32,7 +32,7 @@ signals:
 public slots:
 
 private:
-    Media::Diagnostics m_diag;
+    TagParser::Diagnostics m_diag;
 
 };
 

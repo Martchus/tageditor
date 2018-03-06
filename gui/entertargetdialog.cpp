@@ -17,7 +17,7 @@
 using namespace std;
 using namespace Models;
 using namespace Dialogs;
-using namespace Media;
+using namespace TagParser;
 
 namespace QtGui {
 
@@ -93,7 +93,7 @@ void EnterTargetDialog::updateLevelNamePlaceholderText(int i)
     m_ui->levelNameLineEdit->setPlaceholderText(levelName ? QString::fromUtf8(levelName) : QString());
 }
 
-Media::TagTarget EnterTargetDialog::target() const
+TagParser::TagTarget EnterTargetDialog::target() const
 {
     TagTarget target;
     target.setLevel(static_cast<uint64>(m_ui->levelSpinBox->value()));

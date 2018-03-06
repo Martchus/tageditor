@@ -18,7 +18,7 @@ QT_FORWARD_DECLARE_CLASS(QTreeView)
 QT_FORWARD_DECLARE_CLASS(QFile)
 QT_FORWARD_DECLARE_CLASS(QTemporaryFile)
 
-namespace Media {
+namespace TagParser {
 DECLARE_ENUM_CLASS(TagType, unsigned int);
 }
 
@@ -49,8 +49,8 @@ public:
     bool fileOperationOngoing() const;
     const QString &currentPath() const;
     const QString &currentDir() const;
-    Media::MediaFileInfo &fileInfo();
-    const Media::Diagnostics &diagnostics() const;
+    TagParser::MediaFileInfo &fileInfo();
+    const TagParser::Diagnostics &diagnostics() const;
     bool isTagEditShown() const;
     const QByteArray &fileInfoHtml() const;
     const QByteArray &generateFileInfoHtml();
@@ -100,9 +100,9 @@ private slots:
     void showFile(char result);
     void handleReturnPressed();
     void handleKeepPreviousValuesActionTriggered(QAction *action);
-    void addTag(const std::function<Media::Tag *(Media::MediaFileInfo &)> &createTag);
-    void removeTag(Media::Tag *tag);
-    void changeTarget(Media::Tag *tag);
+    void addTag(const std::function<TagParser::Tag *(TagParser::MediaFileInfo &)> &createTag);
+    void removeTag(TagParser::Tag *tag);
+    void changeTarget(TagParser::Tag *tag);
 
     // saving
     void showSavingResult(bool processingError, bool ioError);
@@ -143,16 +143,16 @@ private:
     QString m_currentPath;
     QFileSystemWatcher *m_fileWatcher;
     bool m_fileChangedOnDisk;
-    Media::MediaFileInfo m_fileInfo;
-    std::vector<Media::Tag *> m_tags;
+    TagParser::MediaFileInfo m_fileInfo;
+    std::vector<TagParser::Tag *> m_tags;
     QByteArray m_fileInfoHtml;
     QString m_fileName;
     QString m_currentDir;
     QString m_lastDir;
     QString m_saveFilePath;
     // status
-    Media::Diagnostics m_diag;
-    Media::Diagnostics m_diagReparsing;
+    TagParser::Diagnostics m_diag;
+    TagParser::Diagnostics m_diagReparsing;
     bool m_nextFileAfterSaving;
     bool m_makingResultsAvailable;
     bool m_abortClicked;
@@ -187,7 +187,7 @@ inline const QString &TagEditorWidget::currentDir() const
 /*!
  * \brief Return file info.
  */
-inline Media::MediaFileInfo &TagEditorWidget::fileInfo()
+inline TagParser::MediaFileInfo &TagEditorWidget::fileInfo()
 {
     return m_fileInfo;
 }
@@ -195,7 +195,7 @@ inline Media::MediaFileInfo &TagEditorWidget::fileInfo()
 /*!
  * \brief Returns the diagnostic messages.
  */
-inline const Media::Diagnostics &TagEditorWidget::diagnostics() const
+inline const TagParser::Diagnostics &TagEditorWidget::diagnostics() const
 {
     return m_diag;
 }

@@ -12,7 +12,7 @@
 #include <QSettings>
 #include <QFile>
 
-using namespace Media;
+using namespace TagParser;
 
 namespace Settings {
 
@@ -104,16 +104,16 @@ void restore()
     settings.beginGroup(QStringLiteral("tagprocessing"));
     switch(settings.value(QStringLiteral("preferredencoding"), 1).toInt()) {
     case 0:
-        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Latin1;
+        v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Latin1;
         break;
     case 2:
-        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Utf16BigEndian;
+        v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Utf16BigEndian;
         break;
     case 3:
-        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Utf16LittleEndian;
+        v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Utf16LittleEndian;
         break;
     default:
-        v.tagPocessing.preferredEncoding = Media::TagTextEncoding::Utf8;
+        v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Utf8;
     };
     switch(settings.value(QStringLiteral("unsupportedfieldhandling"), 0).toInt()) {
     case 1:

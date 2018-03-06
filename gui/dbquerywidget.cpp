@@ -32,7 +32,7 @@ using namespace Dialogs;
 using namespace Models;
 using namespace Settings;
 using namespace Utility;
-using namespace Media;
+using namespace TagParser;
 
 namespace QtGui {
 

@@ -44,7 +44,7 @@
 using namespace std;
 using namespace Models;
 using namespace Widgets;
-using namespace Media;
+using namespace TagParser;
 using namespace ConversionUtilities;
 
 namespace QtGui {
@@ -58,7 +58,7 @@ namespace QtGui {
  * \brief Constructs a new TagFieldEdit.
  * \sa setTagField()
  */
-TagFieldEdit::TagFieldEdit(const QList<Media::Tag *> &tags, Media::KnownField field, QWidget *parent) :
+TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::KnownField field, QWidget *parent) :
     QWidget(parent),
     m_layout(new QVBoxLayout(this)),
     m_tags(&tags),
@@ -83,7 +83,7 @@ TagFieldEdit::TagFieldEdit(const QList<Media::Tag *> &tags, Media::KnownField fi
  *
  * If \a preventUiUpdate is true, the UI will not be updated.
  */
-void TagFieldEdit::setTagField(const QList<Tag *> &tags, Media::KnownField field, PreviousValueHandling previousValueHandling, bool preventUiUpdate)
+void TagFieldEdit::setTagField(const QList<Tag *> &tags, TagParser::KnownField field, PreviousValueHandling previousValueHandling, bool preventUiUpdate)
 {
     bool uiRebuildingRequired = false;
     m_tags = &tags;

@@ -56,7 +56,7 @@ using namespace std::placeholders;
 using namespace Utility;
 using namespace Dialogs;
 using namespace Widgets;
-using namespace Media;
+using namespace TagParser;
 using namespace Models;
 using namespace ConversionUtilities;
 
@@ -494,7 +494,7 @@ void TagEditorWidget::updateTagManagementMenu()
             case ContainerFormat::Webm:
                 // tag format supports targets (Matroska tags are currently the only tag format supporting targets.)
                 label = tr("Matroska tag");
-                connect(m_addTagMenu->addAction(label), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [this] (MediaFileInfo &file) -> Media::Tag * {
+                connect(m_addTagMenu->addAction(label), &QAction::triggered, std::bind(&TagEditorWidget::addTag, this, [this] (MediaFileInfo &file) -> TagParser::Tag * {
                             if(file.container()) {
                                 EnterTargetDialog targetDlg(this);
                                 targetDlg.setTarget(TagTarget(50), &this->m_fileInfo);
@@ -806,10 +806,10 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                 result = IoError;
             }
         } catch(const exception &e) {
-            diag.emplace_back(Media::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", + e.what()), "parsing");
+            diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", + e.what()), "parsing");
             result = FatalParsingError;
         } catch(...) {
-            diag.emplace_back(Media::DiagLevel::Critical, "Something completely unexpected happened", "parsing");
+            diag.emplace_back(TagParser::DiagLevel::Critical, "Something completely unexpected happened", "parsing");
             result = FatalParsingError;
         }
         QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
@@ -916,12 +916,12 @@ void TagEditorWidget::showFile(char result)
             m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
         }
         bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount() > 1;
-        if(diagLevel >= Media::DiagLevel::Critical) {
+        if(diagLevel >= TagParser::DiagLevel::Critical) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
             m_ui->parsingNotificationWidget->appendLine(tr("Errors occured."));
-        } else if(diagLevel == Media::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported() || multipleSegmentsNotTested) {
+        } else if(diagLevel == TagParser::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported() || multipleSegmentsNotTested) {
             m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
-            if(diagLevel == Media::DiagLevel::Warning) {
+            if(diagLevel == TagParser::DiagLevel::Warning) {
                 m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
             }
         }
@@ -1127,10 +1127,10 @@ bool TagEditorWidget::startSaving()
                 ioError = true;
             }
         } catch(const exception &e) {
-            m_diag.emplace_back(Media::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", e.what()), "making");
+            m_diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", e.what()), "making");
             processingError = true;
         } catch(...) {
-            m_diag.emplace_back(Media::DiagLevel::Critical, "Something completely unexpected happened", "making");
+            m_diag.emplace_back(TagParser::DiagLevel::Critical, "Something completely unexpected happened", "making");
             processingError = true;
         }
         QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
@@ -1164,11 +1164,11 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         size_t critical = 0, warnings = 0;
         for(const auto &msg : m_diag) {
             switch(msg.level()) {
-            case Media::DiagLevel::Fatal:
-            case Media::DiagLevel::Critical:
+            case TagParser::DiagLevel::Fatal:
+            case TagParser::DiagLevel::Critical:
                 ++critical;
                 break;
-            case Media::DiagLevel::Warning:
+            case TagParser::DiagLevel::Warning:
                 ++warnings;
                 break;
             default:
@@ -1388,7 +1388,7 @@ void TagEditorWidget::applySettingsFromDialog()
  *
  * Shows an error message if no file is opened. Tag edits, tag management menu und UI status will be updated.
  */
-void TagEditorWidget::addTag(const function<Media::Tag *(Media::MediaFileInfo &)> &createTag)
+void TagEditorWidget::addTag(const function<TagParser::Tag *(TagParser::MediaFileInfo &)> &createTag)
 {
     if(m_fileOperationOngoing) {
         emit statusMessage("Unable to add a tag because the current process hasn't been finished yet.");

@@ -3,7 +3,7 @@
 
 #include <QAbstractTableModel>
 
-namespace Media {
+namespace TagParser {
 class AbstractAttachment;
 }
 
@@ -12,10 +12,10 @@ namespace QtGui {
 class AttachmentItem
 {
 public:
-    AttachmentItem(Media::AbstractAttachment *attachment, bool activated = true, const QString &location = QString());
+    AttachmentItem(TagParser::AbstractAttachment *attachment, bool activated = true, const QString &location = QString());
 
-    Media::AbstractAttachment *attachment();
-    const Media::AbstractAttachment *attachment() const;
+    TagParser::AbstractAttachment *attachment();
+    const TagParser::AbstractAttachment *attachment() const;
     const QString &name() const;
     void setName(const QString &name);
     const QString &description() const;
@@ -31,7 +31,7 @@ public:
     void submit();
 
 private:
-    Media::AbstractAttachment *m_attachment;
+    TagParser::AbstractAttachment *m_attachment;
     QString m_name;
     QString m_description;
     QString m_mimeType;
@@ -58,9 +58,9 @@ public:
     bool submit();
     void repealSelection();
 
-    Media::AbstractAttachment *attachment(const QModelIndex &index);
-    void addAttachment(int row, Media::AbstractAttachment *attachment, bool activated = true, const QString &location = QString());
-    void setAttachments(const QList<Media::AbstractAttachment *> &attachments, bool activated = true, const QString &location = QString());
+    TagParser::AbstractAttachment *attachment(const QModelIndex &index);
+    void addAttachment(int row, TagParser::AbstractAttachment *attachment, bool activated = true, const QString &location = QString());
+    void setAttachments(const QList<TagParser::AbstractAttachment *> &attachments, bool activated = true, const QString &location = QString());
     void removeAttachments(int firstRow, int lastRow);
 
 private:

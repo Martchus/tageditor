@@ -31,7 +31,7 @@
 
 using namespace std;
 using namespace Utility;
-using namespace Media;
+using namespace TagParser;
 using namespace Dialogs;
 using namespace Widgets;
 using namespace ThreadingUtils;

@@ -10,7 +10,7 @@
 
 using namespace std;
 using namespace ChronoUtilities;
-using namespace Media;
+using namespace TagParser;
 using namespace Utility;
 
 namespace QtGui {
@@ -119,7 +119,7 @@ const Diagnostics &DiagModel::diagnostics() const
     return m_diag;
 }
 
-void DiagModel::setDiagnostics(const Media::Diagnostics &notifications)
+void DiagModel::setDiagnostics(const TagParser::Diagnostics &notifications)
 {
     beginResetModel();
     m_diag = notifications;

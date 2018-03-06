@@ -39,7 +39,7 @@
 #include <memory>
 
 using namespace std;
-using namespace Media;
+using namespace TagParser;
 using namespace ConversionUtilities;
 
 namespace QtGui {
@@ -110,7 +110,7 @@ bool fieldPredicate(int i, const std::pair<typename TagType::IdentifierType, typ
  * \param previousValueHandling Specifies the "previous value handling policy".
  */
 template<class TagType>
-int fetchId3v2CoverValues(const TagType *tag, KnownField field, QList<Media::TagValue> &values, const int valueCount, const PreviousValueHandling previousValueHandling)
+int fetchId3v2CoverValues(const TagType *tag, KnownField field, QList<TagParser::TagValue> &values, const int valueCount, const PreviousValueHandling previousValueHandling)
 {
     values.reserve(valueCount);
     int first = -1;
@@ -232,7 +232,7 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
  * \param values Specifies the values to be pushed.
  */
 template<class TagType>
-void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<Media::TagValue> &values)
+void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<TagParser::TagValue> &values)
 {
     auto &fields = tag->fields();
     const auto id = tag->fieldId(field);
@@ -337,7 +337,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
                 emit pictureChanged();
             }
         }
-    } catch (const Media::Failure &) {
+    } catch (const TagParser::Failure &) {
         QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to parse specified cover file."));
     } catch(...) {
         ::IoUtilities::catchIoFailure();

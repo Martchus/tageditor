@@ -15,7 +15,7 @@ QT_FORWARD_DECLARE_CLASS(QGraphicsTextItem)
 QT_FORWARD_DECLARE_CLASS(QGraphicsPixmapItem)
 QT_FORWARD_DECLARE_CLASS(QGraphicsRectItem)
 
-namespace Media {
+namespace TagParser {
 class Tag;
 class TagValue;
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
@@ -34,15 +34,15 @@ class PicturePreviewSelection : public QWidget
     Q_OBJECT
 
 public:
-    explicit PicturePreviewSelection(Media::Tag *tag = nullptr, Media::KnownField field = Media::KnownField::Invalid, QWidget *parent = nullptr);
+    explicit PicturePreviewSelection(TagParser::Tag *tag = nullptr, TagParser::KnownField field = TagParser::KnownField::Invalid, QWidget *parent = nullptr);
     ~PicturePreviewSelection();
     
-    Media::Tag *tag() const;
-    Media::KnownField field() const;
+    TagParser::Tag *tag() const;
+    TagParser::KnownField field() const;
 
 public slots:
-    void setTagField(Media::Tag *tag, Media::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    void setValue(const Media::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    void setTagField(TagParser::Tag *tag, TagParser::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    void setValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
 
     void apply();
     void clear();
@@ -79,9 +79,9 @@ private:
     QPixmap m_pixmap;
     QGraphicsPixmapItem *m_pixmapItem;
     QGraphicsRectItem *m_rectItem;
-    Media::Tag *m_tag;
-    Media::KnownField m_field;
-    QList<Media::TagValue> m_values;
+    TagParser::Tag *m_tag;
+    TagParser::KnownField m_field;
+    QList<TagParser::TagValue> m_values;
     int m_currentTypeIndex;
 };
 
@@ -90,7 +90,7 @@ private:
  *
  * This might have been set initially using the constructor or using the setTagField() method.
  */
-inline Media::Tag *PicturePreviewSelection::tag() const
+inline TagParser::Tag *PicturePreviewSelection::tag() const
 {
     return m_tag;
 }
@@ -98,7 +98,7 @@ inline Media::Tag *PicturePreviewSelection::tag() const
 /*!
  * \brief Returns the field. This is commonly KnownField::Cover.
  */
-inline Media::KnownField PicturePreviewSelection::field() const
+inline TagParser::KnownField PicturePreviewSelection::field() const
 {
     return m_field;
 }
@@ -108,7 +108,7 @@ inline Media::KnownField PicturePreviewSelection::field() const
  *
  * If \a tag is nullptr the widget is disabled. The widget will be re-setup.
  */
-inline void PicturePreviewSelection::setTagField(Media::Tag *tag, Media::KnownField field, PreviousValueHandling previousValueHandling)
+inline void PicturePreviewSelection::setTagField(TagParser::Tag *tag, TagParser::KnownField field, PreviousValueHandling previousValueHandling)
 {
     m_tag = tag;
     m_field = field;

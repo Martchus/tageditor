@@ -3,15 +3,15 @@
 
 #include <cstddef>
 
-namespace Media {
+namespace TagParser {
 enum class KnownField : unsigned int;
 }
 
 namespace Cli {
 namespace FieldMapping {
 
-const char *fieldDenotation(Media::KnownField knownField);
-Media::KnownField knownField(const char *fieldDenotation, std::size_t fieldDenotationSize);
+const char *fieldDenotation(TagParser::KnownField knownField);
+TagParser::KnownField knownField(const char *fieldDenotation, std::size_t fieldDenotationSize);
 
 }
 }

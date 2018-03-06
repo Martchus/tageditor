@@ -23,7 +23,7 @@
 
 using namespace ConversionUtilities;
 using namespace Utility;
-using namespace Media;
+using namespace TagParser;
 using namespace std;
 
 namespace RenamingUtility {

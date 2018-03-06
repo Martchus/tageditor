@@ -14,7 +14,7 @@
 QT_FORWARD_DECLARE_CLASS(QFormLayout)
 QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
 
-namespace Media {
+namespace TagParser {
 class Tag;
 class TagValue;
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
@@ -31,16 +31,16 @@ class TagEdit : public QWidget
 
 public:
     explicit TagEdit(QWidget *parent = nullptr);
-    const QList<Media::Tag *> &tags() const;
-    Media::TagValue value(Media::KnownField field, Media::TagTextEncoding encoding = Media::TagTextEncoding::Utf16LittleEndian) const;
-    void setTag(Media::Tag *tag, bool updateUi = true);
-    void setTags(const QList<Media::Tag *> &tags, bool updateUi = true);
-    bool setValue(Media::KnownField field, const Media::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    template<class Container = std::initializer_list<Media::Tag *> > void setTags(const Container &tags, bool updateUi = true);
-    bool hasField(Media::KnownField field) const;
+    const QList<TagParser::Tag *> &tags() const;
+    TagParser::TagValue value(TagParser::KnownField field, TagParser::TagTextEncoding encoding = TagParser::TagTextEncoding::Utf16LittleEndian) const;
+    void setTag(TagParser::Tag *tag, bool updateUi = true);
+    void setTags(const QList<TagParser::Tag *> &tags, bool updateUi = true);
+    bool setValue(TagParser::KnownField field, const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    template<class Container = std::initializer_list<TagParser::Tag *> > void setTags(const Container &tags, bool updateUi = true);
+    bool hasField(TagParser::KnownField field) const;
     PreviousValueHandling previousValueHandling() const;
     void setPreviousValueHandling(PreviousValueHandling previousValueHandling);
-    TagFieldEdit *tagFieldEdit(Media::KnownField field) const;
+    TagFieldEdit *tagFieldEdit(TagParser::KnownField field) const;
     QString generateLabel() const;
 
 public slots:
@@ -58,17 +58,17 @@ private:
     void removeEdit(QWidget *edit);
     void assignTags();
 
-    QList<Media::Tag *> m_tags;
+    QList<TagParser::Tag *> m_tags;
     QFormLayout *m_layoutLeft;
     QVBoxLayout *m_layoutRight;
-    QMap<Media::KnownField, TagFieldEdit *> m_widgets;
+    QMap<TagParser::KnownField, TagFieldEdit *> m_widgets;
     PreviousValueHandling m_previousValueHandling;
 };
 
 /*!
  * \brief Returns the currently assigned tags.
  */
-inline const QList<Media::Tag *> &TagEdit::tags() const
+inline const QList<TagParser::Tag *> &TagEdit::tags() const
 {
     return m_tags;
 }
@@ -122,7 +122,7 @@ inline void TagEdit::setPreviousValueHandling(PreviousValueHandling previousValu
  * \returns Returns a pointer to the object (ownership remains by the TagEdit object) or - if
  *          there is no TagFieldEdit object - nullptr.
  */
-inline TagFieldEdit *TagEdit::tagFieldEdit(Media::KnownField field) const
+inline TagFieldEdit *TagEdit::tagFieldEdit(TagParser::KnownField field) const
 {
     return m_widgets.value(field, nullptr);
 }

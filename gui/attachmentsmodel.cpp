@@ -6,7 +6,7 @@
 
 #include <QApplication>
 
-using namespace Media;
+using namespace TagParser;
 using namespace ConversionUtilities;
 
 namespace QtGui {
@@ -27,12 +27,12 @@ AttachmentItem::AttachmentItem(AbstractAttachment *attachment, bool activated, c
     }
 }
 
-Media::AbstractAttachment *AttachmentItem::attachment()
+TagParser::AbstractAttachment *AttachmentItem::attachment()
 {
     return m_attachment;
 }
 
-const Media::AbstractAttachment *AttachmentItem::attachment() const
+const TagParser::AbstractAttachment *AttachmentItem::attachment() const
 {
     return m_attachment;
 }

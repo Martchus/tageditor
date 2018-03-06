@@ -9,7 +9,7 @@
 #include <c++utilities/conversion/stringconversion.h>
 
 using namespace std;
-using namespace Media;
+using namespace TagParser;
 
 namespace ReflectiveRapidJSON {
 namespace JsonReflector {
@@ -36,7 +36,7 @@ namespace Json {
 /*!
  * \brief Converts the specified Media::TagValue to an object suitable for JSON serialization.
  */
-TagValue::TagValue(const Media::TagValue &tagValue, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
+TagValue::TagValue(const TagParser::TagValue &tagValue, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : mimeType(tagValue.mimeType())
 {
     if (tagValue.isEmpty()) {
@@ -135,7 +135,7 @@ TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &a
  * \brief Copies relevant information from Media::MediaFileInfo for serialization.
  * \remarks The \a mediaFileInfo must have been parsed before.
  */
-FileInfo::FileInfo(const Media::MediaFileInfo &mediaFileInfo, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
+FileInfo::FileInfo(const TagParser::MediaFileInfo &mediaFileInfo, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : fileName(mediaFileInfo.fileName())
     , size(mediaFileInfo.size())
     , mimeType(mediaFileInfo.mimeType())

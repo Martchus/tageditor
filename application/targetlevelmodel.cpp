@@ -3,7 +3,7 @@
 #include <tagparser/tagtarget.h>
 
 using namespace Models;
-using namespace Media;
+using namespace TagParser;
 
 namespace Settings {
 

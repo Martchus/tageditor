@@ -13,7 +13,7 @@
 QT_FORWARD_DECLARE_CLASS(QFileSystemModel)
 QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
 
-namespace Media {
+namespace TagParser {
 DECLARE_ENUM_CLASS(TagType, unsigned int);
 }
 
@@ -80,7 +80,7 @@ private slots:
 
 private:
     bool fileOperationOngoing() const;
-    Media::MediaFileInfo &fileInfo();
+    TagParser::MediaFileInfo &fileInfo();
 
     // UI
     std::unique_ptr<Ui::MainWindow> m_ui;

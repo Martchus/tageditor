@@ -5,7 +5,7 @@
 
 #include <list>
 
-namespace Media {
+namespace TagParser {
 class MediaFileInfo;
 class Diagnostics;
 }
@@ -20,8 +20,8 @@ public:
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
-    const Media::MediaFileInfo *fileInfo() const;
-    void setFileInfo(Media::MediaFileInfo &fileInfo, Media::Diagnostics &diag, Media::Diagnostics *diagReparsing = nullptr);
+    const TagParser::MediaFileInfo *fileInfo() const;
+    void setFileInfo(TagParser::MediaFileInfo &fileInfo, TagParser::Diagnostics &diag, TagParser::Diagnostics *diagReparsing = nullptr);
 
 #if defined(GUI_QTWIDGETS)
     static const QIcon &informationIcon();
@@ -34,9 +34,9 @@ private:
     void updateCache();
 
 private:
-    Media::MediaFileInfo *m_file;
-    Media::Diagnostics *m_diag;
-    Media::Diagnostics *m_diagReparsing;
+    TagParser::MediaFileInfo *m_file;
+    TagParser::Diagnostics *m_diag;
+    TagParser::Diagnostics *m_diagReparsing;
 };
 
 }

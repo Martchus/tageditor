@@ -23,7 +23,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace Media;
+using namespace TagParser;
 
 namespace Utility
 {

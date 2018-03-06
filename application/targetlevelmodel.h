@@ -6,7 +6,7 @@
 #include <QAbstractListModel>
 #include <QList>
 
-namespace Media {
+namespace TagParser {
 DECLARE_ENUM_CLASS(TagTargetLevel, unsigned char);
 }
 
@@ -22,9 +22,9 @@ public:
         MostUsefulTargets
     };
 
-    static const char *fieldName(Media::TagTargetLevel targetLevel);
-    static QString translatedFieldName(Media::TagTargetLevel targetLevel);
-    static Models::ChecklistItem mkItem(Media::TagTargetLevel targetLevel, Qt::CheckState checkState = Qt::Checked);
+    static const char *fieldName(TagParser::TagTargetLevel targetLevel);
+    static QString translatedFieldName(TagParser::TagTargetLevel targetLevel);
+    static Models::ChecklistItem mkItem(TagParser::TagTargetLevel targetLevel, Qt::CheckState checkState = Qt::Checked);
 
     explicit TargetLevelModel(QObject *parent = nullptr, DefaultSelection defaultSelection = DefaultSelection::None);
     explicit TargetLevelModel(const QList<Models::ChecklistItem> &items, QObject *parent = nullptr);
@@ -33,7 +33,7 @@ public:
     virtual QString labelForId(const QVariant &id) const;
 };
 
-inline Models::ChecklistItem TargetLevelModel::mkItem(Media::TagTargetLevel field, Qt::CheckState checkState)
+inline Models::ChecklistItem TargetLevelModel::mkItem(TagParser::TagTargetLevel field, Qt::CheckState checkState)
 {
     return Models::ChecklistItem(static_cast<int>(field), translatedFieldName(field), checkState);
 }

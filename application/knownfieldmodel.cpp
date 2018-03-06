@@ -2,7 +2,7 @@
 
 #include <tagparser/tag.h>
 
-using namespace Media;
+using namespace TagParser;
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 using namespace Models;

@@ -12,7 +12,7 @@
 
 using namespace std;
 using namespace ConversionUtilities;
-using namespace Media;
+using namespace TagParser;
 
 namespace Cli {
 
@@ -38,7 +38,7 @@ void AttachmentInfo::parseDenotation(const char *denotation)
     }
 }
 
-void AttachmentInfo::apply(AbstractContainer *container, Media::Diagnostics &diag)
+void AttachmentInfo::apply(AbstractContainer *container, TagParser::Diagnostics &diag)
 {
     static const string context("applying specified attachments");
     AbstractAttachment *attachment = nullptr;
@@ -108,7 +108,7 @@ void AttachmentInfo::apply(AbstractContainer *container, Media::Diagnostics &dia
     }
 }
 
-void AttachmentInfo::apply(AbstractAttachment *attachment, Media::Diagnostics &diag)
+void AttachmentInfo::apply(AbstractAttachment *attachment, TagParser::Diagnostics &diag)
 {
     if(hasId) {
         attachment->setId(id);
@@ -135,7 +135,7 @@ void AttachmentInfo::reset()
     path = name = mime = desc = nullptr;
 }
 
-bool AttachmentInfo::next(AbstractContainer *container, Media::Diagnostics &diag)
+bool AttachmentInfo::next(AbstractContainer *container, TagParser::Diagnostics &diag)
 {
     if(!id && !path && !name && !mime && !desc) {
         // skip empty attachment infos

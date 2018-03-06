@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace Media {
+namespace TagParser {
 class MediaFileInfo;
 class AbstractAttachment;
 }
@@ -23,12 +23,12 @@ class AttachmentsEdit : public QWidget
     Q_OBJECT
 
 public:
-    explicit AttachmentsEdit(Media::MediaFileInfo *fileInfo, QWidget *parent = nullptr);
+    explicit AttachmentsEdit(TagParser::MediaFileInfo *fileInfo, QWidget *parent = nullptr);
     ~AttachmentsEdit();
 
-    Media::MediaFileInfo *fileInfo();
-    void setFileInfo(Media::MediaFileInfo *fileInfo, bool updateUi = true);
-    const QList<Media::AbstractAttachment *> &currentAttachments() const;
+    TagParser::MediaFileInfo *fileInfo();
+    void setFileInfo(TagParser::MediaFileInfo *fileInfo, bool updateUi = true);
+    const QList<TagParser::AbstractAttachment *> &currentAttachments() const;
 
 public slots:
     void clear();
@@ -47,18 +47,18 @@ private:
     void setupUi();
 
     std::unique_ptr<Ui::AttachmentsEdit> m_ui;
-    Media::MediaFileInfo *m_fileInfo;
-    QList<Media::AbstractAttachment *> m_currentAttachments;
-    QList<Media::AbstractAttachment *> m_addedAttachments;
+    TagParser::MediaFileInfo *m_fileInfo;
+    QList<TagParser::AbstractAttachment *> m_currentAttachments;
+    QList<TagParser::AbstractAttachment *> m_addedAttachments;
     AttachmentsModel *m_model;
 };
 
-inline Media::MediaFileInfo *AttachmentsEdit::fileInfo()
+inline TagParser::MediaFileInfo *AttachmentsEdit::fileInfo()
 {
     return m_fileInfo;
 }
 
-inline const QList<Media::AbstractAttachment *> &AttachmentsEdit::currentAttachments() const
+inline const QList<TagParser::AbstractAttachment *> &AttachmentsEdit::currentAttachments() const
 {
     return m_currentAttachments;
 }

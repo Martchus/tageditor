@@ -20,7 +20,7 @@ namespace ApplicationUtilities {
 class Argument;
 }
 
-namespace Media {
+namespace TagParser {
 class MediaFileInfo;
 class Diagnostics;
 class AbortableProgressFeedback;
@@ -28,7 +28,7 @@ enum class TagUsage;
 enum class ElementPosition;
 }
 
-using namespace Media;
+using namespace TagParser;
 
 namespace Cli {
 
@@ -265,7 +265,7 @@ constexpr bool isDigit(char c)
 
 std::string incremented(const std::string &str, unsigned int toIncrement = 1);
 
-void printDiagMessages(const Media::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false);
+void printDiagMessages(const TagParser::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false);
 void printProperty(const char *propName, const char *value, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4);
 void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4);
 
@@ -311,8 +311,8 @@ FieldDenotations parseFieldDenotations(const ApplicationUtilities::Argument &fie
 std::string tagName(const Tag *tag);
 bool stringToBool(const std::string &str);
 extern bool logLineFinalized;
-void logNextStep(const Media::AbortableProgressFeedback &progress);
-void logStepPercentage(const Media::AbortableProgressFeedback &progress);
+void logNextStep(const TagParser::AbortableProgressFeedback &progress);
+void logStepPercentage(const TagParser::AbortableProgressFeedback &progress);
 void finalizeLog();
 
 }

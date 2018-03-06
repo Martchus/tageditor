@@ -54,7 +54,7 @@
 using namespace std;
 using namespace ConversionUtilities;
 using namespace ChronoUtilities;
-using namespace Media;
+using namespace TagParser;
 using namespace Utility;
 
 namespace HtmlInfo {

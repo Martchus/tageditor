@@ -32,7 +32,7 @@
 using namespace std;
 using namespace std::placeholders;
 using namespace Settings;
-using namespace Media;
+using namespace TagParser;
 
 namespace QtGui {
 

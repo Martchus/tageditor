@@ -13,7 +13,7 @@ namespace TestUtilities {
 /*!
  * \brief Prints a DiagMessage to enable using it in CPPUNIT_ASSERT_EQUAL.
  */
-inline std::ostream &operator <<(std::ostream &os, const Media::DiagMessage &diagMessage)
+inline std::ostream &operator <<(std::ostream &os, const TagParser::DiagMessage &diagMessage)
 {
     return os << diagMessage.levelName() << ':' << ' ' << diagMessage.message() << ' ' << '(' << diagMessage.context() << ')';
 }
@@ -34,7 +34,7 @@ using namespace std;
 using namespace TestUtilities;
 using namespace TestUtilities::Literals;
 using namespace ConversionUtilities;
-using namespace Media;
+using namespace TagParser;
 
 using namespace CPPUNIT_NS;
 

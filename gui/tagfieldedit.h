@@ -11,7 +11,7 @@
 QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 
-namespace Media {
+namespace TagParser {
 class TagValue;
 class Tag;
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
@@ -37,15 +37,15 @@ class TagFieldEdit : public QWidget
     Q_OBJECT
 
 public:
-    explicit TagFieldEdit(const QList<Media::Tag *> &tags, Media::KnownField field, QWidget *parent = nullptr);
+    explicit TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::KnownField field, QWidget *parent = nullptr);
 
-    const QList<Media::Tag *> &tags() const;
-    Media::KnownField field() const;
-    void setTagField(const QList<Media::Tag *> &tags, Media::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool preventUiUpdate = false);
-    Media::TagValue value(Media::TagTextEncoding encoding, bool includeDescription) const;
-    bool setValue(const Media::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    const QList<TagParser::Tag *> &tags() const;
+    TagParser::KnownField field() const;
+    void setTagField(const QList<TagParser::Tag *> &tags, TagParser::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool preventUiUpdate = false);
+    TagParser::TagValue value(TagParser::TagTextEncoding encoding, bool includeDescription) const;
+    bool setValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool hasDescription() const;
-    bool canApply(Media::KnownField field) const;
+    bool canApply(TagParser::KnownField field) const;
 
 public slots:
     void clear();
@@ -64,7 +64,7 @@ private slots:
     void handleRestoreButtonDestroyed(QObject *obj = nullptr);
 
 private:
-    Media::TagDataType determineDataType();
+    TagParser::TagDataType determineDataType();
     void setupUi();
     Widgets::ClearLineEdit *setupLineEdit();
     Widgets::ClearPlainTextEdit *setupPlainTextEdit();
@@ -76,17 +76,17 @@ private:
     Widgets::ClearLineEdit *setupDescriptionLineEdit();
     QLabel *setupTypeNotSupportedLabel();
     void updateValue(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    void updateValue(Media::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    void updateValue(const Media::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
+    void updateValue(TagParser::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    void updateValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
     Widgets::IconButton *setupRestoreButton();
     void showRestoreButton();
     void applyAutoCorrection(QString &textValue);
     void concretizePreviousValueHandling(PreviousValueHandling &previousValueHandling);
 
     QVBoxLayout *m_layout;
-    const QList<Media::Tag *> *m_tags;
-    Media::KnownField m_field;
-    Media::TagDataType m_dataType;
+    const QList<TagParser::Tag *> *m_tags;
+    TagParser::KnownField m_field;
+    TagParser::TagDataType m_dataType;
     QList<QWidget *> m_widgets;
     Widgets::ClearLineEdit *m_lineEdit;
     Widgets::ClearComboBox *m_comboBox;
@@ -98,12 +98,12 @@ private:
 
 };
 
-inline const QList<Media::Tag *> &TagFieldEdit::tags() const
+inline const QList<TagParser::Tag *> &TagFieldEdit::tags() const
 {
     return *m_tags;
 }
 
-inline Media::KnownField TagFieldEdit::field() const
+inline TagParser::KnownField TagFieldEdit::field() const
 {
     return m_field;
 }

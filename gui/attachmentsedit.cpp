@@ -22,7 +22,7 @@
 using namespace std;
 using namespace IoUtilities;
 using namespace ConversionUtilities;
-using namespace Media;
+using namespace TagParser;
 
 namespace QtGui {
 
@@ -48,7 +48,7 @@ AttachmentsEdit::AttachmentsEdit(MediaFileInfo *fileInfo, QWidget *parent) :
 AttachmentsEdit::~AttachmentsEdit()
 {}
 
-void AttachmentsEdit::setFileInfo(Media::MediaFileInfo *fileInfo, bool updateUi)
+void AttachmentsEdit::setFileInfo(TagParser::MediaFileInfo *fileInfo, bool updateUi)
 {
     m_fileInfo = fileInfo;
     m_currentAttachments.clear();

@@ -11,7 +11,7 @@
 
 using namespace std;
 using namespace Utility;
-using namespace Media;
+using namespace TagParser;
 
 namespace QtGui {
 

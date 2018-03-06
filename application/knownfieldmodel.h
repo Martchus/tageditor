@@ -10,7 +10,7 @@
 # define Q_OBJECT
 #endif
 
-namespace Media {
+namespace TagParser {
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
 }
 
@@ -29,11 +29,11 @@ public:
         CommonFields
     };
 
-    static const char *fieldName(Media::KnownField field);
+    static const char *fieldName(TagParser::KnownField field);
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-    static QString translatedFieldName(Media::KnownField field);
-    static Models::ChecklistItem mkItem(Media::KnownField field, Qt::CheckState checkState = Qt::Checked);
+    static QString translatedFieldName(TagParser::KnownField field);
+    static Models::ChecklistItem mkItem(TagParser::KnownField field, Qt::CheckState checkState = Qt::Checked);
 
     explicit KnownFieldModel(QObject *parent = nullptr, DefaultSelection defaultSelection = DefaultSelection::None);
     explicit KnownFieldModel(const QList<Models::ChecklistItem> &items, QObject *parent = nullptr);
@@ -44,7 +44,7 @@ public:
 };
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-inline Models::ChecklistItem KnownFieldModel::mkItem(Media::KnownField field, Qt::CheckState checkState)
+inline Models::ChecklistItem KnownFieldModel::mkItem(TagParser::KnownField field, Qt::CheckState checkState)
 {
     return Models::ChecklistItem(static_cast<int>(field), translatedFieldName(field), checkState);
 }

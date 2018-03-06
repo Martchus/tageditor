@@ -58,7 +58,7 @@ using namespace ChronoUtilities;
 using namespace IoUtilities;
 using namespace EscapeCodes;
 using namespace Settings;
-using namespace Media;
+using namespace TagParser;
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 using namespace Utility;
 #endif
@@ -125,7 +125,7 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         } else {
             cerr << Phrases::Error << "An IO error occured when writing the file \"" << outputFileArg.values().front() << "\"." << Phrases::EndFlush;
         }
-    } catch(const Media::Failure &) {
+    } catch(const TagParser::Failure &) {
         cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
     } catch(...) {
         ::IoUtilities::catchIoFailure();
@@ -294,7 +294,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                 }
             }
 
-        } catch(const Media::Failure &) {
+        } catch(const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
@@ -354,7 +354,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
             } else {
                 cout << " - File has no (supported) tag information.\n";
             }
-        } catch(const Media::Failure &) {
+        } catch(const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
@@ -568,7 +568,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                             TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
                                             value.setMimeType(fileInfo.mimeType());
                                             convertedValues.emplace_back(move(value));
-                                        } catch(const Media::Failure &) {
+                                        } catch(const TagParser::Failure &) {
                                             diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
                                         } catch(...) {
                                             ::IoUtilities::catchIoFailure();
@@ -696,15 +696,15 @@ void setTagInfo(const SetTagInfoArgs &args)
                 // notify about completion
                 finalizeLog();
                 cout << " - Changes have been applied." << endl;
-            } catch(const Media::OperationAbortedException &) {
+            } catch(const TagParser::OperationAbortedException &) {
                 finalizeLog();
                 cerr << Phrases::Warning << "The operation has been aborted." << Phrases::EndFlush;
                 return;
-            } catch(const Media::Failure &) {
+            } catch(const TagParser::Failure &) {
                 finalizeLog();
                 cerr << " - " << Phrases::Error << "Failed to apply changes." << Phrases::EndFlush;
             }
-        } catch(const Media::Failure &) {
+        } catch(const TagParser::Failure &) {
             finalizeLog();
             cerr << " - " << Phrases::Error << "A parsing failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
         } catch(...) {
@@ -849,7 +849,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                 }
             }
 
-        } catch(const Media::Failure &) {
+        } catch(const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
         } catch(...) {
             ::IoUtilities::catchIoFailure();
@@ -885,7 +885,7 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
             fileInfo.parseTags(diag);
             fileInfo.parseTracks(diag);
             jsonData.emplace_back(fileInfo, document.GetAllocator());
-        } catch(const Media::Failure &) {
+        } catch(const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch(...) {
             ::IoUtilities::catchIoFailure();

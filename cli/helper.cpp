@@ -24,7 +24,7 @@ using namespace std::placeholders;
 using namespace ApplicationUtilities;
 using namespace ConversionUtilities;
 using namespace ChronoUtilities;
-using namespace Media;
+using namespace TagParser;
 using namespace Settings;
 using namespace EscapeCodes;
 
@@ -666,7 +666,7 @@ void logNextStep(const AbortableProgressFeedback &progress)
     logLineFinalized = false;
 }
 
-void logStepPercentage(const Media::AbortableProgressFeedback &progress)
+void logStepPercentage(const TagParser::AbortableProgressFeedback &progress)
 {
     cout << "\r - [" << setw(3) << static_cast<unsigned int>(progress.stepPercentage()) << "%] " << lastStep << flush;
 }

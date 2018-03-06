@@ -79,8 +79,8 @@ struct FileBrowser
 
 struct Id3Processing
 {
-    Media::TagUsage v1Usage = Media::TagUsage::Always;
-    Media::TagUsage v2Usage = Media::TagUsage::Always;
+    TagParser::TagUsage v1Usage = TagParser::TagUsage::Always;
+    TagParser::TagUsage v2Usage = TagParser::TagUsage::Always;
     byte v2Version = 3;
     bool keepVersionOfExistingId3v2Tag = true;
     bool mergeMultipleSuccessiveId3v2Tags = true;
@@ -89,9 +89,9 @@ struct Id3Processing
 struct FileLayout
 {
     bool forceRewrite = true;
-    Media::ElementPosition preferredTagPosition = Media::ElementPosition::BeforeData;
+    TagParser::ElementPosition preferredTagPosition = TagParser::ElementPosition::BeforeData;
     bool forceTagPosition = true;
-    Media::ElementPosition preferredIndexPosition = Media::ElementPosition::BeforeData;
+    TagParser::ElementPosition preferredIndexPosition = TagParser::ElementPosition::BeforeData;
     bool forceIndexPosition = true;
     std::size_t minPadding = 0;
     std::size_t maxPadding = 0;
@@ -100,7 +100,7 @@ struct FileLayout
 
 struct TagProcessing
 {
-    Media::TagTextEncoding preferredEncoding = Media::TagTextEncoding::Utf8;
+    TagParser::TagTextEncoding preferredEncoding = TagParser::TagTextEncoding::Utf8;
     UnsupportedFieldHandling unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     bool autoTagManagement = true;
     Id3Processing id3;

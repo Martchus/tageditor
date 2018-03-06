@@ -5,7 +5,7 @@
 
 #include <c++utilities/conversion/types.h>
 
-namespace Media {
+namespace TagParser {
 class AbstractContainer;
 class AbstractAttachment;
 }
@@ -23,10 +23,10 @@ class AttachmentInfo
 public:
     AttachmentInfo();
     void parseDenotation(const char *denotation);
-    void apply(Media::AbstractContainer *container, Media::Diagnostics &diag);
-    void apply(Media::AbstractAttachment *attachment, Media::Diagnostics &diag);
+    void apply(TagParser::AbstractContainer *container, TagParser::Diagnostics &diag);
+    void apply(TagParser::AbstractAttachment *attachment, TagParser::Diagnostics &diag);
     void reset();
-    bool next(Media::AbstractContainer *container, Media::Diagnostics &diag);
+    bool next(TagParser::AbstractContainer *container, TagParser::Diagnostics &diag);
 
     AttachmentAction action;
     uint64 id;

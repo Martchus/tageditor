@@ -11,7 +11,7 @@ namespace Models {
 class ChecklistModel;
 }
 
-namespace Media {
+namespace TagParser {
 class MediaFileInfo;
 enum class ContainerFormat;
 }
@@ -25,14 +25,14 @@ class EnterTargetDialog;
 class EnterTargetDialog : public QDialog
 {
     Q_OBJECT
-    Q_PROPERTY(Media::TagTarget target READ target WRITE setTarget)
+    Q_PROPERTY(TagParser::TagTarget target READ target WRITE setTarget)
 
 public:
     explicit EnterTargetDialog(QWidget *parent = nullptr);
     ~EnterTargetDialog();
 
-    Media::TagTarget target() const;
-    void setTarget(const Media::TagTarget &target, const Media::MediaFileInfo *file = nullptr);
+    TagParser::TagTarget target() const;
+    void setTarget(const TagParser::TagTarget &target, const TagParser::MediaFileInfo *file = nullptr);
 
 private slots:
     void updateLevelNamePlaceholderText(int i);
@@ -43,7 +43,7 @@ private:
     Models::ChecklistModel *m_chaptersModel;
     Models::ChecklistModel *m_editionsModel;
     Models::ChecklistModel *m_attachmentsModel;
-    Media::ContainerFormat m_currentContainerFormat;
+    TagParser::ContainerFormat m_currentContainerFormat;
 };
 
 }

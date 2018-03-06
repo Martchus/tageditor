@@ -9,7 +9,7 @@
 
 #include <unordered_map>
 
-namespace Media {
+namespace TagParser {
 class MediaFileInfo;
 class Tag;
 class TagValue;
@@ -19,7 +19,7 @@ namespace Cli {
 namespace Json {
 
 struct TagValue : ReflectiveRapidJSON::JsonSerializable<TagValue> {
-    TagValue(const Media::TagValue &tagValue, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
+    TagValue(const TagParser::TagValue &tagValue, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
 
     const char *kind = "undefined";
     const std::string mimeType;
@@ -28,8 +28,8 @@ struct TagValue : ReflectiveRapidJSON::JsonSerializable<TagValue> {
 };
 
 struct TargetInfo : ReflectiveRapidJSON::JsonSerializable<TargetInfo> {
-    using IdContainerType = Media::TagTarget::IdContainerType;
-    TargetInfo(const Media::TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
+    using IdContainerType = TagParser::TagTarget::IdContainerType;
+    TargetInfo(const TagParser::TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
 
     uint64 level;
     std::string levelName;
@@ -40,7 +40,7 @@ struct TargetInfo : ReflectiveRapidJSON::JsonSerializable<TargetInfo> {
 };
 
 struct TagInfo : ReflectiveRapidJSON::JsonSerializable<TagInfo> {
-    TagInfo(const Media::Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
+    TagInfo(const TagParser::Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
 
     const char *format = nullptr;
     TargetInfo target;
@@ -48,7 +48,7 @@ struct TagInfo : ReflectiveRapidJSON::JsonSerializable<TagInfo> {
 };
 
 struct FileInfo : ReflectiveRapidJSON::JsonSerializable<FileInfo> {
-    FileInfo(const Media::MediaFileInfo &mediaFileInfo, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
+    FileInfo(const TagParser::MediaFileInfo &mediaFileInfo, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
 
     std::string fileName;
     std::size_t size;

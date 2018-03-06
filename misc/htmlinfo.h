@@ -5,14 +5,14 @@
 
 #include <list>
 
-namespace Media {
+namespace TagParser {
 class MediaFileInfo;
 class Diagnostics;
 }
 
 namespace HtmlInfo {
 
-QByteArray generateInfo(const Media::MediaFileInfo &file, Media::Diagnostics &diag, Media::Diagnostics &diagReparsing);
+QByteArray generateInfo(const TagParser::MediaFileInfo &file, TagParser::Diagnostics &diag, TagParser::Diagnostics &diagReparsing);
 
 }
 

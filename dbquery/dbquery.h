@@ -13,7 +13,7 @@
 
 QT_FORWARD_DECLARE_CLASS(QNetworkReply)
 
-namespace Media {
+namespace TagParser {
 class TagValue;
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
 }
@@ -58,7 +58,7 @@ public:
     const QStringList &errorList() const;
     bool areResultsAvailable() const;
     bool isFetchingCover() const;
-    Media::TagValue fieldValue(int row, Media::KnownField knownField) const;
+    TagParser::TagValue fieldValue(int row, TagParser::KnownField knownField) const;
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
     Qt::ItemFlags flags(const QModelIndex &index) const;

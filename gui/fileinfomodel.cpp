@@ -29,7 +29,7 @@
 using namespace std;
 using namespace ChronoUtilities;
 using namespace ConversionUtilities;
-using namespace Media;
+using namespace TagParser;
 using namespace Utility;
 
 namespace QtGui {
@@ -116,7 +116,7 @@ private:
     QStandardItem *m_item;
 };
 
-void addDiagMessages(Media::Diagnostics *diag, QStandardItem *parent)
+void addDiagMessages(TagParser::Diagnostics *diag, QStandardItem *parent)
 {
     for(const auto &msg : *diag) {
         QList<QStandardItem *> notificationRow;
