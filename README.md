@@ -3,13 +3,14 @@ A tag editor with Qt GUI and command-line interface. Supports MP4 (iTunes), ID3,
 
 ## Supported formats
 The tag editor can read and write the following tag formats:
-- iTunes-style MP4/M4A tags (MP4-DASH is supported)
-- ID3v1 and ID3v2 tags
-  - conversion between ID3v1 and different versions of ID3v2 is possible
-- Vorbis, Opus and FLAC comments in Ogg streams
-  - cover art via "METADATA_BLOCK_PICTURE" is supported
-- Vorbis comments and "METADATA_BLOCK_PICTURE" in raw FLAC streams
-- Matroska/WebM tags and attachments
+
+* iTunes-style MP4/M4A tags (MP4-DASH is supported)
+* ID3v1 and ID3v2 tags
+    * conversion between ID3v1 and different versions of ID3v2 is possible
+* Vorbis, Opus and FLAC comments in Ogg streams
+    * cover art via "METADATA_BLOCK_PICTURE" is supported
+* Vorbis comments and "METADATA_BLOCK_PICTURE" in raw FLAC streams
+* Matroska/WebM tags and attachments
 
 ## Additional features
 The tag editor can also display technical information such as the ID, format,
@@ -245,7 +246,8 @@ Here are some Bash examples which illustrate getting and setting tag information
 
 
 ## Build instructions
-The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
+The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).  
+When the Qt GUI is enabled, Qt 5 and [qtutilities](https://github.com/Martchus/qtutilities) are required, too.
 
 ### Building with Qt 5 GUI
 The following Qt 5 modules are requried: core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
@@ -268,11 +270,11 @@ To build without GUI, add the following parameters to the CMake call:
 As a small demo for [Reflective RapidJSON](https://github.com/Martchus/reflective-rapidjson), the tag editor features an optional
 JSON export. To enable it, add `-DENABLE_JSON_EXPORT` to the CMake arguments.
 
-When enabled, the following additional dependencies are required (only at built-time): rapidjson, reflective-rapidjson and llvm/clang
+When enabled, the following additional dependencies are required (only at build-time): rapidjson, reflective-rapidjson and llvm/clang
 
 ### Building this straight
 0. Install (preferably the latest version of) g++ or clang, the required Qt 5 modules and CMake.
-1. Get the sources. For the lastest version from Git clone the following repositories:  
+1. Get the sources of additional dependencies and the tag editor itself. For the lastest version from Git clone the following repositories:  
    ```
    cd $SOURCES
    git clone https://github.com/Martchus/cpp-utilities.git c++utilities
@@ -292,14 +294,16 @@ When enabled, the following additional dependencies are required (only at built-
    make install -j$(nproc)
    ```
 
-## TODO
-- Support more formats (EXIF, PDF metadata, Theora in Ogg, ...)
-- Allow adding tags to specific streams when dealing with Ogg
-- Set tag information concurrently if multiple files have been specified (CLI)
-- Support adding cue-sheet to FLAC files
+## TODOs
+* Support more formats (JPEG/EXIF, PDF metadata, Theora in Ogg, ...)
+* Allow adding tags to specific streams when dealing with Ogg
+* Set tag information concurrently if multiple files have been specified (CLI)
+* Support adding cue-sheet to FLAC files
 
-## Bugs
-- Large file information is not shown when using Qt WebEngine
-- It is recommend to create backups before editing because I can not test whether the underlying library
+### Bugs
+* Large file information is not shown when using Qt WebEngine
+* It is recommend to create backups before editing because I can not test whether the underlying library
   works with all kinds of files (when forcing rewrite a backup is always created).
-- Also note the issue tracker on GitHub
+* Also note the issue tracker on GitHub
+
+More TODOs and bugs are tracked in the [issue section at GitHub](https://github.com/Martchus/tageditor/issues).
