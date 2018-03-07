@@ -14,7 +14,7 @@ class ChecklistModel;
 namespace TagParser {
 class MediaFileInfo;
 enum class ContainerFormat;
-}
+} // namespace TagParser
 
 namespace QtGui {
 
@@ -22,8 +22,7 @@ namespace Ui {
 class EnterTargetDialog;
 }
 
-class EnterTargetDialog : public QDialog
-{
+class EnterTargetDialog : public QDialog {
     Q_OBJECT
     Q_PROPERTY(TagParser::TagTarget target READ target WRITE setTarget)
 
@@ -46,6 +45,6 @@ private:
     TagParser::ContainerFormat m_currentContainerFormat;
 };
 
-}
+} // namespace QtGui
 
 #endif // ENTERTARGETLEVELDIALOG_H

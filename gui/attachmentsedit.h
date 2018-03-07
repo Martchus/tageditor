@@ -8,7 +8,7 @@
 namespace TagParser {
 class MediaFileInfo;
 class AbstractAttachment;
-}
+} // namespace TagParser
 
 namespace QtGui {
 
@@ -18,8 +18,7 @@ namespace Ui {
 class AttachmentsEdit;
 }
 
-class AttachmentsEdit : public QWidget
-{
+class AttachmentsEdit : public QWidget {
     Q_OBJECT
 
 public:
@@ -63,6 +62,6 @@ inline const QList<TagParser::AbstractAttachment *> &AttachmentsEdit::currentAtt
     return m_currentAttachments;
 }
 
-}
+} // namespace QtGui
 
 #endif // ATTACHMENTSEDIT_H

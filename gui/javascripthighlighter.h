@@ -5,8 +5,7 @@
 
 namespace QtGui {
 
-class JavaScriptHighlighter : public QSyntaxHighlighter
-{
+class JavaScriptHighlighter : public QSyntaxHighlighter {
     Q_OBJECT
 
 public:
@@ -16,8 +15,7 @@ protected:
     void highlightBlock(const QString &text);
 
 private:
-    struct HighlightingRule
-    {
+    struct HighlightingRule {
         QRegExp pattern;
         QTextCharFormat format;
     };
@@ -34,6 +32,6 @@ private:
     QTextCharFormat m_functionFormat;
 };
 
-}
+} // namespace QtGui
 
 #endif // JAVASCRIPTHIGHLIGHTER_H

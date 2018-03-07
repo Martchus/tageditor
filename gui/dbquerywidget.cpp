@@ -1,6 +1,6 @@
 #include "./dbquerywidget.h"
-#include "./tageditorwidget.h"
 #include "./tagedit.h"
+#include "./tageditorwidget.h"
 
 #include "../application/knownfieldmodel.h"
 #include "../application/settings.h"
@@ -15,13 +15,13 @@
 
 #include <c++utilities/conversion/conversionexception.h>
 
+#include <QDesktopServices>
+#include <QDialog>
+#include <QGraphicsItem>
+#include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMenu>
-#include <QDialog>
-#include <QGraphicsView>
-#include <QGraphicsItem>
 #include <QTextBrowser>
-#include <QDesktopServices>
 
 #include <functional>
 
@@ -36,14 +36,14 @@ using namespace TagParser;
 
 namespace QtGui {
 
-DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) :
-    QWidget(parent),
-    m_ui(new Ui::DbQueryWidget),
-    m_tagEditorWidget(tagEditorWidget),
-    m_model(nullptr),
-    m_coverIndex(-1),
-    m_lyricsIndex(-1),
-    m_menu(new QMenu(parent))
+DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
+    : QWidget(parent)
+    , m_ui(new Ui::DbQueryWidget)
+    , m_tagEditorWidget(tagEditorWidget)
+    , m_model(nullptr)
+    , m_coverIndex(-1)
+    , m_lyricsIndex(-1)
+    , m_menu(new QMenu(parent))
 {
     m_ui->setupUi(this);
 #ifdef Q_OS_WIN32
@@ -82,13 +82,13 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent) 
     m_ui->menuPushButton->setMenu(m_menu);
 
     // ensure fieldsGroupBox takes only minimal space (initially)
-    m_ui->splitter->setSizes({1000, 1});
+    m_ui->splitter->setSizes({ 1000, 1 });
 
     // connect signals and slots
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
     connect(m_ui->searchMusicBrainzPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchMusicBrainz);
     connect(m_ui->searchLyricsWikiaPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchLyricsWikia);
-    connect(m_ui->applyPushButton, &QPushButton::clicked, this, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
+    connect(m_ui->applyPushButton, &QPushButton::clicked, this, static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
     connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &DbQueryWidget::fileStatusChanged);
     connect(m_ui->resultsTreeView, &QTreeView::customContextMenuRequested, this, &DbQueryWidget::showResultsContextMenu);
 }
@@ -100,7 +100,7 @@ DbQueryWidget::~DbQueryWidget()
 
 void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
 {
-    if(tagEdit) {
+    if (tagEdit) {
         // set title, album and artist
         m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
         m_ui->albumLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Album)));
@@ -110,20 +110,20 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
         bool trackValueOk = false;
         try {
             TagValue trackValue = tagEdit->value(KnownField::TrackPosition);
-            if(!trackValue.isEmpty()) {
+            if (!trackValue.isEmpty()) {
                 m_ui->trackSpinBox->setValue(trackValue.toPositionInSet().position());
                 trackValueOk = true;
             }
-        } catch(const ConversionException &) {
+        } catch (const ConversionException &) {
         }
-        if(!trackValueOk) {
+        if (!trackValueOk) {
             TagValue trackValue = tagEdit->value(KnownField::PartNumber);
-            if(!trackValue.isEmpty()) {
+            if (!trackValue.isEmpty()) {
                 m_ui->trackSpinBox->setValue(trackValue.toInteger());
                 trackValueOk = true;
             }
         }
-        if(!trackValueOk) {
+        if (!trackValueOk) {
             m_ui->trackSpinBox->clear();
         }
     }
@@ -142,7 +142,7 @@ SongDescription DbQueryWidget::currentSongDescription() const
 void DbQueryWidget::searchMusicBrainz()
 {
     // check whether enough search terms are supplied
-    if(m_ui->titleLineEdit->text().isEmpty() && m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty()) {
+    if (m_ui->titleLineEdit->text().isEmpty() && m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
         m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied - at least title, album or artist must be specified"));
         return;
@@ -164,7 +164,7 @@ void DbQueryWidget::searchMusicBrainz()
 void DbQueryWidget::searchLyricsWikia()
 {
     // check whether enough search terms are supplied
-    if(m_ui->artistLineEdit->text().isEmpty()) {
+    if (m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
         m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied - artist is mandatory"));
         return;
@@ -185,11 +185,11 @@ void DbQueryWidget::searchLyricsWikia()
 
 void DbQueryWidget::abortSearch()
 {
-    if(m_model) {
-        if(m_model->isFetchingCover()) {
+    if (m_model) {
+        if (m_model->isFetchingCover()) {
             // call abort to abort fetching cover
             m_model->abort();
-        } else if(!m_model->areResultsAvailable()) {
+        } else if (!m_model->areResultsAvailable()) {
             // delete model to abort search
             m_ui->resultsTreeView->setModel(nullptr);
             delete m_model;
@@ -205,10 +205,10 @@ void DbQueryWidget::abortSearch()
 
 void DbQueryWidget::showResults()
 {
-    if(m_model) {
-        if(m_model->errorList().isEmpty()) {
+    if (m_model) {
+        if (m_model->errorList().isEmpty()) {
             m_ui->notificationLabel->setNotificationType(NotificationType::TaskComplete);
-            if(m_model->results().isEmpty()) {
+            if (m_model->results().isEmpty()) {
                 m_ui->notificationLabel->setText(tr("No results available"));
             } else {
                 m_ui->notificationLabel->setText(tr("%1 result(s) available", 0, m_model->results().size()).arg(m_model->results().size()));
@@ -216,14 +216,15 @@ void DbQueryWidget::showResults()
         } else {
             m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
             m_ui->notificationLabel->clearText();
-            for(const QString &error : m_model->errorList()) {
+            for (const QString &error : m_model->errorList()) {
                 m_ui->notificationLabel->appendLine(error);
             }
         }
-        if(m_model->results().isEmpty()) {
+        if (m_model->results().isEmpty()) {
             m_ui->applyPushButton->setEnabled(false);
         } else {
-            m_ui->resultsTreeView->selectionModel()->setCurrentIndex(m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+            m_ui->resultsTreeView->selectionModel()->setCurrentIndex(
+                m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
             m_ui->applyPushButton->setEnabled(m_tagEditorWidget->activeTagEdit());
         }
         setStatus(true);
@@ -252,10 +253,10 @@ void DbQueryWidget::fileStatusChanged(bool, bool hasTags)
 void DbQueryWidget::applySelectedResults()
 {
     // check whether model, tag edit and current selection exist
-    if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-        if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
+    if (TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+        if (const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
             const QModelIndexList selection = selectionModel->selection().indexes();
-            if(!selection.isEmpty()) {
+            if (!selection.isEmpty()) {
                 applyResults(tagEdit, selection.front());
             }
         }
@@ -271,7 +272,7 @@ void DbQueryWidget::applySelectedResults()
  */
 void DbQueryWidget::applyMatchingResults()
 {
-    m_tagEditorWidget->foreachTagEdit(bind(static_cast<void(DbQueryWidget::*)(TagEdit *)>(&DbQueryWidget::applyMatchingResults), this, _1));
+    m_tagEditorWidget->foreachTagEdit(bind(static_cast<void (DbQueryWidget::*)(TagEdit *)>(&DbQueryWidget::applyMatchingResults), this, _1));
 }
 
 /*!
@@ -283,7 +284,7 @@ void DbQueryWidget::applyMatchingResults()
  */
 void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
 {
-    if(!m_model) {
+    if (!m_model) {
         return;
     }
 
@@ -299,9 +300,9 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
     } catch (const ConversionException &) {
         givenTrack = 0;
     }
-    if(!givenTrack) {
-        for(const Tag *tag : tagEdit->tags()) {
-            if(!tag->supportsTarget() || tag->targetLevel() == TagTargetLevel::Track) {
+    if (!givenTrack) {
+        for (const Tag *tag : tagEdit->tags()) {
+            if (!tag->supportsTarget() || tag->targetLevel() == TagTargetLevel::Track) {
                 try {
                     givenTrack = tagEdit->value(KnownField::PartNumber).toInteger();
                 } catch (const ConversionException &) {
@@ -311,16 +312,16 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
         }
     }
 
-    if(givenTitle.isEmpty() || !givenTrack) {
+    if (givenTitle.isEmpty() || !givenTrack) {
         return;
     }
 
     // find row matching already present data
-    for(int row = 0, rowCount = m_model->rowCount(); row != rowCount; ++row) {
-        if((!givenTitle.isEmpty() && givenTitle != m_model->fieldValue(row, KnownField::Title))
-                || (!givenAlbum.isEmpty() && givenAlbum != m_model->fieldValue(row, KnownField::Album))
-                || (!givenArtist.isEmpty() && givenArtist != m_model->fieldValue(row, KnownField::Artist))
-                || (givenTrack && givenTrack != m_model->fieldValue(row, KnownField::PartNumber).toInteger())) {
+    for (int row = 0, rowCount = m_model->rowCount(); row != rowCount; ++row) {
+        if ((!givenTitle.isEmpty() && givenTitle != m_model->fieldValue(row, KnownField::Title))
+            || (!givenAlbum.isEmpty() && givenAlbum != m_model->fieldValue(row, KnownField::Album))
+            || (!givenArtist.isEmpty() && givenArtist != m_model->fieldValue(row, KnownField::Artist))
+            || (givenTrack && givenTrack != m_model->fieldValue(row, KnownField::PartNumber).toInteger())) {
             continue;
         }
 
@@ -337,7 +338,7 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
  */
 void DbQueryWidget::autoInsertMatchingResults()
 {
-    if(m_ui->autoInsertCheckBox->isChecked()) {
+    if (m_ui->autoInsertCheckBox->isChecked()) {
         applyMatchingResults();
     }
 }
@@ -350,24 +351,24 @@ void DbQueryWidget::autoInsertMatchingResults()
  */
 void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultIndex)
 {
-    if(m_model) {
+    if (m_model) {
         // determine previous value handling
-        PreviousValueHandling previousValueHandling = m_ui->overrideCheckBox->isChecked()
-                ? PreviousValueHandling::Update : PreviousValueHandling::Keep;
+        PreviousValueHandling previousValueHandling
+            = m_ui->overrideCheckBox->isChecked() ? PreviousValueHandling::Update : PreviousValueHandling::Keep;
 
         // loop through all fields
-        for(const ChecklistItem &item : values().dbQuery.fields.items()) {
-            if(item.isChecked()) {
+        for (const ChecklistItem &item : values().dbQuery.fields.items()) {
+            if (item.isChecked()) {
                 // field should be used
                 const auto field = static_cast<KnownField>(item.id().toInt());
                 int row = resultIndex.row();
                 TagValue value = m_model->fieldValue(row, field);
 
-                if(value.isEmpty()) {
+                if (value.isEmpty()) {
                     // cover and lyrics might be fetched belated
-                    switch(field) {
+                    switch (field) {
                     case KnownField::Cover:
-                        if(m_model->fetchCover(resultIndex)) {
+                        if (m_model->fetchCover(resultIndex)) {
                             // cover is available now
                             tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
                         } else {
@@ -378,8 +379,8 @@ void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultInde
                             setStatus(false);
                             // -> apply cover when available
                             connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
-                                if(row == index.row()) {
-                                    if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                                if (row == index.row()) {
+                                    if (TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
                                         tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
                                     }
                                 }
@@ -388,7 +389,7 @@ void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultInde
                         break;
 
                     case KnownField::Lyrics:
-                        if(m_model->fetchLyrics(resultIndex)) {
+                        if (m_model->fetchLyrics(resultIndex)) {
                             // lyrics are available now
                             tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
                         } else {
@@ -399,8 +400,8 @@ void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultInde
                             setStatus(false);
                             // -> apply cover when available
                             connect(m_model, &QueryResultsModel::lyricsAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
-                                if(row == index.row()) {
-                                    if(TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                                if (row == index.row()) {
+                                    if (TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
                                         tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
                                     }
                                 }
@@ -408,8 +409,7 @@ void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultInde
                         }
                         break;
 
-                    default:
-                        ;
+                    default:;
                     }
                 } else {
                     // any other fields are just set
@@ -427,20 +427,24 @@ void DbQueryWidget::insertSearchTermsFromActiveTagEdit()
 
 void DbQueryWidget::showResultsContextMenu()
 {
-    if(const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
+    if (const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
         const QModelIndexList selection = selectionModel->selection().indexes();
-        if(!selection.isEmpty()) {
+        if (!selection.isEmpty()) {
             QMenu contextMenu;
-            if(m_ui->applyPushButton->isEnabled()) {
-                contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
+            if (m_ui->applyPushButton->isEnabled()) {
+                contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this,
+                    static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
             }
-            if(m_model && m_model->areResultsAvailable()) {
-                if(!contextMenu.isEmpty()) {
+            if (m_model && m_model->areResultsAvailable()) {
+                if (!contextMenu.isEmpty()) {
                     contextMenu.addSeparator();
                 }
-                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
-                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, &DbQueryWidget::fetchAndShowLyricsForSelection);
-                contextMenu.addAction(QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
+                contextMenu.addAction(
+                    QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
+                contextMenu.addAction(
+                    QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, &DbQueryWidget::fetchAndShowLyricsForSelection);
+                contextMenu.addAction(
+                    QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
             }
             contextMenu.exec(QCursor::pos());
         }
@@ -450,15 +454,15 @@ void DbQueryWidget::showResultsContextMenu()
 void DbQueryWidget::fetchAndShowCoverForSelection()
 {
     const QModelIndex selectedIndex = this->selectedIndex();
-    if(!selectedIndex.isValid()) {
+    if (!selectedIndex.isValid()) {
         return;
     }
 
-    if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+    if (const QByteArray *cover = m_model->cover(selectedIndex)) {
         showCover(*cover);
     } else {
-        if(m_model->fetchCover(selectedIndex)) {
-            if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+        if (m_model->fetchCover(selectedIndex)) {
+            if (const QByteArray *cover = m_model->cover(selectedIndex)) {
                 showCover(*cover);
             } else {
                 // cover couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
@@ -478,15 +482,15 @@ void DbQueryWidget::fetchAndShowCoverForSelection()
 void DbQueryWidget::fetchAndShowLyricsForSelection()
 {
     const QModelIndex selectedIndex = this->selectedIndex();
-    if(!selectedIndex.isValid()) {
+    if (!selectedIndex.isValid()) {
         return;
     }
 
-    if(const QString *lyrics = m_model->lyrics(selectedIndex)) {
+    if (const QString *lyrics = m_model->lyrics(selectedIndex)) {
         showLyrics(*lyrics);
     } else {
-        if(m_model->fetchLyrics(selectedIndex)) {
-            if(const QByteArray *cover = m_model->cover(selectedIndex)) {
+        if (m_model->fetchLyrics(selectedIndex)) {
+            if (const QByteArray *cover = m_model->cover(selectedIndex)) {
                 showLyrics(*cover);
             } else {
                 // lyrics couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
@@ -506,15 +510,15 @@ void DbQueryWidget::fetchAndShowLyricsForSelection()
 void DbQueryWidget::openSelectionInBrowser()
 {
     const QModelIndex selectedIndex = this->selectedIndex();
-    if(!selectedIndex.isValid()) {
+    if (!selectedIndex.isValid()) {
         return;
     }
     const QUrl url(m_model->webUrl(selectedIndex));
-    if(url.isEmpty()) {
+    if (url.isEmpty()) {
         m_ui->notificationLabel->appendLine(tr("No web URL available."));
         return;
     }
-    if(!QDesktopServices::openUrl(url)) {
+    if (!QDesktopServices::openUrl(url)) {
         m_ui->notificationLabel->appendLine(tr("Unable to open URL: ") + url.toString());
     }
 }
@@ -538,7 +542,7 @@ void DbQueryWidget::showCover(const QByteArray &data)
 
 void DbQueryWidget::showCoverFromIndex(const QModelIndex &index)
 {
-    if(m_coverIndex == index.row()) {
+    if (m_coverIndex == index.row()) {
         m_coverIndex = -1;
         showCover(*m_model->cover(index));
     }
@@ -561,7 +565,7 @@ void DbQueryWidget::showLyrics(const QString &data)
 
 void DbQueryWidget::showLyricsFromIndex(const QModelIndex &index)
 {
-    if(m_lyricsIndex == index.row()) {
+    if (m_lyricsIndex == index.row()) {
         m_lyricsIndex = -1;
         showLyrics(*m_model->lyrics(index));
     }
@@ -577,19 +581,17 @@ void DbQueryWidget::clearSearchCriteria()
 
 bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)
 {
-    if(obj == m_ui->searchGroupBox) {
-        switch(event->type()) {
+    if (obj == m_ui->searchGroupBox) {
+        switch (event->type()) {
         case QEvent::KeyRelease:
-            switch(static_cast<QKeyEvent *>(event)->key()) {
+            switch (static_cast<QKeyEvent *>(event)->key()) {
             case Qt::Key_Return:
                 searchMusicBrainz();
                 break;
-            default:
-                ;
+            default:;
             }
             break;
-        default:
-            ;
+        default:;
         }
     }
     return QWidget::eventFilter(obj, event);
@@ -605,18 +607,18 @@ void DbQueryWidget::useQueryResults(QueryResultsModel *queryResults)
 
 QModelIndex DbQueryWidget::selectedIndex() const
 {
-    if(!m_model) {
+    if (!m_model) {
         return QModelIndex();
     }
     const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel();
-    if(!selectionModel) {
+    if (!selectionModel) {
         return QModelIndex();
     }
     const QModelIndexList selection = selectionModel->selectedRows();
-    if(selection.size() != 1) {
+    if (selection.size() != 1) {
         return QModelIndex();
     }
     return selection.at(0);
 }
 
-}
+} // namespace QtGui

@@ -3,26 +3,26 @@
 
 #include <qtutilities/misc/conversion.h>
 
-#include <tagparser/signature.h>
-#include <tagparser/mediafileinfo.h>
+#include <tagparser/abstractattachment.h>
 #include <tagparser/abstractcontainer.h>
+#include <tagparser/abstracttrack.h>
+#include <tagparser/diagnostics.h>
 #include <tagparser/matroska/matroskacontainer.h>
 #include <tagparser/matroska/matroskaeditionentry.h>
+#include <tagparser/mediafileinfo.h>
 #include <tagparser/mp4/mp4container.h>
-#include <tagparser/abstracttrack.h>
-#include <tagparser/abstractattachment.h>
-#include <tagparser/diagnostics.h>
+#include <tagparser/signature.h>
 
 #include <c++utilities/chrono/datetime.h>
 #include <c++utilities/conversion/stringconversion.h>
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
-# include <QApplication>
-# include <QStyle>
-# include <QIcon>
+#include <QApplication>
+#include <QIcon>
+#include <QStyle>
 #elif defined(TAGEDITOR_GUI_QTQUICK)
-# include <QGuiApplication>
-# include <QIcon>
+#include <QGuiApplication>
+#include <QIcon>
 #endif
 #include <QStringBuilder>
 
@@ -47,21 +47,18 @@ QStandardItem *defaultItem(const QString &text)
     return item;
 }
 
-class ItemHelper
-{
+class ItemHelper {
 public:
-    ItemHelper(QStandardItem *item) :
-        m_item(item)
+    ItemHelper(QStandardItem *item)
+        : m_item(item)
     {
         m_item->setEditable(false);
     }
 
     void appendRow(const QString &label, const QString &text)
     {
-        if(!text.isEmpty()) {
-            m_item->appendRow(QList<QStandardItem *>()
-                              << defaultItem(label)
-                              << defaultItem(text));
+        if (!text.isEmpty()) {
+            m_item->appendRow(QList<QStandardItem *>() << defaultItem(label) << defaultItem(text));
         }
     }
 
@@ -72,42 +69,42 @@ public:
 
     void appendRow(const QString &label, const string &text)
     {
-        if(!text.empty()) {
+        if (!text.empty()) {
             appendRow(label, text.data());
         }
     }
 
     void appendRow(const QString &label, DateTime dateTime)
     {
-        if(!dateTime.isNull()) {
+        if (!dateTime.isNull()) {
             appendRow(label, dateTime.toString());
         }
     }
 
     void appendRow(const QString &label, TimeSpan timeSpan)
     {
-        if(!timeSpan.isNull()) {
+        if (!timeSpan.isNull()) {
             appendRow(label, timeSpan.toString(TimeSpanOutputFormat::WithMeasures));
         }
     }
 
     void appendRow(const QString &label, uint64 number)
     {
-        if(number) {
+        if (number) {
             appendRow(label, QString::number(number));
         }
     }
 
     void appendRow(const QString &label, const Margin &margin)
     {
-        if(!margin.isNull()) {
+        if (!margin.isNull()) {
             appendRow(label, margin.toString());
         }
     }
 
     void appendRow(const QString &label, const Size &size)
     {
-        if(!size.isNull()) {
+        if (!size.isNull()) {
             appendRow(label, size.toString());
         }
     }
@@ -118,12 +115,12 @@ private:
 
 void addDiagMessages(TagParser::Diagnostics *diag, QStandardItem *parent)
 {
-    for(const auto &msg : *diag) {
+    for (const auto &msg : *diag) {
         QList<QStandardItem *> notificationRow;
         notificationRow.reserve(3);
 
         auto *firstItem = defaultItem(QString::fromUtf8(msg.creationTime().toString().data()));
-        switch(msg.level()) {
+        switch (msg.level()) {
         case DiagLevel::None:
         case DiagLevel::Debug:
             firstItem->setIcon(FileInfoModel::debugIcon());
@@ -139,32 +136,25 @@ void addDiagMessages(TagParser::Diagnostics *diag, QStandardItem *parent)
             firstItem->setIcon(FileInfoModel::errorIcon());
             break;
         }
-        parent->appendRow(QList<QStandardItem *>()
-                          << firstItem
-                          << defaultItem(QString::fromUtf8(msg.message().data()))
-                          << defaultItem(QString::fromUtf8(msg.context().data())));
+        parent->appendRow(QList<QStandardItem *>() << firstItem << defaultItem(QString::fromUtf8(msg.message().data()))
+                                                   << defaultItem(QString::fromUtf8(msg.context().data())));
     }
-
 }
 
-template<class ElementType, bool isAdditional = false> void addElementNode(const ElementType *element, QStandardItem *parent)
+template <class ElementType, bool isAdditional = false> void addElementNode(const ElementType *element, QStandardItem *parent)
 {
-    while(element) {
-        if(element->isParsed()) {
+    while (element) {
+        if (element->isParsed()) {
             auto *firstItem = defaultItem(QString::fromLatin1(element->idToString().data()));
-            parent->appendRow(QList<QStandardItem *>()
-                              << firstItem
-                              << defaultItem(
-                                  QStringLiteral("offset: 0x")
-                                  % QString::number(element->startOffset(), 16)
-                                  % QStringLiteral(", size: 0x")
-                                  % QString::number(element->totalSize(), 16)));
-            if(element->firstChild()) {
+            parent->appendRow(QList<QStandardItem *>() << firstItem
+                                                       << defaultItem(QStringLiteral("offset: 0x") % QString::number(element->startOffset(), 16)
+                                                              % QStringLiteral(", size: 0x") % QString::number(element->totalSize(), 16)));
+            if (element->firstChild()) {
                 addElementNode(element->firstChild(), firstItem);
             }
             element = element->nextSibling();
         } else {
-            if(!isAdditional) {
+            if (!isAdditional) {
                 auto *notAnalyzedItem = defaultItem(QStringLiteral("not analyzed"));
                 notAnalyzedItem->setForeground(QBrush(QColor(Qt::red)));
                 parent->appendRow(notAnalyzedItem);
@@ -190,30 +180,28 @@ template<class ElementType, bool isAdditional = false> void addElementNode(const
 /*!
  * \brief Constructs a new instance with the specified \a fileInfo which might be nullptr.
  */
-FileInfoModel::FileInfoModel(QObject *parent) :
-    QStandardItemModel(parent)
+FileInfoModel::FileInfoModel(QObject *parent)
+    : QStandardItemModel(parent)
 {
 }
 
 QVariant FileInfoModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    switch(orientation) {
+    switch (orientation) {
     case Qt::Horizontal:
-        switch(role) {
+        switch (role) {
         case Qt::DisplayRole:
-            switch(section) {
+            switch (section) {
             case 0:
                 return tr("Property");
             case 1:
                 return tr("Value");
-            default:
-                ;
+            default:;
             }
             break;
-        }        
+        }
         break;
-    default:
-        ;
+    default:;
     }
     return QVariant();
 }
@@ -270,7 +258,7 @@ void FileInfoModel::updateCache()
 {
     beginResetModel();
     clear();
-    if(m_file) {
+    if (m_file) {
         // get diag
         Diagnostics &diag = m_diagReparsing ? *m_diagReparsing : *m_diag;
 
@@ -285,12 +273,12 @@ void FileInfoModel::updateCache()
         rootHelper.appendRow(tr("Path"), fromNativeFileName(m_file->path().data()));
         rootHelper.appendRow(tr("Size"), dataSizeToString(m_file->size()));
         const TimeSpan duration = m_file->duration();
-        if(!duration.isNull()) {
+        if (!duration.isNull()) {
             rootHelper.appendRow(tr("Duration"), duration);
             rootHelper.appendRow(tr("Overall avg. bitrate"), bitrateToString(0.0078125 * m_file->size() / duration.totalSeconds()));
         }
         const char *const mimeType = m_file->mimeType();
-        if(*mimeType) {
+        if (*mimeType) {
             rootHelper.appendRow(tr("Mime-type"), mimeType);
         }
 
@@ -307,7 +295,7 @@ void FileInfoModel::updateCache()
         // -> add container name
         QString containerName;
         const char *const subversion = m_file->containerFormatSubversion();
-        if(*subversion) {
+        if (*subversion) {
             containerName = QString::fromUtf8(m_file->containerFormatName()) % QChar(' ') % QString::fromUtf8(m_file->containerFormatSubversion());
         } else {
             containerName = QString::fromUtf8(m_file->containerFormatName());
@@ -315,10 +303,10 @@ void FileInfoModel::updateCache()
         setItem(currentRow, 1, defaultItem(containerName));
 
         // container details
-        if(container) {
+        if (container) {
             size_t segmentIndex = 0;
-            for(const auto &title : container->titles()) {
-                if(segmentIndex) {
+            for (const auto &title : container->titles()) {
+                if (segmentIndex) {
                     containerHelper.appendRow(tr("Title (segment %1)").arg(++segmentIndex), title);
                 } else {
                     ++segmentIndex;
@@ -338,12 +326,12 @@ void FileInfoModel::updateCache()
         // tags
         {
             const auto tags = m_file->tags();
-            if(!tags.empty()) {
+            if (!tags.empty()) {
                 auto *tagsItem = defaultItem(tr("Tags"));
                 setItem(++currentRow, tagsItem);
                 setItem(currentRow, 1, defaultItem(tr("%1 tag(s) assigned", nullptr, trQuandity(tags.size())).arg(tags.size())));
 
-                for(const Tag *tag : tags) {
+                for (const Tag *tag : tags) {
                     auto *tagItem = defaultItem(tag->typeName());
                     ItemHelper tagHelper(tagItem);
                     tagHelper.appendRow(tr("Version"), tag->version());
@@ -358,18 +346,20 @@ void FileInfoModel::updateCache()
         // tracks
         {
             const auto tracks = m_file->tracks();
-            if(!tracks.empty()) {
+            if (!tracks.empty()) {
                 auto *tracksItem = defaultItem(tr("Tracks"));
                 setItem(++currentRow, tracksItem);
                 const string summary(m_file->technicalSummary());
-                if(summary.empty()) {
+                if (summary.empty()) {
                     setItem(currentRow, 1, defaultItem(tr("%1 track(s) contained", nullptr, trQuandity(tracks.size())).arg(tracks.size())));
                 } else {
-                    setItem(currentRow, 1, defaultItem(tr("%1 track(s): ", nullptr, trQuandity(tracks.size())).arg(tracks.size()) + QString::fromUtf8(summary.data(), summary.size())));
+                    setItem(currentRow, 1,
+                        defaultItem(tr("%1 track(s): ", nullptr, trQuandity(tracks.size())).arg(tracks.size())
+                            + QString::fromUtf8(summary.data(), summary.size())));
                 }
 
                 size_t number = 0;
-                for(const AbstractTrack *track : tracks) {
+                for (const AbstractTrack *track : tracks) {
                     auto *trackItem = defaultItem(tr("Track #%1").arg(++number));
                     ItemHelper trackHelper(trackItem);
                     trackHelper.appendRow(tr("ID"), track->id());
@@ -378,11 +368,11 @@ void FileInfoModel::updateCache()
                     trackHelper.appendRow(tr("Type"), track->mediaTypeName());
                     const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
                     trackHelper.appendRow(tr("Format"), fmtName);
-                    if(track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
+                    if (track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
                         trackHelper.appendRow(tr("Abbreviation"), fmtAbbr);
                     }
-                    if(track->version() > 0) {
-                        switch(track->format().general) {
+                    if (track->version() > 0) {
+                        switch (track->format().general) {
                         case GeneralMediaFormat::Mpeg4Video:
                         case GeneralMediaFormat::Avc:
                             trackHelper.appendRow(tr("Level"), QChar('L') + QString::number(track->version()));
@@ -392,7 +382,7 @@ void FileInfoModel::updateCache()
                         }
                     }
                     fmtName = track->format().extensionName();
-                    if(*fmtName) {
+                    if (*fmtName) {
                         trackHelper.appendRow(tr("Extension"), fmtName);
                     }
                     trackHelper.appendRow(tr("Format/codec ID"), track->formatId());
@@ -404,27 +394,29 @@ void FileInfoModel::updateCache()
                     trackHelper.appendRow(tr("Modification time"), track->modificationTime());
                     trackHelper.appendRow(tr("Language"), track->language());
                     trackHelper.appendRow(tr("Compressor name"), track->compressorName());
-                    if(track->samplingFrequency()) {
-                        trackHelper.appendRow(tr("Sampling frequency"), track->extensionSamplingFrequency()
-                                              ? QString::number(track->extensionSamplingFrequency()) % QStringLiteral(" Hz / ") % QString::number(track->samplingFrequency()) % QStringLiteral(" Hz")
-                                              : QString::number(track->samplingFrequency()) + QStringLiteral(" Hz"));
+                    if (track->samplingFrequency()) {
+                        trackHelper.appendRow(tr("Sampling frequency"),
+                            track->extensionSamplingFrequency() ? QString::number(track->extensionSamplingFrequency()) % QStringLiteral(" Hz / ")
+                                    % QString::number(track->samplingFrequency()) % QStringLiteral(" Hz")
+                                                                : QString::number(track->samplingFrequency()) + QStringLiteral(" Hz"));
                     }
-                    trackHelper.appendRow(track->mediaType() == MediaType::Video
-                                          ? tr("Frame count")
-                                          : tr("Sample count"), track->sampleCount());
+                    trackHelper.appendRow(track->mediaType() == MediaType::Video ? tr("Frame count") : tr("Sample count"), track->sampleCount());
                     trackHelper.appendRow(tr("Bits per sample"), track->bitsPerSample());
                     trackHelper.appendRow(tr("Quality"), track->quality());
                     trackHelper.appendRow(tr("Pixel size"), track->pixelSize());
                     trackHelper.appendRow(tr("Display size"), track->displaySize());
-                    if(track->pixelAspectRatio().isValid()) {
-                        trackHelper.appendRow(tr("Pixel Aspect Ratio"), QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ") % QString::number(track->pixelAspectRatio().denominator));
+                    if (track->pixelAspectRatio().isValid()) {
+                        trackHelper.appendRow(tr("Pixel Aspect Ratio"),
+                            QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ")
+                                % QString::number(track->pixelAspectRatio().denominator));
                     }
                     trackHelper.appendRow(tr("Cropping"), track->cropping());
                     trackHelper.appendRow(tr("Resolution"), track->resolution());
-                    if(track->channelConfigString()) {
-                        trackHelper.appendRow(tr("Channel config"), track->extensionChannelConfigString()
-                                              ? QString::fromUtf8(track->extensionChannelConfigString()) % QStringLiteral(" / ") % QString::fromUtf8(track->channelConfigString())
-                                              : QString::fromUtf8(track->channelConfigString()));
+                    if (track->channelConfigString()) {
+                        trackHelper.appendRow(tr("Channel config"),
+                            track->extensionChannelConfigString() ? QString::fromUtf8(track->extensionChannelConfigString()) % QStringLiteral(" / ")
+                                    % QString::fromUtf8(track->channelConfigString())
+                                                                  : QString::fromUtf8(track->channelConfigString()));
                     } else {
                         trackHelper.appendRow(tr("Channel count"), track->channelCount());
                     }
@@ -432,25 +424,25 @@ void FileInfoModel::updateCache()
                     trackHelper.appendRow(tr("Frames per second"), track->fps());
                     trackHelper.appendRow(tr("Chroma format"), track->chromaFormat());
                     QStringList labels;
-                    if(track->isInterlaced()) {
+                    if (track->isInterlaced()) {
                         labels << tr("interlaced");
                     }
-                    if(!track->isEnabled()) {
+                    if (!track->isEnabled()) {
                         labels << tr("disabled");
                     }
-                    if(track->isDefault()) {
+                    if (track->isDefault()) {
                         labels << tr("default");
                     }
-                    if(track->isForced()) {
+                    if (track->isForced()) {
                         labels << tr("forced");
                     }
-                    if(track->hasLacing()) {
+                    if (track->hasLacing()) {
                         labels << tr("has lacing");
                     }
-                    if(track->isEncrypted()) {
+                    if (track->isEncrypted()) {
                         labels << tr("encrypted");
                     }
-                    if(!labels.isEmpty()) {
+                    if (!labels.isEmpty()) {
                         trackHelper.appendRow(tr("Labeled as"), labels.join(QStringLiteral(", ")));
                     }
                     tracksItem->appendRow(trackItem);
@@ -461,13 +453,13 @@ void FileInfoModel::updateCache()
         // attachments
         {
             const auto attachments = m_file->attachments();
-            if(!attachments.empty()) {
+            if (!attachments.empty()) {
                 auto *attachmentsItem = defaultItem(tr("Attachments"));
                 setItem(++currentRow, attachmentsItem);
                 setItem(currentRow, 1, defaultItem(tr("%1 attachment(s) present", nullptr, trQuandity(attachments.size())).arg(attachments.size())));
 
                 size_t number = 0;
-                for(const AbstractAttachment *attachment : attachments) {
+                for (const AbstractAttachment *attachment : attachments) {
                     auto *attachmentItem = defaultItem(tr("Attachment #%1").arg(++number));
                     ItemHelper attachHelper(attachmentItem);
                     attachHelper.appendRow(tr("ID"), attachment->id());
@@ -484,69 +476,72 @@ void FileInfoModel::updateCache()
         {
             size_t number = 0;
             function<void(const AbstractChapter *, QStandardItem *)> addChapter;
-            addChapter = [&addChapter, &number] (const AbstractChapter *chapter, QStandardItem *parent) {
+            addChapter = [&addChapter, &number](const AbstractChapter *chapter, QStandardItem *parent) {
                 auto *chapterItem = defaultItem(tr("Chapter #%1").arg(++number));
                 ItemHelper chapterHelper(chapterItem);
                 chapterHelper.appendRow(tr("ID"), chapter->id());
-                for(const LocaleAwareString &name : chapter->names()) {
+                for (const LocaleAwareString &name : chapter->names()) {
                     static const string delim(", ");
-                    const string locale = joinStrings(initializer_list<string>{joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true)}, delim, true);
+                    const string locale = joinStrings(
+                        initializer_list<string>{ joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true) }, delim,
+                        true);
                     chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromUtf8(locale.data())), name);
                 }
-                if(!chapter->startTime().isNegative()) {
+                if (!chapter->startTime().isNegative()) {
                     chapterHelper.appendRow(tr("Start time"), chapter->startTime());
                 }
-                if(!chapter->endTime().isNegative()) {
+                if (!chapter->endTime().isNegative()) {
                     chapterHelper.appendRow(tr("End time"), chapter->endTime());
                 }
                 QStringList labels;
-                if(chapter->isHidden()) {
+                if (chapter->isHidden()) {
                     labels << tr("hidden");
                 }
-                if(!chapter->isEnabled()) {
+                if (!chapter->isEnabled()) {
                     labels << tr("disabled");
                 }
-                if(!labels.empty()) {
+                if (!labels.empty()) {
                     chapterHelper.appendRow(tr("Labeled as"), labels.join(QStringLiteral(", ")));
                 }
-                if(!chapter->tracks().empty()) {
+                if (!chapter->tracks().empty()) {
                     QStringList trackIds;
-                    for(const uint64 id : chapter->tracks()) {
+                    for (const uint64 id : chapter->tracks()) {
                         trackIds << QString::number(id);
                     }
                     chapterHelper.appendRow(tr("Tracks"), trackIds.join(QStringLiteral(", ")));
                 }
-                for(size_t i = 0, nestedChapters = chapter->nestedChapterCount(); i < nestedChapters; ++i) {
+                for (size_t i = 0, nestedChapters = chapter->nestedChapterCount(); i < nestedChapters; ++i) {
                     addChapter(chapter->nestedChapter(i), chapterItem);
                 }
                 parent->appendRow(chapterItem);
             };
 
-            if(m_file->containerFormat() == ContainerFormat::Matroska) {
+            if (m_file->containerFormat() == ContainerFormat::Matroska) {
                 const auto &editionEntries = static_cast<const MatroskaContainer *>(container)->editionEntires();
-                if(!editionEntries.empty()) {
+                if (!editionEntries.empty()) {
                     auto *editionsItem = defaultItem(tr("Editions"));
                     setItem(++currentRow, editionsItem);
-                    setItem(currentRow, 1, defaultItem(tr("%1 edition(s) present", nullptr, trQuandity(editionEntries.size())).arg(editionEntries.size())));
+                    setItem(currentRow, 1,
+                        defaultItem(tr("%1 edition(s) present", nullptr, trQuandity(editionEntries.size())).arg(editionEntries.size())));
                     size_t editionNumber = 0;
-                    for(const auto &edition : editionEntries) {
+                    for (const auto &edition : editionEntries) {
                         auto *editionItem = defaultItem(tr("Edition #%1").arg(++editionNumber));
                         ItemHelper editionHelper(editionItem);
                         editionHelper.appendRow(tr("ID"), edition->id());
                         QStringList labels;
-                        if(edition->isHidden()) {
+                        if (edition->isHidden()) {
                             labels << tr("hidden");
                         }
-                        if(edition->isDefault()) {
+                        if (edition->isDefault()) {
                             labels << tr("default");
                         }
-                        if(edition->isOrdered()) {
+                        if (edition->isOrdered()) {
                             labels << tr("ordered");
                         }
-                        if(!labels.isEmpty()) {
+                        if (!labels.isEmpty()) {
                             editionHelper.appendRow(tr("Labeled as"), labels.join(QStringLiteral(", ")));
                         }
-                        for(const auto &chapter : edition->chapters()) {
+                        for (const auto &chapter : edition->chapters()) {
                             addChapter(chapter.get(), editionItem);
                         }
                         editionsItem->appendRow(editionItem);
@@ -554,11 +549,11 @@ void FileInfoModel::updateCache()
                 }
             } else {
                 const auto chapters = m_file->chapters();
-                if(!chapters.empty()) {
+                if (!chapters.empty()) {
                     auto *chaptersItem = defaultItem(tr("Chapters"));
                     setItem(++currentRow, chaptersItem);
                     setItem(currentRow, 1, defaultItem(tr("%1 chapter(s) present", nullptr, trQuandity(chapters.size())).arg(chapters.size())));
-                    for(const AbstractChapter *chapter : chapters) {
+                    for (const AbstractChapter *chapter : chapters) {
                         addChapter(chapter, chaptersItem);
                     }
                 }
@@ -566,14 +561,14 @@ void FileInfoModel::updateCache()
         }
 
         // structure
-        switch(m_file->containerFormat()) {
+        switch (m_file->containerFormat()) {
         case ContainerFormat::Mp4:
         case ContainerFormat::QuickTime:
         case ContainerFormat::Matroska:
         case ContainerFormat::Webm:
         case ContainerFormat::Ebml: {
             auto *structureItem = defaultItem(tr("Structure"));
-            switch(m_file->containerFormat()) {
+            switch (m_file->containerFormat()) {
             case ContainerFormat::Mp4:
             case ContainerFormat::QuickTime:
                 addElementNode(static_cast<const Mp4Container *>(container)->firstElement(), structureItem);
@@ -583,15 +578,12 @@ void FileInfoModel::updateCache()
             case ContainerFormat::Ebml:
                 addElementNode(static_cast<const MatroskaContainer *>(container)->firstElement(), structureItem);
                 break;
-            default:
-                ;
+            default:;
             }
             setItem(++currentRow, structureItem);
             setItem(currentRow, 1, defaultItem(QString()));
-        }
-            break;
-        default:
-            ;
+        } break;
+        default:;
         }
 
         // notifications
@@ -609,4 +601,4 @@ void FileInfoModel::updateCache()
 
 #endif
 
-}
+} // namespace QtGui

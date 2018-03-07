@@ -5,38 +5,38 @@
 
 #include "ui_picturepreviewselection.h"
 
+#include <tagparser/diagnostics.h>
+#include <tagparser/id3/id3v2frame.h>
+#include <tagparser/id3/id3v2tag.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
-#include <tagparser/id3/id3v2tag.h>
-#include <tagparser/id3/id3v2frame.h>
 #include <tagparser/vorbis/vorbiscomment.h>
 #include <tagparser/vorbis/vorbiscommentfield.h>
-#include <tagparser/diagnostics.h>
 
 #include <qtutilities/misc/conversion.h>
 
 #include <c++utilities/io/catchiofailure.h>
 
-#include <QEvent>
-#include <QGraphicsScene>
-#include <QGraphicsTextItem>
-#include <QGraphicsRectItem>
-#include <QFile>
-#include <QImage>
-#include <QFileDialog>
-#include <QInputDialog>
-#include <QMessageBox>
+#include <QAction>
+#include <QCursor>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <QMimeData>
-#include <QCursor>
+#include <QEvent>
+#include <QFile>
+#include <QFileDialog>
+#include <QGraphicsRectItem>
+#include <QGraphicsScene>
+#include <QGraphicsTextItem>
+#include <QImage>
+#include <QInputDialog>
 #include <QMenu>
-#include <QAction>
+#include <QMessageBox>
+#include <QMimeData>
 
-#include <stdexcept>
-#include <functional>
 #include <cassert>
+#include <functional>
 #include <memory>
+#include <stdexcept>
 
 using namespace std;
 using namespace TagParser;
@@ -47,20 +47,21 @@ namespace QtGui {
 /*!
  * \brief Constructs a new PicturePreviewSelection for the specified \a tag and \a field.
  */
-PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWidget *parent) :
-    QWidget(parent),
-    m_ui(new Ui::PicturePreviewSelection),
-    m_scene(nullptr),
-    m_textItem(nullptr),
-    m_pixmapItem(nullptr),
-    m_rectItem(nullptr),
-    m_tag(tag),
-    m_field(field),
-    m_currentTypeIndex(0)
+PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWidget *parent)
+    : QWidget(parent)
+    , m_ui(new Ui::PicturePreviewSelection)
+    , m_scene(nullptr)
+    , m_textItem(nullptr)
+    , m_pixmapItem(nullptr)
+    , m_rectItem(nullptr)
+    , m_tag(tag)
+    , m_field(field)
+    , m_currentTypeIndex(0)
 {
     m_ui->setupUi(this);
     m_ui->coverButtonsWidget->setHidden(Settings::values().editor.hideCoverButtons);
-    connect(m_ui->addButton, &QPushButton::clicked, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
+    connect(m_ui->addButton, &QPushButton::clicked, this,
+        static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
     connect(m_ui->removeButton, &QPushButton::clicked, this, &PicturePreviewSelection::removeSelected);
     connect(m_ui->extractButton, &QPushButton::clicked, this, &PicturePreviewSelection::extractSelected);
     connect(m_ui->displayButton, &QPushButton::clicked, this, &PicturePreviewSelection::displaySelected);
@@ -74,7 +75,8 @@ PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWi
  * \brief Destroys the instance.
  */
 PicturePreviewSelection::~PicturePreviewSelection()
-{}
+{
+}
 
 /*!
  * \brief Sets the \a value of the current tag field manually using the given \a previousValueHandling.
@@ -83,8 +85,8 @@ void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandl
 {
     assert(m_currentTypeIndex < m_values.size());
     TagValue &currentValue = m_values[m_currentTypeIndex];
-    if(previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
-        if(previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty()) {
+    if (previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
+        if (previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty()) {
             currentValue = value; // TODO: move(value);
             emit pictureChanged();
         }
@@ -95,8 +97,7 @@ void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandl
 /*!
  * \brief Defines the predicate to get relevant fields.
  */
-template<class TagType>
-bool fieldPredicate(int i, const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
+template <class TagType> bool fieldPredicate(int i, const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
 {
     return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == static_cast<typename TagType::FieldType::TypeInfoType>(i)) : (i == 0);
 }
@@ -109,28 +110,29 @@ bool fieldPredicate(int i, const std::pair<typename TagType::IdentifierType, typ
  * \param valueCount Specifies the number of cover types.
  * \param previousValueHandling Specifies the "previous value handling policy".
  */
-template<class TagType>
-int fetchId3v2CoverValues(const TagType *tag, KnownField field, QList<TagParser::TagValue> &values, const int valueCount, const PreviousValueHandling previousValueHandling)
+template <class TagType>
+int fetchId3v2CoverValues(
+    const TagType *tag, KnownField field, QList<TagParser::TagValue> &values, const int valueCount, const PreviousValueHandling previousValueHandling)
 {
     values.reserve(valueCount);
     int first = -1;
     const auto &fields = tag->fields();
     auto range = fields.equal_range(tag->fieldId(field));
-    for(int i = 0; i < valueCount; ++i) {
-        if(i >= values.size()) {
+    for (int i = 0; i < valueCount; ++i) {
+        if (i >= values.size()) {
             values << TagValue();
         }
         auto pair = find_if(range.first, range.second, std::bind(fieldPredicate<TagType>, i, placeholders::_1));
-        if(pair != range.second) {
+        if (pair != range.second) {
             const TagValue &value = pair->second.value();
-            if((previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty())
-                    && (previousValueHandling != PreviousValueHandling::Keep || values[i].isEmpty())) {
+            if ((previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty())
+                && (previousValueHandling != PreviousValueHandling::Keep || values[i].isEmpty())) {
                 values[i] = value;
             }
-        } else if(previousValueHandling == PreviousValueHandling::Clear) {
+        } else if (previousValueHandling == PreviousValueHandling::Clear) {
             values[i].clearDataAndMetadata();
         }
-        if(first < 0 && !values[i].isEmpty()) {
+        if (first < 0 && !values[i].isEmpty()) {
             first = i;
         }
     }
@@ -143,71 +145,57 @@ int fetchId3v2CoverValues(const TagType *tag, KnownField field, QList<TagParser:
  */
 void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
 {
-    if(previousValueHandling == PreviousValueHandling::Auto) {
+    if (previousValueHandling == PreviousValueHandling::Auto) {
         previousValueHandling = PreviousValueHandling::Update;
     }
     m_currentTypeIndex = 0;
-    if(m_tag) {
-        if(m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
+    if (m_tag) {
+        if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
             m_ui->switchTypeComboBox->setHidden(false);
             m_ui->switchTypeLabel->setHidden(false);
-            if(!m_ui->switchTypeComboBox->count()) {
+            if (!m_ui->switchTypeComboBox->count()) {
                 m_ui->switchTypeComboBox->addItems(QStringList()
-                                                   << tr("Other")
-                                                   << tr("32x32 File icon")
-                                                   << tr("Other file icon")
-                                                   << tr("Cover (front)")
-                                                   << tr("Cover (back)")
-                                                   << tr("Leaflet page")
-                                                   << tr("Media (e. g. label side of CD)")
-                                                   << tr("Lead artist/performer/soloist")
-                                                   << tr("Artist/performer")
-                                                   << tr("Conductor")
-                                                   << tr("Band/Orchestra")
-                                                   << tr("Composer")
-                                                   << tr("Lyricist/text writer")
-                                                   << tr("Recording Location")
-                                                   << tr("During recording")
-                                                   << tr("During performance")
-                                                   << tr("Movie/video screen capture")
-                                                   << tr("A bright coloured fish")
-                                                   << tr("Illustration")
-                                                   << tr("Band/artist logotype")
-                                                   << tr("Publisher/Studio logotype")
-                                                   );
+                    << tr("Other") << tr("32x32 File icon") << tr("Other file icon") << tr("Cover (front)") << tr("Cover (back)")
+                    << tr("Leaflet page") << tr("Media (e. g. label side of CD)") << tr("Lead artist/performer/soloist") << tr("Artist/performer")
+                    << tr("Conductor") << tr("Band/Orchestra") << tr("Composer") << tr("Lyricist/text writer") << tr("Recording Location")
+                    << tr("During recording") << tr("During performance") << tr("Movie/video screen capture") << tr("A bright coloured fish")
+                    << tr("Illustration") << tr("Band/artist logotype") << tr("Publisher/Studio logotype"));
             }
             int first;
-            switch(m_tag->type()) {
+            switch (m_tag->type()) {
             case TagType::Id3v2Tag:
-                first = fetchId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
+                first = fetchId3v2CoverValues(
+                    static_cast<Id3v2Tag *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
                 break;
             case TagType::VorbisComment:
             case TagType::OggVorbisComment:
-                first = fetchId3v2CoverValues(static_cast<VorbisComment *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
+                first = fetchId3v2CoverValues(
+                    static_cast<VorbisComment *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
                 break;
             default:
                 first = 0;
             }
-            if(first >= 0) {
+            if (first >= 0) {
                 m_ui->switchTypeComboBox->setCurrentIndex(first);
             }
             m_currentTypeIndex = m_ui->switchTypeComboBox->currentIndex();
-            connect(m_ui->switchTypeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &PicturePreviewSelection::typeSwitched);
+            connect(m_ui->switchTypeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+                &PicturePreviewSelection::typeSwitched);
         } else {
             m_ui->switchTypeComboBox->setHidden(true);
             m_ui->switchTypeLabel->setHidden(true);
             m_currentTypeIndex = 0;
             const TagValue &value = m_tag->value(m_field);
-            if(previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
-                if(m_values.size()) {
-                    if(previousValueHandling != PreviousValueHandling::Keep || m_values[0].isEmpty()) {
+            if (previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
+                if (m_values.size()) {
+                    if (previousValueHandling != PreviousValueHandling::Keep || m_values[0].isEmpty()) {
                         m_values[0] = value;
                     }
                 } else {
                     m_values << value;
                 }
             }
-            if(m_values.size()) {
+            if (m_values.size()) {
                 m_values.erase(m_values.begin() + 1, m_values.end());
             } else {
                 m_values << TagValue();
@@ -231,27 +219,26 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
  * \param field Specifies the field.
  * \param values Specifies the values to be pushed.
  */
-template<class TagType>
-void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<TagParser::TagValue> &values)
+template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<TagParser::TagValue> &values)
 {
     auto &fields = tag->fields();
     const auto id = tag->fieldId(field);
     const auto range = fields.equal_range(id);
     const auto first = range.first;
     // iterate through all tag values
-    for(int index = 0, valueCount = values.size(); index < valueCount; ++index) {
+    for (int index = 0, valueCount = values.size(); index < valueCount; ++index) {
         // check whether there is already a tag value with the current index/type
         auto pair = find_if(first, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1));
-        if(pair != range.second) {
+        if (pair != range.second) {
             // there is already a tag value with the current index/type
             // -> update this value
             pair->second.setValue(values[index]);
             // check whether there are more values with the current index/type assigned
-            while((pair = find_if(++pair, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1))) != range.second) {
+            while ((pair = find_if(++pair, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1))) != range.second) {
                 // -> remove these values as we only support one value of a type in the same tag
                 pair->second.setValue(TagValue());
             }
-        } else if(!values[index].isEmpty()) {
+        } else if (!values[index].isEmpty()) {
             typename TagType::FieldType field(id, values[index]);
             field.setTypeInfo(index);
             fields.insert(std::make_pair(id, field));
@@ -264,20 +251,19 @@ void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<TagParser:
  */
 void PicturePreviewSelection::apply()
 {
-    if(m_tag) {
-        if(m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
-            switch(m_tag->type()) {
+    if (m_tag) {
+        if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
+            switch (m_tag->type()) {
             case TagType::Id3v2Tag:
                 pushId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values);
                 break;
             case TagType::VorbisComment:
                 pushId3v2CoverValues(static_cast<VorbisComment *>(m_tag), m_field, m_values);
                 break;
-            default:
-                ;
+            default:;
             }
         } else {
-            if(m_values.size()) {
+            if (m_values.size()) {
                 m_tag->setValue(m_field, m_values.first());
             } else {
                 m_tag->setValue(m_field, TagValue());
@@ -291,7 +277,7 @@ void PicturePreviewSelection::apply()
  */
 void PicturePreviewSelection::clear()
 {
-    for(int i = 0, count = m_values.count(); i < count; ++i) {
+    for (int i = 0, count = m_values.count(); i < count; ++i) {
         m_values[i].clearDataAndMetadata();
     }
     updatePreview(m_currentTypeIndex);
@@ -305,7 +291,7 @@ void PicturePreviewSelection::addOfSelectedType()
 {
     assert(m_currentTypeIndex < m_values.size());
     QString path = QFileDialog::getOpenFileName(this, tr("Select a picture to add as cover"));
-    if(!path.isEmpty()) {
+    if (!path.isEmpty()) {
         addOfSelectedType(path);
     }
 }
@@ -325,11 +311,14 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
         // TODO: show diagnostic messages
         auto mimeType = QString::fromUtf8(fileInfo.mimeType());
         bool ok;
-        mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
-        if(ok) {
-            if((fileInfo.size() < 10485760)
-                    || (QMessageBox::warning(this, QApplication::applicationName(), tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::No)) {
-                auto buff = make_unique<char []>(fileInfo.size());
+        mimeType = QInputDialog::getText(
+            this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
+        if (ok) {
+            if ((fileInfo.size() < 10485760)
+                || (QMessageBox::warning(this, QApplication::applicationName(),
+                        tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No)
+                       == QMessageBox::No)) {
+                auto buff = make_unique<char[]>(fileInfo.size());
                 fileInfo.stream().seekg(0);
                 fileInfo.stream().read(buff.get(), fileInfo.size());
                 selectedCover.assignData(std::move(buff), fileInfo.size(), TagDataType::Picture);
@@ -339,7 +328,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
         }
     } catch (const TagParser::Failure &) {
         QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to parse specified cover file."));
-    } catch(...) {
+    } catch (...) {
         ::IoUtilities::catchIoFailure();
         QMessageBox::critical(this, QApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
     }
@@ -351,8 +340,8 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
  */
 void PicturePreviewSelection::removeSelected()
 {
-    if(m_currentTypeIndex < m_values.size()) {
-        if(m_values[m_currentTypeIndex].isEmpty()) {
+    if (m_currentTypeIndex < m_values.size()) {
+        if (m_values[m_currentTypeIndex].isEmpty()) {
             QMessageBox::information(this, QApplication::applicationName(), tr("There is no cover to remove."));
         } else {
             m_values[m_currentTypeIndex].clearData();
@@ -371,14 +360,14 @@ void PicturePreviewSelection::extractSelected()
 {
     assert(m_currentTypeIndex < m_values.size());
     TagValue &value = m_values[m_currentTypeIndex];
-    if(value.isEmpty()) {
+    if (value.isEmpty()) {
         QMessageBox::information(this, QApplication::applicationName(), tr("There is no image attached to be extracted."));
     } else {
         const auto path = QFileDialog::getSaveFileName(this, tr("Where do you want to save the cover?"));
-        if(!path.isEmpty()) {
+        if (!path.isEmpty()) {
             QFile file(path);
-            if(file.open(QIODevice::WriteOnly)) {
-                if(file.write(value.dataPointer(), value.dataSize()) > 0) {
+            if (file.open(QIODevice::WriteOnly)) {
+                if (file.write(value.dataPointer(), value.dataSize()) > 0) {
                     QMessageBox::information(this, QApplication::applicationName(), tr("The cover has extracted."));
                 } else {
                     QMessageBox::warning(this, QApplication::applicationName(), tr("Unable to write to output file."));
@@ -398,11 +387,11 @@ void PicturePreviewSelection::displaySelected()
 {
     assert(m_currentTypeIndex < m_values.size());
     TagValue &value = m_values[m_currentTypeIndex];
-    if(!value.isEmpty()) {
+    if (!value.isEmpty()) {
         QImage img;
-        if(value.mimeType() == "-->") {
+        if (value.mimeType() == "-->") {
             QFile file(Utility::stringToQString(value.toString(), value.dataEncoding()));
-            if(file.open(QFile::ReadOnly)) {
+            if (file.open(QFile::ReadOnly)) {
                 img = QImage::fromData(file.readAll());
             } else {
                 QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be found."));
@@ -411,7 +400,7 @@ void PicturePreviewSelection::displaySelected()
         } else {
             img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
         }
-        if(img.isNull()) {
+        if (img.isNull()) {
             QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be displayed."));
         } else {
             QDialog dlg;
@@ -442,11 +431,11 @@ void PicturePreviewSelection::changeMimeTypeOfSelected()
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     auto mimeType = QString::fromUtf8(selectedCover.mimeType().data());
     bool ok;
-    mimeType = QInputDialog::getText(this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
-    if(ok) {
+    mimeType = QInputDialog::getText(
+        this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
+    if (ok) {
         selectedCover.setMimeType(mimeType.toUtf8().data());
     }
-
 }
 
 /*!
@@ -459,20 +448,19 @@ void PicturePreviewSelection::setCoverButtonsHidden(bool hideCoverButtons)
 
 void PicturePreviewSelection::changeEvent(QEvent *event)
 {
-    switch(event->type()) {
+    switch (event->type()) {
     case QEvent::EnabledChange:
-        if(m_rectItem) {
+        if (m_rectItem) {
             m_rectItem->setVisible(!isEnabled());
         }
         break;
-    default:
-        ;
+    default:;
     }
 }
 
 void PicturePreviewSelection::resizeEvent(QResizeEvent *)
 {
-    if(m_pixmapItem && !m_pixmap.isNull()) {
+    if (m_pixmapItem && !m_pixmap.isNull()) {
         m_pixmapItem->setPixmap(m_pixmap.scaled(m_ui->previewGraphicsView->size(), Qt::KeepAspectRatio));
     }
 }
@@ -480,9 +468,9 @@ void PicturePreviewSelection::resizeEvent(QResizeEvent *)
 void PicturePreviewSelection::dragEnterEvent(QDragEnterEvent *event)
 {
     const auto *mimeData = event->mimeData();
-    if(mimeData->hasUrls()) {
-        for(const auto &url : mimeData->urls()) {
-            if(url.scheme() == QLatin1String("file")) {
+    if (mimeData->hasUrls()) {
+        for (const auto &url : mimeData->urls()) {
+            if (url.scheme() == QLatin1String("file")) {
                 event->accept();
                 return;
             }
@@ -494,21 +482,21 @@ void PicturePreviewSelection::dragEnterEvent(QDragEnterEvent *event)
 void PicturePreviewSelection::dropEvent(QDropEvent *event)
 {
     const auto *mimeData = event->mimeData();
-    if(mimeData->hasUrls()) {
-        for(const auto &url : mimeData->urls()) {
-            if(url.scheme() == QLatin1String("file")) {
+    if (mimeData->hasUrls()) {
+        for (const auto &url : mimeData->urls()) {
+            if (url.scheme() == QLatin1String("file")) {
 #ifdef Q_OS_WIN32
                 // remove leading slash
                 QString path = url.path();
                 int index = 0;
-                for(const auto &c : path) {
-                    if(c == QChar('/')) {
+                for (const auto &c : path) {
+                    if (c == QChar('/')) {
                         ++index;
                     } else {
                         break;
                     }
                 }
-                if(index) {
+                if (index) {
                     path = path.mid(index);
                 }
                 addOfSelectedType(path);
@@ -530,7 +518,7 @@ void PicturePreviewSelection::typeSwitched(int index)
 {
     assert(m_currentTypeIndex < m_values.size());
     int lastIndex = m_currentTypeIndex;
-    if(index < 0 || index >= m_values.size()) {
+    if (index < 0 || index >= m_values.size()) {
         throw logic_error("current type index is invalid");
     } else {
         m_currentTypeIndex = index;
@@ -554,7 +542,7 @@ void PicturePreviewSelection::updateDescription(int newIndex)
 void PicturePreviewSelection::updateDescription(int lastIndex, int newIndex)
 {
     TagTextEncoding enc;
-    if(m_tag) {
+    if (m_tag) {
         TagTextEncoding preferredEncoding = Settings::values().tagPocessing.preferredEncoding;
         enc = m_tag->canEncodingBeUsed(preferredEncoding) ? preferredEncoding : m_tag->proposedTextEncoding();
     } else {
@@ -571,20 +559,20 @@ void PicturePreviewSelection::updateDescription(int lastIndex, int newIndex)
  */
 void PicturePreviewSelection::updatePreview(int index)
 {
-    if(!m_scene) {
+    if (!m_scene) {
         m_scene = new QGraphicsScene(m_ui->previewGraphicsView);
         m_ui->previewGraphicsView->setScene(m_scene);
     }
-    if(!m_textItem) {
+    if (!m_textItem) {
         m_textItem = new QGraphicsTextItem;
         m_textItem->setTextWidth(m_ui->previewGraphicsView->width());
         m_scene->addItem(m_textItem);
     }
-    if(!m_pixmapItem) {
+    if (!m_pixmapItem) {
         m_pixmapItem = new QGraphicsPixmapItem;
         m_scene->addItem(m_pixmapItem);
     }
-    if(!m_rectItem) {
+    if (!m_rectItem) {
         m_rectItem = new QGraphicsRectItem;
         m_rectItem->setPen(Qt::NoPen);
         m_rectItem->setBrush(QBrush(QColor(120, 120, 120, 120)));
@@ -592,16 +580,16 @@ void PicturePreviewSelection::updatePreview(int index)
         m_scene->addItem(m_rectItem);
     }
     TagValue &value = m_values[index];
-    if(value.isEmpty()) {
+    if (value.isEmpty()) {
         m_textItem->setVisible(true);
         m_textItem->setPlainText(tr("No image (of the selected type) attached."));
         m_pixmapItem->setVisible(false);
         m_ui->addButton->setText(tr("Add"));
     } else {
         QImage img;
-        if(value.mimeType() == "-->") {
+        if (value.mimeType() == "-->") {
             QFile file(Utility::stringToQString(value.toString(), value.dataEncoding()));
-            if(file.open(QFile::ReadOnly))
+            if (file.open(QFile::ReadOnly))
                 img = QImage::fromData(file.readAll());
             else {
                 m_textItem->setPlainText(tr("The attached image can't be found."));
@@ -612,7 +600,7 @@ void PicturePreviewSelection::updatePreview(int index)
         } else {
             img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
         }
-        if(img.isNull()) {
+        if (img.isNull()) {
             m_pixmap = QPixmap();
             m_textItem->setPlainText(tr("Unable to display attached image."));
             m_textItem->setVisible(true);
@@ -634,29 +622,29 @@ void PicturePreviewSelection::showContextMenu()
     QAction *addAction = menu.addAction(m_ui->addButton->text());
     addAction->setIcon(QIcon::fromTheme(QStringLiteral("list-add")));
     connect(addAction, &QAction::triggered, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
-    if(m_ui->extractButton->isEnabled()) {
+    if (m_ui->extractButton->isEnabled()) {
         QAction *mimeAction = menu.addAction(tr("Change MIME-type"));
         mimeAction->setIcon(QIcon::fromTheme(QStringLiteral("document-properties")));
         connect(mimeAction, &QAction::triggered, this, &PicturePreviewSelection::changeMimeTypeOfSelected);
     }
     menu.addSeparator();
-    if(m_ui->removeButton->isEnabled()) {
+    if (m_ui->removeButton->isEnabled()) {
         QAction *removeAction = menu.addAction(m_ui->removeButton->text());
         removeAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-delete")));
         connect(removeAction, &QAction::triggered, this, &PicturePreviewSelection::removeSelected);
     }
-    if(m_ui->restoreButton->isEnabled()) {
+    if (m_ui->restoreButton->isEnabled()) {
         QAction *restoreAction = menu.addAction(m_ui->restoreButton->text());
         restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("document-revert")));
         connect(restoreAction, &QAction::triggered, std::bind(&PicturePreviewSelection::setup, this, PreviousValueHandling::Clear));
     }
     menu.addSeparator();
-    if(m_ui->extractButton->isEnabled()) {
+    if (m_ui->extractButton->isEnabled()) {
         QAction *extractAction = menu.addAction(m_ui->extractButton->text());
         extractAction->setIcon(QIcon::fromTheme(QStringLiteral("document-save")));
         connect(extractAction, &QAction::triggered, this, &PicturePreviewSelection::extractSelected);
     }
-    if(m_ui->displayButton->isEnabled()) {
+    if (m_ui->displayButton->isEnabled()) {
         QAction *displayAction = menu.addAction(m_ui->displayButton->text());
         displayAction->setIcon(QIcon::fromTheme(QStringLiteral("image-x-generic")));
         connect(displayAction, &QAction::triggered, this, &PicturePreviewSelection::displaySelected);
@@ -664,4 +652,4 @@ void PicturePreviewSelection::showContextMenu()
     menu.exec(QCursor::pos());
 }
 
-}
+} // namespace QtGui

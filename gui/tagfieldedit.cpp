@@ -1,44 +1,44 @@
 #include "./tagfieldedit.h"
 #include "./picturepreviewselection.h"
 
-#include "../application/settings.h"
 #include "../application/knownfieldmodel.h"
+#include "../application/settings.h"
 
 #include "../misc/utility.h"
 
-#include <tagparser/tag.h>
-#include <tagparser/tagvalue.h>
 #include <tagparser/id3/id3v2tag.h>
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/tag.h>
+#include <tagparser/tagvalue.h>
 
-#include <qtutilities/widgets/clearlineedit.h>
 #include <qtutilities/widgets/clearcombobox.h>
-#include <qtutilities/widgets/clearspinbox.h>
+#include <qtutilities/widgets/clearlineedit.h>
 #include <qtutilities/widgets/clearplaintextedit.h>
+#include <qtutilities/widgets/clearspinbox.h>
 #include <qtutilities/widgets/iconbutton.h>
 
 #include <c++utilities/conversion/conversionexception.h>
 
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-#include <QPlainTextEdit>
-#include <QGraphicsView>
+#include <QAction>
+#include <QCursor>
+#include <QEvent>
+#include <QFile>
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
-#include <QFile>
+#include <QGraphicsView>
+#include <QHBoxLayout>
 #include <QImage>
-#include <QEvent>
 #include <QKeyEvent>
+#include <QLabel>
 #include <QListIterator>
-#include <QCursor>
 #include <QMenu>
-#include <QAction>
+#include <QPlainTextEdit>
+#include <QPushButton>
+#include <QVBoxLayout>
 
-#include <initializer_list>
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 #include <iostream>
 
 using namespace std;
@@ -58,19 +58,19 @@ namespace QtGui {
  * \brief Constructs a new TagFieldEdit.
  * \sa setTagField()
  */
-TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::KnownField field, QWidget *parent) :
-    QWidget(parent),
-    m_layout(new QVBoxLayout(this)),
-    m_tags(&tags),
-    m_field(field),
-    m_dataType(determineDataType()),
-    m_lineEdit(nullptr),
-    m_comboBox(nullptr),
-    m_spinBoxes(QPair<Widgets::ClearSpinBox *, Widgets::ClearSpinBox *>(nullptr, nullptr)),
-    m_pictureSelection(nullptr),
-    m_plainTextEdit(nullptr),
-    m_descriptionLineEdit(nullptr),
-    m_restoreButton(nullptr)
+TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::KnownField field, QWidget *parent)
+    : QWidget(parent)
+    , m_layout(new QVBoxLayout(this))
+    , m_tags(&tags)
+    , m_field(field)
+    , m_dataType(determineDataType())
+    , m_lineEdit(nullptr)
+    , m_comboBox(nullptr)
+    , m_spinBoxes(QPair<Widgets::ClearSpinBox *, Widgets::ClearSpinBox *>(nullptr, nullptr))
+    , m_pictureSelection(nullptr)
+    , m_plainTextEdit(nullptr)
+    , m_descriptionLineEdit(nullptr)
+    , m_restoreButton(nullptr)
 {
     m_layout->setContentsMargins(QMargins());
     setLayout(m_layout);
@@ -83,23 +83,24 @@ TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::Known
  *
  * If \a preventUiUpdate is true, the UI will not be updated.
  */
-void TagFieldEdit::setTagField(const QList<Tag *> &tags, TagParser::KnownField field, PreviousValueHandling previousValueHandling, bool preventUiUpdate)
+void TagFieldEdit::setTagField(
+    const QList<Tag *> &tags, TagParser::KnownField field, PreviousValueHandling previousValueHandling, bool preventUiUpdate)
 {
     bool uiRebuildingRequired = false;
     m_tags = &tags;
-    if(m_field != field) {
+    if (m_field != field) {
         m_field = field;
         uiRebuildingRequired = true;
     }
-    if(tags.size()) {
+    if (tags.size()) {
         TagDataType proposedDataType = determineDataType();
-        if(proposedDataType != m_dataType) {
+        if (proposedDataType != m_dataType) {
             m_dataType = proposedDataType;
             uiRebuildingRequired = true;
         }
     }
-    if(!preventUiUpdate) {
-        if(uiRebuildingRequired) {
+    if (!preventUiUpdate) {
+        if (uiRebuildingRequired) {
             setupUi();
         }
         updateValue(previousValueHandling);
@@ -115,46 +116,45 @@ void TagFieldEdit::setTagField(const QList<Tag *> &tags, TagParser::KnownField f
 TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) const
 {
     TagValue value;
-    switch(m_dataType) {
+    switch (m_dataType) {
     case TagDataType::Text:
     case TagDataType::TimeSpan:
     case TagDataType::DateTime:
-        switch(m_field) {
+        switch (m_field) {
         case KnownField::Genre:
-            if(m_comboBox) {
+            if (m_comboBox) {
                 value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
             }
             break;
         case KnownField::Lyrics:
-            if(m_plainTextEdit) {
+            if (m_plainTextEdit) {
                 value.assignText(Utility::qstringToString(m_plainTextEdit->toPlainText(), encoding), encoding);
             }
             break;
         default:
-            if(m_lineEdit) {
+            if (m_lineEdit) {
                 value.assignText(Utility::qstringToString(m_lineEdit->text(), encoding), encoding);
             }
         }
         break;
     case TagDataType::Integer:
-        if(m_spinBoxes.first && m_spinBoxes.first->value()) {
+        if (m_spinBoxes.first && m_spinBoxes.first->value()) {
             value.assignInteger(m_spinBoxes.first->value());
         }
         break;
     case TagDataType::PositionInSet:
-        if(m_spinBoxes.first && m_spinBoxes.second) {
+        if (m_spinBoxes.first && m_spinBoxes.second) {
             value.assignPosition(PositionInSet(m_spinBoxes.first->value(), m_spinBoxes.second->value()));
         }
         break;
     case TagDataType::StandardGenreIndex:
-        if(m_comboBox) {
+        if (m_comboBox) {
             value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
         }
         break;
-    default:
-        ;
+    default:;
     }
-    if(m_descriptionLineEdit && includeDescription) { // setup description line edit
+    if (m_descriptionLineEdit && includeDescription) { // setup description line edit
         value.setDescription(Utility::qstringToString(m_descriptionLineEdit->text(), encoding), encoding);
     }
     return value;
@@ -166,7 +166,7 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
 bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
     updateValue(value, previousValueHandling, false);
-    if(m_pictureSelection) {
+    if (m_pictureSelection) {
         m_pictureSelection->setValue(value, previousValueHandling);
     }
     return true;
@@ -177,8 +177,8 @@ bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previou
  */
 bool TagFieldEdit::hasDescription() const
 {
-    for(Tag *tag : tags()) {
-        if(tag->supportsDescription(m_field)) {
+    for (Tag *tag : tags()) {
+        if (tag->supportsDescription(m_field)) {
             return true;
         }
     }
@@ -190,22 +190,21 @@ bool TagFieldEdit::hasDescription() const
  */
 bool TagFieldEdit::canApply(KnownField field) const
 {
-    for(Tag *tag : tags()) {
-        switch(tag->type()) {
+    for (Tag *tag : tags()) {
+        switch (tag->type()) {
         case TagType::Id3v1Tag:
-            if(Settings::values().tagPocessing.id3.v1Usage == TagUsage::Never) {
+            if (Settings::values().tagPocessing.id3.v1Usage == TagUsage::Never) {
                 continue;
             }
             break;
         case TagType::Id3v2Tag:
-            if(Settings::values().tagPocessing.id3.v2Usage == TagUsage::Never) {
+            if (Settings::values().tagPocessing.id3.v2Usage == TagUsage::Never) {
                 continue;
             }
             break;
-        default:
-            ;
+        default:;
         }
-        if(tag->supportsField(field)) {
+        if (tag->supportsField(field)) {
             return true;
         }
     }
@@ -217,7 +216,7 @@ bool TagFieldEdit::canApply(KnownField field) const
  */
 void TagFieldEdit::setCoverButtonsHidden(bool hideCoverButtons)
 {
-    if(m_pictureSelection) {
+    if (m_pictureSelection) {
         m_pictureSelection->setCoverButtonsHidden(hideCoverButtons);
     }
 }
@@ -228,14 +227,14 @@ void TagFieldEdit::setCoverButtonsHidden(bool hideCoverButtons)
 TagDataType TagFieldEdit::determineDataType()
 {
     TagDataType proposedDataType = TagDataType::Undefined;
-    for(Tag *tag : tags()) {
+    for (Tag *tag : tags()) {
         TagDataType type = tag->proposedDataType(m_field);
-        if(proposedDataType == TagDataType::Undefined) {
+        if (proposedDataType == TagDataType::Undefined) {
             proposedDataType = type;
-        } else if((proposedDataType == TagDataType::PositionInSet && type == TagDataType::Integer)
-                  || (type == TagDataType::PositionInSet && proposedDataType == TagDataType::Integer)) {
+        } else if ((proposedDataType == TagDataType::PositionInSet && type == TagDataType::Integer)
+            || (type == TagDataType::PositionInSet && proposedDataType == TagDataType::Integer)) {
             proposedDataType = TagDataType::PositionInSet; // PositionInSet and Number can be considered as compatible
-        } else if(type == TagDataType::Undefined || type != proposedDataType) {
+        } else if (type == TagDataType::Undefined || type != proposedDataType) {
             return TagDataType::Undefined; // undefined or different (incompatible) types proposed
         }
     }
@@ -260,11 +259,11 @@ void TagFieldEdit::setupUi()
     qDeleteAll(m_widgets);
     m_widgets.clear();
     // setup widgets
-    switch(m_dataType) {
+    switch (m_dataType) {
     case TagDataType::Text:
     case TagDataType::TimeSpan:
     case TagDataType::DateTime:
-        switch(m_field) {
+        switch (m_field) {
         case KnownField::Genre:
             setupGenreComboBox();
             break;
@@ -294,8 +293,7 @@ void TagFieldEdit::setupUi()
         setupTypeNotSupportedLabel();
         ;
     }
-    if(m_dataType != TagDataType::Picture
-            && hasDescription()) { // setup description line edit
+    if (m_dataType != TagDataType::Picture && hasDescription()) { // setup description line edit
         setupDescriptionLineEdit();
     }
 }
@@ -337,200 +335,36 @@ ClearComboBox *TagFieldEdit::setupGenreComboBox()
 {
     m_comboBox = new ClearComboBox(this);
     m_comboBox->setEditable(true);
-    if(QLineEdit *lineEdit = m_comboBox->lineEdit()) {
+    if (QLineEdit *lineEdit = m_comboBox->lineEdit()) {
         lineEdit->setPlaceholderText(tr("empty"));
     }
     m_comboBox->addItems(QStringList()
-                         << QString()
-                         << tr("Blues")
-                         << tr("A capella")
-                         << tr("Abstract")
-                         << tr("Acid")
-                         << tr("Acid Jazz")
-                         << tr("Acid Punk")
-                         << tr("Acoustic")
-                         << tr("Alternative")
-                         << tr("Alternative Rock")
-                         << tr("Ambient")
-                         << tr("Anime")
-                         << tr("Art Rock")
-                         << tr("Audio Theatre")
-                         << tr("Audiobook")
-                         << tr("Avantgarde")
-                         << tr("Ballad")
-                         << tr("Baroque")
-                         << tr("Bass")
-                         << tr("Beat")
-                         << tr("Bebop")
-                         << tr("Bhangra")
-                         << tr("Big Band")
-                         << tr("Big Beat")
-                         << tr("Black Metal")
-                         << tr("Bluegrass")
-                         << tr("Booty Bass")
-                         << tr("Breakbeat")
-                         << tr("BritPop")
-                         << tr("Cabaret")
-                         << tr("Celtic")
-                         << tr("Chamber Music")
-                         << tr("Chanson")
-                         << tr("Chillout")
-                         << tr("Chorus")
-                         << tr("Christian Gangsta Rap")
-                         << tr("Christian Rap")
-                         << tr("Christian Rock")
-                         << tr("Classic Rock")
-                         << tr("Classical")
-                         << tr("Club")
-                         << tr("Club-House")
-                         << tr("Comedy")
-                         << tr("Contemporary Christian")
-                         << tr("Country")
-                         << tr("Crossover")
-                         << tr("Cult")
-                         << tr("Dance")
-                         << tr("Dance Hall")
-                         << tr("Darkwave")
-                         << tr("Death Metal")
-                         << tr("Disco")
-                         << tr("Downtempo")
-                         << tr("Dream")
-                         << tr("Drum & Bass")
-                         << tr("Drum Solo")
-                         << tr("Dub")
-                         << tr("Dubstep")
-                         << tr("Duet")
-                         << tr("Easy Listening")
-                         << tr("EBM")
-                         << tr("Eclectic")
-                         << tr("Electro")
-                         << tr("Electroclash")
-                         << tr("Electronic")
-                         << tr("Emo")
-                         << tr("Ethnic")
-                         << tr("Euro-House")
-                         << tr("Euro-Techno")
-                         << tr("Eurodance")
-                         << tr("Experimental")
-                         << tr("Fast Fusion")
-                         << tr("Folk")
-                         << tr("Folk-Rock")
-                         << tr("Folklore")
-                         << tr("Freestyle")
-                         << tr("Funk")
-                         << tr("Fusion")
-                         << tr("G-Funk")
-                         << tr("Game")
-                         << tr("Gangsta")
-                         << tr("Garage")
-                         << tr("Garage Rock")
-                         << tr("Global")
-                         << tr("Goa")
-                         << tr("Gospel")
-                         << tr("Gothic")
-                         << tr("Gothic Rock")
-                         << tr("Grunge")
-                         << tr("Hard Rock")
-                         << tr("Hardcore Techno")
-                         << tr("Heavy Metal")
-                         << tr("Hip-Hop")
-                         << tr("House")
-                         << tr("Humour")
-                         << tr("IDM")
-                         << tr("Illbient")
-                         << tr("Indie")
-                         << tr("Indie Rock")
-                         << tr("Industrial")
-                         << tr("Industro-Goth")
-                         << tr("Instrumental")
-                         << tr("Instrumental Pop")
-                         << tr("Instrumental Rock")
-                         << tr("Jam Band")
-                         << tr("Jazz")
-                         << tr("Jazz & Funk")
-                         << tr("Jpop")
-                         << tr("Jungle")
-                         << tr("Krautrock")
-                         << tr("Latin")
-                         << tr("Leftfield")
-                         << tr("Lo-Fi")
-                         << tr("Lounge")
-                         << tr("Math Rock")
-                         << tr("Meditative")
-                         << tr("Merengue")
-                         << tr("Metal")
-                         << tr("Musical")
-                         << tr("National Folk")
-                         << tr("Native US")
-                         << tr("Negerpunk")
-                         << tr("Neoclassical")
-                         << tr("Neue Deutsche Welle")
-                         << tr("New Age")
-                         << tr("New Romantic")
-                         << tr("New Wave")
-                         << tr("Noise")
-                         << tr("Nu-Breakz")
-                         << tr("Oldies")
-                         << tr("Opera")
-                         << tr("Podcast")
-                         << tr("Polka")
-                         << tr("Polsk Punk")
-                         << tr("Pop")
-                         << tr("Pop-Folk")
-                         << tr("Pop/Funk")
-                         << tr("Porn Groove")
-                         << tr("Post-Punk")
-                         << tr("Post-Rock")
-                         << tr("Power Ballad")
-                         << tr("Pranks")
-                         << tr("Primus")
-                         << tr("Progressive Rock")
-                         << tr("Psychedelic")
-                         << tr("Psychedelic Rock")
-                         << tr("Psytrance")
-                         << tr("Punk")
-                         << tr("Punk Rock")
-                         << tr("Rap")
-                         << tr("Rave")
-                         << tr("Reggae")
-                         << tr("Retro")
-                         << tr("Revival")
-                         << tr("Rhythmic Soul")
-                         << tr("Rock")
-                         << tr("Rock & Roll")
-                         << tr("Salsa")
-                         << tr("Samba")
-                         << tr("Satire")
-                         << tr("Shoegaze")
-                         << tr("Showtunes")
-                         << tr("Ska")
-                         << tr("Slow Jam")
-                         << tr("Slow Rock")
-                         << tr("Sonata")
-                         << tr("Soul")
-                         << tr("Sound Clip")
-                         << tr("Soundtrack")
-                         << tr("Southern Rock")
-                         << tr("Space")
-                         << tr("Space Rock")
-                         << tr("Speech")
-                         << tr("Swing")
-                         << tr("Symphonic Rock")
-                         << tr("Symphony")
-                         << tr("Synthpop")
-                         << tr("Tango")
-                         << tr("Techno")
-                         << tr("Techno-Industrial")
-                         << tr("Terror")
-                         << tr("Thrash Metal")
-                         << tr("Top 40")
-                         << tr("Trailer")
-                         << tr("Trance")
-                         << tr("Tribal")
-                         << tr("Trip-Hop")
-                         << tr("Trop Rock")
-                         << tr("Vocal")
-                         << tr("World Music"));
+        << QString() << tr("Blues") << tr("A capella") << tr("Abstract") << tr("Acid") << tr("Acid Jazz") << tr("Acid Punk") << tr("Acoustic")
+        << tr("Alternative") << tr("Alternative Rock") << tr("Ambient") << tr("Anime") << tr("Art Rock") << tr("Audio Theatre") << tr("Audiobook")
+        << tr("Avantgarde") << tr("Ballad") << tr("Baroque") << tr("Bass") << tr("Beat") << tr("Bebop") << tr("Bhangra") << tr("Big Band")
+        << tr("Big Beat") << tr("Black Metal") << tr("Bluegrass") << tr("Booty Bass") << tr("Breakbeat") << tr("BritPop") << tr("Cabaret")
+        << tr("Celtic") << tr("Chamber Music") << tr("Chanson") << tr("Chillout") << tr("Chorus") << tr("Christian Gangsta Rap")
+        << tr("Christian Rap") << tr("Christian Rock") << tr("Classic Rock") << tr("Classical") << tr("Club") << tr("Club-House") << tr("Comedy")
+        << tr("Contemporary Christian") << tr("Country") << tr("Crossover") << tr("Cult") << tr("Dance") << tr("Dance Hall") << tr("Darkwave")
+        << tr("Death Metal") << tr("Disco") << tr("Downtempo") << tr("Dream") << tr("Drum & Bass") << tr("Drum Solo") << tr("Dub") << tr("Dubstep")
+        << tr("Duet") << tr("Easy Listening") << tr("EBM") << tr("Eclectic") << tr("Electro") << tr("Electroclash") << tr("Electronic") << tr("Emo")
+        << tr("Ethnic") << tr("Euro-House") << tr("Euro-Techno") << tr("Eurodance") << tr("Experimental") << tr("Fast Fusion") << tr("Folk")
+        << tr("Folk-Rock") << tr("Folklore") << tr("Freestyle") << tr("Funk") << tr("Fusion") << tr("G-Funk") << tr("Game") << tr("Gangsta")
+        << tr("Garage") << tr("Garage Rock") << tr("Global") << tr("Goa") << tr("Gospel") << tr("Gothic") << tr("Gothic Rock") << tr("Grunge")
+        << tr("Hard Rock") << tr("Hardcore Techno") << tr("Heavy Metal") << tr("Hip-Hop") << tr("House") << tr("Humour") << tr("IDM")
+        << tr("Illbient") << tr("Indie") << tr("Indie Rock") << tr("Industrial") << tr("Industro-Goth") << tr("Instrumental")
+        << tr("Instrumental Pop") << tr("Instrumental Rock") << tr("Jam Band") << tr("Jazz") << tr("Jazz & Funk") << tr("Jpop") << tr("Jungle")
+        << tr("Krautrock") << tr("Latin") << tr("Leftfield") << tr("Lo-Fi") << tr("Lounge") << tr("Math Rock") << tr("Meditative") << tr("Merengue")
+        << tr("Metal") << tr("Musical") << tr("National Folk") << tr("Native US") << tr("Negerpunk") << tr("Neoclassical")
+        << tr("Neue Deutsche Welle") << tr("New Age") << tr("New Romantic") << tr("New Wave") << tr("Noise") << tr("Nu-Breakz") << tr("Oldies")
+        << tr("Opera") << tr("Podcast") << tr("Polka") << tr("Polsk Punk") << tr("Pop") << tr("Pop-Folk") << tr("Pop/Funk") << tr("Porn Groove")
+        << tr("Post-Punk") << tr("Post-Rock") << tr("Power Ballad") << tr("Pranks") << tr("Primus") << tr("Progressive Rock") << tr("Psychedelic")
+        << tr("Psychedelic Rock") << tr("Psytrance") << tr("Punk") << tr("Punk Rock") << tr("Rap") << tr("Rave") << tr("Reggae") << tr("Retro")
+        << tr("Revival") << tr("Rhythmic Soul") << tr("Rock") << tr("Rock & Roll") << tr("Salsa") << tr("Samba") << tr("Satire") << tr("Shoegaze")
+        << tr("Showtunes") << tr("Ska") << tr("Slow Jam") << tr("Slow Rock") << tr("Sonata") << tr("Soul") << tr("Sound Clip") << tr("Soundtrack")
+        << tr("Southern Rock") << tr("Space") << tr("Space Rock") << tr("Speech") << tr("Swing") << tr("Symphonic Rock") << tr("Symphony")
+        << tr("Synthpop") << tr("Tango") << tr("Techno") << tr("Techno-Industrial") << tr("Terror") << tr("Thrash Metal") << tr("Top 40")
+        << tr("Trailer") << tr("Trance") << tr("Tribal") << tr("Trip-Hop") << tr("Trop Rock") << tr("Vocal") << tr("World Music"));
     m_comboBox->setCurrentIndex(0);
     m_comboBox->setClearButtonEnabled(true);
     m_comboBox->insertCustomButton(0, setupRestoreButton());
@@ -662,12 +496,12 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
     QListIterator<Tag *> i(tags());
     i.toBack();
     bool pictureSelectionUpdated = false;
-    while(i.hasPrevious()) {
+    while (i.hasPrevious()) {
         Tag *tag = i.previous();
         const TagValue &value = tag->value(m_field);
-        if(!value.isEmpty()) {
+        if (!value.isEmpty()) {
             updateValue(value, previousValueHandling);
-            if(m_pictureSelection) {
+            if (m_pictureSelection) {
                 m_pictureSelection->setTagField(tag, m_field, previousValueHandling);
                 pictureSelectionUpdated = true;
             }
@@ -675,8 +509,8 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
         }
     }
     updateValue(TagValue::empty(), previousValueHandling);
-    if(m_pictureSelection && !pictureSelectionUpdated) {
-        if(m_tags->size()) {
+    if (m_pictureSelection && !pictureSelectionUpdated) {
+        if (m_tags->size()) {
             m_pictureSelection->setTagField(m_tags->last(), m_field, previousValueHandling);
         } else {
             m_pictureSelection->setTagField(nullptr, m_field, previousValueHandling);
@@ -692,12 +526,12 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
  */
 void TagFieldEdit::updateValue(Tag *tag, PreviousValueHandling previousValueHandling)
 {
-    if(tag) {
+    if (tag) {
         updateValue(tag->value(m_field), previousValueHandling);
     } else {
         updateValue(TagValue::empty(), previousValueHandling);
     }
-    if(m_pictureSelection) {
+    if (m_pictureSelection) {
         m_pictureSelection->setTagField(tag, m_field, previousValueHandling);
     }
 }
@@ -714,7 +548,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     bool conversionError = false;
     bool updated = false;
     concretizePreviousValueHandling(previousValueHandling);
-    if(m_lineEdit || m_comboBox || m_plainTextEdit) {
+    if (m_lineEdit || m_comboBox || m_plainTextEdit) {
         QString text;
         try {
             text = Utility::tagValueToQString(value);
@@ -722,40 +556,40 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             conversionError = true;
         }
         applyAutoCorrection(text);
-        if(previousValueHandling == PreviousValueHandling::Clear || !text.isEmpty()) {
-            if(m_lineEdit && (previousValueHandling != PreviousValueHandling::Keep || m_lineEdit->isCleared())) {
+        if (previousValueHandling == PreviousValueHandling::Clear || !text.isEmpty()) {
+            if (m_lineEdit && (previousValueHandling != PreviousValueHandling::Keep || m_lineEdit->isCleared())) {
                 m_lineEdit->setText(text);
                 updated = true;
             }
-            if(m_comboBox && (previousValueHandling != PreviousValueHandling::Keep || m_comboBox->isCleared())) {
+            if (m_comboBox && (previousValueHandling != PreviousValueHandling::Keep || m_comboBox->isCleared())) {
                 m_comboBox->setCurrentText(text);
                 updated = true;
             }
-            if(m_plainTextEdit && (previousValueHandling != PreviousValueHandling::Keep || m_plainTextEdit->isCleared())) {
+            if (m_plainTextEdit && (previousValueHandling != PreviousValueHandling::Keep || m_plainTextEdit->isCleared())) {
                 m_plainTextEdit->setPlainText(text);
                 updated = true;
             }
         }
     }
-    if(m_spinBoxes.first) {
-        if(m_spinBoxes.second) {
+    if (m_spinBoxes.first) {
+        if (m_spinBoxes.second) {
             PositionInSet pos;
             try {
                 pos = value.toPositionInSet();
-            } catch(const ConversionException &) {
+            } catch (const ConversionException &) {
                 conversionError = true;
             }
-            if(previousValueHandling == PreviousValueHandling::Clear || pos.position()) {
-                if(previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
+            if (previousValueHandling == PreviousValueHandling::Clear || pos.position()) {
+                if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
                     m_spinBoxes.first->setValue(pos.position());
                     updated = true;
                 }
-            } else if(previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
+            } else if (previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
                 m_spinBoxes.first->setValue(m_spinBoxes.first->value() + 1);
                 updated = true;
             }
-            if(previousValueHandling == PreviousValueHandling::Clear || pos.total()) {
-                if(previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.second->isCleared()) {
+            if (previousValueHandling == PreviousValueHandling::Clear || pos.total()) {
+                if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.second->isCleared()) {
                     m_spinBoxes.second->setValue(pos.total());
                     updated = true;
                 }
@@ -764,56 +598,56 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             int num;
             try {
                 num = value.toInteger();
-            } catch(const ConversionException &) {
+            } catch (const ConversionException &) {
                 conversionError = true;
                 num = 0;
             }
-            if(previousValueHandling == PreviousValueHandling::Clear || num) {
-                if(previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
+            if (previousValueHandling == PreviousValueHandling::Clear || num) {
+                if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
                     m_spinBoxes.first->setValue(num);
                     updated = true;
                 }
-            } else if(previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
+            } else if (previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
                 m_spinBoxes.first->setValue(m_spinBoxes.first->value() + 1);
                 updated = true;
             }
         }
     }
-    if(m_descriptionLineEdit && (previousValueHandling != PreviousValueHandling::Keep || m_descriptionLineEdit->isCleared())) {
+    if (m_descriptionLineEdit && (previousValueHandling != PreviousValueHandling::Keep || m_descriptionLineEdit->isCleared())) {
         try {
             QString desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
             applyAutoCorrection(desc);
             m_descriptionLineEdit->setText(desc);
-        } catch(const ConversionException &) {
+        } catch (const ConversionException &) {
             conversionError = true;
             m_descriptionLineEdit->clear();
         }
     }
-    if(updateRestoreButton && m_restoreButton) {
+    if (updateRestoreButton && m_restoreButton) {
         m_restoreButton->setVisible((!updated && m_restoreButton->isVisible()) || m_tags->size() > 1);
     }
-    const initializer_list<ButtonOverlay *> widgets = {m_lineEdit, m_comboBox, m_spinBoxes.first, m_spinBoxes.second};
+    const initializer_list<ButtonOverlay *> widgets = { m_lineEdit, m_comboBox, m_spinBoxes.first, m_spinBoxes.second };
     bool canApply = this->canApply(m_field);
-    if(conversionError || !canApply) {
+    if (conversionError || !canApply) {
         const QPixmap pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")).pixmap(16));
         QString text;
-        if(conversionError) {
+        if (conversionError) {
             text = tr("The value of this field could not be read from the file because it couldn't be converted properly.");
-            if(!canApply) {
+            if (!canApply) {
                 text += QChar('\n');
             }
         }
-        if(!canApply) {
+        if (!canApply) {
             text += tr("The field can not be applied when saving the file and will be lost.");
         }
-        for(ButtonOverlay *overlay : widgets) {
-            if(overlay) {
+        for (ButtonOverlay *overlay : widgets) {
+            if (overlay) {
                 overlay->enableInfoButton(pixmap, text);
             }
         }
     } else {
-        for(ButtonOverlay *overlay : widgets) {
-            if(overlay) {
+        for (ButtonOverlay *overlay : widgets) {
+            if (overlay) {
                 overlay->disableInfoButton();
             }
         }
@@ -825,9 +659,11 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
  */
 IconButton *TagFieldEdit::setupRestoreButton()
 {
-    if(!m_restoreButton) { // setup restore button
+    if (!m_restoreButton) { // setup restore button
         m_restoreButton = new IconButton(this);
-        m_restoreButton->setPixmap(/*QIcon::fromTheme(QStringLiteral("edit-undo"), */QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-menu.png")/*)*/).pixmap(16));
+        m_restoreButton->setPixmap(
+            /*QIcon::fromTheme(QStringLiteral("edit-undo"), */ QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-menu.png") /*)*/)
+                .pixmap(16));
         m_restoreButton->setToolTip(tr("Restore value as it is currently present in the file"));
         connect(m_restoreButton, &IconButton::clicked, this, &TagFieldEdit::handleRestoreButtonClicked);
         // ownership might be transfered to a child widget/layout
@@ -841,7 +677,7 @@ IconButton *TagFieldEdit::setupRestoreButton()
  */
 void TagFieldEdit::showRestoreButton()
 {
-    if(m_restoreButton) {
+    if (m_restoreButton) {
         m_restoreButton->setVisible(m_tags->size());
     }
 }
@@ -853,19 +689,19 @@ void TagFieldEdit::applyAutoCorrection(QString &textValue)
 {
     const auto &settings = Settings::values().editor.autoCompletition;
     auto &fields = settings.fields.items();
-    auto i = find_if(fields.constBegin(), fields.constEnd(), [this] (const ChecklistItem &item) {
+    auto i = find_if(fields.constBegin(), fields.constEnd(), [this](const ChecklistItem &item) {
         bool ok;
         return (item.id().toInt(&ok) == static_cast<int>(this->field())) && ok;
     });
     // if current field is in the list of auto correction fields and auto correction should be applied
-    if(i != fields.constEnd() && i->isChecked()) {
-        if(settings.trimWhitespaces) {
+    if (i != fields.constEnd() && i->isChecked()) {
+        if (settings.trimWhitespaces) {
             textValue = textValue.trimmed();
         }
-        if(settings.fixUmlauts) {
+        if (settings.fixUmlauts) {
             textValue = Utility::fixUmlauts(textValue);
         }
-        if(settings.formatNames) {
+        if (settings.formatNames) {
             textValue = Utility::formatName(textValue);
         }
     }
@@ -876,9 +712,9 @@ void TagFieldEdit::applyAutoCorrection(QString &textValue)
  */
 void TagFieldEdit::concretizePreviousValueHandling(PreviousValueHandling &previousValueHandling)
 {
-    switch(previousValueHandling) {
+    switch (previousValueHandling) {
     case PreviousValueHandling::Auto:
-        switch(m_field) {
+        switch (m_field) {
         // these differ for each song -> always clear previous value
         case KnownField::Title:
         case KnownField::Lyrics:
@@ -892,8 +728,7 @@ void TagFieldEdit::concretizePreviousValueHandling(PreviousValueHandling &previo
         default:
             previousValueHandling = PreviousValueHandling::Update;
         }
-    default:
-        ;
+    default:;
     }
 }
 
@@ -910,25 +745,25 @@ void TagFieldEdit::restore()
  */
 void TagFieldEdit::clear()
 {
-    if(m_lineEdit) {
+    if (m_lineEdit) {
         m_lineEdit->clear();
     }
-    if(m_comboBox) {
+    if (m_comboBox) {
         m_comboBox->setCurrentText(QString());
     }
-    if(m_plainTextEdit) {
+    if (m_plainTextEdit) {
         m_plainTextEdit->clear();
     }
-    if(m_spinBoxes.first) {
+    if (m_spinBoxes.first) {
         m_spinBoxes.first->setValue(0);
     }
-    if(m_spinBoxes.second) {
+    if (m_spinBoxes.second) {
         m_spinBoxes.second->setValue(0);
     }
-    if(m_pictureSelection) {
+    if (m_pictureSelection) {
         m_pictureSelection->clear();
     }
-    if(m_descriptionLineEdit) {
+    if (m_descriptionLineEdit) {
         m_descriptionLineEdit->clear();
     }
 }
@@ -938,14 +773,14 @@ void TagFieldEdit::clear()
  */
 void TagFieldEdit::apply()
 {
-    for(Tag *tag : *m_tags) {
-        if(m_dataType == TagDataType::Picture) {
-            if(m_pictureSelection) {
+    for (Tag *tag : *m_tags) {
+        if (m_dataType == TagDataType::Picture) {
+            if (m_pictureSelection) {
                 m_pictureSelection->apply();
             }
         } else {
             TagTextEncoding encoding = Settings::values().tagPocessing.preferredEncoding;
-            if(!tag->canEncodingBeUsed(encoding)) {
+            if (!tag->canEncodingBeUsed(encoding)) {
                 encoding = tag->proposedTextEncoding();
             }
             tag->setValue(m_field, value(encoding, tag->supportsDescription(m_field)));
@@ -958,28 +793,27 @@ void TagFieldEdit::apply()
  */
 bool TagFieldEdit::eventFilter(QObject *obj, QEvent *event)
 {
-    switch(event->type()) {
+    switch (event->type()) {
     case QEvent::KeyRelease: {
         auto *keyEvent = static_cast<QKeyEvent *>(event);
         int key = keyEvent->key();
-        switch(key) {
+        switch (key) {
         case Qt::Key_Return:
             emit returnPressed();
             break;
         case Qt::Key_Shift:
-            if(keyEvent->modifiers() & Qt::ControlModifier) {
-                if(QLineEdit *le = qobject_cast<QLineEdit *>(obj)) {
+            if (keyEvent->modifiers() & Qt::ControlModifier) {
+                if (QLineEdit *le = qobject_cast<QLineEdit *>(obj)) {
                     le->setText(Utility::formatName(le->text()));
                     return true;
                 }
             }
             break;
-        default:
-            ;
+        default:;
         }
         break;
-    } default:
-        ;
+    }
+    default:;
     }
     return QWidget::eventFilter(obj, event);
 }
@@ -989,13 +823,15 @@ bool TagFieldEdit::eventFilter(QObject *obj, QEvent *event)
  */
 void TagFieldEdit::handleRestoreButtonClicked()
 {
-    if(tags().size()) {
+    if (tags().size()) {
         QMenu menu;
         int i = 0;
-        for(Tag *tag : tags()) {
+        for (Tag *tag : tags()) {
             ++i;
             QAction *action = menu.addAction(tr("restore to value from %1 (%2)").arg(tag->typeName()).arg(i));
-            connect(action, &QAction::triggered, std::bind(static_cast<void (TagFieldEdit::*) (Tag *, PreviousValueHandling)>(&TagFieldEdit::updateValue), this, tag, PreviousValueHandling::Clear));
+            connect(action, &QAction::triggered,
+                std::bind(static_cast<void (TagFieldEdit::*)(Tag *, PreviousValueHandling)>(&TagFieldEdit::updateValue), this, tag,
+                    PreviousValueHandling::Clear));
         }
         menu.exec(QCursor::pos());
     } else {
@@ -1008,9 +844,9 @@ void TagFieldEdit::handleRestoreButtonClicked()
  */
 void TagFieldEdit::handleRestoreButtonDestroyed(QObject *obj)
 {
-    if(obj == m_restoreButton) {
+    if (obj == m_restoreButton) {
         m_restoreButton = nullptr;
     }
 }
 
-}
+} // namespace QtGui

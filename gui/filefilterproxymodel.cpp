@@ -4,9 +4,9 @@
 
 namespace QtGui {
 
-FileFilterProxyModel::FileFilterProxyModel(QObject *parent) :
-    QSortFilterProxyModel(parent),
-    m_filterEnabled(true)
+FileFilterProxyModel::FileFilterProxyModel(QObject *parent)
+    : QSortFilterProxyModel(parent)
+    , m_filterEnabled(true)
 {
     setDynamicSortFilter(false);
 }
@@ -18,7 +18,7 @@ bool FileFilterProxyModel::isFilterEnabled() const
 
 void FileFilterProxyModel::setFilterEnabled(bool value)
 {
-    if(m_filterEnabled != value) {
+    if (m_filterEnabled != value) {
         beginResetModel();
         m_filterEnabled = value;
         endResetModel();
@@ -42,14 +42,13 @@ bool FileFilterProxyModel::isFileAccepted(const QString &path) const
 
 bool FileFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    if(!m_filterEnabled) {
+    if (!m_filterEnabled) {
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
     }
     const QModelIndex index0 = sourceModel()->index(sourceRow, 0, sourceParent);
     QFileSystemModel *fileModel = qobject_cast<QFileSystemModel *>(sourceModel());
-    return fileModel
-            ? (!m_extensionsToBeFiltered.contains(fileModel->fileInfo(index0).suffix()))
-            : QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+    return fileModel ? (!m_extensionsToBeFiltered.contains(fileModel->fileInfo(index0).suffix()))
+                     : QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
 }
 
 void FileFilterProxyModel::sort(int column, Qt::SortOrder order)
@@ -57,4 +56,4 @@ void FileFilterProxyModel::sort(int column, Qt::SortOrder order)
     sourceModel()->sort(column, order);
 }
 
-}
+} // namespace QtGui

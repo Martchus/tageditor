@@ -1,17 +1,17 @@
 #include "./tagedit.h"
 #include "./tagfieldedit.h"
 
-#include "../application/settings.h"
 #include "../application/knownfieldmodel.h"
+#include "../application/settings.h"
 
 #include <tagparser/tag.h>
 
 #include <c++utilities/conversion/stringconversion.h>
 
-#include <QSplitter>
 #include <QFormLayout>
-#include <QVBoxLayout>
 #include <QLabel>
+#include <QSplitter>
+#include <QVBoxLayout>
 
 using namespace std;
 using namespace std::placeholders;
@@ -28,8 +28,8 @@ namespace QtGui {
 /*!
  * \brief Constructs a new TagEdit object.
  */
-TagEdit::TagEdit(QWidget *parent) :
-    QWidget(parent)
+TagEdit::TagEdit(QWidget *parent)
+    : QWidget(parent)
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(0);
@@ -57,7 +57,7 @@ TagEdit::TagEdit(QWidget *parent) :
  */
 TagValue TagEdit::value(KnownField field, TagTextEncoding encoding) const
 {
-    if(const TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
+    if (const TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
         return edit->value(encoding, false);
     } else {
         return TagValue();
@@ -72,10 +72,10 @@ TagValue TagEdit::value(KnownField field, TagTextEncoding encoding) const
 void TagEdit::setTag(Tag *tag, bool updateUi)
 {
     m_tags.clear();
-    if(tag) {
+    if (tag) {
         m_tags << tag;
     }
-    if(updateUi) {
+    if (updateUi) {
         setupUi();
     } else {
         assignTags();
@@ -90,7 +90,7 @@ void TagEdit::setTag(Tag *tag, bool updateUi)
 void TagEdit::setTags(const QList<Tag *> &tags, bool updateUi)
 {
     m_tags = tags;
-    if(updateUi) {
+    if (updateUi) {
         setupUi();
     } else {
         assignTags();
@@ -102,7 +102,7 @@ void TagEdit::setTags(const QList<Tag *> &tags, bool updateUi)
  */
 bool TagEdit::setValue(KnownField field, const TagParser::TagValue &value, PreviousValueHandling previousValueHandling)
 {
-    if(TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
+    if (TagFieldEdit *edit = m_widgets.value(field, nullptr)) {
         return edit->setValue(value, previousValueHandling);
     } else {
         return false;
@@ -114,8 +114,8 @@ bool TagEdit::setValue(KnownField field, const TagParser::TagValue &value, Previ
  */
 bool TagEdit::hasField(KnownField field) const
 {
-    for(Tag *tag : m_tags) {
-        if(tag->supportsField(field)) {
+    for (Tag *tag : m_tags) {
+        if (tag->supportsField(field)) {
             return true;
         }
     }
@@ -129,24 +129,24 @@ bool TagEdit::hasField(KnownField field) const
  */
 QString TagEdit::generateLabel() const
 {
-    if(!m_tags.isEmpty()) {
+    if (!m_tags.isEmpty()) {
         const TagTarget &target = m_tags.at(0)->target();
         bool differentTargets = false, haveMatroskaTags = false;
         QStringList tagNames;
         tagNames.reserve(m_tags.size());
-        for(const Tag *tag : m_tags) {
+        for (const Tag *tag : m_tags) {
             tagNames << QString::fromUtf8(tag->typeName());
-            if(!differentTargets && !(target == tag->target())) {
+            if (!differentTargets && !(target == tag->target())) {
                 differentTargets = true;
             }
-            if(tag->type() == TagType::MatroskaTag) {
+            if (tag->type() == TagType::MatroskaTag) {
                 haveMatroskaTags = true;
             }
         }
         QString res = tagNames.join(QStringLiteral(", "));
-        if(differentTargets) {
+        if (differentTargets) {
             res.append(tr(" with different targets"));
-        } else if(haveMatroskaTags || !target.isEmpty()) {
+        } else if (haveMatroskaTags || !target.isEmpty()) {
             res.append(tr(" targeting %1").arg(QString::fromUtf8(m_tags.front()->targetString().c_str())));
         }
         return res;
@@ -159,7 +159,7 @@ QString TagEdit::generateLabel() const
  */
 void TagEdit::clear()
 {
-    for(TagFieldEdit *edit : m_widgets) {
+    for (TagFieldEdit *edit : m_widgets) {
         edit->clear();
     }
 }
@@ -169,7 +169,7 @@ void TagEdit::clear()
  */
 void TagEdit::restore()
 {
-    for(TagFieldEdit *edit : m_widgets) {
+    for (TagFieldEdit *edit : m_widgets) {
         edit->restore();
     }
 }
@@ -179,18 +179,17 @@ void TagEdit::restore()
  */
 void TagEdit::apply()
 {
-    switch(Settings::values().tagPocessing.unsupportedFieldHandling) {
+    switch (Settings::values().tagPocessing.unsupportedFieldHandling) {
     case Settings::UnsupportedFieldHandling::Discard:
         // remove all old fields of all tags to discard
         // all unsupported values
-        for(Tag *tag : m_tags) {
+        for (Tag *tag : m_tags) {
             tag->removeAllFields();
         }
         break;
-    default:
-        ;
+    default:;
     }
-    for(TagFieldEdit *edit : m_widgets) {
+    for (TagFieldEdit *edit : m_widgets) {
         edit->apply();
     }
 }
@@ -204,7 +203,7 @@ void TagEdit::apply()
 void TagEdit::invalidate()
 {
     // remove current widgets
-    for(QWidget *edit : m_widgets) {
+    for (QWidget *edit : m_widgets) {
         removeEdit(edit);
         edit->deleteLater();
     }
@@ -218,7 +217,7 @@ void TagEdit::invalidate()
  */
 void TagEdit::setCoverButtonsHidden(bool hideCoverButtons)
 {
-    for(auto i = m_widgets.begin(), end = m_widgets.end(); i != end; ++i) {
+    for (auto i = m_widgets.begin(), end = m_widgets.end(); i != end; ++i) {
         i.value()->setCoverButtonsHidden(hideCoverButtons);
     }
 }
@@ -229,9 +228,9 @@ void TagEdit::setCoverButtonsHidden(bool hideCoverButtons)
 void TagEdit::setupUi()
 {
     setUpdatesEnabled(false);
-    if(!m_tags.size()) {
+    if (!m_tags.size()) {
         // there are no tags assigned -> remove all editing controls
-        for(QWidget *edit : m_widgets) {
+        for (QWidget *edit : m_widgets) {
             removeEdit(edit);
             edit->deleteLater();
         }
@@ -241,20 +240,21 @@ void TagEdit::setupUi()
         // setup editing controls
         TagFieldEdit *edit = nullptr;
         int rowOverall = 0, rowLeft = 0, rowRight = 0;
-        for(const auto &item : Settings::values().editor.fields.items()) {
+        for (const auto &item : Settings::values().editor.fields.items()) {
             KnownField field = static_cast<KnownField>(item.id().toInt());
-            if(item.isChecked() && hasField(field)) {
+            if (item.isChecked() && hasField(field)) {
                 // the field is not disabled and the field is supported by at least one of the assigned tags
                 edit = m_widgets.value(field, nullptr);
-                if(edit) {
+                if (edit) {
                     // we have already an edit for the field -> try to recycle it
                     // the order might have changed
                     int prevIndex; // stores the previous index (NOT row)
-                    switch(field) {
-                    case KnownField::Cover: case KnownField::Lyrics:
+                    switch (field) {
+                    case KnownField::Cover:
+                    case KnownField::Lyrics:
                         // these fields are shown at the right side
                         prevIndex = m_layoutRight->indexOf(edit);
-                        if(prevIndex > 0 && (rowRight * 2 + 1) != prevIndex) {
+                        if (prevIndex > 0 && (rowRight * 2 + 1) != prevIndex) {
                             QLayoutItem *item1 = m_layoutRight->itemAt(prevIndex - 1);
                             QLayoutItem *item2 = m_layoutRight->itemAt(prevIndex);
                             m_layoutRight->removeItem(item1);
@@ -266,7 +266,7 @@ void TagEdit::setupUi()
                     default:
                         // the other fields are shown at the left side
                         prevIndex = m_layoutLeft->indexOf(edit);
-                        if(prevIndex > 0 && (rowLeft * 2 + 1) != prevIndex) {
+                        if (prevIndex > 0 && (rowLeft * 2 + 1) != prevIndex) {
                             QLayoutItem *item1 = m_layoutLeft->itemAt(prevIndex - 1);
                             QLayoutItem *item2 = m_layoutLeft->itemAt(prevIndex);
                             QWidget *label = item1->widget();
@@ -283,8 +283,9 @@ void TagEdit::setupUi()
                     // we need to create a new edit for the field
                     edit = new TagFieldEdit(m_tags, field, this);
                     connect(edit, &TagFieldEdit::returnPressed, this, &TagEdit::returnPressed);
-                    switch(field) {
-                    case KnownField::Cover: case KnownField::Lyrics:
+                    switch (field) {
+                    case KnownField::Cover:
+                    case KnownField::Lyrics:
                         // editing widgets for these fields will be show at the right side (m_layoutRight)
                         m_layoutRight->insertWidget(rowRight * 2, new QLabel(item.label(), this));
                         edit->setContentsMargins(10, 0, 0, 0);
@@ -299,7 +300,7 @@ void TagEdit::setupUi()
                 // update the current position
                 // the position is required to keep the order of Settings::fieldModel().fields()
                 ++rowOverall;
-                switch(field) {
+                switch (field) {
                 case KnownField::Cover:
                 case KnownField::Lyrics:
                     ++rowRight;
@@ -309,7 +310,7 @@ void TagEdit::setupUi()
                 }
             } else {
                 // the field is either disabled or it is not supported by at least one of the assigned tags
-                if((edit = m_widgets.value(field))) {
+                if ((edit = m_widgets.value(field))) {
                     m_widgets.remove(field);
                     removeEdit(edit);
                     edit->deleteLater();
@@ -327,14 +328,14 @@ void TagEdit::removeEdit(QWidget *edit)
 {
     // delete label of the widget (if present) as well
     // the left layout might contain the label
-    if(QWidget *label = m_layoutLeft->labelForField(edit)) {
+    if (QWidget *label = m_layoutLeft->labelForField(edit)) {
         label->deleteLater();
     }
     // or the right layout might contain the label
     int i = m_layoutRight->indexOf(edit) - 1;
-    if(i >= 0) {
-        if(QLayoutItem *item = m_layoutRight->itemAt(i)) {
-            if(item->widget()) {
+    if (i >= 0) {
+        if (QLayoutItem *item = m_layoutRight->itemAt(i)) {
+            if (item->widget()) {
                 item->widget()->deleteLater();
                 m_layoutRight->removeWidget(item->widget());
             }
@@ -347,9 +348,9 @@ void TagEdit::removeEdit(QWidget *edit)
  */
 void TagEdit::assignTags()
 {
-    for(TagFieldEdit *edit : m_widgets) {
+    for (TagFieldEdit *edit : m_widgets) {
         edit->setTagField(m_tags, edit->field(), m_previousValueHandling, true);
     }
 }
 
-}
+} // namespace QtGui

@@ -8,18 +8,13 @@
 namespace TagParser {
 class AbstractContainer;
 class AbstractAttachment;
-}
+} // namespace TagParser
 
 namespace Cli {
 
-enum class AttachmentAction {
-    Add,
-    Update,
-    Remove
-};
+enum class AttachmentAction { Add, Update, Remove };
 
-class AttachmentInfo
-{
+class AttachmentInfo {
 public:
     AttachmentInfo();
     void parseDenotation(const char *denotation);
@@ -37,16 +32,17 @@ public:
     const char *desc;
 };
 
-inline AttachmentInfo::AttachmentInfo() :
-    action(AttachmentAction::Add),
-    id(0),
-    hasId(false),
-    path(nullptr),
-    name(nullptr),
-    mime(nullptr),
-    desc(nullptr)
-{}
-
+inline AttachmentInfo::AttachmentInfo()
+    : action(AttachmentAction::Add)
+    , id(0)
+    , hasId(false)
+    , path(nullptr)
+    , name(nullptr)
+    , mime(nullptr)
+    , desc(nullptr)
+{
 }
+
+} // namespace Cli
 
 #endif // CLI_ATTACHMENT_INFO

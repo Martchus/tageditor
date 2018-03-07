@@ -11,18 +11,18 @@ using namespace ConversionUtilities;
 
 namespace QtGui {
 
-AttachmentItem::AttachmentItem(AbstractAttachment *attachment, bool activated, const QString &location) :
-    m_attachment(attachment),
-    m_location(location)
+AttachmentItem::AttachmentItem(AbstractAttachment *attachment, bool activated, const QString &location)
+    : m_attachment(attachment)
+    , m_location(location)
 {
     revert();
     m_activated = activated;
-    if(m_attachment->data()) {
+    if (m_attachment->data()) {
         m_size = QString::fromStdString(dataSizeToString(attachment->data()->size()));
     } else {
         m_size = QApplication::translate("AttachmentItem", "n/a");
     }
-    if(m_location.isEmpty()) {
+    if (m_location.isEmpty()) {
         m_location = QApplication::translate("AttachmentItem", "currently attached");
     }
 }
@@ -103,21 +103,23 @@ void AttachmentItem::submit()
     m_attachment->setIgnored(!m_activated);
 }
 
-AttachmentsModel::AttachmentsModel(QObject *parent) :
-    QAbstractTableModel(parent)
-{}
+AttachmentsModel::AttachmentsModel(QObject *parent)
+    : QAbstractTableModel(parent)
+{
+}
 
 AttachmentsModel::~AttachmentsModel()
-{}
+{
+}
 
 QVariant AttachmentsModel::data(const QModelIndex &index, int role) const
 {
-    if(index.isValid() && index.row() < m_attachments.size()) {
+    if (index.isValid() && index.row() < m_attachments.size()) {
         const auto &item = m_attachments.at(index.row());
-        switch(role) {
+        switch (role) {
         case Qt::DisplayRole:
         case Qt::EditRole:
-            switch(index.column()) {
+            switch (index.column()) {
             case 0:
                 return item.name();
             case 1:
@@ -128,19 +130,16 @@ QVariant AttachmentsModel::data(const QModelIndex &index, int role) const
                 return item.size();
             case 4:
                 return item.location();
-            default:
-                ;
+            default:;
             }
             break;
         case Qt::CheckStateRole:
-            switch(index.column()) {
+            switch (index.column()) {
             case 0:
                 return QVariant(static_cast<int>(item.isActivated() ? Qt::Checked : Qt::Unchecked));
-            default:
-                ;
+            default:;
             }
-        default:
-            ;
+        default:;
         }
     }
     return QVariant();
@@ -148,11 +147,11 @@ QVariant AttachmentsModel::data(const QModelIndex &index, int role) const
 
 bool AttachmentsModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if(index.isValid() && index.row() < m_attachments.size()) {
+    if (index.isValid() && index.row() < m_attachments.size()) {
         auto &item = m_attachments[index.row()];
-        switch(role) {
+        switch (role) {
         case Qt::EditRole:
-            switch(index.column()) {
+            switch (index.column()) {
             case 0:
                 item.setName(value.toString());
                 emit dataChanged(index, index, QVector<int>() << role);
@@ -165,22 +164,19 @@ bool AttachmentsModel::setData(const QModelIndex &index, const QVariant &value, 
                 item.setMimeType(value.toString());
                 emit dataChanged(index, index, QVector<int>() << role);
                 return true;
-            default:
-                ;
+            default:;
             }
             break;
         case Qt::CheckStateRole:
-            switch(index.column()) {
+            switch (index.column()) {
             case 0:
                 item.setActivated(value.toInt() == Qt::Checked);
                 emit dataChanged(index, index, QVector<int>() << role);
                 return true;
-            default:
-                ;
+            default:;
             }
             break;
-        default:
-            ;
+        default:;
         }
     }
     return false;
@@ -189,16 +185,15 @@ bool AttachmentsModel::setData(const QModelIndex &index, const QVariant &value, 
 Qt::ItemFlags AttachmentsModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = Qt::ItemNeverHasChildren | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-    if(index.isValid()) {
-        switch(index.column()) {
+    if (index.isValid()) {
+        switch (index.column()) {
         case 0:
             flags |= Qt::ItemIsUserCheckable;
         case 1:
         case 2:
             flags |= Qt::ItemIsEditable;
             break;
-        default:
-            ;
+        default:;
         }
     }
     return flags;
@@ -206,11 +201,11 @@ Qt::ItemFlags AttachmentsModel::flags(const QModelIndex &index) const
 
 QVariant AttachmentsModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    switch(orientation) {
+    switch (orientation) {
     case Qt::Horizontal:
-        switch(role) {
+        switch (role) {
         case Qt::DisplayRole:
-            switch(section) {
+            switch (section) {
             case 0:
                 return tr("Name");
             case 1:
@@ -221,23 +216,20 @@ QVariant AttachmentsModel::headerData(int section, Qt::Orientation orientation, 
                 return tr("Size");
             case 4:
                 return tr("Location");
-            default:
-                ;
+            default:;
             }
             break;
-        default:
-            ;
+        default:;
         }
         break;
-    default:
-        ;
+    default:;
     }
     return QVariant();
 }
 
 int AttachmentsModel::rowCount(const QModelIndex &parent) const
 {
-    if(parent.isValid()) {
+    if (parent.isValid()) {
         return 0;
     } else {
         return m_attachments.size();
@@ -246,7 +238,7 @@ int AttachmentsModel::rowCount(const QModelIndex &parent) const
 
 int AttachmentsModel::columnCount(const QModelIndex &parent) const
 {
-    if(parent.isValid()) {
+    if (parent.isValid()) {
         return 0;
     } else {
         return 5;
@@ -255,7 +247,7 @@ int AttachmentsModel::columnCount(const QModelIndex &parent) const
 
 void AttachmentsModel::revert()
 {
-    for(auto &item : m_attachments) {
+    for (auto &item : m_attachments) {
         item.revert();
     }
     emit dataChanged(index(0, 0), index(m_attachments.size() - 1, 0), QVector<int>() << Qt::CheckStateRole);
@@ -263,7 +255,7 @@ void AttachmentsModel::revert()
 
 bool AttachmentsModel::submit()
 {
-    for(auto &item : m_attachments) {
+    for (auto &item : m_attachments) {
         item.submit();
     }
     return true;
@@ -271,8 +263,8 @@ bool AttachmentsModel::submit()
 
 void AttachmentsModel::repealSelection()
 {
-    if(!m_attachments.isEmpty()) {
-        for(auto &item : m_attachments) {
+    if (!m_attachments.isEmpty()) {
+        for (auto &item : m_attachments) {
             item.setActivated(false);
         }
         emit dataChanged(index(0, 0), index(m_attachments.size() - 1, 0), QVector<int>() << Qt::CheckStateRole);
@@ -281,7 +273,7 @@ void AttachmentsModel::repealSelection()
 
 AbstractAttachment *AttachmentsModel::attachment(const QModelIndex &index)
 {
-    if(index.isValid() && index.row() < m_attachments.size()) {
+    if (index.isValid() && index.row() < m_attachments.size()) {
         return m_attachments[index.row()].attachment();
     }
     return nullptr;
@@ -289,7 +281,7 @@ AbstractAttachment *AttachmentsModel::attachment(const QModelIndex &index)
 
 void AttachmentsModel::addAttachment(int row, AbstractAttachment *attachment, bool activated, const QString &location)
 {
-    if(row < 0 || row > m_attachments.size()) {
+    if (row < 0 || row > m_attachments.size()) {
         row = m_attachments.size();
     }
     beginInsertRows(QModelIndex(), row, row);
@@ -302,7 +294,7 @@ void AttachmentsModel::setAttachments(const QList<AbstractAttachment *> &attachm
     beginResetModel();
     m_attachments.clear();
     m_attachments.reserve(attachments.size());
-    for(auto *attachment : attachments) {
+    for (auto *attachment : attachments) {
         m_attachments << AttachmentItem(attachment, activated, location);
     }
     endResetModel();
@@ -310,13 +302,11 @@ void AttachmentsModel::setAttachments(const QList<AbstractAttachment *> &attachm
 
 void AttachmentsModel::removeAttachments(int firstRow, int lastRow)
 {
-    if(firstRow <= lastRow
-            && firstRow >= 0 && firstRow < m_attachments.size()
-            && lastRow >= 0 && lastRow < m_attachments.size()) {
+    if (firstRow <= lastRow && firstRow >= 0 && firstRow < m_attachments.size() && lastRow >= 0 && lastRow < m_attachments.size()) {
         beginRemoveRows(QModelIndex(), firstRow, lastRow);
         m_attachments.erase(m_attachments.begin() + firstRow, m_attachments.end() + lastRow);
         endRemoveRows();
     }
 }
 
-}
+} // namespace QtGui

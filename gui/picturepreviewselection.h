@@ -19,7 +19,7 @@ namespace TagParser {
 class Tag;
 class TagValue;
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
-}
+} // namespace TagParser
 
 namespace QtGui {
 
@@ -29,14 +29,14 @@ namespace Ui {
 class PicturePreviewSelection;
 }
 
-class PicturePreviewSelection : public QWidget
-{
+class PicturePreviewSelection : public QWidget {
     Q_OBJECT
 
 public:
-    explicit PicturePreviewSelection(TagParser::Tag *tag = nullptr, TagParser::KnownField field = TagParser::KnownField::Invalid, QWidget *parent = nullptr);
+    explicit PicturePreviewSelection(
+        TagParser::Tag *tag = nullptr, TagParser::KnownField field = TagParser::KnownField::Invalid, QWidget *parent = nullptr);
     ~PicturePreviewSelection();
-    
+
     TagParser::Tag *tag() const;
     TagParser::KnownField field() const;
 
@@ -115,6 +115,6 @@ inline void PicturePreviewSelection::setTagField(TagParser::Tag *tag, TagParser:
     setup(previousValueHandling);
 }
 
-}
+} // namespace QtGui
 
 #endif // COVEREDIT_H

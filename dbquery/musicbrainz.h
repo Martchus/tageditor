@@ -9,14 +9,10 @@ QT_FORWARD_DECLARE_CLASS(QNetworkRequest)
 
 namespace QtGui {
 
-class MusicBrainzResultsModel : public HttpResultsModel
-{
+class MusicBrainzResultsModel : public HttpResultsModel {
     Q_OBJECT
 private:
-    enum What {
-        MusicBrainzMetaData,
-        CoverArt
-    };
+    enum What { MusicBrainzMetaData, CoverArt };
 
 public:
     MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);

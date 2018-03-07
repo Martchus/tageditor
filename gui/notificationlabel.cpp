@@ -1,15 +1,15 @@
 #include "./notificationlabel.h"
 
-#include <QPainter>
-#include <QPaintEvent>
-#include <QStyleOption>
-#include <QPixmap>
-#include <QFontMetrics>
 #include <QBrush>
 #include <QConicalGradient>
-#include <QMessageBox>
 #include <QCoreApplication>
+#include <QFontMetrics>
+#include <QMessageBox>
+#include <QPaintEvent>
+#include <QPainter>
+#include <QPixmap>
 #include <QStringBuilder>
+#include <QStyleOption>
 
 #include <cmath>
 
@@ -18,17 +18,17 @@ namespace QtGui {
 const QChar NotificationLabel::s_bulletPoint(0x2022);
 const QString NotificationLabel::s_bulletLine(QStringLiteral("\n• "));
 
-NotificationLabel::NotificationLabel(QWidget *parent) :
-    QWidget(parent),
-    m_type(NotificationType::Information),
-    m_subject(NotificationSubject::None),
-    m_percentage(-1),
-    m_minIconSize(25),
-    m_maxIconSize(25),
-    m_pixmapsInvalidated(true),
-    m_animationStep(0),
-    m_maxLineCount(infiniteLines),
-    m_currentLineCount(0)
+NotificationLabel::NotificationLabel(QWidget *parent)
+    : QWidget(parent)
+    , m_type(NotificationType::Information)
+    , m_subject(NotificationSubject::None)
+    , m_percentage(-1)
+    , m_minIconSize(25)
+    , m_maxIconSize(25)
+    , m_pixmapsInvalidated(true)
+    , m_animationStep(0)
+    , m_maxLineCount(infiniteLines)
+    , m_currentLineCount(0)
 {
     connect(&m_updateTimer, &QTimer::timeout, this, &NotificationLabel::updateAnimation);
     m_updateTimer.setInterval(80);
@@ -45,14 +45,16 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
     QRect textRect(option.rect.x() + iconSize + 5, option.rect.y(), option.rect.width() - iconSize - 5, option.rect.height());
     QPainter painter(this);
 
-    if(event->rect().contains(textRect)) {
-        style->drawItemText(&painter, textRect, static_cast<int>(QStyle::visualAlignment(layoutDirection(), Qt::AlignVCenter | Qt::AlignLeft | Qt::AlignJustify)), option.palette, isEnabled(), m_text, foregroundRole());
+    if (event->rect().contains(textRect)) {
+        style->drawItemText(&painter, textRect,
+            static_cast<int>(QStyle::visualAlignment(layoutDirection(), Qt::AlignVCenter | Qt::AlignLeft | Qt::AlignJustify)), option.palette,
+            isEnabled(), m_text, foregroundRole());
     }
-    if(event->rect().contains(pixmapRect)) {
+    if (event->rect().contains(pixmapRect)) {
         setupPixmaps(pixmapRect.size());
-        switch(m_type) {
+        switch (m_type) {
         case NotificationType::Progress:
-            if(m_subject == NotificationSubject::None) {
+            if (m_subject == NotificationSubject::None) {
                 drawProgressIndicator(painter, pixmapRect, option.palette.color(QPalette::Foreground), m_animationStep);
             } else {
                 style->drawItemPixmap(&painter, pixmapRect, Qt::AlignTop | Qt::AlignLeft, m_mainPixmap);
@@ -62,7 +64,7 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
             }
             break;
         default:
-            if(m_subject == NotificationSubject::None) {
+            if (m_subject == NotificationSubject::None) {
                 style->drawItemPixmap(&painter, pixmapRect, Qt::AlignCenter, m_mainPixmap);
             } else {
                 style->drawItemPixmap(&painter, pixmapRect, Qt::AlignTop | Qt::AlignLeft, m_mainPixmap);
@@ -75,7 +77,7 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
 void NotificationLabel::mouseDoubleClickEvent(QMouseEvent *event)
 {
     Q_UNUSED(event)
-    if(m_type == NotificationType::Progress) {
+    if (m_type == NotificationType::Progress) {
         return;
     }
     showMessageBox();
@@ -83,12 +85,11 @@ void NotificationLabel::mouseDoubleClickEvent(QMouseEvent *event)
 
 void NotificationLabel::updateAnimation()
 {
-    switch(m_type) {
+    switch (m_type) {
     case NotificationType::Progress:
         m_animationStep = m_animationStep >= 15 ? m_animationStep - 15 : (360 - 15);
         break;
-    default:
-        ;
+    default:;
     }
     update(iconRect());
 }
@@ -121,11 +122,11 @@ QRect NotificationLabel::textRect() const
 void NotificationLabel::setupPixmaps(const QSize &size)
 {
     const QStyle *const style = QWidget::style();
-    if(m_pixmapsInvalidated) {
+    if (m_pixmapsInvalidated) {
         m_mainPixmap = QPixmap();
         m_smallPixmap = QPixmap();
         QStyle::StandardPixmap icon;
-        switch(m_type) {
+        switch (m_type) {
         case NotificationType::Information:
             icon = QStyle::SP_MessageBoxInformation;
             break;
@@ -141,15 +142,15 @@ void NotificationLabel::setupPixmaps(const QSize &size)
         default:
             icon = static_cast<QStyle::StandardPixmap>(QStyle::SP_CustomBase + 1);
         }
-        switch(m_subject) {
+        switch (m_subject) {
         case NotificationSubject::None:
-            if(icon != QStyle::SP_CustomBase + 1) {
+            if (icon != QStyle::SP_CustomBase + 1) {
                 m_mainPixmap = style->standardIcon(icon, nullptr, this).pixmap(size);
             }
             break;
         case NotificationSubject::Saving:
             m_mainPixmap = style->standardIcon(QStyle::SP_DialogSaveButton, nullptr, this).pixmap(size * 0.8);
-            if(icon != QStyle::SP_CustomBase + 1) {
+            if (icon != QStyle::SP_CustomBase + 1) {
                 m_smallPixmap = style->standardIcon(icon, nullptr, this).pixmap(size * 0.6);
             }
             break;
@@ -170,7 +171,7 @@ void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, con
     linearGrad.setColorAt(1, Qt::transparent);
     painter.setPen(QPen(linearGrad, circleWidth, Qt::SolidLine, Qt::RoundCap));
     painter.drawArc(rect, angle * 16 + 25 * 16, 16 * 310);
-    if(m_percentage > 0 && m_percentage <= 100) {
+    if (m_percentage > 0 && m_percentage <= 100) {
         QFont font = this->font();
         font.setPixelSize(rect.width() / 2);
         painter.setFont(font);
@@ -181,19 +182,19 @@ void NotificationLabel::drawProgressIndicator(QPainter &painter, QRect rect, con
 
 void NotificationLabel::applyMaxLineCount()
 {
-    if(m_maxLineCount == infiniteLines || m_currentLineCount < 2) {
+    if (m_maxLineCount == infiniteLines || m_currentLineCount < 2) {
         return;
     }
 
     int newStart = 0;
-    for(; m_currentLineCount > m_maxLineCount; --m_currentLineCount) {
+    for (; m_currentLineCount > m_maxLineCount; --m_currentLineCount) {
         const int nextBullet = m_text.indexOf(s_bulletLine, newStart);
-        if(nextBullet < 0) {
+        if (nextBullet < 0) {
             break;
         }
         newStart = nextBullet;
     }
-    if(newStart) {
+    if (newStart) {
         m_text.remove(0, newStart + 1);
     }
 }
@@ -202,7 +203,7 @@ QSize NotificationLabel::sizeHint() const
 {
     const QFontMetrics fm(fontMetrics());
     QSize size = fm.size(0, m_text);
-    if(size.height() < m_minIconSize) {
+    if (size.height() < m_minIconSize) {
         size.setHeight(m_minIconSize);
     }
     const int iconSize = size.height() > m_maxIconSize ? m_maxIconSize : size.height();
@@ -222,14 +223,14 @@ void NotificationLabel::setText(const QString &text)
     m_currentLineCount = 1;
     updateGeometry();
     update(textRect());
-    if(updateTooltip) {
+    if (updateTooltip) {
         setToolTip(m_text);
     }
 }
 
 void NotificationLabel::clearText()
 {
-    if(toolTip() == m_text) {
+    if (toolTip() == m_text) {
         setToolTip(QString());
     }
     m_text.clear();
@@ -241,11 +242,11 @@ void NotificationLabel::clearText()
 void NotificationLabel::appendLine(const QString &line)
 {
     const bool updateTooltip = toolTip().isEmpty() || toolTip() == m_text;
-    if(m_text.isEmpty()) {
+    if (m_text.isEmpty()) {
         m_text = line;
         m_currentLineCount = 1;
     } else {
-        if(!m_text.startsWith(s_bulletPoint)) {
+        if (!m_text.startsWith(s_bulletPoint)) {
             m_text = s_bulletPoint % QChar(' ') % m_text % s_bulletLine % line;
         } else {
             m_text = m_text % s_bulletLine % line;
@@ -255,7 +256,7 @@ void NotificationLabel::appendLine(const QString &line)
     applyMaxLineCount();
     updateGeometry();
     update(textRect());
-    if(updateTooltip) {
+    if (updateTooltip) {
         setToolTip(m_text);
     }
 }
@@ -269,12 +270,12 @@ void NotificationLabel::setNotificationSubject(NotificationSubject value)
 
 void NotificationLabel::setNotificationType(NotificationType value)
 {
-    if(m_type != value) {
+    if (m_type != value) {
         m_type = value;
         m_pixmapsInvalidated = true;
         m_animationStep = 0;
         update(iconRect());
-        if(m_type == NotificationType::Progress) {
+        if (m_type == NotificationType::Progress) {
             m_updateTimer.start();
         } else {
             m_updateTimer.stop();
@@ -284,7 +285,7 @@ void NotificationLabel::setNotificationType(NotificationType value)
 
 void NotificationLabel::setPercentage(int percentage)
 {
-    if(m_percentage != percentage) {
+    if (m_percentage != percentage) {
         m_percentage = percentage;
         update(iconRect());
     }
@@ -293,7 +294,7 @@ void NotificationLabel::setPercentage(int percentage)
 void NotificationLabel::setMaxIconSize(int size)
 {
     m_maxIconSize = size;
-    if(m_minIconSize > size) {
+    if (m_minIconSize > size) {
         m_minIconSize = size;
     }
     m_pixmapsInvalidated = true;
@@ -309,11 +310,11 @@ void NotificationLabel::setMaxLineCount(std::size_t maxLineCount)
 void NotificationLabel::setMinIconSize(int size)
 {
     m_minIconSize = size;
-    if(m_maxIconSize < size) {
+    if (m_maxIconSize < size) {
         m_maxIconSize = size;
     }
     m_pixmapsInvalidated = true;
     updateGeometry();
 }
 
-}
+} // namespace QtGui

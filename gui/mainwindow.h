@@ -7,8 +7,8 @@
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tagvalue.h>
 
-#include <QMainWindow>
 #include <QByteArray>
+#include <QMainWindow>
 
 QT_FORWARD_DECLARE_CLASS(QFileSystemModel)
 QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
@@ -20,7 +20,7 @@ DECLARE_ENUM_CLASS(TagType, unsigned int);
 namespace Dialogs {
 class AboutDialog;
 class SettingsDialog;
-}
+} // namespace Dialogs
 
 namespace QtGui {
 
@@ -32,12 +32,11 @@ class TagEditorWidget;
 class RenameFilesDialog;
 class DbQueryWidget;
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
     Q_PROPERTY(QString currentDirectory READ currentDirectory WRITE setCurrentDirectory)
     Q_PROPERTY(bool layoutLocked READ isLayoutLocked WRITE setLayoutLocked)
-    
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -95,6 +94,6 @@ private:
     DbQueryWidget *m_dbQueryWidget;
 };
 
-}
+} // namespace QtGui
 
 #endif // TAGEDITORMAINWINDOW_H

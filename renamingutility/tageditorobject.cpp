@@ -6,11 +6,11 @@
 
 #include "../misc/utility.h"
 
+#include <tagparser/abstracttrack.h>
+#include <tagparser/exceptions.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>
-#include <tagparser/abstracttrack.h>
-#include <tagparser/exceptions.h>
 
 #include <qtutilities/misc/conversion.h>
 
@@ -29,10 +29,10 @@ using namespace std;
 namespace RenamingUtility {
 
 /// \brief Adds notifications from \a statusProvider to \a notificationsObject.
-TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &diagObject, const Diagnostics &diag)
+TAGEDITOR_JS_VALUE &operator<<(TAGEDITOR_JS_VALUE &diagObject, const Diagnostics &diag)
 {
     quint32 counter = 0;
-    for(const auto &msg : diag) {
+    for (const auto &msg : diag) {
         TAGEDITOR_JS_VALUE val;
         val.setProperty("msg", QString::fromUtf8(msg.message().data()) TAGEDITOR_JS_READONLY);
         val.setProperty("critical", msg.level() >= DiagLevel::Critical TAGEDITOR_JS_READONLY);
@@ -43,50 +43,54 @@ TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &diagObject, const Diagnostic
 }
 
 /// \brief Add fields and notifications from \a tag to \a tagObject.
-TAGEDITOR_JS_VALUE &operator <<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
+TAGEDITOR_JS_VALUE &operator<<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
 {
     // add text fields
-    static const char *fieldNames[] = {"title", "artist", "album", "year", "comment", "genre", "encoder", "language",
-                                       "description", nullptr};
-    static const KnownField fields[] = {KnownField::Title, KnownField::Artist, KnownField::Album, KnownField::Year,
-                                        KnownField::Comment, KnownField::Genre, KnownField::Encoder, KnownField::Language,
-                                        KnownField::Description};
+    static const char *fieldNames[] = { "title", "artist", "album", "year", "comment", "genre", "encoder", "language", "description", nullptr };
+    static const KnownField fields[] = { KnownField::Title, KnownField::Artist, KnownField::Album, KnownField::Year, KnownField::Comment,
+        KnownField::Genre, KnownField::Encoder, KnownField::Language, KnownField::Description };
     const char **fieldName = fieldNames;
     const KnownField *field = fields;
-    for(; *fieldName; ++fieldName, ++field) {
+    for (; *fieldName; ++fieldName, ++field) {
         try {
             tagObject.setProperty(*fieldName, tagValueToQString(tag.value(*field)) TAGEDITOR_JS_READONLY);
-        } catch(const ConversionException &) {}
+        } catch (const ConversionException &) {
+        }
     }
 
     // add numeric fields
     try {
         tagObject.setProperty("partNumber", tag.value(KnownField::PartNumber).toInteger() TAGEDITOR_JS_READONLY);
-    } catch(const ConversionException &) {}
+    } catch (const ConversionException &) {
+    }
     try {
         tagObject.setProperty("totalParts", tag.value(KnownField::TotalParts).toInteger() TAGEDITOR_JS_READONLY);
-    } catch(const ConversionException &) {}
+    } catch (const ConversionException &) {
+    }
     PositionInSet pos;
     try {
         pos = tag.value(KnownField::TrackPosition).toPositionInSet();
-    } catch(const ConversionException &) {}
+    } catch (const ConversionException &) {
+    }
     tagObject.setProperty("trackPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("trackTotal", pos.total() TAGEDITOR_JS_READONLY);
     pos = PositionInSet();
     try {
         pos = tag.value(KnownField::DiskPosition).toPositionInSet();
-    } catch(const ConversionException &) {}
+    } catch (const ConversionException &) {
+    }
     tagObject.setProperty("diskPos", pos.position() TAGEDITOR_JS_READONLY);
     tagObject.setProperty("diskTotal", pos.total() TAGEDITOR_JS_READONLY);
 
     return tagObject;
 }
 
-TagEditorObject::TagEditorObject(TAGEDITOR_JS_ENGINE *engine) :
-    m_engine(engine),
-    m_currentType(ItemType::Dir),
-    m_action(ActionType::None)
-{}
+TagEditorObject::TagEditorObject(TAGEDITOR_JS_ENGINE *engine)
+    : m_engine(engine)
+    , m_currentType(ItemType::Dir)
+    , m_action(ActionType::None)
+{
+}
 
 void TagEditorObject::setFileInfo(const QFileInfo &file, FileSystemItem *item)
 {
@@ -144,7 +148,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     fileInfoObject.setProperty(QStringLiteral("currentName"), QString::fromUtf8(fileInfo.fileName(false).data()));
     fileInfoObject.setProperty(QStringLiteral("currentBaseName"), QString::fromUtf8(fileInfo.fileName(true).data()));
     QString suffix = fromNativeFileName(fileInfo.extension().data());
-    if(suffix.startsWith('.')) {
+    if (suffix.startsWith('.')) {
         suffix.remove(0, 1);
     }
     fileInfoObject.setProperty(QStringLiteral("currentSuffix"), suffix TAGEDITOR_JS_READONLY);
@@ -153,10 +157,10 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     bool criticalParseingErrorOccured = false;
     try {
         fileInfo.parseEverything(diag);
-    } catch(const Failure &) {
+    } catch (const Failure &) {
         // parsing notifications will be addded anyways
         criticalParseingErrorOccured = true;
-    } catch(...) {
+    } catch (...) {
         ::IoUtilities::catchIoFailure();
         criticalParseingErrorOccured = true;
     }
@@ -179,7 +183,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     auto combinedTagNotifications = m_engine->newArray();
     auto tagsObject = m_engine->newArray(static_cast<uint>(tags.size()));
     uint32 tagIndex = 0;
-    for(auto tagIterator = tags.cbegin(), end = tags.cend(); tagIterator != end; ++tagIterator, ++tagIndex) {
+    for (auto tagIterator = tags.cbegin(), end = tags.cend(); tagIterator != end; ++tagIterator, ++tagIndex) {
         const Tag &tag = **tagIterator;
         auto tagObject = m_engine->newObject();
         combinedTagObject << tag;
@@ -195,7 +199,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     const vector<AbstractTrack *> tracks = fileInfo.tracks();
     auto tracksObject = m_engine->newArray(static_cast<uint>(tracks.size()));
     uint32 trackIndex = 0;
-    for(auto trackIterator = tracks.cbegin(), end = tracks.cend(); trackIterator != end; ++trackIterator, ++trackIndex) {
+    for (auto trackIterator = tracks.cbegin(), end = tracks.cend(); trackIterator != end; ++trackIterator, ++trackIndex) {
         const AbstractTrack &track = **trackIterator;
         auto trackObject = m_engine->newObject();
         trackObject.setProperty(QStringLiteral("mediaType"), QString::fromUtf8(track.mediaTypeName()));
@@ -222,11 +226,11 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileName(const QString &fileName)
 TAGEDITOR_JS_VALUE TagEditorObject::allFiles(const QString &dirName)
 {
     const QDir dir(dirName);
-    if(dir.exists()) {
+    if (dir.exists()) {
         const auto files(dir.entryList(QDir::Files));
         auto entriesObj = m_engine->newArray(static_cast<uint>(files.size()));
         quint32 counter = 0;
-        for(const auto &file : files) {
+        for (const auto &file : files) {
             entriesObj.setProperty(counter, file TAGEDITOR_JS_READONLY);
             ++counter;
         }
@@ -239,9 +243,9 @@ TAGEDITOR_JS_VALUE TagEditorObject::allFiles(const QString &dirName)
 TAGEDITOR_JS_VALUE TagEditorObject::firstFile(const QString &dirName)
 {
     const QDir dir(dirName);
-    if(dir.exists()) {
+    if (dir.exists()) {
         const auto files(dir.entryList(QDir::Files));
-        if(!files.empty()) {
+        if (!files.empty()) {
             return TAGEDITOR_JS_VALUE(files.first());
         }
     }

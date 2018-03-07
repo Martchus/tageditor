@@ -1,10 +1,10 @@
 #include "./renamefilesdialog.h"
 #include "./javascripthighlighter.h"
 
-#include "../renamingutility/renamingengine.h"
 #include "../renamingutility/filesystemitem.h"
 #include "../renamingutility/filesystemitemmodel.h"
 #include "../renamingutility/filteredfilesystemitemmodel.h"
+#include "../renamingutility/renamingengine.h"
 
 #include "../application/settings.h"
 
@@ -12,27 +12,27 @@
 
 #include <qtutilities/misc/dialogutils.h>
 
-#include <QMessageBox>
-#include <QFileDialog>
+#include <QClipboard>
 #include <QDir>
+#include <QFileDialog>
+#include <QFontDatabase>
 #include <QItemSelectionModel>
 #include <QMenu>
-#include <QClipboard>
+#include <QMessageBox>
 #include <QTextStream>
-#include <QFontDatabase>
 
 using namespace Dialogs;
 using namespace RenamingUtility;
 
 namespace QtGui {
 
-RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
-    QDialog(parent),
-    m_ui(new Ui::RenameFilesDialog),
-    m_itemsProcessed(0),
-    m_errorsOccured(0),
-    m_changingSelection(false),
-    m_scriptModified(false)
+RenameFilesDialog::RenameFilesDialog(QWidget *parent)
+    : QDialog(parent)
+    , m_ui(new Ui::RenameFilesDialog)
+    , m_itemsProcessed(0)
+    , m_errorsOccured(0)
+    , m_changingSelection(false)
+    , m_scriptModified(false)
 {
     setAttribute(Qt::WA_QuitOnClose, false);
     m_ui->setupUi(this);
@@ -67,11 +67,11 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
 
     // restore settings
     const auto &settings = Settings::values().renamingUtility;
-    if(Settings::values().renamingUtility.scriptSource < m_ui->sourceFileStackedWidget->count()) {
+    if (Settings::values().renamingUtility.scriptSource < m_ui->sourceFileStackedWidget->count()) {
         m_ui->sourceFileStackedWidget->setCurrentIndex(settings.scriptSource);
     }
     m_ui->scriptFilePathLineEdit->setText(settings.externalScript);
-    if(!Settings::values().renamingUtility.editorScript.isEmpty()) {
+    if (!Settings::values().renamingUtility.editorScript.isEmpty()) {
         m_ui->javaScriptPlainTextEdit->setPlainText(settings.editorScript);
         m_scriptModified = true;
     } else {
@@ -95,7 +95,8 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent) :
 }
 
 RenameFilesDialog::~RenameFilesDialog()
-{}
+{
+}
 
 QString RenameFilesDialog::directory() const
 {
@@ -110,19 +111,18 @@ void RenameFilesDialog::setDirectory(const QString &directory)
 bool RenameFilesDialog::event(QEvent *event)
 {
     auto &settings = Settings::values().renamingUtility;
-    switch(event->type()) {
+    switch (event->type()) {
     case QEvent::Close:
         // save settings
         settings.scriptSource = m_ui->sourceFileStackedWidget->currentIndex();
         settings.externalScript = m_ui->scriptFilePathLineEdit->text();
-        if(m_scriptModified) {
+        if (m_scriptModified) {
             settings.editorScript = m_ui->javaScriptPlainTextEdit->toPlainText();
         } else {
             settings.editorScript.clear();
         }
         break;
-    default:
-        ;
+    default:;
     }
     return QDialog::event(event);
 }
@@ -130,29 +130,29 @@ bool RenameFilesDialog::event(QEvent *event)
 void RenameFilesDialog::showScriptFileSelectionDlg()
 {
     QString file = QFileDialog::getOpenFileName(this, QApplication::applicationName(), m_ui->scriptFilePathLineEdit->text());
-    if(!file.isEmpty()) {
+    if (!file.isEmpty()) {
         m_ui->scriptFilePathLineEdit->setText(file);
     }
 }
 
 void RenameFilesDialog::startGeneratingPreview()
 {
-    if(m_engine->isBusy()) {
+    if (m_engine->isBusy()) {
         return;
     }
     QDir selectedDir(directory());
     m_ui->notificationLabel->setHidden(false);
-    if(selectedDir.exists()) {
+    if (selectedDir.exists()) {
         QString program;
-        if(m_ui->sourceFileStackedWidget->currentIndex() == 0) {
+        if (m_ui->sourceFileStackedWidget->currentIndex() == 0) {
             program = m_ui->javaScriptPlainTextEdit->toPlainText();
         } else {
             QString fileName = m_ui->scriptFilePathLineEdit->text();
-            if(fileName.isEmpty()) {
+            if (fileName.isEmpty()) {
                 m_ui->notificationLabel->setText(tr("There is no external script file is selected."));
             } else {
                 QFile file(fileName);
-                if(file.open(QFile::ReadOnly)) {
+                if (file.open(QFile::ReadOnly)) {
                     QTextStream textStream(&file);
                     program = textStream.readAll();
                 } else {
@@ -160,8 +160,8 @@ void RenameFilesDialog::startGeneratingPreview()
                 }
             }
         }
-        if(!program.isEmpty()) {
-            if(m_engine->setProgram(program)) {
+        if (!program.isEmpty()) {
+            if (m_engine->setProgram(program)) {
                 m_ui->notificationLabel->setText(tr("Generating preview ..."));
                 m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
                 m_ui->abortClosePushButton->setText(tr("Abort"));
@@ -170,9 +170,9 @@ void RenameFilesDialog::startGeneratingPreview()
                 m_engine->generatePreview(directory(), m_ui->includeSubdirsCheckBox->isChecked());
             } else {
                 m_engine->clearPreview();
-                if(m_engine->errorLineNumber()) {
-                    m_ui->notificationLabel->setText(tr("The script is not valid.\nError in line %1: %3")
-                                                    .arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
+                if (m_engine->errorLineNumber()) {
+                    m_ui->notificationLabel->setText(
+                        tr("The script is not valid.\nError in line %1: %3").arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
                 } else {
                     m_ui->notificationLabel->setText(tr("An error occured when parsing the script: %1").arg(m_engine->errorMessage()));
                 }
@@ -181,7 +181,7 @@ void RenameFilesDialog::startGeneratingPreview()
         } else {
             m_engine->clearPreview();
             m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
-            if(m_ui->notificationLabel->text().isEmpty()) {
+            if (m_ui->notificationLabel->text().isEmpty()) {
                 m_ui->notificationLabel->setText(tr("The script is empty."));
             }
         }
@@ -192,10 +192,9 @@ void RenameFilesDialog::startGeneratingPreview()
     }
 }
 
-
 void RenameFilesDialog::startApplyChangings()
 {
-    if(m_engine->isBusy()) {
+    if (m_engine->isBusy()) {
         return;
     }
     m_ui->notificationLabel->setText(tr("Applying changings ..."));
@@ -211,7 +210,7 @@ void RenameFilesDialog::showPreviewProgress(int itemsProcessed, int errorsOccure
     m_itemsProcessed = itemsProcessed;
     m_errorsOccured = errorsOccured;
     QString text = tr("%1 files/directories processed", 0, itemsProcessed).arg(itemsProcessed);
-    if(m_errorsOccured > 0) {
+    if (m_errorsOccured > 0) {
         text.append(QChar('\n'));
         text.append(tr("%1 error(s) occured", 0, errorsOccured).arg(errorsOccured));
     }
@@ -223,7 +222,7 @@ void RenameFilesDialog::showPreviewResults()
     m_ui->abortClosePushButton->setText(tr("Close"));
     m_ui->generatePreviewPushButton->setHidden(false);
     m_ui->applyChangingsPushButton->setHidden(false);
-    if(m_engine->rootItem()) {
+    if (m_engine->rootItem()) {
         m_ui->notificationLabel->setText(tr("Preview has been generated."));
         m_ui->notificationLabel->appendLine(tr("%1 files/directories have been processed.", 0, m_itemsProcessed).arg(m_itemsProcessed));
         m_ui->notificationLabel->setNotificationType(NotificationType::Information);
@@ -233,11 +232,11 @@ void RenameFilesDialog::showPreviewResults()
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
         m_ui->applyChangingsPushButton->setEnabled(false);
     }
-    if(m_engine->isAborted()) {
+    if (m_engine->isAborted()) {
         m_ui->notificationLabel->appendLine(tr("Generation of preview has been aborted prematurely."));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
-    if(m_errorsOccured) {
+    if (m_errorsOccured) {
         m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", 0, m_errorsOccured).arg(m_errorsOccured));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
@@ -251,11 +250,11 @@ void RenameFilesDialog::showChangsingsResults()
     m_ui->notificationLabel->setText(tr("Changins applied."));
     m_ui->notificationLabel->appendLine(tr("%1 files/directories have been processed.", 0, m_itemsProcessed).arg(m_itemsProcessed));
     m_ui->notificationLabel->setNotificationType(NotificationType::Information);
-    if(m_engine->isAborted()) {
+    if (m_engine->isAborted()) {
         m_ui->notificationLabel->appendLine(tr("Applying has been aborted prematurely."));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
-    if(m_errorsOccured) {
+    if (m_errorsOccured) {
         m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", 0, m_errorsOccured).arg(m_errorsOccured));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
@@ -263,23 +262,22 @@ void RenameFilesDialog::showChangsingsResults()
 
 void RenameFilesDialog::currentItemSelected(const QItemSelection &, const QItemSelection &)
 {
-    if(m_changingSelection) {
+    if (m_changingSelection) {
         return;
     }
 
     m_changingSelection = true;
     m_ui->previewTreeView->selectionModel()->clear();
-    for(const QModelIndex &row : m_ui->currentTreeView->selectionModel()->selectedRows()) {
+    for (const QModelIndex &row : m_ui->currentTreeView->selectionModel()->selectedRows()) {
         QModelIndex currentIndex = m_engine->currentModel()->mapToSource(row);
-        QModelIndex counterpartIndex = m_engine->model()->counterpart(
-                    currentIndex, 1);
-        if(!counterpartIndex.isValid()) {
+        QModelIndex counterpartIndex = m_engine->model()->counterpart(currentIndex, 1);
+        if (!counterpartIndex.isValid()) {
             counterpartIndex = currentIndex;
         }
         QModelIndex previewIndex = m_engine->previewModel()->mapFromSource(counterpartIndex);
-        if(previewIndex.isValid()) {
+        if (previewIndex.isValid()) {
             QModelIndex parent = previewIndex.parent();
-            if(parent.isValid()) {
+            if (parent.isValid()) {
                 m_ui->previewTreeView->expand(m_engine->previewModel()->index(parent.row(), parent.column(), parent.parent()));
             }
             m_ui->previewTreeView->scrollTo(previewIndex);
@@ -291,23 +289,22 @@ void RenameFilesDialog::currentItemSelected(const QItemSelection &, const QItemS
 
 void RenameFilesDialog::previewItemSelected(const QItemSelection &, const QItemSelection &)
 {
-    if(m_changingSelection) {
+    if (m_changingSelection) {
         return;
     }
 
     m_changingSelection = true;
     m_ui->currentTreeView->selectionModel()->clear();
-    for(const QModelIndex &row : m_ui->previewTreeView->selectionModel()->selectedRows()) {
+    for (const QModelIndex &row : m_ui->previewTreeView->selectionModel()->selectedRows()) {
         QModelIndex previewIndex = m_engine->previewModel()->mapToSource(row);
-        QModelIndex counterpartIndex = m_engine->model()->counterpart(
-                    previewIndex, 0);
-        if(!counterpartIndex.isValid()) {
+        QModelIndex counterpartIndex = m_engine->model()->counterpart(previewIndex, 0);
+        if (!counterpartIndex.isValid()) {
             counterpartIndex = previewIndex;
         }
         QModelIndex currentIndex = m_engine->currentModel()->mapFromSource(counterpartIndex);
-        if(currentIndex.isValid()) {
+        if (currentIndex.isValid()) {
             QModelIndex parent = currentIndex.parent();
-            if(parent.isValid()) {
+            if (parent.isValid()) {
                 m_ui->currentTreeView->expand(m_engine->currentModel()->index(parent.row(), parent.column(), parent.parent()));
             }
             m_ui->currentTreeView->scrollTo(currentIndex);
@@ -320,7 +317,7 @@ void RenameFilesDialog::previewItemSelected(const QItemSelection &, const QItemS
 void RenameFilesDialog::pasteScriptFromFile(const QString &fileName)
 {
     QFile file(fileName);
-    if(file.open(QFile::ReadOnly)) {
+    if (file.open(QFile::ReadOnly)) {
         QTextStream textStream(&file);
         m_ui->javaScriptPlainTextEdit->setPlainText(textStream.readAll());
     } else {
@@ -331,14 +328,14 @@ void RenameFilesDialog::pasteScriptFromFile(const QString &fileName)
 void RenameFilesDialog::showSelectScriptFileDlg()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Select script"));
-    if(!fileName.isEmpty()) {
+    if (!fileName.isEmpty()) {
         pasteScriptFromFile(fileName);
     }
 }
 
 void RenameFilesDialog::abortClose()
 {
-    if(m_engine->isBusy()) {
+    if (m_engine->isBusy()) {
         m_engine->abort();
     } else {
         close();
@@ -348,7 +345,7 @@ void RenameFilesDialog::abortClose()
 void RenameFilesDialog::pasteScriptFromClipboard()
 {
     const QString script = QApplication::clipboard()->text();
-    if(script.isEmpty()) {
+    if (script.isEmpty()) {
         QMessageBox::warning(this, windowTitle(), tr("Clipboard contains no text."));
         return;
     }
@@ -363,7 +360,7 @@ void RenameFilesDialog::pasteDefaultExampleScript()
 
 void RenameFilesDialog::showTreeViewContextMenu()
 {
-    if(const QTreeView *sender = qobject_cast<const QTreeView *>(QObject::sender())) {
+    if (const QTreeView *sender = qobject_cast<const QTreeView *>(QObject::sender())) {
         QMenu menu;
         menu.addAction(tr("Expand all"), sender, &QTreeView::expandAll);
         menu.addAction(tr("Collapse all"), sender, &QTreeView::collapseAll);
@@ -374,7 +371,7 @@ void RenameFilesDialog::showTreeViewContextMenu()
 void RenameFilesDialog::toggleScriptSource()
 {
     int nextIndex;
-    switch(m_ui->sourceFileStackedWidget->currentIndex()) {
+    switch (m_ui->sourceFileStackedWidget->currentIndex()) {
     case 0:
         nextIndex = 1;
         break;
@@ -382,7 +379,7 @@ void RenameFilesDialog::toggleScriptSource()
         nextIndex = 0;
     }
     m_ui->sourceFileStackedWidget->setCurrentIndex(nextIndex);
-    switch(nextIndex) {
+    switch (nextIndex) {
     case 0:
         m_ui->pasteScriptPushButton->setVisible(true);
         m_ui->toggleScriptSourcePushButton->setText("Use external file");
@@ -398,4 +395,4 @@ void RenameFilesDialog::setScriptModified(bool scriptModified)
     m_scriptModified = scriptModified;
 }
 
-}
+} // namespace QtGui

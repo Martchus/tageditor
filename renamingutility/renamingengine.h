@@ -5,10 +5,10 @@
 #include "./jsdefs.h"
 #include "./jsincludes.h"
 
-#include <QObject>
-#include <QList>
-#include <QDir>
 #include <QAtomicInteger>
+#include <QDir>
+#include <QList>
+#include <QObject>
 
 #include <memory>
 
@@ -20,8 +20,7 @@ class FileSystemItemModel;
 class FilteredFileSystemItemModel;
 class TagEditorObject;
 
-class RenamingEngine : public QObject
-{
+class RenamingEngine : public QObject {
     Q_OBJECT
 
 public:

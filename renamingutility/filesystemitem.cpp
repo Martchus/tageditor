@@ -1,7 +1,7 @@
 #include "./filesystemitem.h"
 
-#include <QDir>
 #include <QCoreApplication>
+#include <QDir>
 
 namespace RenamingUtility {
 
@@ -10,46 +10,47 @@ namespace RenamingUtility {
     Necessary for lupdate.
 */
 
-const QString &emptyStr() {
+const QString &emptyStr()
+{
     static QString emptyStr;
     return emptyStr;
 }
 
-FileSystemItem::FileSystemItem(ItemStatus status, ItemType type, const QString &name, FileSystemItem *parent) :
-    m_parent(parent),
-    m_counterpart(nullptr),
-    m_status(status),
-    m_type(type),
-    m_error(false),
-    m_applied(false),
-    m_name(name),
-    m_checked(false),
-    m_checkable(false)
+FileSystemItem::FileSystemItem(ItemStatus status, ItemType type, const QString &name, FileSystemItem *parent)
+    : m_parent(parent)
+    , m_counterpart(nullptr)
+    , m_status(status)
+    , m_type(type)
+    , m_error(false)
+    , m_applied(false)
+    , m_name(name)
+    , m_checked(false)
+    , m_checkable(false)
 {
-    if(m_parent) {
+    if (m_parent) {
         m_parent->m_children << this;
     }
 }
 
 FileSystemItem::~FileSystemItem()
 {
-    for(FileSystemItem *child : m_children) {
+    for (FileSystemItem *child : m_children) {
         child->m_parent = nullptr;
         delete child;
     }
-    if(m_parent) {
+    if (m_parent) {
         m_parent->m_children.removeAll(this);
     }
 }
 
 void FileSystemItem::setParent(FileSystemItem *parent)
 {
-    if(parent != m_parent) {
-        if(m_parent) {
+    if (parent != m_parent) {
+        if (m_parent) {
             m_parent->m_children.removeAll(this);
         }
         m_parent = parent;
-        if(m_parent && !m_parent->m_children.contains(this)) {
+        if (m_parent && !m_parent->m_children.contains(this)) {
             m_parent->m_children << this;
         }
     }
@@ -57,11 +58,9 @@ void FileSystemItem::setParent(FileSystemItem *parent)
 
 const QString &FileSystemItem::currentName() const
 {
-    switch(m_status) {
+    switch (m_status) {
     case ItemStatus::New:
-        return m_counterpart
-                ? m_counterpart->name()
-                : emptyStr();
+        return m_counterpart ? m_counterpart->name() : emptyStr();
     case ItemStatus::Current:
         return m_name;
     }
@@ -70,9 +69,9 @@ const QString &FileSystemItem::currentName() const
 
 bool FileSystemItem::setCurrentName(const QString &currentName)
 {
-    switch(m_status) {
+    switch (m_status) {
     case ItemStatus::New:
-        if(!m_counterpart) {
+        if (!m_counterpart) {
             // creating an imaginary current file doesn't make sense here
             return false;
         } else {
@@ -88,11 +87,9 @@ bool FileSystemItem::setCurrentName(const QString &currentName)
 
 const QString &FileSystemItem::newName() const
 {
-    switch(m_status) {
+    switch (m_status) {
     case ItemStatus::Current:
-        return m_counterpart
-                ? m_counterpart->name()
-                : emptyStr();
+        return m_counterpart ? m_counterpart->name() : emptyStr();
     case ItemStatus::New:
         return m_name;
     }
@@ -101,10 +98,10 @@ const QString &FileSystemItem::newName() const
 
 bool FileSystemItem::setNewName(const QString &newName)
 {
-    switch(m_status) {
+    switch (m_status) {
     case ItemStatus::Current:
-        if(!m_counterpart) {
-            if(m_parent) {
+        if (!m_counterpart) {
+            if (m_parent) {
                 m_counterpart = new FileSystemItem(ItemStatus::New, m_type, newName);
                 m_counterpart->m_counterpart = this;
                 m_counterpart->setParent(m_parent);
@@ -125,8 +122,8 @@ bool FileSystemItem::setNewName(const QString &newName)
 
 FileSystemItem *FileSystemItem::findChild(const QString &name) const
 {
-    for(FileSystemItem *child : m_children) {
-        if(child->name() == name) {
+    for (FileSystemItem *child : m_children) {
+        if (child->name() == name) {
             return child;
         }
     }
@@ -135,8 +132,8 @@ FileSystemItem *FileSystemItem::findChild(const QString &name) const
 
 FileSystemItem *FileSystemItem::findChild(const QString &name, const FileSystemItem *exclude) const
 {
-    for(FileSystemItem *child : m_children) {
-        if(child != exclude && child->name() == name) {
+    for (FileSystemItem *child : m_children) {
+        if (child != exclude && child->name() == name) {
             return child;
         }
     }
@@ -147,15 +144,15 @@ FileSystemItem *FileSystemItem::makeChildAvailable(const QString &relativePath)
 {
     QStringList dirs = relativePath.split(QDir::separator(), QString::SkipEmptyParts);
     FileSystemItem *parent = this;
-    if(!dirs.isEmpty()) {
-        if(relativePath.startsWith(QChar('/'))) {
+    if (!dirs.isEmpty()) {
+        if (relativePath.startsWith(QChar('/'))) {
             // we actually just got an absolute path
             // -> just leave the / there to handle absolute path as well
             dirs.front().prepend(QChar('/'));
         }
-        for(const QString &dir : dirs) {
+        for (const QString &dir : dirs) {
             FileSystemItem *child = parent->findChild(dir);
-            if(!child) {
+            if (!child) {
                 child = new FileSystemItem(ItemStatus::New, ItemType::Dir, dir);
                 child->setParent(parent);
                 child->setNote(QCoreApplication::translate("RenamingUtility::FileSystemItem", "will be created"));
@@ -168,7 +165,7 @@ FileSystemItem *FileSystemItem::makeChildAvailable(const QString &relativePath)
 
 void FileSystemItem::relativeDir(QString &res) const
 {
-    if(m_parent) {
+    if (m_parent) {
         m_parent->relativePath(res);
     }
 }
@@ -182,9 +179,9 @@ QString FileSystemItem::relativeDir() const
 
 void FileSystemItem::relativePath(QString &res) const
 {
-    if(m_parent) {
+    if (m_parent) {
         m_parent->relativePath(res);
-        if(!res.isEmpty()) {
+        if (!res.isEmpty()) {
             res.append(QLatin1Char('/'));
         }
         res.append(name());
@@ -200,15 +197,15 @@ QString FileSystemItem::relativePath() const
 
 bool FileSystemItem::hasSibling(const QString &name) const
 {
-    if(m_parent) {
+    if (m_parent) {
         const QList<FileSystemItem *> &siblings = m_parent->children();
-        for(const FileSystemItem *siblingItem : siblings) {
-            if(siblingItem == this) {
+        for (const FileSystemItem *siblingItem : siblings) {
+            if (siblingItem == this) {
                 continue;
             }
-            if(!siblingItem->newName().isEmpty() && siblingItem->newName() == name) {
+            if (!siblingItem->newName().isEmpty() && siblingItem->newName() == name) {
                 return true;
-            } else if(siblingItem->name() == name) {
+            } else if (siblingItem->name() == name) {
                 return true;
             }
         }
@@ -216,4 +213,4 @@ bool FileSystemItem::hasSibling(const QString &name) const
     return false;
 }
 
-}
+} // namespace RenamingUtility

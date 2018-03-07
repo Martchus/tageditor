@@ -1,11 +1,11 @@
 #include "./dbquery.h"
 
-#include "../misc/utility.h"
 #include "../misc/networkaccessmanager.h"
+#include "../misc/utility.h"
 
-#include <tagparser/tagvalue.h>
-#include <tagparser/tag.h>
 #include <tagparser/signature.h>
+#include <tagparser/tag.h>
+#include <tagparser/tagvalue.h>
 
 #include <QMessageBox>
 
@@ -15,25 +15,27 @@ using namespace TagParser;
 
 namespace QtGui {
 
-SongDescription::SongDescription(const QString &songId) :
-    songId(songId),
-    track(0),
-    totalTracks(0),
-    disk(0),
-    cover(nullptr)
-{}
+SongDescription::SongDescription(const QString &songId)
+    : songId(songId)
+    , track(0)
+    , totalTracks(0)
+    , disk(0)
+    , cover(nullptr)
+{
+}
 
 map<QString, QByteArray> QueryResultsModel::m_coverData = map<QString, QByteArray>();
 
-QueryResultsModel::QueryResultsModel(QObject *parent) :
-    QAbstractTableModel(parent),
-    m_resultsAvailable(false),
-    m_fetchingCover(false)
-{}
+QueryResultsModel::QueryResultsModel(QObject *parent)
+    : QAbstractTableModel(parent)
+    , m_resultsAvailable(false)
+    , m_fetchingCover(false)
+{
+}
 
 void QueryResultsModel::setResultsAvailable(bool resultsAvailable)
 {
-    if((m_resultsAvailable = resultsAvailable)) {
+    if ((m_resultsAvailable = resultsAvailable)) {
         emit this->resultsAvailable();
     }
 }
@@ -44,7 +46,8 @@ void QueryResultsModel::setFetchingCover(bool fetchingCover)
 }
 
 void QueryResultsModel::abort()
-{}
+{
+}
 
 QUrl QueryResultsModel::webUrl(const QModelIndex &index)
 {
@@ -56,9 +59,9 @@ QUrl QueryResultsModel::webUrl(const QModelIndex &index)
 
 TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
 {
-    if(row < m_results.size()) {
+    if (row < m_results.size()) {
         const SongDescription &res = m_results.at(row);
-        switch(knownField) {
+        switch (knownField) {
         case KnownField::Title:
             returnValue(title);
         case KnownField::Album:
@@ -76,7 +79,7 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
         case KnownField::TotalParts:
             return TagValue(res.totalTracks);
         case KnownField::Cover:
-            if(!res.cover.isEmpty()) {
+            if (!res.cover.isEmpty()) {
                 TagValue tagValue(res.cover.data(), static_cast<size_t>(res.cover.size()), TagDataType::Picture);
                 tagValue.setMimeType(containerMimeType(parseSignature(res.cover.data(), res.cover.size())));
                 return tagValue;
@@ -84,8 +87,7 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
             break;
         case KnownField::Lyrics:
             returnValue(lyrics);
-        default:
-            ;
+        default:;
         }
     }
     return TagValue();
@@ -95,11 +97,11 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
 
 QVariant QueryResultsModel::data(const QModelIndex &index, int role) const
 {
-    if(index.isValid() && index.row() < m_results.size()) {
+    if (index.isValid() && index.row() < m_results.size()) {
         const SongDescription &res = m_results.at(index.row());
-        switch(role) {
+        switch (role) {
         case Qt::DisplayRole:
-            switch(index.column()) {
+            switch (index.column()) {
             case TitleCol:
                 return res.title;
             case AlbumCol:
@@ -111,25 +113,22 @@ QVariant QueryResultsModel::data(const QModelIndex &index, int role) const
             case YearCol:
                 return res.year;
             case TrackCol:
-                if(res.track) {
+                if (res.track) {
                     return res.track;
                 } else {
                     return QString();
                 }
             case TotalTracksCol:
-                if(res.totalTracks) {
+                if (res.totalTracks) {
                     return res.totalTracks;
                 } else {
                     return QString();
                 }
-            default:
-                ;
+            default:;
             }
             break;
-        default:
-            ;
+        default:;
         }
-
     }
     return QVariant();
 }
@@ -137,7 +136,7 @@ QVariant QueryResultsModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags QueryResultsModel::flags(const QModelIndex &index) const
 {
     Qt::ItemFlags flags = Qt::ItemNeverHasChildren | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
-    if(index.isValid()) {
+    if (index.isValid()) {
         flags |= Qt::ItemIsUserCheckable;
     }
     return flags;
@@ -145,11 +144,11 @@ Qt::ItemFlags QueryResultsModel::flags(const QModelIndex &index) const
 
 QVariant QueryResultsModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    switch(orientation) {
+    switch (orientation) {
     case Qt::Horizontal:
-        switch(role) {
+        switch (role) {
         case Qt::DisplayRole:
-            switch(section) {
+            switch (section) {
             case TitleCol:
                 return tr("Song title");
             case AlbumCol:
@@ -164,16 +163,13 @@ QVariant QueryResultsModel::headerData(int section, Qt::Orientation orientation,
                 return tr("Total tracks");
             case GenreCol:
                 return tr("Genre");
-            default:
-                ;
+            default:;
             }
             break;
-        default:
-            ;
+        default:;
         }
         break;
-    default:
-        ;
+    default:;
     }
     return QVariant();
 }
@@ -190,9 +186,9 @@ int QueryResultsModel::columnCount(const QModelIndex &parent) const
 
 const QByteArray *QueryResultsModel::cover(const QModelIndex &index) const
 {
-    if(!index.parent().isValid() && index.row() < m_results.size()) {
+    if (!index.parent().isValid() && index.row() < m_results.size()) {
         const QByteArray &cover = m_results.at(index.row()).cover;
-        if(!cover.isEmpty()) {
+        if (!cover.isEmpty()) {
             return &cover;
         }
     }
@@ -220,9 +216,9 @@ bool QueryResultsModel::fetchCover(const QModelIndex &index)
 
 const QString *QueryResultsModel::lyrics(const QModelIndex &index) const
 {
-    if(!index.parent().isValid() && index.row() < m_results.size()) {
+    if (!index.parent().isValid() && index.row() < m_results.size()) {
         const QString &lyrics = m_results.at(index.row()).lyrics;
-        if(!lyrics.isEmpty()) {
+        if (!lyrics.isEmpty()) {
             return &lyrics;
         }
     }
@@ -252,8 +248,8 @@ bool QueryResultsModel::fetchLyrics(const QModelIndex &index)
  * \brief Constructs a new HttpResultsModel for the specified \a reply.
  * \remarks The model takes ownership over the specified \a reply.
  */
-HttpResultsModel::HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply) :
-    m_initialDescription(initialSongDescription)
+HttpResultsModel::HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply)
+    : m_initialDescription(initialSongDescription)
 {
     addReply(reply, this, &HttpResultsModel::handleInitialReplyFinished);
 }
@@ -274,10 +270,10 @@ void HttpResultsModel::handleInitialReplyFinished()
 {
     auto *reply = static_cast<QNetworkReply *>(sender());
     QByteArray data;
-    if(auto *newReply = evaluateReplyResults(reply, data, false)) {
+    if (auto *newReply = evaluateReplyResults(reply, data, false)) {
         addReply(newReply, this, &HttpResultsModel::handleInitialReplyFinished);
     } else {
-        if(!data.isEmpty()) {
+        if (!data.isEmpty()) {
             parseInitialResults(data);
         }
         setResultsAvailable(true); // update status, emit resultsAvailable()
@@ -290,26 +286,27 @@ QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByt
     reply->deleteLater();
     m_replies.removeAll(reply);
 
-    if(reply->error() == QNetworkReply::NoError) {
+    if (reply->error() == QNetworkReply::NoError) {
         const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-        if(!redirectionTarget.isNull()) {
+        if (!redirectionTarget.isNull()) {
             // there's a redirection available
             // -> resolve new URL
             const QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
             // -> ask user whether to follow redirection unless alwaysFollowRedirection is true
-            if(!alwaysFollowRedirection) {
-                const QString message = tr("<p>Do you want to redirect form <i>%1</i> to <i>%2</i>?</p>").arg(
-                            reply->url().toString(), newUrl.toString());
-                alwaysFollowRedirection = QMessageBox::question(nullptr, tr("Search"), message, QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
+            if (!alwaysFollowRedirection) {
+                const QString message
+                    = tr("<p>Do you want to redirect form <i>%1</i> to <i>%2</i>?</p>").arg(reply->url().toString(), newUrl.toString());
+                alwaysFollowRedirection
+                    = QMessageBox::question(nullptr, tr("Search"), message, QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
             }
-            if(alwaysFollowRedirection) {
+            if (alwaysFollowRedirection) {
                 return networkAccessManager().get(QNetworkRequest(newUrl));
             } else {
                 m_errorList << tr("Redirection to: ") + newUrl.toString();
                 return nullptr;
             }
         } else {
-            if((data = reply->readAll()).isEmpty()) {
+            if ((data = reply->readAll()).isEmpty()) {
                 m_errorList << tr("Server replied no data.");
             }
 #ifdef DEBUG_BUILD
@@ -328,7 +325,7 @@ QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByt
  */
 void HttpResultsModel::abort()
 {
-    if(!m_replies.isEmpty()) {
+    if (!m_replies.isEmpty()) {
         qDeleteAll(m_replies);
         m_replies.clear();
         // must update status manually because handleReplyFinished() won't be called anymore
@@ -340,10 +337,10 @@ void HttpResultsModel::abort()
 void HttpResultsModel::handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row)
 {
     QByteArray data;
-    if(auto *newReply = evaluateReplyResults(reply, data, true)) {
+    if (auto *newReply = evaluateReplyResults(reply, data, true)) {
         addReply(newReply, bind(&HttpResultsModel::handleCoverReplyFinished, this, newReply, albumId, row));
     } else {
-        if(!data.isEmpty()) {
+        if (!data.isEmpty()) {
             parseCoverResults(albumId, row, data);
         }
         setResultsAvailable(true);
@@ -353,8 +350,8 @@ void HttpResultsModel::handleCoverReplyFinished(QNetworkReply *reply, const QStr
 void HttpResultsModel::parseCoverResults(const QString &albumId, int row, const QByteArray &data)
 {
     // add cover -> determine album ID and row
-    if(!albumId.isEmpty() && row < m_results.size()) {
-        if(!data.isEmpty()) {
+    if (!albumId.isEmpty() && row < m_results.size()) {
+        if (!data.isEmpty()) {
             m_coverData[albumId] = data;
             m_results[row].cover = data;
             emit coverAvailable(index(row, 0));
@@ -366,6 +363,6 @@ void HttpResultsModel::parseCoverResults(const QString &albumId, int row, const 
     setFetchingCover(false);
 }
 
-}
+} // namespace QtGui
 
 #include "dbquery.moc"

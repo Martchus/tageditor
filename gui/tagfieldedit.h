@@ -17,7 +17,7 @@ class Tag;
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
 DECLARE_ENUM_CLASS(TagDataType, unsigned int);
 DECLARE_ENUM_CLASS(TagTextEncoding, unsigned int);
-}
+} // namespace TagParser
 
 namespace Widgets {
 class ButtonOverlay;
@@ -26,14 +26,13 @@ class ClearComboBox;
 class ClearSpinBox;
 class ClearPlainTextEdit;
 class IconButton;
-}
+} // namespace Widgets
 
 namespace QtGui {
 
 class PicturePreviewSelection;
 
-class TagFieldEdit : public QWidget
-{
+class TagFieldEdit : public QWidget {
     Q_OBJECT
 
 public:
@@ -41,7 +40,8 @@ public:
 
     const QList<TagParser::Tag *> &tags() const;
     TagParser::KnownField field() const;
-    void setTagField(const QList<TagParser::Tag *> &tags, TagParser::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool preventUiUpdate = false);
+    void setTagField(const QList<TagParser::Tag *> &tags, TagParser::KnownField field,
+        PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool preventUiUpdate = false);
     TagParser::TagValue value(TagParser::TagTextEncoding encoding, bool includeDescription) const;
     bool setValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool hasDescription() const;
@@ -77,7 +77,8 @@ private:
     QLabel *setupTypeNotSupportedLabel();
     void updateValue(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     void updateValue(TagParser::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    void updateValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
+    void updateValue(
+        const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
     Widgets::IconButton *setupRestoreButton();
     void showRestoreButton();
     void applyAutoCorrection(QString &textValue);
@@ -95,7 +96,6 @@ private:
     Widgets::ClearPlainTextEdit *m_plainTextEdit;
     Widgets::ClearLineEdit *m_descriptionLineEdit;
     Widgets::IconButton *m_restoreButton;
-
 };
 
 inline const QList<TagParser::Tag *> &TagFieldEdit::tags() const
@@ -108,6 +108,6 @@ inline TagParser::KnownField TagFieldEdit::field() const
     return m_field;
 }
 
-}
+} // namespace QtGui
 
 #endif // QTGUI_TAGFIELDLINEEDIT_H

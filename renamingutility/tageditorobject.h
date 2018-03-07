@@ -15,8 +15,7 @@ class FileSystemItem;
 enum class ItemType;
 enum class ActionType;
 
-class TagEditorObject : public QObject
-{
+class TagEditorObject : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString currentPath READ currentPath)
     Q_PROPERTY(QString currentName READ currentName)
@@ -49,7 +48,6 @@ public slots:
     void rename(const QString &newName);
     void move(const QString &newRelativeDirectory);
     void skip();
-
 
 private:
     TAGEDITOR_JS_ENGINE *m_engine;

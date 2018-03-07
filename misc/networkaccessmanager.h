@@ -8,7 +8,6 @@ QT_FORWARD_DECLARE_CLASS(QNetworkAccessManager)
 namespace Utility {
 
 QNetworkAccessManager &networkAccessManager();
-
 }
 
 #endif // TAGEDITOR_NETWORKACCESSMANAGER_H

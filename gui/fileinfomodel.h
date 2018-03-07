@@ -8,12 +8,11 @@
 namespace TagParser {
 class MediaFileInfo;
 class Diagnostics;
-}
+} // namespace TagParser
 
 namespace QtGui {
 
-class FileInfoModel : public QStandardItemModel
-{
+class FileInfoModel : public QStandardItemModel {
     Q_OBJECT
 public:
     explicit FileInfoModel(QObject *parent = nullptr);
@@ -39,6 +38,6 @@ private:
     TagParser::Diagnostics *m_diagReparsing;
 };
 
-}
+} // namespace QtGui
 
 #endif // FILEINFOMODEL_H

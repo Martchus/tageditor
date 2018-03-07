@@ -13,10 +13,10 @@ JavaScriptHighlighter::JavaScriptHighlighter(QTextDocument *parent)
     keywordPatterns.reserve(14);
     keywordPatterns << QStringLiteral("\\bvar\\b") << QStringLiteral("\\bArray\\b") << QStringLiteral("\\bfunction\\b")
                     << QStringLiteral("\\breturn\\b") << QStringLiteral("\\barguments\\b") << QStringLiteral("\\bif\\b")
-                    << QStringLiteral("\\belse\\b") << QStringLiteral("\\bfor\\b") << QStringLiteral("\\bswitch\\b")
-                    << QStringLiteral("\\bcase\\b") << QStringLiteral("\\bbreak\\b") << QStringLiteral("\\bwhile\\b")
-                    << QStringLiteral("\\bundefined\\b") << QStringLiteral("\\continue\\b");
-    for(const QString &pattern : keywordPatterns) {
+                    << QStringLiteral("\\belse\\b") << QStringLiteral("\\bfor\\b") << QStringLiteral("\\bswitch\\b") << QStringLiteral("\\bcase\\b")
+                    << QStringLiteral("\\bbreak\\b") << QStringLiteral("\\bwhile\\b") << QStringLiteral("\\bundefined\\b")
+                    << QStringLiteral("\\continue\\b");
+    for (const QString &pattern : keywordPatterns) {
         rule.pattern = QRegExp(pattern);
         rule.format = m_keywordFormat;
         m_highlightingRules.append(rule);
@@ -46,7 +46,7 @@ JavaScriptHighlighter::JavaScriptHighlighter(QTextDocument *parent)
 
 void JavaScriptHighlighter::highlightBlock(const QString &text)
 {
-    for(const HighlightingRule &rule : m_highlightingRules) {
+    for (const HighlightingRule &rule : m_highlightingRules) {
         QRegExp expression(rule.pattern);
         int index = expression.indexIn(text);
         while (index >= 0) {
@@ -76,4 +76,4 @@ void JavaScriptHighlighter::highlightBlock(const QString &text)
     }
 }
 
-}
+} // namespace QtGui

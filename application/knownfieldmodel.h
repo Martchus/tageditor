@@ -2,12 +2,12 @@
 #define KNOWNFIELDMODEL_H
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-# include <qtutilities/models/checklistmodel.h>
-# include <QAbstractListModel>
-# include <QList>
+#include <QAbstractListModel>
+#include <QList>
+#include <qtutilities/models/checklistmodel.h>
 #else
-# include <c++utilities/application/global.h>
-# define Q_OBJECT
+#include <c++utilities/application/global.h>
+#define Q_OBJECT
 #endif
 
 namespace TagParser {
@@ -18,16 +18,12 @@ namespace Settings {
 
 class KnownFieldModel
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-        : public Models::ChecklistModel
+    : public Models::ChecklistModel
 #endif
 {
     Q_OBJECT
 public:
-    enum class DefaultSelection
-    {
-        None,
-        CommonFields
-    };
+    enum class DefaultSelection { None, CommonFields };
 
     static const char *fieldName(TagParser::KnownField field);
 
@@ -50,6 +46,6 @@ inline Models::ChecklistItem KnownFieldModel::mkItem(TagParser::KnownField field
 }
 #endif
 
-}
+} // namespace Settings
 
 #endif // KNOWNFIELDMODEL_H

@@ -5,8 +5,7 @@
 
 namespace QtGui {
 
-class CodeEdit : public QPlainTextEdit
-{
+class CodeEdit : public QPlainTextEdit {
 public:
     CodeEdit(QWidget *parent = nullptr);
     ~CodeEdit();
@@ -34,6 +33,6 @@ inline void CodeEdit::setIndentation(const QString &indentation)
     m_indentation = indentation;
 }
 
-}
+} // namespace QtGui
 
 #endif // CODEEDITOR_H

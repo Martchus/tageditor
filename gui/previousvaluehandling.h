@@ -6,8 +6,7 @@ namespace QtGui {
 /*!
  * \brief Specifies the "previous value handling" policy.
  */
-enum class PreviousValueHandling : int
-{
+enum class PreviousValueHandling : int {
     Auto, /**< The policy is determined automatically. */
     Clear, /**< The previous value will be cleared. */
     Update, /**< The previous value will be updated. */
@@ -15,6 +14,6 @@ enum class PreviousValueHandling : int
     Keep /**< The previous value will be kept. */
 };
 
-}
+} // namespace QtGui
 
 #endif // QTGUI_PREVIOUSVALUEHANDLING_H

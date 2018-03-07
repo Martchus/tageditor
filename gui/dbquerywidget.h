@@ -24,8 +24,7 @@ class TagEditorWidget;
 class TagEdit;
 struct SongDescription;
 
-class DbQueryWidget : public QWidget
-{
+class DbQueryWidget : public QWidget {
     Q_OBJECT
 
 public:
@@ -75,6 +74,6 @@ private:
     QAction *m_insertPresentDataAction;
 };
 
-}
+} // namespace QtGui
 
 #endif // DBQUERYWIDGET_H

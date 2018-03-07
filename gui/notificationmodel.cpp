@@ -5,8 +5,8 @@
 #include <c++utilities/chrono/datetime.h>
 
 #include <QApplication>
-#include <QStyle>
 #include <QIcon>
+#include <QStyle>
 
 using namespace std;
 using namespace ChronoUtilities;
@@ -15,38 +15,37 @@ using namespace Utility;
 
 namespace QtGui {
 
-DiagModel::DiagModel(QObject *parent) :
-    QAbstractListModel(parent)
-{}
+DiagModel::DiagModel(QObject *parent)
+    : QAbstractListModel(parent)
+{
+}
 
 QVariant DiagModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    switch(orientation) {
+    switch (orientation) {
     case Qt::Horizontal:
-        switch(role) {
+        switch (role) {
         case Qt::DisplayRole:
-            switch(section) {
+            switch (section) {
             case 0:
                 return tr("Context");
             case 1:
                 return tr("Message");
             case 2:
                 return tr("Time");
-            default:
-                ;
+            default:;
             }
             break;
-        }        
+        }
         break;
-    default:
-        ;
+    default:;
     }
     return QVariant();
 }
 
 int DiagModel::columnCount(const QModelIndex &parent) const
 {
-    if(!parent.isValid()) {
+    if (!parent.isValid()) {
         return 3;
     }
     return 0;
@@ -54,7 +53,7 @@ int DiagModel::columnCount(const QModelIndex &parent) const
 
 int DiagModel::rowCount(const QModelIndex &parent) const
 {
-    if(!parent.isValid()) {
+    if (!parent.isValid()) {
         return sizeToInt(m_diag.size());
     }
     return 0;
@@ -67,13 +66,13 @@ Qt::ItemFlags DiagModel::flags(const QModelIndex &index) const
 
 QVariant DiagModel::data(const QModelIndex &index, int role) const
 {
-    if(index.isValid() && index.row() >= 0 && static_cast<std::size_t>(index.row()) < m_diag.size()) {
-        switch(role) {
+    if (index.isValid() && index.row() >= 0 && static_cast<std::size_t>(index.row()) < m_diag.size()) {
+        switch (role) {
         case Qt::DisplayRole:
-            switch(index.column()) {
+            switch (index.column()) {
             case 0: {
                 const string &context = m_diag[static_cast<std::size_t>(index.row())].context();
-                if(context.empty()) {
+                if (context.empty()) {
                     return tr("unspecified");
                 } else {
                     return QString::fromUtf8(context.c_str());
@@ -82,15 +81,15 @@ QVariant DiagModel::data(const QModelIndex &index, int role) const
             case 1:
                 return QString::fromUtf8(m_diag[static_cast<std::size_t>(index.row())].message().c_str());
             case 2:
-                return QString::fromUtf8(m_diag[static_cast<std::size_t>(index.row())].creationTime().toString(DateTimeOutputFormat::DateAndTime, true).c_str());
-            default:
-                ;
+                return QString::fromUtf8(
+                    m_diag[static_cast<std::size_t>(index.row())].creationTime().toString(DateTimeOutputFormat::DateAndTime, true).c_str());
+            default:;
             }
             break;
         case Qt::DecorationRole:
-            switch(index.column()) {
+            switch (index.column()) {
             case 0:
-                switch(m_diag[static_cast<std::size_t>(index.row())].level()) {
+                switch (m_diag[static_cast<std::size_t>(index.row())].level()) {
                 case DiagLevel::None:
                 case DiagLevel::Debug:
                     return debugIcon();
@@ -103,12 +102,10 @@ QVariant DiagModel::data(const QModelIndex &index, int role) const
                     return errorIcon();
                 }
                 break;
-            default:
-                ;
+            default:;
             }
             break;
-        default:
-            ;
+        default:;
         }
     }
     return QVariant();
@@ -150,4 +147,4 @@ const QIcon &DiagModel::debugIcon()
     return icon;
 }
 
-}
+} // namespace QtGui

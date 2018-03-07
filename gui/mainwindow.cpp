@@ -1,31 +1,31 @@
 #include "./mainwindow.h"
-#include "./settingsdialog.h"
-#include "./renamefilesdialog.h"
 #include "./dbquerywidget.h"
+#include "./renamefilesdialog.h"
+#include "./settingsdialog.h"
 #include "./tageditorwidget.h"
 
 #include "../application/settings.h"
-#include "../misc/utility.h"
 #include "../misc/htmlinfo.h"
+#include "../misc/utility.h"
 
 #include "ui_mainwindow.h"
 
 #include <tagparser/mediafileinfo.h>
 
 #include <qtutilities/aboutdialog/aboutdialog.h>
-#include <qtutilities/misc/dialogutils.h>
-#include <qtutilities/misc/desktoputils.h>
-#include <qtutilities/misc/trylocker.h>
 #include <qtutilities/misc/conversion.h>
+#include <qtutilities/misc/desktoputils.h>
+#include <qtutilities/misc/dialogutils.h>
+#include <qtutilities/misc/trylocker.h>
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
 
-#include <QMessageBox>
 #include <QFileDialog>
 #include <QFileSystemModel>
-#include <QTextStream>
+#include <QMessageBox>
 #include <QTextCodec>
+#include <QTextStream>
 
 #include <iomanip>
 
@@ -42,12 +42,7 @@ namespace QtGui {
 /*!
  * \brief The LoadingResult enum specifies whether the file could be parsed.
  */
-enum LoadingResult : char
-{
-    ParsingSuccessful,
-    FatalParsingError,
-    IoError
-};
+enum LoadingResult : char { ParsingSuccessful, FatalParsingError, IoError };
 
 /*!
  * \class QtGui::MainWindow
@@ -73,13 +68,13 @@ MediaFileInfo &MainWindow::fileInfo()
 /*!
  * \brief Constructs a new main window.
  */
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent, Qt::Window),
-    m_ui(new Ui::MainWindow()),
-    m_internalFileSelection(false),
-    m_aboutDlg(nullptr),
-    m_settingsDlg(nullptr),
-    m_dbQueryWidget(nullptr)
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent, Qt::Window)
+    , m_ui(new Ui::MainWindow())
+    , m_internalFileSelection(false)
+    , m_aboutDlg(nullptr)
+    , m_settingsDlg(nullptr)
+    , m_dbQueryWidget(nullptr)
 {
     // setup UI
     m_ui->setupUi(this);
@@ -112,7 +107,7 @@ MainWindow::MainWindow(QWidget *parent) :
     handleFileStatusChange(false, false);
 
     // dbquery dock widget
-    if(settings.dbQuery.widgetShown) {
+    if (settings.dbQuery.widgetShown) {
         initDbQueryWidget();
     }
 
@@ -135,20 +130,21 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_ui->actionReload, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::reparseFile);
     connect(m_ui->actionExternalPlayer, &QAction::triggered, this, &MainWindow::spawnExternalPlayer);
     //  menu: directory
-    connect(m_ui->actionSelect_next_file, &QAction::triggered, this, static_cast<void(MainWindow::*)(void)>(&MainWindow::selectNextFile));
+    connect(m_ui->actionSelect_next_file, &QAction::triggered, this, static_cast<void (MainWindow::*)(void)>(&MainWindow::selectNextFile));
     connect(m_ui->actionSelect_next_file_and_save_current, &QAction::triggered, m_ui->tagEditorWidget, &TagEditorWidget::saveAndShowNextFile);
     connect(m_ui->actionRename_files, &QAction::triggered, this, &MainWindow::showRenameFilesDlg);
     //  menu: help
     connect(m_ui->actionAbout, &QAction::triggered, this, &MainWindow::showAboutDlg);
     // tag editor widget
-    connect(m_ui->tagEditorWidget, &TagEditorWidget::nextFileSelected, this, static_cast<void(MainWindow::*)(void)>(&MainWindow::selectNextFile));
+    connect(m_ui->tagEditorWidget, &TagEditorWidget::nextFileSelected, this, static_cast<void (MainWindow::*)(void)>(&MainWindow::selectNextFile));
     connect(m_ui->tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &MainWindow::handleFileStatusChange);
     connect(m_ui->tagEditorWidget, &TagEditorWidget::statusMessage, m_ui->statusBar, &QStatusBar::showMessage);
     connect(m_ui->tagEditorWidget, &TagEditorWidget::currentPathChanged, this, &MainWindow::handleCurrentPathChanged);
     //  misc
     connect(m_ui->pathLineEdit, &QLineEdit::textEdited, this, &MainWindow::pathEntered);
     connect(m_ui->filesTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::fileSelected);
-    connect(m_ui->selectNextCommandLinkButton, &QCommandLinkButton::clicked, this, static_cast<void(MainWindow::*)(void)>(&MainWindow::selectNextFile));
+    connect(
+        m_ui->selectNextCommandLinkButton, &QCommandLinkButton::clicked, this, static_cast<void (MainWindow::*)(void)>(&MainWindow::selectNextFile));
     // apply settings
     setCurrentDirectory(settings.mainWindow.currentFileBrowserDirectory);
     applySettingsFromDialog();
@@ -158,7 +154,8 @@ MainWindow::MainWindow(QWidget *parent) :
  * \brief Destroys the main window.
  */
 MainWindow::~MainWindow()
-{}
+{
+}
 
 /*!
  * \brief Returns directory the file browser is currently showning.
@@ -190,8 +187,8 @@ bool MainWindow::isLayoutLocked() const
  */
 void MainWindow::setLayoutLocked(bool locked)
 {
-    if(locked != isLayoutLocked()) {
-        if(locked) {
+    if (locked != isLayoutLocked()) {
+        if (locked) {
             m_ui->fileSelectionDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
             m_ui->dbQueryDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
             m_ui->lockLayout->setText(tr("Unlock layout"));
@@ -226,7 +223,7 @@ void MainWindow::startParsing(const QString &path)
 bool MainWindow::event(QEvent *event)
 {
     auto &settings = Settings::values();
-    switch(event->type()) {
+    switch (event->type()) {
     case QEvent::Close:
         // save settings
         settings.mainWindow.geometry = saveGeometry();
@@ -235,8 +232,7 @@ bool MainWindow::event(QEvent *event)
         settings.mainWindow.layoutLocked = isLayoutLocked();
         settings.dbQuery.widgetShown = m_ui->dbQueryDockWidget->isVisible();
         break;
-    default:
-        ;
+    default:;
     }
     return QMainWindow::event(event);
 }
@@ -250,9 +246,9 @@ bool MainWindow::event(QEvent *event)
 void MainWindow::pathEntered()
 {
     const QString path = m_ui->pathLineEdit->text();
-    if(!path.isEmpty()) {
+    if (!path.isEmpty()) {
         const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(path));
-        if(index.isValid()) {
+        if (index.isValid()) {
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
             m_ui->pathLineEdit->setProperty("classNames", QStringList());
         } else {
@@ -270,15 +266,15 @@ void MainWindow::pathEntered()
  */
 void MainWindow::fileSelected()
 {
-    if(!m_internalFileSelection) {
+    if (!m_internalFileSelection) {
         const QModelIndexList selectedIndexes = m_ui->filesTreeView->selectionModel()->selectedRows();
-        if(selectedIndexes.count() == 1) {
+        if (selectedIndexes.count() == 1) {
             const QString path(m_fileModel->filePath(m_fileFilterModel->mapToSource(selectedIndexes.at(0))));
             const QFileInfo fileInfo(path);
-            if(fileInfo.isFile()) {
+            if (fileInfo.isFile()) {
                 startParsing(path);
                 m_ui->pathLineEdit->setText(fileInfo.dir().path());
-            } else if(fileInfo.isDir()) {
+            } else if (fileInfo.isDir()) {
                 m_ui->pathLineEdit->setText(path);
             }
             m_ui->pathLineEdit->setProperty("classNames", QStringList());
@@ -313,7 +309,7 @@ void MainWindow::handleCurrentPathChanged(const QString &newPath)
     // ensure the current file is still selected
     m_internalFileSelection = true;
     const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(newPath));
-    if(index.isValid()) {
+    if (index.isValid()) {
         m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
         m_ui->pathLineEdit->setText(QFileInfo(newPath).dir().path());
         m_ui->pathLineEdit->setProperty("classNames", QStringList());
@@ -330,7 +326,7 @@ void MainWindow::handleCurrentPathChanged(const QString &newPath)
 void MainWindow::spawnExternalPlayer()
 {
     const QString &currentPath = m_ui->tagEditorWidget->currentPath();
-    if(!currentPath.isEmpty()) {
+    if (!currentPath.isEmpty()) {
         DesktopUtils::openLocalFileOrDir(currentPath);
     } else {
         m_ui->statusBar->showMessage(tr("No file opened."));
@@ -342,9 +338,10 @@ void MainWindow::spawnExternalPlayer()
  */
 void MainWindow::initDbQueryWidget()
 {
-    if(!m_dbQueryWidget) {
+    if (!m_dbQueryWidget) {
         m_ui->dbQueryDockWidget->setWidget(m_dbQueryWidget = new DbQueryWidget(m_ui->tagEditorWidget, this));
-        connect(m_ui->tagEditorWidget, &TagEditorWidget::tagValuesLoaded, m_dbQueryWidget, static_cast<void(DbQueryWidget::*)(void)>(&DbQueryWidget::autoInsertMatchingResults), Qt::DirectConnection);
+        connect(m_ui->tagEditorWidget, &TagEditorWidget::tagValuesLoaded, m_dbQueryWidget,
+            static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::autoInsertMatchingResults), Qt::DirectConnection);
     }
 }
 
@@ -362,10 +359,11 @@ void MainWindow::toggleDbQueryWidget()
  */
 void MainWindow::showAboutDlg()
 {
-    if(!m_aboutDlg) {
-        m_aboutDlg = new Dialogs::AboutDialog(this, tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."), QImage(QStringLiteral(":/tageditor/icons/hicolor/128x128/apps/tageditor.png")));
+    if (!m_aboutDlg) {
+        m_aboutDlg = new Dialogs::AboutDialog(this, tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."),
+            QImage(QStringLiteral(":/tageditor/icons/hicolor/128x128/apps/tageditor.png")));
     }
-    if(m_aboutDlg->isHidden()) {
+    if (m_aboutDlg->isHidden()) {
         m_aboutDlg->show();
     } else {
         m_aboutDlg->activateWindow();
@@ -377,7 +375,7 @@ void MainWindow::showAboutDlg()
  */
 void MainWindow::showSettingsDlg()
 {
-    if(!m_settingsDlg) {
+    if (!m_settingsDlg) {
         m_settingsDlg = new SettingsDialog(this);
         connect(m_settingsDlg, &SettingsDialog::applied, this, &MainWindow::applySettingsFromDialog);
         connect(m_settingsDlg, &SettingsDialog::applied, m_ui->tagEditorWidget, &TagEditorWidget::applySettingsFromDialog);
@@ -390,11 +388,11 @@ void MainWindow::showSettingsDlg()
  */
 void MainWindow::showRenameFilesDlg()
 {
-    if(!m_renameFilesDlg) {
+    if (!m_renameFilesDlg) {
         m_renameFilesDlg.reset(new RenameFilesDialog);
     }
     m_renameFilesDlg->setDirectory(currentDirectory());
-    if(m_renameFilesDlg->isHidden()) {
+    if (m_renameFilesDlg->isHidden()) {
         m_renameFilesDlg->show();
     } else {
         m_renameFilesDlg->activateWindow();
@@ -409,7 +407,7 @@ void MainWindow::selectNextFile()
 {
     QItemSelectionModel *selectionModel = m_ui->filesTreeView->selectionModel();
     const QModelIndexList selectedIndexes = selectionModel->selectedIndexes();
-    if(!selectedIndexes.isEmpty()) {
+    if (!selectedIndexes.isEmpty()) {
         selectNextFile(selectionModel, selectedIndexes.at(0), false);
     }
 }
@@ -423,30 +421,32 @@ void MainWindow::selectNextFile()
 void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QModelIndex &currentIndex, bool notDeeper)
 {
     QModelIndex next;
-    if(!notDeeper && selectionModel->model()->hasChildren(currentIndex)) {
+    if (!notDeeper && selectionModel->model()->hasChildren(currentIndex)) {
         // a directory is selected -> go deeper
-        if(m_fileFilterModel->canFetchMore(currentIndex)) {
+        if (m_fileFilterModel->canFetchMore(currentIndex)) {
             // files and subdirectories have to be fetched
             // -> QFileSystemModel seems to fetch files and directories async
             // -> hence fetchMore will return immediatly
             // -> select next file when rowsInserted is emitted
             auto conn = make_shared<QMetaObject::Connection>();
-            *conn = connect(m_fileFilterModel, &QAbstractItemModel::rowsInserted, [this, selectionModel, currentIndex, conn] (const QModelIndex &parent, int, int) {
-                disconnect(*conn);
-                if(parent == currentIndex) {
-                    const QModelIndex next = m_fileFilterModel->index(0, 0, parent);
-                    if(next.isValid()) {
-                        if(m_ui->filesTreeView->model()->hasChildren(next)) {
-                            // next item is a directory -> keep on searching
-                            selectNextFile(selectionModel, next, false);
+            *conn = connect(m_fileFilterModel, &QAbstractItemModel::rowsInserted,
+                [this, selectionModel, currentIndex, conn](const QModelIndex &parent, int, int) {
+                    disconnect(*conn);
+                    if (parent == currentIndex) {
+                        const QModelIndex next = m_fileFilterModel->index(0, 0, parent);
+                        if (next.isValid()) {
+                            if (m_ui->filesTreeView->model()->hasChildren(next)) {
+                                // next item is a directory -> keep on searching
+                                selectNextFile(selectionModel, next, false);
+                            } else {
+                                m_ui->filesTreeView->selectionModel()->setCurrentIndex(
+                                    next, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+                            }
                         } else {
-                            m_ui->filesTreeView->selectionModel()->setCurrentIndex(next, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+                            selectNextFile(selectionModel, currentIndex, true);
                         }
-                    } else {
-                        selectNextFile(selectionModel, currentIndex, true);
                     }
-                }
-            });
+                });
             m_fileModel->fetchMore(m_fileFilterModel->mapToSource(currentIndex));
             return;
         } else {
@@ -454,20 +454,20 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
             next = currentIndex.child(0, currentIndex.column());
         }
     }
-    if(!next.isValid()) {
+    if (!next.isValid()) {
         // not possible to go deeper -> choose next sibling
         next = currentIndex.sibling(currentIndex.row() + 1, currentIndex.column());
     }
-    if(!next.isValid()) {
+    if (!next.isValid()) {
         // not possible to choose next sibling -> go higher
         const QModelIndex parent = currentIndex.parent();
-        if(parent.isValid()) {
+        if (parent.isValid()) {
             selectNextFile(selectionModel, parent, true);
             return;
         }
     }
-    if(next.isValid()) {
-        if(selectionModel->model()->hasChildren(next)) {
+    if (next.isValid()) {
+        if (selectionModel->model()->hasChildren(next)) {
             // next item is a directory -> keep on searching
             selectNextFile(selectionModel, next, false);
         } else {
@@ -491,7 +491,7 @@ void MainWindow::showNextFileNotFound()
 void MainWindow::showOpenFileDlg()
 {
     const QString path = QFileDialog::getOpenFileName(this, tr("Open file - ") + QCoreApplication::applicationName());
-    if(!path.isEmpty()) {
+    if (!path.isEmpty()) {
         startParsing(path);
     }
 }
@@ -501,9 +501,9 @@ void MainWindow::showOpenFileDlg()
  */
 void MainWindow::showSaveAsDlg()
 {
-    const QString path = QFileDialog::getSaveFileName(this, tr("Save changes as - ") + QCoreApplication::applicationName(),
-                                                      m_ui->tagEditorWidget->currentDir());
-    if(!path.isEmpty()) {
+    const QString path
+        = QFileDialog::getSaveFileName(this, tr("Save changes as - ") + QCoreApplication::applicationName(), m_ui->tagEditorWidget->currentDir());
+    if (!path.isEmpty()) {
         m_ui->tagEditorWidget->fileInfo().setSaveFilePath(toNativeFileName(path).data());
         m_ui->tagEditorWidget->applyEntriesAndSaveChangings();
     }
@@ -516,17 +516,17 @@ void MainWindow::showSaveAsDlg()
 void MainWindow::applySettingsFromDialog()
 {
     auto &settings = Settings::values();
-    if(m_fileFilterModel->isFilterEnabled() != settings.fileBrowser.hideBackupFiles) {
+    if (m_fileFilterModel->isFilterEnabled() != settings.fileBrowser.hideBackupFiles) {
         // check this condition to avoid unnecessary model reset
         m_fileFilterModel->setFilterEnabled(settings.fileBrowser.hideBackupFiles);
         const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(m_ui->pathLineEdit->text()));
-        if(index.isValid()) {
+        if (index.isValid()) {
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Select);
         }
     }
-    if(m_fileModel->isReadOnly() != settings.fileBrowser.readOnly) {
+    if (m_fileModel->isReadOnly() != settings.fileBrowser.readOnly) {
         m_fileModel->setReadOnly(settings.fileBrowser.readOnly);
     }
 }
 
-}
+} // namespace QtGui

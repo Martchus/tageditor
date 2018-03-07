@@ -9,8 +9,7 @@ class Argument;
 
 namespace Cli {
 
-struct SetTagInfoArgs
-{
+struct SetTagInfoArgs {
     SetTagInfoArgs(ApplicationUtilities::Argument &filesArg, ApplicationUtilities::Argument &verboseArg);
     ApplicationUtilities::Argument &filesArg;
     ApplicationUtilities::Argument &verboseArg;
@@ -49,13 +48,19 @@ extern const char *const fieldNames;
 extern const char *const fieldNamesForSet;
 void applyGeneralConfig(const ApplicationUtilities::Argument &timeSapnFormatArg);
 void printFieldNames(const ApplicationUtilities::ArgumentOccurrence &occurrence);
-void displayFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
-void generateFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &inputFileArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
-void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
+void displayFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg,
+    const ApplicationUtilities::Argument &verboseArg);
+void generateFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &inputFileArg,
+    const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
+void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &filesArg,
+    const ApplicationUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
-void extractField(const ApplicationUtilities::Argument &fieldArg, const ApplicationUtilities::Argument &attachmentArg, const ApplicationUtilities::Argument &inputFilesArg, const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &verboseArg);
-void exportToJson(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &prettyArg);
+void extractField(const ApplicationUtilities::Argument &fieldArg, const ApplicationUtilities::Argument &attachmentArg,
+    const ApplicationUtilities::Argument &inputFilesArg, const ApplicationUtilities::Argument &outputFileArg,
+    const ApplicationUtilities::Argument &verboseArg);
+void exportToJson(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg,
+    const ApplicationUtilities::Argument &prettyArg);
 
-}
+} // namespace Cli
 
 #endif // MAINFEATURES_H

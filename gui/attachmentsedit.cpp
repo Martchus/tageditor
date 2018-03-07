@@ -4,14 +4,14 @@
 
 #include "ui_attachmentsedit.h"
 
-#include <tagparser/mediafileinfo.h>
 #include <tagparser/abstractattachment.h>
 #include <tagparser/diagnostics.h>
+#include <tagparser/mediafileinfo.h>
 
 #include <qtutilities/misc/conversion.h>
 
-#include <c++utilities/io/copy.h>
 #include <c++utilities/io/catchiofailure.h>
+#include <c++utilities/io/copy.h>
 #include <c++utilities/io/nativefilestream.h>
 
 #include <QFileDialog>
@@ -26,10 +26,10 @@ using namespace TagParser;
 
 namespace QtGui {
 
-AttachmentsEdit::AttachmentsEdit(MediaFileInfo *fileInfo, QWidget *parent) :
-    QWidget(parent),
-    m_ui(new Ui::AttachmentsEdit),
-    m_model(nullptr)
+AttachmentsEdit::AttachmentsEdit(MediaFileInfo *fileInfo, QWidget *parent)
+    : QWidget(parent)
+    , m_ui(new Ui::AttachmentsEdit)
+    , m_model(nullptr)
 {
     // setup UI and model
     m_ui->setupUi(this);
@@ -46,22 +46,23 @@ AttachmentsEdit::AttachmentsEdit(MediaFileInfo *fileInfo, QWidget *parent) :
 }
 
 AttachmentsEdit::~AttachmentsEdit()
-{}
+{
+}
 
 void AttachmentsEdit::setFileInfo(TagParser::MediaFileInfo *fileInfo, bool updateUi)
 {
     m_fileInfo = fileInfo;
     m_currentAttachments.clear();
-    if(fileInfo && fileInfo->areAttachmentsSupported()) {
-        if(AbstractContainer *container = fileInfo->container()) {
+    if (fileInfo && fileInfo->areAttachmentsSupported()) {
+        if (AbstractContainer *container = fileInfo->container()) {
             auto count = container->attachmentCount();
             m_currentAttachments.reserve(count);
-            for(size_t i = 0; i < count; ++i) {
+            for (size_t i = 0; i < count; ++i) {
                 m_currentAttachments << container->attachment(i);
             }
         }
     }
-    if(updateUi) {
+    if (updateUi) {
         setEnabled(fileInfo && fileInfo->areAttachmentsSupported());
         setupUi();
     }
@@ -92,7 +93,7 @@ void AttachmentsEdit::invalidate()
 
 void AttachmentsEdit::addFile(const QString &path)
 {
-    if(!fileInfo() || fileInfo()->attachmentsParsingStatus() != ParsingStatus::Ok || !fileInfo()->container()) {
+    if (!fileInfo() || fileInfo()->attachmentsParsingStatus() != ParsingStatus::Ok || !fileInfo()->container()) {
         throw Failure();
     }
     // create and add attachment
@@ -108,12 +109,13 @@ void AttachmentsEdit::addFile(const QString &path)
 void AttachmentsEdit::showFileSelection()
 {
     auto path = QFileDialog::getOpenFileName(this, tr("Select a file to attach"));
-    if(!path.isEmpty()) {
+    if (!path.isEmpty()) {
         try {
             addFile(path);
-        } catch(const Failure &) {
-            QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added because the attachments of the file could not be parsed successfully."));
-        } catch(...) {
+        } catch (const Failure &) {
+            QMessageBox::warning(this, QApplication::applicationName(),
+                tr("The file couldn't be added because the attachments of the file could not be parsed successfully."));
+        } catch (...) {
             ::IoUtilities::catchIoFailure();
             QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added because an IO error occured."));
         }
@@ -123,11 +125,11 @@ void AttachmentsEdit::showFileSelection()
 void AttachmentsEdit::extractSelected()
 {
     auto selectedRows = m_ui->treeView->selectionModel()->selectedRows();
-    if(selectedRows.size() == 1) {
-        if(auto *attachment = m_model->attachment(selectedRows.front())) {
-            if(attachment->data() && attachment->data()->size()) {
+    if (selectedRows.size() == 1) {
+        if (auto *attachment = m_model->attachment(selectedRows.front())) {
+            if (attachment->data() && attachment->data()->size()) {
                 auto fileName = QFileDialog::getSaveFileName(this, tr("Select where to store the extracted file"));
-                if(!fileName.isEmpty()) {
+                if (!fileName.isEmpty()) {
                     auto *data = attachment->data();
                     auto &input = attachment->data()->stream();
                     NativeFileStream file;
@@ -137,7 +139,7 @@ void AttachmentsEdit::extractSelected()
                         file.open(toNativeFileName(fileName).data(), ios_base::out | ios_base::binary);
                         CopyHelper<0x1000> helper;
                         helper.copy(input, file, data->size());
-                    } catch(...) {
+                    } catch (...) {
                         ::IoUtilities::catchIoFailure();
                         QMessageBox::warning(this, QApplication::applicationName(), tr("An IO error occured when extracting the attached file."));
                     }
@@ -161,6 +163,4 @@ void AttachmentsEdit::setupUi()
     m_model->setAttachments(m_currentAttachments, true, currentlyAttached);
 }
 
-
-
-}
+} // namespace QtGui

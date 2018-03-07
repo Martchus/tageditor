@@ -7,8 +7,7 @@
 
 namespace QtGui {
 
-class LyricsWikiaResultsModel : public HttpResultsModel
-{
+class LyricsWikiaResultsModel : public HttpResultsModel {
     Q_OBJECT
 
 public:

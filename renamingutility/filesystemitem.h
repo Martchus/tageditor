@@ -6,33 +6,20 @@
 
 namespace RenamingUtility {
 
-enum class ActionType
-{
-    None,
-    Rename,
-    Skip
-};
+enum class ActionType { None, Rename, Skip };
 
-enum class ItemStatus
-{
-    Current,
-    New
-};
+enum class ItemStatus { Current, New };
 
-enum class ItemType
-{
-    Dir,
-    File
-};
+enum class ItemType { Dir, File };
 
-class FileSystemItem
-{
+class FileSystemItem {
 
 public:
-    explicit FileSystemItem(ItemStatus status = ItemStatus::Current, ItemType type = ItemType::File, const QString &name = QString(), FileSystemItem *parent = nullptr);
+    explicit FileSystemItem(
+        ItemStatus status = ItemStatus::Current, ItemType type = ItemType::File, const QString &name = QString(), FileSystemItem *parent = nullptr);
     ~FileSystemItem();
     FileSystemItem(const FileSystemItem &other) = delete;
-    FileSystemItem &operator =(const FileSystemItem &other) = delete;
+    FileSystemItem &operator=(const FileSystemItem &other) = delete;
 
     FileSystemItem *root();
     FileSystemItem *parent() const;
@@ -104,11 +91,11 @@ inline FileSystemItem *FileSystemItem::counterpart() const
 
 inline void FileSystemItem::setCounterpart(FileSystemItem *counterpart)
 {
-    if(m_counterpart) {
+    if (m_counterpart) {
         m_counterpart->m_counterpart = nullptr;
     }
     m_counterpart = counterpart;
-    if(m_counterpart) {
+    if (m_counterpart) {
         m_counterpart->m_counterpart = this;
     }
 }
@@ -125,7 +112,7 @@ inline ItemType FileSystemItem::type() const
 
 inline bool FileSystemItem::errorOccured() const
 {
-    if(m_counterpart) {
+    if (m_counterpart) {
         return m_error || m_counterpart->m_error;
     } else {
         return m_error;
@@ -139,7 +126,7 @@ inline void FileSystemItem::setErrorOccured(bool error)
 
 inline bool FileSystemItem::applied() const
 {
-    if(m_counterpart) {
+    if (m_counterpart) {
         return m_applied || m_counterpart->m_applied;
     } else {
         return m_applied;
@@ -163,7 +150,7 @@ inline void FileSystemItem::setName(const QString &name)
 
 inline const QString &FileSystemItem::note() const
 {
-    if(m_note.isEmpty() && m_counterpart) {
+    if (m_note.isEmpty() && m_counterpart) {
         return m_counterpart->note();
     } else {
         return m_note;
@@ -187,7 +174,7 @@ inline void FileSystemItem::setChecked(bool checked)
 
 inline bool FileSystemItem::checkable() const
 {
-    if(m_counterpart) {
+    if (m_counterpart) {
         return m_counterpart->m_checkable || m_checkable;
     } else {
         return m_checkable;
@@ -201,11 +188,9 @@ inline void FileSystemItem::setCheckable(bool checkable)
 
 inline int FileSystemItem::row()
 {
-    return m_parent
-            ? m_parent->children().indexOf(this)
-            : -1;
+    return m_parent ? m_parent->children().indexOf(this) : -1;
 }
 
-}
+} // namespace RenamingUtility
 
 #endif // FILESYSTEMITEM_H

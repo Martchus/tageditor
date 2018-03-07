@@ -2,8 +2,7 @@
 
 #include <QNetworkAccessManager>
 
-namespace Utility
-{
+namespace Utility {
 
 QNetworkAccessManager &networkAccessManager()
 {
@@ -11,4 +10,4 @@ QNetworkAccessManager &networkAccessManager()
     return mgr;
 }
 
-}
+} // namespace Utility

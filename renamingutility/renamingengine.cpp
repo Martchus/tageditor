@@ -13,20 +13,22 @@ using namespace std;
 
 namespace RenamingUtility {
 
-RenamingEngine::RenamingEngine(QObject *parent) :
-    QObject(parent),
+RenamingEngine::RenamingEngine(QObject *parent)
+    : QObject(parent)
+    ,
 #ifndef TAGEDITOR_NO_JSENGINE
-    m_tagEditorQObj(new TagEditorObject(&m_engine)),
-    m_tagEditorJsObj(TAGEDITOR_JS_QOBJECT(m_engine, m_tagEditorQObj)),
+    m_tagEditorQObj(new TagEditorObject(&m_engine))
+    , m_tagEditorJsObj(TAGEDITOR_JS_QOBJECT(m_engine, m_tagEditorQObj))
+    ,
 #endif
-    m_itemsProcessed(0),
-    m_errorsOccured(0),
-    m_aborted(false),
-    m_includeSubdirs(false),
-    m_isBusy(false),
-    m_model(nullptr),
-    m_currentModel(nullptr),
-    m_previewModel(nullptr)
+    m_itemsProcessed(0)
+    , m_errorsOccured(0)
+    , m_aborted(false)
+    , m_includeSubdirs(false)
+    , m_isBusy(false)
+    , m_model(nullptr)
+    , m_currentModel(nullptr)
+    , m_previewModel(nullptr)
 {
 #ifndef TAGEDITOR_NO_JSENGINE
     m_engine.globalObject().setProperty(QStringLiteral("tageditor"), m_tagEditorJsObj);
@@ -38,12 +40,12 @@ RenamingEngine::RenamingEngine(QObject *parent) :
 #ifndef TAGEDITOR_NO_JSENGINE
 bool RenamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
 {
-    if(TAGEDITOR_JS_IS_VALID_PROG(program)) {
+    if (TAGEDITOR_JS_IS_VALID_PROG(program)) {
         m_errorMessage.clear();
         m_errorLineNumber = 0;
         m_program = program;
         return true;
-    } else if(program.isError()) {
+    } else if (program.isError()) {
         m_errorMessage = program.property(QStringLiteral("message")).toString();
         m_errorLineNumber = TAGEDITOR_JS_INT(program.property(QStringLiteral("lineNumber")));
     } else {
@@ -68,13 +70,13 @@ bool RenamingEngine::setProgram(const QString &program)
 bool RenamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubdirs)
 {
 #ifndef TAGEDITOR_NO_JSENGINE
-    if(m_isBusy) {
+    if (m_isBusy) {
         return false;
     }
     setRootItem();
     m_includeSubdirs = includeSubdirs;
     m_dir = rootDirectory;
-    QtConcurrent::run([this] () {
+    QtConcurrent::run([this]() {
         m_aborted.store(false);
         m_itemsProcessed = 0;
         m_errorsOccured = 0;
@@ -89,10 +91,10 @@ bool RenamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubd
 
 bool RenamingEngine::applyChangings()
 {
-    if(!m_rootItem || m_isBusy) {
+    if (!m_rootItem || m_isBusy) {
         return false;
     }
-    QtConcurrent::run([this] () {
+    QtConcurrent::run([this]() {
         m_aborted.store(false);
         m_itemsProcessed = 0;
         m_errorsOccured = 0;
@@ -104,7 +106,7 @@ bool RenamingEngine::applyChangings()
 
 bool RenamingEngine::clearPreview()
 {
-    if(m_isBusy) {
+    if (m_isBusy) {
         return false;
     }
 
@@ -115,7 +117,7 @@ bool RenamingEngine::clearPreview()
 
 FileSystemItemModel *RenamingEngine::model()
 {
-    if(!m_model) {
+    if (!m_model) {
         m_model = new FileSystemItemModel(m_rootItem.get(), this);
     }
     return m_model;
@@ -123,7 +125,7 @@ FileSystemItemModel *RenamingEngine::model()
 
 FilteredFileSystemItemModel *RenamingEngine::currentModel()
 {
-    if(!m_currentModel) {
+    if (!m_currentModel) {
         m_currentModel = new FilteredFileSystemItemModel(ItemStatus::Current, this);
         m_currentModel->setSourceModel(model());
     }
@@ -132,7 +134,7 @@ FilteredFileSystemItemModel *RenamingEngine::currentModel()
 
 FilteredFileSystemItemModel *RenamingEngine::previewModel()
 {
-    if(!m_previewModel) {
+    if (!m_previewModel) {
         m_previewModel = new FilteredFileSystemItemModel(ItemStatus::New, this);
         m_previewModel->setSourceModel(model());
     }
@@ -160,7 +162,7 @@ inline void RenamingEngine::setRootItem(unique_ptr<FileSystemItem> &&rootItem)
 
 void RenamingEngine::updateModel(FileSystemItem *rootItem)
 {
-    if(m_model) {
+    if (m_model) {
         m_model->setRootItem(rootItem);
     }
 }
@@ -170,28 +172,27 @@ unique_ptr<FileSystemItem> RenamingEngine::generatePreview(const QDir &dir, File
 {
     auto item = make_unique<FileSystemItem>(ItemStatus::Current, ItemType::Dir, dir.dirName(), parent);
     item->setApplied(false);
-    for(const QFileInfo &entry : dir.entryInfoList()) {
-        if(entry.fileName() == QLatin1String("..")
-                || entry.fileName() == QLatin1String(".")) {
+    for (const QFileInfo &entry : dir.entryInfoList()) {
+        if (entry.fileName() == QLatin1String("..") || entry.fileName() == QLatin1String(".")) {
             continue;
         }
         FileSystemItem *subItem; // will be deleted by parent
-        if(entry.isDir() && m_includeSubdirs) {
+        if (entry.isDir() && m_includeSubdirs) {
             subItem = generatePreview(QDir(entry.absoluteFilePath()), item.get()).release();
-        } else if(entry.isFile()) {
+        } else if (entry.isFile()) {
             subItem = new FileSystemItem(ItemStatus::Current, ItemType::File, entry.fileName(), item.get());
             subItem->setApplied(false);
         } else {
             subItem = nullptr;
         }
-        if(subItem) {
+        if (subItem) {
             executeScriptForItem(entry, subItem);
-            if(subItem->errorOccured()) {
+            if (subItem->errorOccured()) {
                 ++m_errorsOccured;
             }
         }
         ++m_itemsProcessed;
-        if(isAborted()) {
+        if (isAborted()) {
             return item;
         }
     }
@@ -202,29 +203,29 @@ unique_ptr<FileSystemItem> RenamingEngine::generatePreview(const QDir &dir, File
 
 void RenamingEngine::applyChangings(FileSystemItem *parentItem)
 {
-    for(FileSystemItem *item : parentItem->children()) {
-        if(!item->applied() && !item->errorOccured()) {
-            switch(item->status()) {
+    for (FileSystemItem *item : parentItem->children()) {
+        if (!item->applied() && !item->errorOccured()) {
+            switch (item->status()) {
             case ItemStatus::New: {
                 const FileSystemItem *counterpartItem = item->counterpart(); // holds current name
                 const QString currentPath = counterpartItem ? counterpartItem->relativePath() : QString();
                 const QString newPath = item->relativePath();
-                if(item->name().isEmpty()) {
+                if (item->name().isEmpty()) {
                     // new item name mustn't be empty
                     item->setNote(tr("generated name is empty"));
                     item->setErrorOccured(true);
-                } else if(counterpartItem && !counterpartItem->name().isEmpty()) {
+                } else if (counterpartItem && !counterpartItem->name().isEmpty()) {
                     // rename current item
-                    if(item->parent() != counterpartItem->parent() || item->name() != counterpartItem->name()) {
-                        if(m_dir.exists(newPath)) {
-                            if(item->parent() == counterpartItem->parent()) {
+                    if (item->parent() != counterpartItem->parent() || item->name() != counterpartItem->name()) {
+                        if (m_dir.exists(newPath)) {
+                            if (item->parent() == counterpartItem->parent()) {
                                 item->setNote(tr("unable to rename, there is already an entry with the same name"));
                             } else {
                                 item->setNote(tr("unable to move, there is already an entry with the same name"));
                             }
                             item->setErrorOccured(true);
-                        } else if(m_dir.rename(currentPath, newPath)) {
-                            if(item->parent() == counterpartItem->parent()) {
+                        } else if (m_dir.rename(currentPath, newPath)) {
+                            if (item->parent() == counterpartItem->parent()) {
                                 item->setNote(tr("renamed"));
                             } else {
                                 item->setNote(tr("moved"));
@@ -238,12 +239,12 @@ void RenamingEngine::applyChangings(FileSystemItem *parentItem)
                         item->setNote(tr("nothing to be changed"));
                         item->setApplied(true);
                     }
-                } else if(item->type() == ItemType::Dir) {
+                } else if (item->type() == ItemType::Dir) {
                     // create new item, but only if its a dir
-                    if(m_dir.exists(newPath)) {
+                    if (m_dir.exists(newPath)) {
                         item->setNote(tr("directory already existed"));
                         item->setApplied(true);
-                    } else if(m_dir.mkpath(newPath)) {
+                    } else if (m_dir.mkpath(newPath)) {
                         item->setNote(tr("directory created"));
                         item->setApplied(true);
                     } else {
@@ -256,15 +257,16 @@ void RenamingEngine::applyChangings(FileSystemItem *parentItem)
                     item->setErrorOccured(true);
                 }
                 break;
-            } case ItemStatus::Current:
+            }
+            case ItemStatus::Current:
                 break;
             }
         }
-        if(item->errorOccured()) {
+        if (item->errorOccured()) {
             ++m_errorsOccured;
         }
         // apply changings for child items as well
-        if(item->type() == ItemType::Dir) {
+        if (item->type() == ItemType::Dir) {
             applyChangings(item);
         }
     }
@@ -274,7 +276,7 @@ void RenamingEngine::applyChangings(FileSystemItem *parentItem)
 
 void RenamingEngine::setError(const QList<FileSystemItem *> items)
 {
-    for(FileSystemItem *item : items) {
+    for (FileSystemItem *item : items) {
         item->setErrorOccured(true);
         item->setNote(tr("skipped due to error of superior item"));
     }
@@ -287,7 +289,7 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
     m_tagEditorQObj->setFileInfo(fileInfo, item);
     // execute script
     auto scriptResult = m_program.call();
-    if(scriptResult.isError()) {
+    if (scriptResult.isError()) {
         // handle error
         item->setErrorOccured(true);
         item->setNote(scriptResult.toString());
@@ -295,15 +297,15 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         // create preview for action
         const QString &newName = m_tagEditorQObj->newName();
         const QString &newRelativeDirectory = m_tagEditorQObj->newRelativeDirectory();
-        switch(m_tagEditorQObj->action()) {
+        switch (m_tagEditorQObj->action()) {
         case ActionType::None:
             item->setNote(tr("no action specified"));
             break;
         case ActionType::Rename:
-            if(!newRelativeDirectory.isEmpty()) {
+            if (!newRelativeDirectory.isEmpty()) {
                 FileSystemItem *counterpartParent = item->root()->makeChildAvailable(newRelativeDirectory);
                 const QString &counterpartName = newName.isEmpty() ? item->name() : newName;
-                if(counterpartParent->findChild(counterpartName, item)) {
+                if (counterpartParent->findChild(counterpartName, item)) {
                     item->setNote(tr("name is already used at new location"));
                     item->setErrorOccured(true);
                 } else {
@@ -312,17 +314,16 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
                     counterpart->setCheckable(true);
                     counterpart->setChecked(true);
                 }
-            } else if(!newName.isEmpty()) {
+            } else if (!newName.isEmpty()) {
                 item->setNewName(newName);
             }
-            if(FileSystemItem *newItem = item->counterpart()) {
-                if((newItem->name().isEmpty() || newItem->name() == item->name())
-                    && (newItem->parent() == item->parent())) {
+            if (FileSystemItem *newItem = item->counterpart()) {
+                if ((newItem->name().isEmpty() || newItem->name() == item->name()) && (newItem->parent() == item->parent())) {
                     item->setNote(tr("name doesn't change"));
-                } else if(newItem->parent() && newItem->parent()->findChild(newItem->name(), newItem)) {
+                } else if (newItem->parent() && newItem->parent()->findChild(newItem->name(), newItem)) {
                     item->setNote(tr("generated name is already used"));
                     item->setErrorOccured(true);
-                } else if(newItem->parent() == item->parent()) {
+                } else if (newItem->parent() == item->parent()) {
                     item->setNote(tr("will be renamed"));
                     newItem->setCheckable(true);
                     newItem->setChecked(true);

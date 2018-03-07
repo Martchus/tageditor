@@ -4,11 +4,11 @@
 #include "./previousvaluehandling.h"
 #include "./webviewdefs.h"
 
-#include <tagparser/mediafileinfo.h>
 #include <tagparser/diagnostics.h>
+#include <tagparser/mediafileinfo.h>
 
-#include <QWidget>
 #include <QByteArray>
+#include <QWidget>
 
 #include <functional>
 
@@ -31,8 +31,7 @@ class TagEditorWidget;
 class TagEdit;
 class FileInfoModel;
 
-class TagEditorWidget : public QWidget
-{
+class TagEditorWidget : public QWidget {
     Q_OBJECT
     Q_PROPERTY(QString currentPath READ currentPath NOTIFY currentPathChanged)
     Q_PROPERTY(QString currentDir READ currentDir)
@@ -40,7 +39,7 @@ class TagEditorWidget : public QWidget
     Q_PROPERTY(QByteArray fileInfoHtml READ fileInfoHtml)
     Q_PROPERTY(bool fileNameVisible READ isFileNameVisible WRITE setFileNameVisible)
     Q_PROPERTY(bool buttonsVisible READ areButtonsVisible WRITE setButtonVisible)
-    
+
 public:
     explicit TagEditorWidget(QWidget *parent = nullptr);
     ~TagEditorWidget();
@@ -58,7 +57,7 @@ public:
     void setFileNameVisible(bool visible);
     bool areButtonsVisible() const;
     void setButtonVisible(bool visible);
-    void foreachTagEdit(const std::function<void (TagEdit *)> &function);
+    void foreachTagEdit(const std::function<void(TagEdit *)> &function);
     TagEdit *activeTagEdit();
 
 public slots:
@@ -218,6 +217,6 @@ inline bool TagEditorWidget::isTagEditShown() const
     return !m_tags.empty();
 }
 
-}
+} // namespace QtGui
 
 #endif // TAGEDITORWIDGET_H

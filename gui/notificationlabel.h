@@ -1,31 +1,19 @@
 #ifndef NOTIFICATIONLABEL_H
 #define NOTIFICATIONLABEL_H
 
-#include <QWidget>
 #include <QPixmap>
 #include <QTimer>
+#include <QWidget>
 
 #include <limits>
 
 namespace QtGui {
 
-enum class NotificationType
-{
-    Information,
-    Warning,
-    Critical,
-    TaskComplete,
-    Progress
-};
+enum class NotificationType { Information, Warning, Critical, TaskComplete, Progress };
 
-enum class NotificationSubject
-{
-    None,
-    Saving
-};
+enum class NotificationSubject { None, Saving };
 
-class NotificationLabel : public QWidget
-{
+class NotificationLabel : public QWidget {
     Q_OBJECT
     Q_PROPERTY(QString text READ text WRITE setText)
     Q_PROPERTY(QString context READ context WRITE setContext)
@@ -68,7 +56,7 @@ public slots:
 protected:
     void paintEvent(QPaintEvent *event);
     void mouseDoubleClickEvent(QMouseEvent *event);
-    
+
 private slots:
     void updateAnimation();
     void showMessageBox() const;
@@ -152,6 +140,6 @@ inline std::size_t NotificationLabel::currentLineCount() const
     return m_currentLineCount;
 }
 
-}
+} // namespace QtGui
 
 #endif // NOTIFICATIONLABEL_H

@@ -6,8 +6,7 @@
 
 namespace QtGui {
 
-class FileFilterProxyModel : public QSortFilterProxyModel
-{
+class FileFilterProxyModel : public QSortFilterProxyModel {
     Q_OBJECT
     Q_PROPERTY(bool filterEnabled READ isFilterEnabled WRITE setFilterEnabled)
     Q_PROPERTY(QStringList extensionsToBeFiltered READ extensionsToBeFiltered WRITE setExtensionsToBeFiltered)
@@ -28,9 +27,8 @@ protected:
 private:
     bool m_filterEnabled;
     QStringList m_extensionsToBeFiltered;
-    
 };
 
-}
+} // namespace QtGui
 
 #endif // FILEFILTERPROXYMODEL_H

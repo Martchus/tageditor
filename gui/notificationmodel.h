@@ -7,8 +7,7 @@
 
 namespace QtGui {
 
-class DiagModel : public QAbstractListModel
-{
+class DiagModel : public QAbstractListModel {
     Q_OBJECT
 public:
     explicit DiagModel(QObject *parent = nullptr);
@@ -33,9 +32,8 @@ public slots:
 
 private:
     TagParser::Diagnostics m_diag;
-
 };
 
-}
+} // namespace QtGui
 
 #endif // NOTIFICATIONMODEL_H

@@ -6,9 +6,9 @@
 
 #include "resources/config.h"
 
+#include <qtutilities/resources/importplugin.h>
 #include <qtutilities/resources/qtconfigarguments.h>
 #include <qtutilities/resources/resources.h>
-#include <qtutilities/resources/importplugin.h>
 #include <qtutilities/settingsdialog/qtsettings.h>
 
 #include <QApplication>
@@ -29,14 +29,14 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     qtConfigArgs.applySettings(Settings::values().qt.hasCustomFont());
     LOAD_QT_TRANSLATIONS;
     int res;
-    if(launchRenamingUtility) {
+    if (launchRenamingUtility) {
         RenameFilesDialog w;
         w.show();
         res = a.exec();
     } else {
         MainWindow w;
         w.show();
-        if(!path.isEmpty()) {
+        if (!path.isEmpty()) {
             w.startParsing(path);
         }
         res = a.exec();
@@ -45,4 +45,4 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     return res;
 }
 
-}
+} // namespace QtGui

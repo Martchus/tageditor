@@ -9,8 +9,7 @@ class AbstractAttachment;
 
 namespace QtGui {
 
-class AttachmentItem
-{
+class AttachmentItem {
 public:
     AttachmentItem(TagParser::AbstractAttachment *attachment, bool activated = true, const QString &location = QString());
 
@@ -40,8 +39,7 @@ private:
     bool m_activated;
 };
 
-class AttachmentsModel : public QAbstractTableModel
-{
+class AttachmentsModel : public QAbstractTableModel {
     Q_OBJECT
 public:
     AttachmentsModel(QObject *parent = nullptr);
@@ -67,6 +65,6 @@ private:
     QList<AttachmentItem> m_attachments;
 };
 
-}
+} // namespace QtGui
 
 #endif // ATTACHMENTSMODEL_H

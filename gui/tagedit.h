@@ -18,14 +18,13 @@ namespace TagParser {
 class Tag;
 class TagValue;
 DECLARE_ENUM_CLASS(KnownField, unsigned int);
-}
+} // namespace TagParser
 
 namespace QtGui {
 
 class TagFieldEdit;
 
-class TagEdit : public QWidget
-{
+class TagEdit : public QWidget {
     Q_OBJECT
     Q_PROPERTY(PreviousValueHandling previousValueHandling READ previousValueHandling WRITE setPreviousValueHandling)
 
@@ -35,8 +34,9 @@ public:
     TagParser::TagValue value(TagParser::KnownField field, TagParser::TagTextEncoding encoding = TagParser::TagTextEncoding::Utf16LittleEndian) const;
     void setTag(TagParser::Tag *tag, bool updateUi = true);
     void setTags(const QList<TagParser::Tag *> &tags, bool updateUi = true);
-    bool setValue(TagParser::KnownField field, const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    template<class Container = std::initializer_list<TagParser::Tag *> > void setTags(const Container &tags, bool updateUi = true);
+    bool setValue(
+        TagParser::KnownField field, const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    template <class Container = std::initializer_list<TagParser::Tag *>> void setTags(const Container &tags, bool updateUi = true);
     bool hasField(TagParser::KnownField field) const;
     PreviousValueHandling previousValueHandling() const;
     void setPreviousValueHandling(PreviousValueHandling previousValueHandling);
@@ -52,7 +52,7 @@ public slots:
 
 signals:
     void returnPressed();
-    
+
 private:
     void setupUi();
     void removeEdit(QWidget *edit);
@@ -78,14 +78,14 @@ inline const QList<TagParser::Tag *> &TagEdit::tags() const
  * \param updateUi Specifies whether the UI of should be updated.
  * \remarks The TagEdit object does not take ownership.
  */
-template<class Container> void TagEdit::setTags(const Container &tags, bool updateUi)
+template <class Container> void TagEdit::setTags(const Container &tags, bool updateUi)
 {
     m_tags.clear();
     m_tags.reserve(tags.size());
-    for(auto *tag : tags) {
+    for (auto *tag : tags) {
         m_tags << tag;
     }
-    if(updateUi) {
+    if (updateUi) {
         setupUi();
     } else {
         assignTags();
@@ -127,6 +127,6 @@ inline TagFieldEdit *TagEdit::tagFieldEdit(TagParser::KnownField field) const
     return m_widgets.value(field, nullptr);
 }
 
-}
+} // namespace QtGui
 
 #endif // QTGUI_TAGEDIT_H

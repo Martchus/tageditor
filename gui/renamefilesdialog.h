@@ -20,15 +20,14 @@ class RenameFilesDialog;
 
 class JavaScriptHighlighter;
 
-class RenameFilesDialog : public QDialog
-{
+class RenameFilesDialog : public QDialog {
     Q_OBJECT
     Q_PROPERTY(QString directory READ directory WRITE setDirectory)
-    
+
 public:
     explicit RenameFilesDialog(QWidget *parent = nullptr);
     ~RenameFilesDialog();
-    
+
     QString directory() const;
     void setDirectory(const QString &directory);
 
@@ -63,6 +62,6 @@ private:
     bool m_scriptModified;
 };
 
-}
+} // namespace QtGui
 
 #endif // RENAMEFILESDIALOG_H
