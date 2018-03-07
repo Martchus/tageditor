@@ -10,9 +10,9 @@ set(META_APP_URL "https://github.com/${META_APP_AUTHOR}/${META_PROJECT_NAME}")
 set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska")
 set(META_GUI_OPTIONAL true)
 set(META_JS_SRC_DIR renamingutility)
-set(META_VERSION_MAJOR 2)
-set(META_VERSION_MINOR 3)
-set(META_VERSION_PATCH 4)
+set(META_VERSION_MAJOR 3)
+set(META_VERSION_MINOR 0)
+set(META_VERSION_PATCH 0)
 
 # add project files
 set(HEADER_FILES
