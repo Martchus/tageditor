@@ -929,12 +929,12 @@ public:
                 if(container->doctypeReadVersion()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Document read version"), QString::number(container->doctypeReadVersion()));
                 }
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tag position"), container->determineTagPosition(m_diagReparsing));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Index position"), container->determineIndexPosition(m_diagReparsing));
             }
             if(m_file.paddingSize()) {
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"), QStringLiteral("%1 (%2 %)").arg(qstr(dataSizeToString(m_file.paddingSize(), true))).arg(static_cast<double>(m_file.paddingSize()) / m_file.size() * 100.0, 0, 'g', 2));
             }
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tag position"), container->determineTagPosition(m_diagReparsing));
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Index position"), container->determineIndexPosition(m_diagReparsing));
 
             m_writer.writeEndElement();
         }
