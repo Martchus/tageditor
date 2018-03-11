@@ -389,12 +389,15 @@ void setTagInfo(const SetTagInfoArgs &args)
         cerr << Phrases::Warning << "No fields/attachments have been specified." << Phrases::End;
     }
 
+    TagCreationSettings settings;
+    settings.flags = TagCreationFlags::None;
+
     // determine required targets
-    vector<TagTarget> requiredTargets;
     for (const auto &fieldDenotation : fields) {
         const FieldScope &scope = fieldDenotation.first;
-        if (!scope.isTrack() && find(requiredTargets.cbegin(), requiredTargets.cend(), scope.tagTarget) == requiredTargets.cend()) {
-            requiredTargets.push_back(scope.tagTarget);
+        if (!scope.isTrack()
+            && find(settings.requiredTargets.cbegin(), settings.requiredTargets.cend(), scope.tagTarget) == settings.requiredTargets.cend()) {
+            settings.requiredTargets.push_back(scope.tagTarget);
         }
     }
 
@@ -418,24 +421,40 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
 
     // parse ID3v2 version
-    uint32 id3v2Version = 3;
     if (args.id3v2VersionArg.isPresent()) {
         try {
-            id3v2Version = stringToNumber<uint32>(args.id3v2VersionArg.values().front());
-            if (id3v2Version < 1 || id3v2Version > 4) {
+            settings.id3v2MajorVersion = stringToNumber<byte>(args.id3v2VersionArg.values().front());
+            if (settings.id3v2MajorVersion < 1 || settings.id3v2MajorVersion > 4) {
                 throw ConversionException();
             }
         } catch (const ConversionException &) {
-            id3v2Version = 3;
+            settings.id3v2MajorVersion = 3;
             cerr << Phrases::Warning << "The specified ID3v2 version \"" << args.id3v2VersionArg.values().front()
                  << "\" is invalid and will be ingored." << Phrases::End;
         }
     }
 
+    // parse flags
+    if (args.treatUnknownFilesAsMp3FilesArg.isPresent()) {
+        settings.flags |= TagCreationFlags::TreatUnknownFilesAsMp3Files;
+    }
+    if (args.id3InitOnCreateArg.isPresent()) {
+        settings.flags |= TagCreationFlags::Id3InitOnCreate;
+    }
+    if (args.id3TransferOnRemovalArg.isPresent()) {
+        settings.flags |= TagCreationFlags::Id3TransferValuesOnRemoval;
+    }
+    if (args.mergeMultipleSuccessiveTagsArg.isPresent()) {
+        settings.flags |= TagCreationFlags::MergeMultipleSuccessiveId3v2Tags;
+    }
+    if (!args.id3v2VersionArg.isPresent()) {
+        settings.flags |= TagCreationFlags::KeepExistingId3v2Version;
+    }
+
     // parse other settings
     const TagTextEncoding denotedEncoding = parseEncodingDenotation(args.encodingArg, TagTextEncoding::Utf8);
-    const TagUsage id3v1Usage = parseUsageDenotation(args.id3v1UsageArg, TagUsage::KeepExisting);
-    const TagUsage id3v2Usage = parseUsageDenotation(args.id3v2UsageArg, TagUsage::Always);
+    settings.id3v1usage = parseUsageDenotation(args.id3v1UsageArg, TagUsage::KeepExisting);
+    settings.id3v2usage = parseUsageDenotation(args.id3v2UsageArg, TagUsage::Always);
 
     // setup media file info
     MediaFileInfo fileInfo;
@@ -479,9 +498,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
 
             // create new tags according to settings
-            fileInfo.createAppropriateTags(args.treatUnknownFilesAsMp3FilesArg.isPresent(), id3v1Usage, id3v2Usage,
-                args.id3InitOnCreateArg.isPresent(), args.id3TransferOnRemovalArg.isPresent(), args.mergeMultipleSuccessiveTagsArg.isPresent(),
-                !args.id3v2VersionArg.isPresent(), id3v2Version, requiredTargets);
+            fileInfo.createAppropriateTags(settings);
             auto container = fileInfo.container();
             if (args.docTitleArg.isPresent() && !args.docTitleArg.values().empty()) {
                 if (container && container->supportsTitle()) {

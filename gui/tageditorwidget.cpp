@@ -870,7 +870,7 @@ void TagEditorWidget::showFile(char result)
         }
 
         // create appropriate tags according to file type and user preferences when automatic tag management is enabled
-        const auto &settings = Settings::values().tagPocessing;
+        auto &settings = Settings::values().tagPocessing;
         if (settings.autoTagManagement) {
             vector<TagTarget> requiredTargets;
             requiredTargets.reserve(2);
@@ -882,13 +882,11 @@ void TagEditorWidget::showFile(char result)
             }
             // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
             // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
-            if (!m_fileInfo.createAppropriateTags(false, settings.id3.v1Usage, settings.id3.v2Usage, false, true,
-                    settings.id3.mergeMultipleSuccessiveId3v2Tags, settings.id3.keepVersionOfExistingId3v2Tag, settings.id3.v2Version,
-                    requiredTargets)) {
+            settings.creationSettings.flags -= TagCreationFlags::KeepExistingId3v2Version;
+            if (!m_fileInfo.createAppropriateTags(settings.creationSettings)) {
                 if (confirmCreationOfId3TagForUnsupportedFile()) {
-                    m_fileInfo.createAppropriateTags(true, settings.id3.v1Usage, settings.id3.v2Usage, false, true,
-                        settings.id3.mergeMultipleSuccessiveId3v2Tags, settings.id3.keepVersionOfExistingId3v2Tag, settings.id3.v2Version,
-                        requiredTargets);
+                    settings.creationSettings.flags += TagCreationFlags::KeepExistingId3v2Version;
+                    m_fileInfo.createAppropriateTags(settings.creationSettings);
                 }
             }
             // tags might have been adjusted -> reload tags

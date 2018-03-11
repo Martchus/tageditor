@@ -177,7 +177,7 @@ bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previou
  */
 bool TagFieldEdit::hasDescription() const
 {
-    for (Tag *tag : tags()) {
+    for (const Tag *tag : tags()) {
         if (tag->supportsDescription(m_field)) {
             return true;
         }
@@ -190,15 +190,15 @@ bool TagFieldEdit::hasDescription() const
  */
 bool TagFieldEdit::canApply(KnownField field) const
 {
-    for (Tag *tag : tags()) {
+    for (const Tag *tag : tags()) {
         switch (tag->type()) {
         case TagType::Id3v1Tag:
-            if (Settings::values().tagPocessing.id3.v1Usage == TagUsage::Never) {
+            if (Settings::values().tagPocessing.creationSettings.id3v1usage == TagUsage::Never) {
                 continue;
             }
             break;
         case TagType::Id3v2Tag:
-            if (Settings::values().tagPocessing.id3.v2Usage == TagUsage::Never) {
+            if (Settings::values().tagPocessing.creationSettings.id3v2usage == TagUsage::Never) {
                 continue;
             }
             break;

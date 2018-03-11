@@ -6,9 +6,10 @@
 
 #include <c++utilities/conversion/types.h>
 
+#include <tagparser/abstractcontainer.h>
 #include <tagparser/tagvalue.h>
+#include <tagparser/settings.h>
 #include <tagparser/tag.h>
-#include <tagparser/mediafileinfo.h>
 
 #include <qtutilities/settingsdialog/qtsettings.h>
 
@@ -77,15 +78,6 @@ struct FileBrowser
     bool readOnly = true;
 };
 
-struct Id3Processing
-{
-    TagParser::TagUsage v1Usage = TagParser::TagUsage::Always;
-    TagParser::TagUsage v2Usage = TagParser::TagUsage::Always;
-    byte v2Version = 3;
-    bool keepVersionOfExistingId3v2Tag = true;
-    bool mergeMultipleSuccessiveId3v2Tags = true;
-};
-
 struct FileLayout
 {
     bool forceRewrite = true;
@@ -103,7 +95,7 @@ struct TagProcessing
     TagParser::TagTextEncoding preferredEncoding = TagParser::TagTextEncoding::Utf8;
     UnsupportedFieldHandling unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     bool autoTagManagement = true;
-    Id3Processing id3;
+    TagParser::TagCreationSettings creationSettings;
     FileLayout fileLayout;
 };
 

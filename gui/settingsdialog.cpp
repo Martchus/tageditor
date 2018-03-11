@@ -396,13 +396,13 @@ Id3v1OptionPage::~Id3v1OptionPage()
 bool Id3v1OptionPage::apply()
 {
     if (hasBeenShown()) {
-        auto &settings = values().tagPocessing.id3;
+        auto &settings = values().tagPocessing.creationSettings;
         if (ui()->alwaysCreateRadioButton->isChecked()) {
-            settings.v1Usage = TagUsage::Always;
+            settings.id3v1usage = TagUsage::Always;
         } else if (ui()->keepExistingRadioButton->isChecked()) {
-            settings.v1Usage = TagUsage::KeepExisting;
+            settings.id3v1usage = TagUsage::KeepExisting;
         } else if (ui()->removeExistingRadioButton->isChecked()) {
-            settings.v1Usage = TagUsage::Never;
+            settings.id3v1usage = TagUsage::Never;
         }
     }
     return true;
@@ -411,8 +411,8 @@ bool Id3v1OptionPage::apply()
 void Id3v1OptionPage::reset()
 {
     if (hasBeenShown()) {
-        const auto &settings = values().tagPocessing.id3;
-        switch (settings.v1Usage) {
+        const auto &settings = values().tagPocessing.creationSettings;
+        switch (settings.id3v1usage) {
         case TagUsage::Always:
             ui()->alwaysCreateRadioButton->setChecked(true);
             break;
@@ -439,23 +439,23 @@ Id3v2OptionPage::~Id3v2OptionPage()
 bool Id3v2OptionPage::apply()
 {
     if (hasBeenShown()) {
-        auto &settings = values().tagPocessing.id3;
+        auto &settings = values().tagPocessing.creationSettings;
         if (ui()->alwaysCreateRadioButton->isChecked()) {
-            settings.v2Usage = TagUsage::Always;
+            settings.id3v2usage = TagUsage::Always;
         } else if (ui()->keepExistingRadioButton->isChecked()) {
-            settings.v2Usage = TagUsage::KeepExisting;
+            settings.id3v2usage = TagUsage::KeepExisting;
         } else if (ui()->removeExistingRadioButton->isChecked()) {
-            settings.v2Usage = TagUsage::Never;
+            settings.id3v2usage = TagUsage::Never;
         }
         if (ui()->version230radioButton->isChecked()) {
-            settings.v2Version = 3;
+            settings.id3v2MajorVersion = 3;
         } else if (ui()->version240radioButton->isChecked()) {
-            settings.v2Version = 4;
+            settings.id3v2MajorVersion = 4;
         } else if (ui()->version220radioButton->isChecked()) {
-            settings.v2Version = 2;
+            settings.id3v2MajorVersion = 2;
         }
-        settings.keepVersionOfExistingId3v2Tag = ui()->keepExistingVersionCheckBox->isChecked();
-        settings.mergeMultipleSuccessiveId3v2Tags = ui()->mergeRadioButton->isChecked();
+        settings.setFlag(TagCreationFlags::KeepExistingId3v2Version, ui()->keepExistingVersionCheckBox->isChecked());
+        settings.setFlag(TagCreationFlags::MergeMultipleSuccessiveId3v2Tags, ui()->mergeRadioButton->isChecked());
     }
     return true;
 }
@@ -463,8 +463,8 @@ bool Id3v2OptionPage::apply()
 void Id3v2OptionPage::reset()
 {
     if (hasBeenShown()) {
-        const auto &settings = values().tagPocessing.id3;
-        switch (settings.v2Usage) {
+        const auto &settings = values().tagPocessing.creationSettings;
+        switch (settings.id3v2usage) {
         case TagUsage::Always:
             ui()->alwaysCreateRadioButton->setChecked(true);
             break;
@@ -475,7 +475,7 @@ void Id3v2OptionPage::reset()
             ui()->removeExistingRadioButton->setChecked(true);
             break;
         }
-        switch (settings.v2Version) {
+        switch (settings.id3v2MajorVersion) {
         case 3:
             ui()->version230radioButton->setChecked(true);
             break;
@@ -486,8 +486,8 @@ void Id3v2OptionPage::reset()
             ui()->version220radioButton->setChecked(true);
             break;
         }
-        ui()->keepExistingVersionCheckBox->setChecked(settings.keepVersionOfExistingId3v2Tag);
-        if (settings.mergeMultipleSuccessiveId3v2Tags) {
+        ui()->keepExistingVersionCheckBox->setChecked(settings.flags & TagCreationFlags::KeepExistingId3v2Version);
+        if (settings.flags & TagCreationFlags::MergeMultipleSuccessiveId3v2Tags) {
             ui()->mergeRadioButton->setChecked(true);
         } else {
             ui()->keepSeparateRadioButton->setChecked(true);
