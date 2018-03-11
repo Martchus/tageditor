@@ -12,15 +12,10 @@ DECLARE_ENUM_CLASS(TagTargetLevel, unsigned char);
 
 namespace Settings {
 
-class TargetLevelModel : public Models::ChecklistModel
-{
+class TargetLevelModel : public Models::ChecklistModel {
     Q_OBJECT
 public:
-    enum class DefaultSelection
-    {
-        None,
-        MostUsefulTargets
-    };
+    enum class DefaultSelection { None, MostUsefulTargets };
 
     static const char *fieldName(TagParser::TagTargetLevel targetLevel);
     static QString translatedFieldName(TagParser::TagTargetLevel targetLevel);
@@ -38,6 +33,6 @@ inline Models::ChecklistItem TargetLevelModel::mkItem(TagParser::TagTargetLevel 
     return Models::ChecklistItem(static_cast<int>(field), translatedFieldName(field), checkState);
 }
 
-}
+} // namespace Settings
 
 #endif // TARGETLEVELMODEL_H

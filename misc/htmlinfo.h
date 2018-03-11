@@ -8,12 +8,11 @@
 namespace TagParser {
 class MediaFileInfo;
 class Diagnostics;
-}
+} // namespace TagParser
 
 namespace HtmlInfo {
 
 QByteArray generateInfo(const TagParser::MediaFileInfo &file, TagParser::Diagnostics &diag, TagParser::Diagnostics &diagReparsing);
-
 }
 
 #endif // HTMLINFO_H

@@ -14,7 +14,7 @@ namespace Settings {
 
 const char *TargetLevelModel::fieldName(TagTargetLevel targetLevel)
 {
-    switch(targetLevel) {
+    switch (targetLevel) {
     case TagTargetLevel::Unspecified:
         return QT_TR_NOOP("unspecified, everything");
     case TagTargetLevel::Shot:
@@ -46,8 +46,8 @@ QString TargetLevelModel::labelForId(const QVariant &id) const
     return translatedFieldName(static_cast<TagTargetLevel>(id.toInt()));
 }
 
-TargetLevelModel::TargetLevelModel(QObject *parent, DefaultSelection defaultSelection) :
-    ChecklistModel(parent)
+TargetLevelModel::TargetLevelModel(QObject *parent, DefaultSelection defaultSelection)
+    : ChecklistModel(parent)
 {
     QList<ChecklistItem> items;
     items.reserve(8);
@@ -63,30 +63,28 @@ TargetLevelModel::TargetLevelModel(QObject *parent, DefaultSelection defaultSele
     setItems(items);
 }
 
-TargetLevelModel::TargetLevelModel(const QList<Models::ChecklistItem> &items, QObject *parent) :
-    ChecklistModel(parent)
+TargetLevelModel::TargetLevelModel(const QList<Models::ChecklistItem> &items, QObject *parent)
+    : ChecklistModel(parent)
 {
     setItems(items);
 }
 
 QVariant TargetLevelModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-    switch(orientation) {
+    switch (orientation) {
     case Qt::Horizontal:
-        switch(role) {
+        switch (role) {
         case Qt::DisplayRole:
-            switch(section) {
+            switch (section) {
             case 0:
                 return tr("Target level");
-            default:
-                ;
+            default:;
             }
         }
         break;
-    default:
-        ;
+    default:;
     }
     return QVariant();
 }
 
-}
+} // namespace Settings

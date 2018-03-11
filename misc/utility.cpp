@@ -3,34 +3,33 @@
 #include "../application/settings.h"
 
 #include <tagparser/exceptions.h>
-#include <tagparser/signature.h>
-#include <tagparser/mediafileinfo.h>
-#include <tagparser/tag.h>
 #include <tagparser/id3/id3v1tag.h>
 #include <tagparser/id3/id3v2tag.h>
+#include <tagparser/mediafileinfo.h>
+#include <tagparser/signature.h>
+#include <tagparser/tag.h>
 
 #include <c++utilities/io/path.h>
 
+#include <QAbstractItemModel>
 #include <QCoreApplication>
 #include <QDir>
-#include <QFileInfo>
 #include <QDirIterator>
+#include <QFileInfo>
 #include <QTextCodec>
-#include <QAbstractItemModel>
 
 #include <ios>
-#include <stdexcept>
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 using namespace TagParser;
 
-namespace Utility
-{
+namespace Utility {
 
 const char *textEncodingToCodecName(TagTextEncoding textEncoding)
 {
-    switch(textEncoding) {
+    switch (textEncoding) {
     case TagTextEncoding::Latin1:
         return "ISO 8859-1";
     case TagTextEncoding::Utf8:
@@ -47,8 +46,8 @@ const char *textEncodingToCodecName(TagTextEncoding textEncoding)
 
 QString tagValueToQString(const TagValue &value)
 {
-    if(!value.isEmpty()) {
-        switch(value.type()) {
+    if (!value.isEmpty()) {
+        switch (value.type()) {
         case TagDataType::Text:
             return dataToQString(value.dataPointer(), value.dataSize(), value.dataEncoding());
         case TagDataType::Integer:
@@ -57,8 +56,7 @@ QString tagValueToQString(const TagValue &value)
         case TagDataType::TimeSpan:
         case TagDataType::PositionInSet:
             return QString::fromUtf8(value.toString().c_str());
-        default:
-            ;
+        default:;
         }
     }
     return QString();
@@ -66,10 +64,10 @@ QString tagValueToQString(const TagValue &value)
 
 QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encoding)
 {
-    if(data && dataSize) {
+    if (data && dataSize) {
         const char *codecName = textEncodingToCodecName(encoding);
         auto *codec = QTextCodec::codecForName(codecName);
-        if(!codec) {
+        if (!codec) {
             codec = QTextCodec::codecForLocale();
         }
         return codec->toUnicode(data, static_cast<int>(dataSize));
@@ -79,10 +77,10 @@ QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encodin
 
 QString stringToQString(const string &value, TagTextEncoding textEncoding)
 {
-    if(!value.empty()) {
+    if (!value.empty()) {
         const char *codecName = textEncodingToCodecName(textEncoding);
         auto *codec = QTextCodec::codecForName(codecName);
-        if(!codec) {
+        if (!codec) {
             codec = QTextCodec::codecForLocale();
         }
         return codec->toUnicode(value.c_str());
@@ -92,10 +90,10 @@ QString stringToQString(const string &value, TagTextEncoding textEncoding)
 
 string qstringToString(const QString &value, TagTextEncoding textEncoding)
 {
-    if(!value.isEmpty()) {
+    if (!value.isEmpty()) {
         const char *codecName = textEncodingToCodecName(textEncoding);
         auto *codec = QTextCodec::codecForName(codecName);
-        if(!codec) {
+        if (!codec) {
             codec = QTextCodec::codecForLocale();
         }
         const auto encodedString = codec->fromUnicode(value);
@@ -111,13 +109,12 @@ TagValue qstringToTagValue(const QString &value, TagTextEncoding textEncoding)
 
 QString elementPositionToQString(ElementPosition elementPosition)
 {
-    switch(elementPosition) {
+    switch (elementPosition) {
     case ElementPosition::BeforeData:
         return QCoreApplication::translate("Utility", "before data");
     case ElementPosition::AfterData:
         return QCoreApplication::translate("Utility", "after data");
-    case ElementPosition::Keep:
-        ;
+    case ElementPosition::Keep:;
     }
     return QString();
 }
@@ -126,27 +123,27 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
 {
     QString res;
     bool whitespace = true;
-    for(int i = 0, size = str.size(); i != size; ++i) {
+    for (int i = 0, size = str.size(); i != size; ++i) {
         const QChar current = str.at(i);
-        if(current.isSpace() || current == QChar('(') || current == QChar('[')) {
+        if (current.isSpace() || current == QChar('(') || current == QChar('[')) {
             whitespace = true;
             res += current;
-        } else if(underscoreToWhitespace && current == QChar('_')) {
+        } else if (underscoreToWhitespace && current == QChar('_')) {
             whitespace = true;
             res += ' ';
-        } else if(whitespace) {
-            if(i) {
+        } else if (whitespace) {
+            if (i) {
                 auto rest = str.midRef(i);
-                static const char *const connectingWords[] = {"the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on ", "as "};
-                for(const char *word : connectingWords) {
-                    if(rest.startsWith(QLatin1String(word), Qt::CaseInsensitive)) {
+                static const char *const connectingWords[] = { "the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on ", "as " };
+                for (const char *word : connectingWords) {
+                    if (rest.startsWith(QLatin1String(word), Qt::CaseInsensitive)) {
                         res += current.toLower();
                         whitespace = false;
                         break;
                     }
                 }
             }
-            if(whitespace) {
+            if (whitespace) {
                 res += current.toUpper();
                 whitespace = false;
             }
@@ -160,26 +157,23 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
 QString fixUmlauts(const QString &str)
 {
     auto words = str.split(QChar(' '));
-    static const QLatin1String exceptions[] = {
-        QLatin1String("reggae"), QLatin1String("blues"), QLatin1String("auer"), QLatin1String("aues"), QLatin1String("manuel"),
-        QLatin1String("duet"), QLatin1String("neue"), QLatin1String("prologue")
-    };
-    static const QLatin1String pairs[6][2] = {
-        {QLatin1String("ae"), QLatin1String("\xe4")}, {QLatin1String("ue"), QLatin1String("\xfc")}, {QLatin1String("oe"), QLatin1String("\xf6")},
-        {QLatin1String("Ae"), QLatin1String("\xc4")}, {QLatin1String("Ue"), QLatin1String("\xdc")}, {QLatin1String("Oe"), QLatin1String("\xd6")}
-    };
-    for(auto &word : words) {
+    static const QLatin1String exceptions[] = { QLatin1String("reggae"), QLatin1String("blues"), QLatin1String("auer"), QLatin1String("aues"),
+        QLatin1String("manuel"), QLatin1String("duet"), QLatin1String("neue"), QLatin1String("prologue") };
+    static const QLatin1String pairs[6][2] = { { QLatin1String("ae"), QLatin1String("\xe4") }, { QLatin1String("ue"), QLatin1String("\xfc") },
+        { QLatin1String("oe"), QLatin1String("\xf6") }, { QLatin1String("Ae"), QLatin1String("\xc4") },
+        { QLatin1String("Ue"), QLatin1String("\xdc") }, { QLatin1String("Oe"), QLatin1String("\xd6") } };
+    for (auto &word : words) {
         // preserve words containing any of the exceptions
-        for(const auto &exception : exceptions) {
-            if(word.contains(exception, Qt::CaseInsensitive)) {
+        for (const auto &exception : exceptions) {
+            if (word.contains(exception, Qt::CaseInsensitive)) {
                 goto continueOuterLoop;
             }
         }
         // fix all umlauts
-        for(const auto *pair : pairs) {
+        for (const auto *pair : pairs) {
             word = word.replace(pair[0], pair[1], Qt::CaseSensitive);
         }
-        continueOuterLoop:;
+    continueOuterLoop:;
     }
     return words.join(' ');
 }
@@ -189,24 +183,22 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
     title = fileName.trimmed();
     trackNumber = 0;
     int lastPoint = title.lastIndexOf(QChar('.'));
-    if(lastPoint > 0) {
+    if (lastPoint > 0) {
         title.truncate(lastPoint);
-    } else if(lastPoint == 0) {
+    } else if (lastPoint == 0) {
         title.remove(0, 1);
     }
-    static const QLatin1String delims[] = {
-        QLatin1String(" - "), QLatin1String(", "), QLatin1String("-"), QLatin1String(" ")
-    };
-    for(const auto &delim : delims) {
+    static const QLatin1String delims[] = { QLatin1String(" - "), QLatin1String(", "), QLatin1String("-"), QLatin1String(" ") };
+    for (const auto &delim : delims) {
         int lastDelimIndex = 0;
         int delimIndex = title.indexOf(delim);
-        while(delimIndex > lastDelimIndex) {
+        while (delimIndex > lastDelimIndex) {
             bool ok = false;
             trackNumber = title.midRef(lastDelimIndex, delimIndex - lastDelimIndex).toInt(&ok);
-            if(ok) {
+            if (ok) {
                 int titleStart = delimIndex + delim.size();
-                for(const auto &delim : delims) {
-                    if(title.midRef(titleStart).startsWith(delim)) {
+                for (const auto &delim : delims) {
+                    if (title.midRef(titleStart).startsWith(delim)) {
                         titleStart += delim.size();
                         break;
                     }
@@ -229,12 +221,12 @@ QString printModel(QAbstractItemModel *model)
 
 void printModelIndex(const QModelIndex &index, QString &res, int level)
 {
-    if(index.isValid()) {
+    if (index.isValid()) {
         const auto data = index.data().toString();
-        if(!data.isEmpty()) {
-            switch(index.column()) {
+        if (!data.isEmpty()) {
+            switch (index.column()) {
             case 0:
-                for(int i = 0; i < level; ++i) {
+                for (int i = 0; i < level; ++i) {
                     res += "\t";
                 }
                 break;
@@ -247,16 +239,16 @@ void printModelIndex(const QModelIndex &index, QString &res, int level)
         const auto nextInCol = index.sibling(index.row(), index.column() + 1);
         const auto child = index.child(0, 0);
         const auto next = index.sibling(index.row() + 1, 0);
-        if(nextInCol.isValid()) {
+        if (nextInCol.isValid()) {
             printModelIndex(nextInCol, res, level);
         } else {
             res += "\n";
         }
-        if(index.column() == 0) {
+        if (index.column() == 0) {
             printModelIndex(child, res, level + 1);
             printModelIndex(next, res, level);
         }
     }
 }
 
-}
+} // namespace Utility

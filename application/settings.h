@@ -1,45 +1,30 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "./targetlevelmodel.h"
 #include "./knownfieldmodel.h"
+#include "./targetlevelmodel.h"
 
 #include <c++utilities/conversion/types.h>
 
 #include <tagparser/abstractcontainer.h>
-#include <tagparser/tagvalue.h>
 #include <tagparser/settings.h>
 #include <tagparser/tag.h>
+#include <tagparser/tagvalue.h>
 
 #include <qtutilities/settingsdialog/qtsettings.h>
 
-#include <QString>
 #include <QByteArray>
+#include <QString>
 
 namespace Settings {
 
-enum class ActionEnabled
-{
-    Ask,
-    Yes,
-    No
-};
+enum class ActionEnabled { Ask, Yes, No };
 
-enum class AdoptFields
-{
-    Never,
-    WithinDirectory,
-    Always
-};
+enum class AdoptFields { Never, WithinDirectory, Always };
 
-enum class MultipleTagHandling
-{
-    SingleEditorPerTarget,
-    SeparateEditors
-};
+enum class MultipleTagHandling { SingleEditorPerTarget, SeparateEditors };
 
-struct AutoCompletition
-{
+struct AutoCompletition {
     AutoCompletition();
     bool insertTitleFromFilename = false;
     bool trimWhitespaces = true;
@@ -48,8 +33,7 @@ struct AutoCompletition
     KnownFieldModel fields;
 };
 
-struct Editor
-{
+struct Editor {
     Editor();
     AdoptFields adoptFields = AdoptFields::Never;
     bool saveAndShowNextOnEnter = false;
@@ -66,20 +50,14 @@ struct Editor
     TargetLevelModel defaultTargets;
 };
 
-enum class UnsupportedFieldHandling
-{
-    Ignore,
-    Discard
-};
+enum class UnsupportedFieldHandling { Ignore, Discard };
 
-struct FileBrowser
-{
+struct FileBrowser {
     bool hideBackupFiles = true;
     bool readOnly = true;
 };
 
-struct FileLayout
-{
+struct FileLayout {
     bool forceRewrite = true;
     TagParser::ElementPosition preferredTagPosition = TagParser::ElementPosition::BeforeData;
     bool forceTagPosition = true;
@@ -90,8 +68,7 @@ struct FileLayout
     std::size_t preferredPadding = 0;
 };
 
-struct TagProcessing
-{
+struct TagProcessing {
     TagParser::TagTextEncoding preferredEncoding = TagParser::TagTextEncoding::Utf8;
     UnsupportedFieldHandling unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     bool autoTagManagement = true;
@@ -99,16 +76,14 @@ struct TagProcessing
     FileLayout fileLayout;
 };
 
-struct MainWindow
-{
+struct MainWindow {
     QByteArray geometry;
     QByteArray state;
     QString currentFileBrowserDirectory;
     bool layoutLocked = false;
 };
 
-struct DbQuery
-{
+struct DbQuery {
     DbQuery();
     bool widgetShown = false;
     bool override = false;
@@ -118,15 +93,13 @@ struct DbQuery
     QString lyricsWikiaUrl;
 };
 
-struct RenamingUtility
-{
+struct RenamingUtility {
     int scriptSource = 0;
     QString externalScript;
     QString editorScript;
 };
 
-struct Settings
-{
+struct Settings {
     Editor editor;
     FileBrowser fileBrowser;
     TagProcessing tagPocessing;
@@ -140,6 +113,6 @@ Settings &values();
 void restore();
 void save();
 
-}
+} // namespace Settings
 
 #endif // SETTINGS_H

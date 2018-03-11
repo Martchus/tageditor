@@ -4,39 +4,37 @@
 
 #include "resources/config.h"
 
+#include <tagparser/backuphelper.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
-#include <tagparser/backuphelper.h>
 
 #include <QApplication>
-#include <QSettings>
 #include <QFile>
+#include <QSettings>
 
 using namespace TagParser;
 
 namespace Settings {
 
-AutoCompletition::AutoCompletition() :
-    fields(nullptr, KnownFieldModel::DefaultSelection::None)
-{}
+AutoCompletition::AutoCompletition()
+    : fields(nullptr, KnownFieldModel::DefaultSelection::None)
+{
+}
 
-Editor::Editor() :
-    fields(nullptr, KnownFieldModel::DefaultSelection::CommonFields),
-    defaultTargets(nullptr, TargetLevelModel::DefaultSelection::MostUsefulTargets)
-{}
+Editor::Editor()
+    : fields(nullptr, KnownFieldModel::DefaultSelection::CommonFields)
+    , defaultTargets(nullptr, TargetLevelModel::DefaultSelection::MostUsefulTargets)
+{
+}
 
-DbQuery::DbQuery() :
-    fields(QList<Models::ChecklistItem>()
-           << KnownFieldModel::mkItem(KnownField::Title)
-           << KnownFieldModel::mkItem(KnownField::TrackPosition)
-           << KnownFieldModel::mkItem(KnownField::DiskPosition)
-           << KnownFieldModel::mkItem(KnownField::Album)
-           << KnownFieldModel::mkItem(KnownField::Album)
-           << KnownFieldModel::mkItem(KnownField::Year)
-           << KnownFieldModel::mkItem(KnownField::Genre)
-           << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
-           << KnownFieldModel::mkItem(KnownField::Lyrics, Qt::Unchecked))
-{}
+DbQuery::DbQuery()
+    : fields(QList<Models::ChecklistItem>() << KnownFieldModel::mkItem(KnownField::Title) << KnownFieldModel::mkItem(KnownField::TrackPosition)
+                                            << KnownFieldModel::mkItem(KnownField::DiskPosition) << KnownFieldModel::mkItem(KnownField::Album)
+                                            << KnownFieldModel::mkItem(KnownField::Album) << KnownFieldModel::mkItem(KnownField::Year)
+                                            << KnownFieldModel::mkItem(KnownField::Genre) << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
+                                            << KnownFieldModel::mkItem(KnownField::Lyrics, Qt::Unchecked))
+{
+}
 
 Settings &values()
 {
@@ -48,13 +46,14 @@ void restore()
 {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, QStringLiteral(PROJECT_NAME));
     // move old config to new location
-    const QString oldConfig = QSettings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()).fileName();
+    const QString oldConfig
+        = QSettings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()).fileName();
     QFile::rename(oldConfig, settings.fileName()) || QFile::remove(oldConfig);
     settings.sync();
     Settings &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
-    switch(settings.value(QStringLiteral("adoptfields"), 0).toInt()) {
+    switch (settings.value(QStringLiteral("adoptfields"), 0).toInt()) {
     case 1:
         v.editor.adoptFields = AdoptFields::WithinDirectory;
         break;
@@ -67,7 +66,7 @@ void restore()
     };
     v.editor.saveAndShowNextOnEnter = settings.value(QStringLiteral("saveandshownextonenter"), false).toBool();
     v.editor.askBeforeDeleting = settings.value(QStringLiteral("askbeforedeleting"), true).toBool();
-    switch(settings.value(QStringLiteral("multipletaghandling"), 0).toInt()) {
+    switch (settings.value(QStringLiteral("multipletaghandling"), 0).toInt()) {
     case 0:
         v.editor.multipleTagHandling = MultipleTagHandling::SingleEditorPerTarget;
         break;
@@ -102,7 +101,7 @@ void restore()
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("tagprocessing"));
-    switch(settings.value(QStringLiteral("preferredencoding"), 1).toInt()) {
+    switch (settings.value(QStringLiteral("preferredencoding"), 1).toInt()) {
     case 0:
         v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Latin1;
         break;
@@ -115,7 +114,7 @@ void restore()
     default:
         v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Utf8;
     };
-    switch(settings.value(QStringLiteral("unsupportedfieldhandling"), 0).toInt()) {
+    switch (settings.value(QStringLiteral("unsupportedfieldhandling"), 0).toInt()) {
     case 1:
         v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Discard;
         break;
@@ -124,37 +123,42 @@ void restore()
     };
     v.tagPocessing.autoTagManagement = settings.value(QStringLiteral("autotagmanagement"), true).toBool();
     settings.beginGroup(QStringLiteral("id3v1"));
-    switch(settings.value(QStringLiteral("usage"), 0).toInt()) {
+    switch (settings.value(QStringLiteral("usage"), 0).toInt()) {
     case 1:
-        v.tagPocessing.id3.v1Usage = TagUsage::KeepExisting;
+        v.tagPocessing.creationSettings.id3v1usage = TagUsage::KeepExisting;
         break;
     case 2:
-        v.tagPocessing.id3.v1Usage = TagUsage::Never;
+        v.tagPocessing.creationSettings.id3v1usage = TagUsage::Never;
         break;
     default:
-        v.tagPocessing.id3.v1Usage = TagUsage::Always;
+        v.tagPocessing.creationSettings.id3v1usage = TagUsage::Always;
         break;
     };
     settings.endGroup();
     settings.beginGroup(QStringLiteral("id3v2"));
-    switch(settings.value(QStringLiteral("usage"), 0).toInt()) {
+    switch (settings.value(QStringLiteral("usage"), 0).toInt()) {
     case 1:
-        v.tagPocessing.id3.v2Usage = TagUsage::KeepExisting;
+        v.tagPocessing.creationSettings.id3v2usage = TagUsage::KeepExisting;
         break;
     case 2:
-        v.tagPocessing.id3.v2Usage = TagUsage::Never;
+        v.tagPocessing.creationSettings.id3v2usage = TagUsage::Never;
         break;
     default:
-        v.tagPocessing.id3.v2Usage = TagUsage::Always;
+        v.tagPocessing.creationSettings.id3v2usage = TagUsage::Always;
     };
-    v.tagPocessing.id3.v2Version = settings.value(QStringLiteral("versiontobeused"), 3).toUInt();
-    v.tagPocessing.id3.keepVersionOfExistingId3v2Tag = settings.value(QStringLiteral("keepversionofexistingtag"), true).toBool();
-    v.tagPocessing.id3.mergeMultipleSuccessiveId3v2Tags = settings.value(QStringLiteral("mergemultiplesuccessivetags"), true).toBool();
+    v.tagPocessing.creationSettings.id3v2MajorVersion = static_cast<byte>(settings.value(QStringLiteral("versiontobeused")).toUInt());
+    if (v.tagPocessing.creationSettings.id3v2MajorVersion < 1 || v.tagPocessing.creationSettings.id3v2MajorVersion > 4) {
+        v.tagPocessing.creationSettings.id3v2MajorVersion = 3;
+    }
+    v.tagPocessing.creationSettings.setFlag(
+        TagCreationFlags::KeepExistingId3v2Version, settings.value(QStringLiteral("keepversionofexistingtag"), true).toBool());
+    v.tagPocessing.creationSettings.setFlag(
+        TagCreationFlags::MergeMultipleSuccessiveId3v2Tags, settings.value(QStringLiteral("mergemultiplesuccessivetags"), true).toBool());
     settings.endGroup();
     v.editor.defaultTargets.restore(settings, QStringLiteral("targets"));
     settings.beginGroup(QStringLiteral("filelayout"));
     v.tagPocessing.fileLayout.forceRewrite = settings.value(QStringLiteral("forcerewrite"), true).toBool();
-    switch(settings.value(QStringLiteral("tagpos")).toInt()) {
+    switch (settings.value(QStringLiteral("tagpos")).toInt()) {
     case 0:
         v.tagPocessing.fileLayout.preferredTagPosition = ElementPosition::BeforeData;
         break;
@@ -163,7 +167,7 @@ void restore()
         break;
     }
     v.tagPocessing.fileLayout.forceTagPosition = settings.value(QStringLiteral("forcetagpos"), true).toBool();
-    switch(settings.value(QStringLiteral("indexpos")).toInt()) {
+    switch (settings.value(QStringLiteral("indexpos")).toInt()) {
     case 0:
         v.tagPocessing.fileLayout.preferredIndexPosition = ElementPosition::BeforeData;
         break;
@@ -243,13 +247,14 @@ void save()
     settings.setValue(QStringLiteral("unsupportedfieldhandling"), static_cast<int>(v.tagPocessing.unsupportedFieldHandling));
     settings.setValue(QStringLiteral("autotagmanagement"), v.tagPocessing.autoTagManagement);
     settings.beginGroup(QStringLiteral("id3v1"));
-    settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.id3.v1Usage));
+    settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.creationSettings.id3v1usage));
     settings.endGroup();
     settings.beginGroup(QStringLiteral("id3v2"));
-    settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.id3.v2Usage));
-    settings.setValue(QStringLiteral("versiontobeused"), v.tagPocessing.id3.v2Version);
-    settings.setValue(QStringLiteral("keepversionofexistingtag"), v.tagPocessing.id3.keepVersionOfExistingId3v2Tag);
-    settings.setValue(QStringLiteral("mergemultiplesuccessivetags"), v.tagPocessing.id3.mergeMultipleSuccessiveId3v2Tags);
+    settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.creationSettings.id3v2usage));
+    settings.setValue(QStringLiteral("versiontobeused"), v.tagPocessing.creationSettings.id3v2MajorVersion);
+    settings.setValue(QStringLiteral("keepversionofexistingtag"), v.tagPocessing.creationSettings.flags & TagCreationFlags::KeepExistingId3v2Version);
+    settings.setValue(
+        QStringLiteral("mergemultiplesuccessivetags"), v.tagPocessing.creationSettings.flags & TagCreationFlags::MergeMultipleSuccessiveId3v2Tags);
     settings.endGroup();
     v.editor.defaultTargets.save(settings, QStringLiteral("targets"));
     settings.beginGroup(QStringLiteral("filelayout"));
@@ -288,4 +293,4 @@ void save()
     v.qt.save(settings);
 }
 
-}
+} // namespace Settings

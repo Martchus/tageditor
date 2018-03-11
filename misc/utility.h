@@ -13,7 +13,7 @@ namespace TagParser {
 class MediaFileInfo;
 class Tag;
 enum class ElementPosition;
-}
+} // namespace TagParser
 
 namespace Utility {
 
@@ -40,6 +40,6 @@ constexpr int trQuandity(quint64 quandity)
     return quandity > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : static_cast<int>(quandity);
 }
 
-}
+} // namespace Utility
 
 #endif // UTILITYFEATURES_H

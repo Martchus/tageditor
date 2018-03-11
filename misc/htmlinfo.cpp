@@ -1,54 +1,53 @@
 #include "./htmlinfo.h"
 #include "./utility.h"
 
-#include <tagparser/signature.h>
-#include <tagparser/mediafileinfo.h>
+#include <tagparser/abstractattachment.h>
 #include <tagparser/abstractcontainer.h>
+#include <tagparser/abstracttrack.h>
 #include <tagparser/matroska/matroskacontainer.h>
 #include <tagparser/matroska/matroskaeditionentry.h>
+#include <tagparser/mediafileinfo.h>
 #include <tagparser/mp4/mp4container.h>
-#include <tagparser/abstracttrack.h>
-#include <tagparser/abstractattachment.h>
+#include <tagparser/signature.h>
 
 #include <qtutilities/resources/resources.h>
 
-#include <c++utilities/chrono/timespan.h>
 #include <c++utilities/chrono/datetime.h>
+#include <c++utilities/chrono/timespan.h>
 #include <c++utilities/conversion/stringconversion.h>
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
-# include <QApplication>
-# include <QStyle>
+#include <QApplication>
+#include <QStyle>
 #elif defined(TAGEDITOR_GUI_QTQUICK)
-# include <QGuiApplication>
+#include <QGuiApplication>
 #endif
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-# include <QFont>
-# include <QFontMetrics>
-# include <QIcon>
+#include <QFont>
+#include <QFontMetrics>
+#include <QIcon>
 #endif
-#include <QString>
-#include <QStringBuilder>
-#include <QResource>
 #include <QBuffer>
 #include <QByteArray>
+#include <QResource>
+#include <QString>
+#include <QStringBuilder>
 #include <QXmlStreamWriter>
 #ifdef QT_DEBUG
-# include <QFile>
+#include <QFile>
 #endif
 
 #include <list>
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-# define APPEND_GUI_RULE(rule, fallback) \
-    if(ApplicationInstances::hasGuiApp()) { \
-        res.append(rule); \
-    } else { \
-        res.append(fallback); \
+#define APPEND_GUI_RULE(rule, fallback)                                                                                                              \
+    if (ApplicationInstances::hasGuiApp()) {                                                                                                         \
+        res.append(rule);                                                                                                                            \
+    } else {                                                                                                                                         \
+        res.append(fallback);                                                                                                                        \
     }
 #else
-# define APPEND_GUI_RULE(rule, fallback) \
-    res.append(fallback);
+#define APPEND_GUI_RULE(rule, fallback) res.append(fallback);
 #endif
 
 using namespace std;
@@ -69,13 +68,13 @@ inline QString qstr(const string &stdstr)
     return QString::fromUtf8(stdstr.data(), static_cast<int>(stdstr.size()));
 }
 
-class RowMaker
-{
+class RowMaker {
 public:
-    RowMaker(QXmlStreamWriter &writer) :
-        writer(writer),
-        m_even(true)
-    {}
+    RowMaker(QXmlStreamWriter &writer)
+        : writer(writer)
+        , m_even(true)
+    {
+    }
 
     void reset()
     {
@@ -85,7 +84,7 @@ public:
     void startRow(const QString &label, bool head = true)
     {
         writer.writeStartElement(QStringLiteral("tr"));
-        if((m_even = !m_even)) {
+        if ((m_even = !m_even)) {
             writer.writeAttribute(QStringLiteral("class"), QStringLiteral("even"));
         }
         writer.writeTextElement(head ? QStringLiteral("th") : QStringLiteral("td"), label);
@@ -95,7 +94,7 @@ public:
     void startRow(const QString &label, const QString &helpText)
     {
         writer.writeStartElement(QStringLiteral("tr"));
-        if((m_even = !m_even)) {
+        if ((m_even = !m_even)) {
             writer.writeAttribute(QStringLiteral("class"), QStringLiteral("even"));
         }
         writer.writeAttribute(QStringLiteral("title"), helpText);
@@ -134,12 +133,12 @@ public:
     void startSubTab(const QString &subLabel, size_t index, unsigned int level = 0)
     {
         writer.writeStartElement(QStringLiteral("tr"));
-        if((m_even = !m_even)) {
+        if ((m_even = !m_even)) {
             writer.writeAttribute(QStringLiteral("class"), QStringLiteral("even"));
         }
         writer.writeStartElement(QStringLiteral("th"));
         writer.writeCharacters(subLabel % QStringLiteral(" #") % QString::number(index));
-        if(level) {
+        if (level) {
             writer.writeEmptyElement(QStringLiteral("br"));
             writer.writeCharacters(QString::number(level));
         }
@@ -153,7 +152,7 @@ public:
     void startSubTab(const QString &subLabel)
     {
         writer.writeStartElement(QStringLiteral("tr"));
-        if((m_even = !m_even)) {
+        if ((m_even = !m_even)) {
             writer.writeAttribute(QStringLiteral("class"), QStringLiteral("even"));
         }
         writer.writeTextElement(QStringLiteral("th"), subLabel);
@@ -166,7 +165,7 @@ public:
     void startHorizontalSubTab(const QString &subLabel, const QStringList &headerLabels)
     {
         writer.writeStartElement(QStringLiteral("tr"));
-        if((m_even = !m_even)) {
+        if ((m_even = !m_even)) {
             writer.writeAttribute(QStringLiteral("class"), QStringLiteral("even"));
         }
         writer.writeTextElement(QStringLiteral("th"), subLabel);
@@ -175,7 +174,7 @@ public:
         writer.writeAttribute(QStringLiteral("class"), QStringLiteral("headerhorizontal"));
         writer.writeStartElement(QStringLiteral("thead"));
         writer.writeStartElement(QStringLiteral("tr"));
-        for(const auto &label : headerLabels) {
+        for (const auto &label : headerLabels) {
             writer.writeTextElement(QStringLiteral("th"), label);
         }
         writer.writeEndElement();
@@ -199,7 +198,7 @@ private:
 QString mkFontStyle(const QFont &font)
 {
     QString style;
-    switch(font.style()) {
+    switch (font.style()) {
     case QFont::StyleItalic:
         style = QStringLiteral("italic");
         break;
@@ -210,7 +209,7 @@ QString mkFontStyle(const QFont &font)
         style = QStringLiteral("normal");
     }
     QString weight;
-    switch(font.weight()) {
+    switch (font.weight()) {
     case QFont::Light:
         weight = QStringLiteral("light");
         break;
@@ -224,7 +223,7 @@ QString mkFontStyle(const QFont &font)
         weight = QStringLiteral("normal");
     }
     QString size;
-    if(font.pixelSize() > 0) {
+    if (font.pixelSize() > 0) {
         size = QStringLiteral("%1px").arg(font.pixelSize());
     } else {
         size = QStringLiteral("%1pt").arg(font.pointSize());
@@ -232,8 +231,8 @@ QString mkFontStyle(const QFont &font)
     return QStringLiteral("font-family: \"%1\", sans-serif;"
                           "font-style: %2;"
                           "font-weight: %3;"
-                          "font-size: %4;").arg(
-                font.family(), style, weight, size);
+                          "font-size: %4;")
+        .arg(font.family(), style, weight, size);
 }
 
 QByteArray mkBase64(const QIcon &icon)
@@ -269,26 +268,28 @@ const QByteArray &mkDebugIconData()
     return data;
 }
 
-template<class ElementType> void mkElementContent(QXmlStreamWriter &, ElementType *)
-{}
-
-template<> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element)
+template <class ElementType> void mkElementContent(QXmlStreamWriter &, ElementType *)
 {
-    switch(element->id()) {
+}
+
+template <> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element)
+{
+    switch (element->id()) {
     case MatroskaIds::SeekID: {
         const uint64 seekId = element->readUInteger();
         writer.writeCharacters(QStringLiteral(", denoted type: 0x"));
         writer.writeCharacters(QString::number(seekId, 16));
-        if(seekId <= numeric_limits<uint32>::max()) {
+        if (seekId <= numeric_limits<uint32>::max()) {
             const char *const seekIdName = matroskaIdName(static_cast<uint32>(seekId));
-            if(*seekIdName) {
+            if (*seekIdName) {
                 writer.writeCharacters(QStringLiteral(" \""));
                 writer.writeCharacters(QString::fromLatin1(seekIdName));
                 writer.writeCharacters(QStringLiteral("\""));
             }
         }
         break;
-    } case MatroskaIds::SeekPosition: {
+    }
+    case MatroskaIds::SeekPosition: {
         writer.writeCharacters(QStringLiteral(", denoted position: "));
         const uint64 seekPos = element->readUInteger();
         const auto seekPosStr = QString::number(seekPos);
@@ -299,22 +300,21 @@ template<> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element)
         writer.writeCharacters(seekPosStr);
         writer.writeEndElement();
         break;
-    } default:
-        ;
+    }
+    default:;
     }
 }
 
-class Generator
-{
+class Generator {
 public:
-
-    Generator(const MediaFileInfo &file, Diagnostics &diag, Diagnostics &diagReparsing) :
-        m_writer(&m_res),
-        m_rowMaker(m_writer),
-        m_file(file),
-        m_diag(diag),
-        m_diagReparsing(diagReparsing)
-    {}
+    Generator(const MediaFileInfo &file, Diagnostics &diag, Diagnostics &diagReparsing)
+        : m_writer(&m_res)
+        , m_rowMaker(m_writer)
+        , m_file(file)
+        , m_diag(diag)
+        , m_diagReparsing(diagReparsing)
+    {
+    }
 
     QString mkStyle()
     {
@@ -324,7 +324,7 @@ public:
                                   "margin: 0px;"));
 #ifndef GUI_NONE
         QPalette palette;
-        if(ApplicationInstances::hasGuiApp()) {
+        if (ApplicationInstances::hasGuiApp()) {
             palette = QGuiApplication::palette();
             res.append(mkFontStyle(QGuiApplication::font()));
             res.append(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::Base).name()));
@@ -338,73 +338,76 @@ public:
 #endif
         res.append(QStringLiteral("}"
                                   "a:link, #structure .parent-node {"));
-        APPEND_GUI_RULE(QStringLiteral("color: %1;").arg(palette.color(QPalette::Link).name()),
-                        QStringLiteral("color: #337AB7;"))
-                res.append(QStringLiteral("text-decoration: none;"
-                                          "}"
-                                          "a:focus, a:hover {"));
-        APPEND_GUI_RULE(QStringLiteral("color: %1;").arg(palette.link().color().darker(palette.color(QPalette::Background).lightness() > palette.color(QPalette::Link).lightness() ? 150 : 50).name()),
-                        QStringLiteral("color: #23527c;"))
-                res.append(QStringLiteral("text-decoration: underline;"
-                                          "} table {"
-                                          "border-collapse: collapse;"
-                                          "width: 100%;"
-                                          "} tr {"));
-        APPEND_GUI_RULE(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::Base).name()),
-                        QStringLiteral("background-color: #fff;"))
-                res.append(QStringLiteral("} tr.even {"));
-        APPEND_GUI_RULE(QStringLiteral("background-color: %1!important;").arg(palette.color(QPalette::AlternateBase).name()), QStringLiteral("background-color: #fafafa!important;"))
-                res.append(QStringLiteral("}"
-                                          "table.headervertical th, table.headervertical td {"
-                                          "padding: 2px 5px;"
-                                          "text-align: left;"
-                                          "vertical-align: top;"
-                                          "}"
-                                          "table.headervertical > tbody > tr > th {"
-                                          "text-align: right;"
-                                          "border: none;"
-                                          "width: 25%;"
-                                          "}"
-                                          "table.headerhorizontal > thead > tr > th {"
-                                          "text-align: center;"
-                                          "border: none;"
-                                          "}"
-                                          ".more {"
-                                          "display: none;"
-                                          "}"
-                                          ".more tr > th {"
-                                          "font-weight: normal;"
-                                          "}"
-                                          ".nodecollapsed {"
-                                          "display: none;"
-                                          "}"
-                                          ".nodeexpaned {"
-                                          "display: block;"
-                                          "}"
-                                          "table.headerhorizontal > thead > tr > th {"
-                                          "font-weight: bold;"
-                                          "}"
-                                          "td table.headervertical > thead > tr > th {"
-                                          "font-weight: normal;"
-                                          "border: none;"
-                                          "background-color: transparent;"
-                                          "}"
-                                          "th {"
-                                          "cursor: default;"
-                                          "}"
-                                          "td.warning, td.critical, td.information {"
-                                          "width: 18px;"
-                                          "background-repeat: no-repeat;"
-                                          "background-position:center;"
-                                          "}"
-                                          ".has-helptext {"
-                                          "cursor: help;"
-                                          "}"
-                                          "#structure_links a {"
-                                          "margin-right: 5px;"
-                                          "}"));
+        APPEND_GUI_RULE(QStringLiteral("color: %1;").arg(palette.color(QPalette::Link).name()), QStringLiteral("color: #337AB7;"))
+        res.append(QStringLiteral("text-decoration: none;"
+                                  "}"
+                                  "a:focus, a:hover {"));
+        APPEND_GUI_RULE(QStringLiteral("color: %1;")
+                            .arg(palette.link()
+                                     .color()
+                                     .darker(palette.color(QPalette::Background).lightness() > palette.color(QPalette::Link).lightness() ? 150 : 50)
+                                     .name()),
+            QStringLiteral("color: #23527c;"))
+        res.append(QStringLiteral("text-decoration: underline;"
+                                  "} table {"
+                                  "border-collapse: collapse;"
+                                  "width: 100%;"
+                                  "} tr {"));
+        APPEND_GUI_RULE(QStringLiteral("background-color: %1;").arg(palette.color(QPalette::Base).name()), QStringLiteral("background-color: #fff;"))
+        res.append(QStringLiteral("} tr.even {"));
+        APPEND_GUI_RULE(QStringLiteral("background-color: %1!important;").arg(palette.color(QPalette::AlternateBase).name()),
+            QStringLiteral("background-color: #fafafa!important;"))
+        res.append(QStringLiteral("}"
+                                  "table.headervertical th, table.headervertical td {"
+                                  "padding: 2px 5px;"
+                                  "text-align: left;"
+                                  "vertical-align: top;"
+                                  "}"
+                                  "table.headervertical > tbody > tr > th {"
+                                  "text-align: right;"
+                                  "border: none;"
+                                  "width: 25%;"
+                                  "}"
+                                  "table.headerhorizontal > thead > tr > th {"
+                                  "text-align: center;"
+                                  "border: none;"
+                                  "}"
+                                  ".more {"
+                                  "display: none;"
+                                  "}"
+                                  ".more tr > th {"
+                                  "font-weight: normal;"
+                                  "}"
+                                  ".nodecollapsed {"
+                                  "display: none;"
+                                  "}"
+                                  ".nodeexpaned {"
+                                  "display: block;"
+                                  "}"
+                                  "table.headerhorizontal > thead > tr > th {"
+                                  "font-weight: bold;"
+                                  "}"
+                                  "td table.headervertical > thead > tr > th {"
+                                  "font-weight: normal;"
+                                  "border: none;"
+                                  "background-color: transparent;"
+                                  "}"
+                                  "th {"
+                                  "cursor: default;"
+                                  "}"
+                                  "td.warning, td.critical, td.information {"
+                                  "width: 18px;"
+                                  "background-repeat: no-repeat;"
+                                  "background-position:center;"
+                                  "}"
+                                  ".has-helptext {"
+                                  "cursor: help;"
+                                  "}"
+                                  "#structure_links a {"
+                                  "margin-right: 5px;"
+                                  "}"));
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
-        if(ApplicationInstances::hasWidgetsApp()) {
+        if (ApplicationInstances::hasWidgetsApp()) {
             res.append(QStringLiteral("td.warning {background-image: url(data:image/png;base64,"));
             res.append(mkWarningIconData());
             res.append(QStringLiteral(");}td.critical {background-image: url(data:image/png;base64,"));
@@ -517,134 +520,156 @@ public:
     {
         RowMaker rowMaker(m_writer);
         rowMaker.startSubTab(QCoreApplication::translate("HtmlInfo", "Track"), trackNumber);
-        if(track->id()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QCoreApplication::translate("HtmlInfo", "The unique number used to identify the track in the container file."), QString::number(track->id()));
+        if (track->id()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "ID"),
+                QCoreApplication::translate("HtmlInfo", "The unique number used to identify the track in the container file."),
+                QString::number(track->id()));
         }
-        if(track->trackNumber()) {
-           rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Number"), QCoreApplication::translate("HtmlInfo", "The index of the track in the container file."), QString::number(track->trackNumber()));
+        if (track->trackNumber()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Number"),
+                QCoreApplication::translate("HtmlInfo", "The index of the track in the container file."), QString::number(track->trackNumber()));
         }
-        if(!track->name().empty()) {
+        if (!track->name().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(track->name()));
         }
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Type"), qstr(track->mediaTypeName()));
         const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
-        rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format"), QCoreApplication::translate("HtmlInfo", "The unabbreviated name of the track's format."), qstr(fmtName));
-        if(track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"), QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr));
+        rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format"),
+            QCoreApplication::translate("HtmlInfo", "The unabbreviated name of the track's format."), qstr(fmtName));
+        if (track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"),
+                QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr));
         }
-        if(track->version() != 0.0) {
-            switch(track->format().general) {
+        if (track->version() != 0.0) {
+            switch (track->format().general) {
             case GeneralMediaFormat::Mpeg4Video:
             case GeneralMediaFormat::Avc:
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Level"), QCoreApplication::translate("HtmlInfo", "The version/level of the track's format."), QChar('L') + QString::number(track->version()));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Level"),
+                    QCoreApplication::translate("HtmlInfo", "The version/level of the track's format."),
+                    QChar('L') + QString::number(track->version()));
                 break;
             default:
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QCoreApplication::translate("HtmlInfo", "The version/level of the track's format."), QString::number(track->version()));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"),
+                    QCoreApplication::translate("HtmlInfo", "The version/level of the track's format."), QString::number(track->version()));
             }
         }
         fmtName = track->format().extensionName();
-        if(*fmtName) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Extension"), QCoreApplication::translate("HtmlInfo", "Used format extensions."), qstr(fmtName));
+        if (*fmtName) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Extension"), QCoreApplication::translate("HtmlInfo", "Used format extensions."),
+                qstr(fmtName));
         }
-        if(!track->formatId().empty()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format/codec ID"), QCoreApplication::translate("HtmlInfo", "The raw format/codec identifier extracted from the container."), qstr(track->formatId()));
+        if (!track->formatId().empty()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format/codec ID"),
+                QCoreApplication::translate("HtmlInfo", "The raw format/codec identifier extracted from the container."), qstr(track->formatId()));
         }
-        if(track->size()) {
+        if (track->size()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(track->size(), true)));
         }
-        if(!track->duration().isNull()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(track->duration().toString(TimeSpanOutputFormat::WithMeasures)) % QStringLiteral(" (") % QString::number(track->duration().totalTicks()) % QChar(')'));
+        if (!track->duration().isNull()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"),
+                qstr(track->duration().toString(TimeSpanOutputFormat::WithMeasures)) % QStringLiteral(" (")
+                    % QString::number(track->duration().totalTicks()) % QChar(')'));
         }
-        if(track->bitrate() != 0.0) {
+        if (track->bitrate() != 0.0) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Avg. bitrate"), qstr(bitrateToString(track->bitrate())));
         }
-        if(track->maxBitrate() != 0.0) {
+        if (track->maxBitrate() != 0.0) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Maximum bitrate"), qstr(bitrateToString(track->maxBitrate())));
         }
-        if(!track->creationTime().isNull()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Creation time"), qstr(track->creationTime().toString(DateTimeOutputFormat::DateAndTime, true)));
+        if (!track->creationTime().isNull()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Creation time"),
+                qstr(track->creationTime().toString(DateTimeOutputFormat::DateAndTime, true)));
         }
-        if(!track->modificationTime().isNull()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Modification time"), qstr(track->modificationTime().toString(DateTimeOutputFormat::DateAndTime, true)));
+        if (!track->modificationTime().isNull()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Modification time"),
+                qstr(track->modificationTime().toString(DateTimeOutputFormat::DateAndTime, true)));
         }
-        if(!track->language().empty()) {
+        if (!track->language().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Language"), qstr(track->language()));
         }
-        if(!track->compressorName().empty()) {
+        if (!track->compressorName().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Compressor name"), qstr(track->compressorName()));
         }
-        if(track->samplingFrequency()) {
-            if(track->extensionSamplingFrequency()) {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QString::number(track->extensionSamplingFrequency()) % QStringLiteral(" Hz / ") % QString::number(track->samplingFrequency()) % QStringLiteral(" Hz"));
+        if (track->samplingFrequency()) {
+            if (track->extensionSamplingFrequency()) {
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"),
+                    QString::number(track->extensionSamplingFrequency()) % QStringLiteral(" Hz / ") % QString::number(track->samplingFrequency())
+                        % QStringLiteral(" Hz"));
             } else {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"), QString::number(track->samplingFrequency()) + QStringLiteral(" Hz"));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Sampling frequency"),
+                    QString::number(track->samplingFrequency()) + QStringLiteral(" Hz"));
             }
         }
-        if(track->sampleCount()) {
-            rowMaker.mkRow(track->mediaType() == MediaType::Video
-                           ? QCoreApplication::translate("HtmlInfo", "Frame count")
-                           : QCoreApplication::translate("HtmlInfo", "Sample count"),
-                           QString::number(track->sampleCount()));
+        if (track->sampleCount()) {
+            rowMaker.mkRow(track->mediaType() == MediaType::Video ? QCoreApplication::translate("HtmlInfo", "Frame count")
+                                                                  : QCoreApplication::translate("HtmlInfo", "Sample count"),
+                QString::number(track->sampleCount()));
         }
-        if(track->bitsPerSample()) {
+        if (track->bitsPerSample()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Bits per sample"), QString::number(track->bitsPerSample()));
         }
-        if(track->quality()) {
+        if (track->quality()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Quality"), QString::number(track->quality()));
         }
-        if(!track->pixelSize().isNull()) {
+        if (!track->pixelSize().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Pixel size"), qstr(track->pixelSize().toString()));
         }
-        if(!track->displaySize().isNull()) {
+        if (!track->displaySize().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Display size"), qstr(track->displaySize().toString()));
         }
-        if(track->pixelAspectRatio().isValid()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Pixel Aspect Ratio"), QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ") % QString::number(track->pixelAspectRatio().denominator));
+        if (track->pixelAspectRatio().isValid()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Pixel Aspect Ratio"),
+                QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ")
+                    % QString::number(track->pixelAspectRatio().denominator));
         }
-        if(!track->cropping().isNull()) {
+        if (!track->cropping().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Cropping"), qstr(track->cropping().toString()));
         }
-        if(!track->resolution().isNull()) {
+        if (!track->resolution().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Resolution"), qstr(track->resolution().toString()));
         }
-        if(track->channelConfigString()) {
-            if(track->extensionChannelConfigString()) {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QStringLiteral("%1 / %2").arg(QString::fromUtf8(track->extensionChannelConfigString()), QString::fromUtf8(track->channelConfigString())));
+        if (track->channelConfigString()) {
+            if (track->extensionChannelConfigString()) {
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"),
+                    QCoreApplication::translate("HtmlInfo", "Channel configuration"),
+                    QStringLiteral("%1 / %2").arg(
+                        QString::fromUtf8(track->extensionChannelConfigString()), QString::fromUtf8(track->channelConfigString())));
             } else {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"), QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromUtf8(track->channelConfigString()));
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"),
+                    QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromUtf8(track->channelConfigString()));
             }
-        } else if(track->channelCount()) {
+        } else if (track->channelCount()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel count"), QString::number(track->channelCount()));
         }
-        if(track->depth()) {
+        if (track->depth()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Bit depth"), QString::number(track->depth()));
         }
-        if(track->fps()) {
+        if (track->fps()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Frames per second"), QString::number(track->fps()));
         }
-        if(track->chromaFormat()) {
+        if (track->chromaFormat()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chroma format"), qstr(track->chromaFormat()));
         }
         QStringList labels;
-        if(track->isInterlaced()) {
+        if (track->isInterlaced()) {
             labels << QCoreApplication::translate("HtmlInfo", "interlaced");
         }
-        if(!track->isEnabled()) {
+        if (!track->isEnabled()) {
             labels << QCoreApplication::translate("HtmlInfo", "disabled");
         }
-        if(track->isDefault()) {
+        if (track->isDefault()) {
             labels << QCoreApplication::translate("HtmlInfo", "default");
         }
-        if(track->isForced()) {
+        if (track->isForced()) {
             labels << QCoreApplication::translate("HtmlInfo", "forced");
         }
-        if(track->hasLacing()) {
+        if (track->hasLacing()) {
             labels << QCoreApplication::translate("HtmlInfo", "has lacing");
         }
-        if(track->isEncrypted()) {
+        if (track->isEncrypted()) {
             labels << QCoreApplication::translate("HtmlInfo", "encrypted");
         }
-        if(!labels.isEmpty()) {
+        if (!labels.isEmpty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), labels.join(QStringLiteral(", ")));
         }
         rowMaker.endSubTab();
@@ -654,19 +679,20 @@ public:
     {
         RowMaker rowMaker(m_writer);
         m_rowMaker.startSubTab(QCoreApplication::translate("HtmlInfo", "Attachment"), attachmentNumber);
-        if(attachment->id()) {
+        if (attachment->id()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QString::number(attachment->id()));
         }
-        if(!attachment->name().empty()) {
+        if (!attachment->name().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(attachment->name()));
         }
-        if(attachment->data()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(static_cast<uint64>(attachment->data()->size()), true)));
+        if (attachment->data()) {
+            rowMaker.mkRow(
+                QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(static_cast<uint64>(attachment->data()->size()), true)));
         }
-        if(!attachment->mimeType().empty()) {
+        if (!attachment->mimeType().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Mime-type"), qstr(attachment->mimeType()));
         }
-        if(!attachment->description().empty()) {
+        if (!attachment->description().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Description"), qstr(attachment->description()));
         }
         rowMaker.endSubTab();
@@ -676,40 +702,42 @@ public:
     {
         RowMaker rowMaker(m_writer);
         rowMaker.startSubTab(QCoreApplication::translate("HtmlInfo", "Chapter"), chapterNumber + 1, level);
-        if(chapter.id()) {
+        if (chapter.id()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QString::number(chapter.id()));
         }
-        for(const LocaleAwareString &name : chapter.names()) {
+        for (const LocaleAwareString &name : chapter.names()) {
             static const string delim(", ");
-            const string locale = joinStrings(initializer_list<string>{joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true)}, delim, true);
+            const string locale = joinStrings(
+                initializer_list<string>{ joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true) }, delim, true);
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name (%1)").arg(qstr(locale)), qstr(name));
         }
-        if(!chapter.startTime().isNegative()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Start time"), qstr(chapter.startTime().toString(TimeSpanOutputFormat::WithMeasures)));
+        if (!chapter.startTime().isNegative()) {
+            rowMaker.mkRow(
+                QCoreApplication::translate("HtmlInfo", "Start time"), qstr(chapter.startTime().toString(TimeSpanOutputFormat::WithMeasures)));
         }
-        if(!chapter.endTime().isNegative()) {
+        if (!chapter.endTime().isNegative()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "End time"), qstr(chapter.endTime().toString(TimeSpanOutputFormat::WithMeasures)));
         }
         QStringList labels;
-        if(chapter.isHidden()) {
+        if (chapter.isHidden()) {
             labels << QCoreApplication::translate("HtmlInfo", "hidden");
         }
-        if(!chapter.isEnabled()) {
+        if (!chapter.isEnabled()) {
             labels << QCoreApplication::translate("HtmlInfo", "disabled");
         }
-        if(!labels.empty()) {
+        if (!labels.empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), labels.join(QStringLiteral(", ")));
         }
-        if(!chapter.tracks().empty()) {
+        if (!chapter.tracks().empty()) {
             QStringList trackIds;
-            for(uint64 id : chapter.tracks()) {
+            for (uint64 id : chapter.tracks()) {
                 trackIds << QString::number(id);
             }
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tracks"), trackIds.join(QStringLiteral(", ")));
         }
         rowMaker.endSubTab();
         ++level;
-        for(size_t i = 0, nestedChapters = chapter.nestedChapterCount(); i < nestedChapters; ++i) {
+        for (size_t i = 0, nestedChapters = chapter.nestedChapterCount(); i < nestedChapters; ++i) {
             mkChapter(*chapter.nestedChapter(i), i, level);
         }
     }
@@ -718,46 +746,48 @@ public:
     {
         RowMaker rowMaker(m_writer);
         rowMaker.startSubTab(QCoreApplication::translate("HtmlInfo", "Edition"), editionNumber + 1);
-        if(edition.id()) {
+        if (edition.id()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QString::number(edition.id()));
         }
         QStringList labels;
-        if(edition.isHidden()) {
+        if (edition.isHidden()) {
             labels << QCoreApplication::translate("HtmlInfo", "hidden");
         }
-        if(edition.isDefault()) {
+        if (edition.isDefault()) {
             labels << QCoreApplication::translate("HtmlInfo", "default");
         }
-        if(edition.isOrdered()) {
+        if (edition.isOrdered()) {
             labels << QCoreApplication::translate("HtmlInfo", "ordered");
         }
-        if(!labels.isEmpty()) {
+        if (!labels.isEmpty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Labeled as"), labels.join(QStringLiteral(", ")));
         }
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chapters"),
-                                  QCoreApplication::translate("HtmlInfo", "edition contains %1 chapter(s)", nullptr, static_cast<int>(edition.chapters().size())).arg(edition.chapters().size()));
+            QCoreApplication::translate("HtmlInfo", "edition contains %1 chapter(s)", nullptr, static_cast<int>(edition.chapters().size()))
+                .arg(edition.chapters().size()));
         rowMaker.endSubTab();
         unsigned int chapterNumber = 0;
-        for(const auto &chapter : edition.chapters()) {
+        for (const auto &chapter : edition.chapters()) {
             mkChapter(*chapter, chapterNumber);
             ++chapterNumber;
         }
     }
 
-    template<class ElementType, bool isAdditional = false> void mkElementNode(ElementType *element)
+    template <class ElementType, bool isAdditional = false> void mkElementNode(ElementType *element)
     {
         m_writer.writeStartElement(QStringLiteral("ul"));
-        m_writer.writeAttribute(QStringLiteral("class"), element && element->parent() ? QStringLiteral("nodecollapsed") : QStringLiteral("nodeexpanded"));
-        while(element) {
-            if(element->isParsed()) {
+        m_writer.writeAttribute(
+            QStringLiteral("class"), element && element->parent() ? QStringLiteral("nodecollapsed") : QStringLiteral("nodeexpanded"));
+        while (element) {
+            if (element->isParsed()) {
                 m_writer.writeStartElement(QStringLiteral("li"));
-                if(element->firstChild()) {
+                if (element->firstChild()) {
                     m_writer.writeStartElement(QStringLiteral("span"));
                     m_writer.writeAttribute(QStringLiteral("class"), QStringLiteral("parent-node"));
                     m_writer.writeAttribute(QStringLiteral("onclick"), QStringLiteral("expandCollapse(this.parentElement);"));
                 }
                 string idString = element->idToString();
-                if(!idString.empty()) {
+                if (!idString.empty()) {
                     m_writer.writeTextElement(QStringLiteral("em"), QString::fromLatin1(idString.data(), static_cast<int>(idString.size())));
                 }
 
@@ -781,7 +811,7 @@ public:
 
                 mkElementContent(m_writer, element);
 
-                if(element->firstChild()) {
+                if (element->firstChild()) {
                     m_writer.writeEndElement();
                     mkElementNode(element->firstChild());
                 }
@@ -789,7 +819,7 @@ public:
                 element = element->nextSibling();
                 m_writer.writeEndElement();
             } else {
-                if(!isAdditional) {
+                if (!isAdditional) {
                     m_writer.writeStartElement(QStringLiteral("li"));
                     m_writer.writeAttribute(QStringLiteral("style"), QStringLiteral("color: red;"));
                     m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "section has not been analyzed"));
@@ -801,10 +831,10 @@ public:
         m_writer.writeEndElement();
     }
 
-    template<class ContainerType> void mkElementTree(ContainerType *container)
+    template <class ContainerType> void mkElementTree(ContainerType *container)
     {
         mkElementNode(container->firstElement());
-        for(auto &element : container->additionalElements()) {
+        for (auto &element : container->additionalElements()) {
             mkElementNode<typename ContainerType::ContainerElementType, true>(element.get());
         }
     }
@@ -816,16 +846,20 @@ public:
         }
         startTableSection();
         const QString moreId(reparsing ? QStringLiteral("notificationsReparsingMore") : QStringLiteral("notificationsMore"));
-        m_rowMaker.startRow(reparsing ? QCoreApplication::translate("HtmlInfo", "Notifications (reparsing after saving)") : QCoreApplication::translate("HtmlInfo", "Notifications"));
-        m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 notification(s) available", nullptr, trQuandity(diag.size())).arg(diag.size()));
+        m_rowMaker.startRow(reparsing ? QCoreApplication::translate("HtmlInfo", "Notifications (reparsing after saving)")
+                                      : QCoreApplication::translate("HtmlInfo", "Notifications"));
+        m_writer.writeCharacters(
+            QCoreApplication::translate("HtmlInfo", "%1 notification(s) available", nullptr, trQuandity(diag.size())).arg(diag.size()));
         mkSpace();
         mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show notifications"));
         m_rowMaker.endRow();
         m_writer.writeEndElement();
 
         startExtendedTableSection(moreId);
-        m_rowMaker.startHorizontalSubTab(QString(), QStringList({QString(), QCoreApplication::translate("HtmlInfo", "Context"), QCoreApplication::translate("HtmlInfo", "Message"), QCoreApplication::translate("HtmlInfo", "Time")}));
-        for(const auto &msg : diag) {
+        m_rowMaker.startHorizontalSubTab(QString(),
+            QStringList({ QString(), QCoreApplication::translate("HtmlInfo", "Context"), QCoreApplication::translate("HtmlInfo", "Message"),
+                QCoreApplication::translate("HtmlInfo", "Time") }));
+        for (const auto &msg : diag) {
             m_writer.writeStartElement(QStringLiteral("tr"));
             m_writer.writeEmptyElement(QStringLiteral("td"));
             m_writer.writeAttribute(QStringLiteral("class"), qstr(msg.levelName()));
@@ -845,7 +879,8 @@ public:
 #endif
         // <!DOCTYPE ... <html> <head>
         m_writer.writeStartDocument();
-        m_writer.writeDTD(QStringLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"));
+        m_writer.writeDTD(
+            QStringLiteral("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">"));
         m_writer.writeStartElement(QStringLiteral("html"));
         m_writer.writeAttribute(QStringLiteral("xmlns"), QStringLiteral("http://www.w3.org/1999/xhtml"));
         m_writer.writeStartElement(QStringLiteral("head"));
@@ -877,23 +912,24 @@ public:
         m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Path"), qstr(m_file.path()));
         m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(m_file.size(), true)));
         const TimeSpan duration = m_file.duration();
-        if(!duration.isNull()) {
+        if (!duration.isNull()) {
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(duration.toString(TimeSpanOutputFormat::WithMeasures)));
-            m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Overall avg. bitrate"), qstr(bitrateToString(0.0078125 * m_file.size() / duration.totalSeconds())));
+            m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Overall avg. bitrate"),
+                qstr(bitrateToString(0.0078125 * m_file.size() / duration.totalSeconds())));
         }
         const char *const mimeType = m_file.mimeType();
-        if(*mimeType) {
+        if (*mimeType) {
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Mime-type"), qstr(mimeType));
         }
         m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Container"));
         m_writer.writeCharacters(qstr(m_file.containerFormatName()));
         const char *const subversion = m_file.containerFormatSubversion();
-        if(*subversion) {
+        if (*subversion) {
             mkSpace();
             m_writer.writeCharacters(qstr(subversion));
         }
         AbstractContainer *container = m_file.container();
-        if(container || m_file.paddingSize()) {
+        if (container || m_file.paddingSize()) {
             mkSpace();
             mkDetailsLink(QStringLiteral("containerMore"), QCoreApplication::translate("HtmlInfo", "show details"));
         }
@@ -901,39 +937,43 @@ public:
         m_writer.writeEndElement();
 
         // container
-        if(container || m_file.paddingSize()) {
+        if (container || m_file.paddingSize()) {
             startExtendedTableSection(QStringLiteral("containerMore"));
             RowMaker rowMaker(m_writer);
-            if(container) {
+            if (container) {
                 size_t segmentIndex = 0;
-                for(const auto &title : container->titles()) {
-                    if(segmentIndex) {
+                for (const auto &title : container->titles()) {
+                    if (segmentIndex) {
                         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Title (segment %1)").arg(++segmentIndex), qstr(title));
                     } else {
                         ++segmentIndex;
                         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Title"), qstr(title));
                     }
                 }
-                if(container->version()) {
+                if (container->version()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"), QString::number(container->version()));
                 }
-                if(container->readVersion()) {
+                if (container->readVersion()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Read version"), QString::number(container->readVersion()));
                 }
-                if(!container->documentType().empty()) {
+                if (!container->documentType().empty()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Document type"), qstr(container->documentType()));
                 }
-                if(container->doctypeVersion()) {
+                if (container->doctypeVersion()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Document version"), QString::number(container->doctypeVersion()));
                 }
-                if(container->doctypeReadVersion()) {
-                    rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Document read version"), QString::number(container->doctypeReadVersion()));
+                if (container->doctypeReadVersion()) {
+                    rowMaker.mkRow(
+                        QCoreApplication::translate("HtmlInfo", "Document read version"), QString::number(container->doctypeReadVersion()));
                 }
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tag position"), container->determineTagPosition(m_diagReparsing));
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Index position"), container->determineIndexPosition(m_diagReparsing));
             }
-            if(m_file.paddingSize()) {
-                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"), QStringLiteral("%1 (%2 %)").arg(qstr(dataSizeToString(m_file.paddingSize(), true))).arg(static_cast<double>(m_file.paddingSize()) / m_file.size() * 100.0, 0, 'g', 2));
+            if (m_file.paddingSize()) {
+                rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"),
+                    QStringLiteral("%1 (%2 %)")
+                        .arg(qstr(dataSizeToString(m_file.paddingSize(), true)))
+                        .arg(static_cast<double>(m_file.paddingSize()) / m_file.size() * 100.0, 0, 'g', 2));
             }
 
             m_writer.writeEndElement();
@@ -941,24 +981,25 @@ public:
 
         // tags
         auto tags = m_file.tags();
-        if(!tags.empty()) {
+        if (!tags.empty()) {
             startTableSection();
             const QString moreId(QStringLiteral("tagsMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Tags"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 tag(s) assigned", nullptr, static_cast<int>(tags.size())).arg(tags.size()));
+            m_writer.writeCharacters(
+                QCoreApplication::translate("HtmlInfo", "%1 tag(s) assigned", nullptr, static_cast<int>(tags.size())).arg(tags.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
             m_rowMaker.endRow();
             m_writer.writeEndElement();
 
             startExtendedTableSection(moreId);
-            for(const Tag *tag : tags) {
+            for (const Tag *tag : tags) {
                 RowMaker rowMaker(m_writer);
                 rowMaker.startSubTab(tag->typeName());
-                if(!tag->version().empty()) {
+                if (!tag->version().empty()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"), qstr(tag->version()));
                 }
-                if(tag->supportsTarget() && !tag->target().isEmpty()) {
+                if (tag->supportsTarget() && !tag->target().isEmpty()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Target level"), qstr(tag->targetString()));
                 }
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(tag->size(), true)));
@@ -970,13 +1011,14 @@ public:
 
         // tracks
         const auto tracks = m_file.tracks();
-        if(!tracks.empty()) {
+        if (!tracks.empty()) {
             startTableSection();
             const QString moreId(QStringLiteral("tracksMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Tracks"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 track(s)", nullptr, static_cast<int>(tracks.size())).arg(tracks.size()));
+            m_writer.writeCharacters(
+                QCoreApplication::translate("HtmlInfo", "file has %1 track(s)", nullptr, static_cast<int>(tracks.size())).arg(tracks.size()));
             const string summary(m_file.technicalSummary());
-            if(!summary.empty()) {
+            if (!summary.empty()) {
                 m_writer.writeCharacters(QStringLiteral(": "));
                 m_writer.writeCharacters(QString::fromUtf8(summary.data(), static_cast<int>(summary.size())));
                 mkBreak();
@@ -988,7 +1030,7 @@ public:
 
             startExtendedTableSection(moreId);
             unsigned int trackNumber = 1;
-            for(const auto *track : tracks) {
+            for (const auto *track : tracks) {
                 mkTrack(track, trackNumber);
                 ++trackNumber;
             }
@@ -997,11 +1039,13 @@ public:
 
         // attachments
         auto attachments = m_file.attachments();
-        if(!attachments.empty()) {
+        if (!attachments.empty()) {
             startTableSection();
             const QString moreId(QStringLiteral("attachmentsMore"));
             m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Attachments"));
-            m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "%1 attachment(s) assigned", nullptr, static_cast<int>(attachments.size())).arg(attachments.size()));
+            m_writer.writeCharacters(
+                QCoreApplication::translate("HtmlInfo", "%1 attachment(s) assigned", nullptr, static_cast<int>(attachments.size()))
+                    .arg(attachments.size()));
             mkSpace();
             mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
             m_rowMaker.endRow();
@@ -1009,7 +1053,7 @@ public:
 
             startExtendedTableSection(moreId);
             unsigned int attachmentNumber = 1;
-            for(const auto *attachment : attachments) {
+            for (const auto *attachment : attachments) {
                 mkAttachment(attachment, attachmentNumber);
                 ++attachmentNumber;
             }
@@ -1017,14 +1061,16 @@ public:
         }
 
         // chapters
-        if(container) {
-            if(m_file.containerFormat() == ContainerFormat::Matroska) {
+        if (container) {
+            if (m_file.containerFormat() == ContainerFormat::Matroska) {
                 const auto &editionEntries = static_cast<const MatroskaContainer *>(container)->editionEntires();
-                if(!editionEntries.empty()) {
+                if (!editionEntries.empty()) {
                     startTableSection();
                     const QString moreId(QStringLiteral("editionsMore"));
                     m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Editions/chapters"));
-                    m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", nullptr, static_cast<int>(editionEntries.size())).arg(editionEntries.size()));
+                    m_writer.writeCharacters(
+                        QCoreApplication::translate("HtmlInfo", "file has %1 edition(s)", nullptr, static_cast<int>(editionEntries.size()))
+                            .arg(editionEntries.size()));
                     mkSpace();
                     mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
                     m_rowMaker.endRow();
@@ -1032,24 +1078,25 @@ public:
 
                     startExtendedTableSection(moreId);
                     unsigned int editionNumber = 0;
-                    for(const auto &edition : static_cast<const MatroskaContainer *>(container)->editionEntires()) {
+                    for (const auto &edition : static_cast<const MatroskaContainer *>(container)->editionEntires()) {
                         mkEdition(*edition, editionNumber);
                         ++editionNumber;
                     }
                     m_writer.writeEndElement();
                 }
-            } else if(size_t chapterCount = container->chapterCount()) {
+            } else if (size_t chapterCount = container->chapterCount()) {
                 startTableSection();
                 const QString moreId(QStringLiteral("chaptersMore"));
                 m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "chapters"));
-                m_writer.writeCharacters(QCoreApplication::translate("HtmlInfo", "file has %1 chapter(s)", nullptr, static_cast<int>(chapterCount)).arg(chapterCount));
+                m_writer.writeCharacters(
+                    QCoreApplication::translate("HtmlInfo", "file has %1 chapter(s)", nullptr, static_cast<int>(chapterCount)).arg(chapterCount));
                 mkSpace();
                 mkDetailsLink(moreId, QCoreApplication::translate("HtmlInfo", "show details"));
                 m_rowMaker.endRow();
                 m_writer.writeEndElement();
 
                 startExtendedTableSection(moreId);
-                for(size_t i = 0; i < chapterCount; ++i) {
+                for (size_t i = 0; i < chapterCount; ++i) {
                     mkChapter(*container->chapter(i), i);
                 }
                 m_writer.writeEndElement();
@@ -1057,7 +1104,7 @@ public:
         }
 
         // structure
-        switch(m_file.containerFormat()) {
+        switch (m_file.containerFormat()) {
         case ContainerFormat::Mp4:
         case ContainerFormat::QuickTime:
         case ContainerFormat::Matroska:
@@ -1090,7 +1137,7 @@ public:
 
             startTableSection(QStringLiteral("structure"));
             m_rowMaker.startRow(QString());
-            switch(m_file.containerFormat()) {
+            switch (m_file.containerFormat()) {
             case ContainerFormat::Mp4:
             case ContainerFormat::QuickTime:
                 mkElementTree(static_cast<Mp4Container *>(m_file.container()));
@@ -1100,14 +1147,12 @@ public:
             case ContainerFormat::Ebml:
                 mkElementTree(static_cast<MatroskaContainer *>(m_file.container()));
                 break;
-            default:
-                ;
+            default:;
             }
             m_rowMaker.endRow();
             m_writer.writeEndElement();
             break;
-        default:
-            ;
+        default:;
         }
 
         // notifications
@@ -1154,4 +1199,4 @@ QByteArray generateInfo(const MediaFileInfo &file, Diagnostics &diag, Diagnostic
     return gen.res();
 }
 
-}
+} // namespace HtmlInfo
