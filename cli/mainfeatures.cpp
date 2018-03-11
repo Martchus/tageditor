@@ -155,9 +155,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             fileInfo.setPath(file);
             fileInfo.open(true);
             fileInfo.parseContainerFormat(diag);
-            fileInfo.parseTracks(diag);
-            fileInfo.parseAttachments(diag);
-            fileInfo.parseChapters(diag);
+            fileInfo.parseEverything(diag);
 
             // print general/container-related info
             cout << "Technical information for \"" << file << "\":\n";
