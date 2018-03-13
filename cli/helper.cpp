@@ -264,7 +264,9 @@ TimeSpanOutputFormat parseTimeSpanOutputFormat(const Argument &timeSpanFormatArg
         } else if (!strcmp(val, "seconds")) {
             return TimeSpanOutputFormat::TotalSeconds;
         } else {
-            cerr << Phrases::Warning << "The specified time span format \"" << val << "\" is invalid and will be ignored." << Phrases::EndFlush;
+            cerr << Phrases::Error << "The specified time span format \"" << val << "\" is invalid." << Phrases::End
+                 << "note: Valid formats are measures, colons and seconds." << endl;
+            exit(-1);
         }
     }
     return defaultFormat;
@@ -281,7 +283,9 @@ TagUsage parseUsageDenotation(const Argument &usageArg, TagUsage defaultUsage)
         } else if (!strcmp(val, "always")) {
             return TagUsage::Always;
         } else {
-            cerr << Phrases::Warning << "The specified tag usage \"" << val << "\" is invalid and will be ignored." << Phrases::EndFlush;
+            cerr << Phrases::Error << "The specified tag usage \"" << val << "\" is invalid." << Phrases::End
+                 << "note: Valid values are never, keepexisting and always." << endl;
+            exit(-1);
         }
     }
     return defaultUsage;
@@ -301,7 +305,9 @@ TagTextEncoding parseEncodingDenotation(const Argument &encodingArg, TagTextEnco
             return TagTextEncoding::Utf16LittleEndian;
         } else if (!strcmp(val, "auto")) {
         } else {
-            cerr << Phrases::Warning << "The specified encoding \"" << val << "\" is invalid and will be ignored." << Phrases::EndFlush;
+            cerr << Phrases::Error << "The specified encoding \"" << val << "\" is invalid." << Phrases::End
+                 << "note: Valid encodings are utf8, latin1, utf16be, utf16le and auto." << endl;
+            exit(-1);
         }
     }
     return defaultEncoding;
@@ -318,7 +324,9 @@ ElementPosition parsePositionDenotation(const Argument &posArg, const Argument &
         } else if (!strcmp(val, "keep")) {
             return ElementPosition::Keep;
         } else {
-            cerr << Phrases::Warning << "The specified position \"" << val << "\" is invalid and will be ignored." << Phrases::EndFlush;
+            cerr << Phrases::Error << "The specified position \"" << val << "\" is invalid." << Phrases::End
+                 << "note: Valid positions are front, back and keep." << endl;
+            exit(-1);
         }
     }
     return defaultPos;
@@ -334,8 +342,8 @@ uint64 parseUInt64(const Argument &arg, uint64 defaultValue)
                 return stringToNumber<uint64>(arg.values().front());
             }
         } catch (const ConversionException &) {
-            cerr << Phrases::Warning << "The specified value \"" << arg.values().front() << "\" is no valid unsigned integer and will be ignored."
-                 << Phrases::EndFlush;
+            cerr << Phrases::Error << "The specified value \"" << arg.values().front() << "\" is no valid unsigned integer." << Phrases::EndFlush;
+            exit(-1);
         }
     }
     return defaultValue;
@@ -350,7 +358,9 @@ TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
         try {
             convertedIds.push_back(stringToNumber<TagTarget::IdType>(id));
         } catch (const ConversionException &) {
-            cerr << Phrases::Warning << "The specified ID \"" << id << "\" is invalid and will be ignored." << Phrases::EndFlush;
+            cerr << Phrases::Error << "The specified ID \"" << id << "\" is invalid." << Phrases::End << "note: IDs must be unsigned integers."
+                 << endl;
+            exit(-1);
         }
     }
     return convertedIds;
@@ -363,8 +373,9 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
             try {
                 target.setLevel(stringToNumber<uint64>(configStr.substr(13)));
             } catch (const ConversionException &) {
-                cerr << Phrases::Warning << "The specified target level \"" << configStr.substr(13) << "\" is invalid and will be ignored."
-                     << Phrases::EndFlush;
+                cerr << Phrases::Error << "The specified target level \"" << configStr.substr(13) << "\" is invalid." << Phrases::End
+                     << "note: The target level must be an unsigned integer." << endl;
+                exit(-1);
             }
         } else if (configStr.compare(0, 17, "target-levelname=") == 0) {
             target.setLevelName(configStr.substr(17));
@@ -378,8 +389,8 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
             target.attachments() = parseIds(configStr.substr(17));
         } else if (configStr.compare(0, 13, "target-reset=") == 0) {
             if (*(configStr.data() + 13)) {
-                cerr << Phrases::Warning << "Invalid assignment " << (configStr.data() + 13) << " for target-reset will be ignored."
-                     << Phrases::EndFlush;
+                cerr << Phrases::Error << "Invalid assignment " << (configStr.data() + 13) << " for target-reset." << Phrases::EndFlush;
+                exit(-1);
             }
             target.clear();
         } else if (configStr == "target-reset") {
@@ -408,13 +419,11 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
         const auto fieldDenotationLen = strlen(fieldDenotationString);
         if (!strncmp(fieldDenotationString, "tag=", 4)) {
             if (fieldDenotationLen == 4) {
-                cerr << Phrases::Warning
-                     << "The \"tag\"-specifier has been used with no value(s) and hence is ignored. Possible values are: "
-                        "id3,id3v1,id3v2,itunes,vorbis,matroska,all"
-                     << Phrases::EndFlush;
+                cerr << Phrases::Error << "The \"tag\"-specifier has been used with no value(s)." << Phrases::End
+                     << "note: Possible values are id3,id3v1,id3v2,itunes,vorbis,matroska and all." << endl;
+                exit(-1);
             } else {
                 TagType tagType = TagType::Unspecified;
-                bool error = false;
                 for (const auto &part : splitString(fieldDenotationString + 4, ",", EmptyPartsTreat::Omit)) {
                     if (part == "id3v1") {
                         tagType |= TagType::Id3v1Tag;
@@ -432,19 +441,14 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                         tagType = TagType::Unspecified;
                         break;
                     } else {
-                        cerr << Phrases::Warning
-                             << "The value provided with the \"tag\"-specifier is invalid and will be ignored. Possible values are: "
-                                "id3,id3v1,id3v2,itunes,vorbis,matroska,all"
-                             << Phrases::EndFlush;
-                        error = true;
-                        break;
+                        cerr << Phrases::Error << "The value \"" << part << " for the \"tag\"-specifier is invalid." << Phrases::End
+                             << "note: Possible values are id3,id3v1,id3v2,itunes,vorbis,matroska and all." << endl;
+                        exit(-1);
                     }
                 }
-                if (!error) {
-                    scope.tagType = tagType;
-                    scope.allTracks = false;
-                    scope.trackIds.clear();
-                }
+                scope.tagType = tagType;
+                scope.allTracks = false;
+                scope.trackIds.clear();
             }
             continue;
         } else if (applyTargetConfiguration(scope.tagTarget, fieldDenotationString)) {
@@ -454,7 +458,6 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             bool allTracks = false;
             vector<uint64> trackIds;
             trackIds.reserve(parts.size());
-            bool error = false;
             for (const auto &part : parts) {
                 if (part == "all" || part == "any") {
                     allTracks = true;
@@ -463,19 +466,14 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                     try {
                         trackIds.emplace_back(stringToNumber<uint64>(part));
                     } catch (const ConversionException &) {
-                        cerr << Phrases::Warning
-                             << "The value provided with the \"track\"-specifier is invalid and will be ignored. It must be a comma-separated list "
-                                "of track IDs."
-                             << Phrases::EndFlush;
-                        error = true;
-                        break;
+                        cerr << Phrases::Error << "The value provided with the \"track\"-specifier is invalid." << Phrases::End
+                             << "note: It must be a comma-separated list of track IDs." << endl;
+                        exit(-1);
                     }
                 }
             }
-            if (!error) {
-                scope.allTracks = allTracks;
-                scope.trackIds = move(trackIds);
-            }
+            scope.allTracks = allTracks;
+            scope.trackIds = move(trackIds);
             continue;
         }
 
@@ -511,9 +509,8 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             fileIndex += static_cast<unsigned int>(*digitPos - '0') * mult;
         }
         if (!fieldNameLen) {
-            cerr << Phrases::Warning << "Ignoring field denotation \"" << fieldDenotationString << "\" because no field name has been specified."
-                 << Phrases::EndFlush;
-            continue;
+            cerr << Phrases::Error << "The field denotation \"" << fieldDenotationString << "\" has no field name." << Phrases::EndFlush;
+            exit(-1);
         }
 
         // parse the denoted field ID
@@ -525,9 +522,9 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             }
         } catch (const ConversionException &e) {
             // unable to parse field ID denotation -> discard the field denotation
-            cerr << Phrases::Warning << "The field denotation \"" << string(fieldDenotationString, fieldNameLen)
-                 << "\" could not be parsed and will be ignored: " << e.what() << Phrases::EndFlush;
-            continue;
+            cerr << Phrases::Error << "The field denotation \"" << string(fieldDenotationString, fieldNameLen)
+                 << "\" could not be parsed: " << e.what() << Phrases::EndFlush;
+            exit(-1);
         }
 
         // read cover always from file
@@ -540,8 +537,9 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
         // add value to the scope (if present)
         if (equationPos) {
             if (readOnly) {
-                cerr << Phrases::Warning << "Specified value for \"" << string(fieldDenotationString, fieldNameLen) << "\" will be ignored."
-                     << Phrases::EndFlush;
+                cerr << Phrases::Error << "A value has been specified for \"" << string(fieldDenotationString, fieldNameLen) << "\"." << Phrases::End
+                     << "note: This is only possible when the \"set\"-operation is used." << endl;
+                exit(-1);
             } else {
                 // file index might have been specified explicitely
                 // if not (mult == 1) use the index of the last value and increase it by one if the value is not an additional one
@@ -552,8 +550,9 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             }
         }
         if (additionalValue && readOnly) {
-            cerr << Phrases::Warning << "Indication of an additional value for \"" << string(fieldDenotationString, fieldNameLen)
-                 << "\" will be ignored." << Phrases::EndFlush;
+            cerr << Phrases::Error << "Indication of an additional value for \"" << string(fieldDenotationString, fieldNameLen) << "\" is invalid."
+                 << Phrases::End << "note: This is only possible when the \"set\"-operation is used." << endl;
+            exit(-1);
         }
     }
     return fields;

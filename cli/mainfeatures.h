@@ -41,6 +41,7 @@ struct SetTagInfoArgs {
     ApplicationUtilities::Argument valuesArg;
     ApplicationUtilities::Argument outputFilesArg;
     ApplicationUtilities::ConfigValueArgument backupDirArg;
+    ApplicationUtilities::ConfigValueArgument layoutOnlyArg;
     ApplicationUtilities::Argument setTagInfoArg;
 };
 

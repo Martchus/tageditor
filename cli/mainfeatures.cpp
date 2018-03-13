@@ -144,7 +144,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
     // check whether files have been specified
     if (!filesArg.isPresent() || filesArg.values().empty()) {
         cerr << Phrases::Error << "No files have been specified." << Phrases::End;
-        return;
+        exit(-1);
     }
 
     MediaFileInfo fileInfo;
@@ -306,7 +306,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
     // check whether files have been specified
     if (!filesArg.isPresent() || filesArg.values().empty()) {
         cerr << Phrases::Error << "No files have been specified." << Phrases::End;
-        return;
+        exit(-1);
     }
 
     // parse specified fields
@@ -365,11 +365,11 @@ void setTagInfo(const SetTagInfoArgs &args)
     // check whether files have been specified
     if (!args.filesArg.isPresent() || args.filesArg.values().empty()) {
         cerr << Phrases::Error << "No files have been specified." << Phrases::EndFlush;
-        return;
+        exit(-1);
     }
     if (args.outputFilesArg.isPresent() && args.outputFilesArg.values().size() != args.filesArg.values().size()) {
         cerr << Phrases::Error << "The number of output files does not match the number of input files." << Phrases::EndFlush;
-        return;
+        exit(-1);
     }
 
     // get output files
@@ -384,7 +384,15 @@ void setTagInfo(const SetTagInfoArgs &args)
         && (!args.removeAttachmentArg.isPresent() || args.removeAttachmentArg.values().empty())
         && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty()) && !args.id3v1UsageArg.isPresent() && !args.id3v2UsageArg.isPresent()
         && !args.id3v2VersionArg.isPresent()) {
-        cerr << Phrases::Warning << "No fields/attachments have been specified." << Phrases::End;
+        if (!args.layoutOnlyArg.isPresent()) {
+            cerr << Phrases::Error << "No fields/attachments have been specified." << Phrases::End
+                 << "note: This is usually a mistake. Use --layout-only to prevent this error and apply file layout options only." << endl;
+            exit(-1);
+        }
+    } else if (args.layoutOnlyArg.isPresent()) {
+        cerr << Phrases::Error << "Fields/attachments and --layout-only have been specified." << Phrases::End
+             << "note: Don't use --layout-only if you actually want to alter tag information or attachments." << endl;
+        exit(-1);
     }
 
     TagCreationSettings settings;
@@ -412,8 +420,8 @@ void setTagInfo(const SetTagInfoArgs &args)
             } else if (applyTargetConfiguration(targetsToRemove.back(), targetDenotation)) {
                 validRemoveTargetsSpecified = true;
             } else {
-                cerr << Phrases::Warning << "The given target specification \"" << targetDenotation << "\" is invalid and will be ignored."
-                     << Phrases::End;
+                cerr << Phrases::Error << "The given target specification \"" << targetDenotation << "\" is invalid." << Phrases::EndFlush;
+                exit(-1);
             }
         }
     }
@@ -427,8 +435,9 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
         } catch (const ConversionException &) {
             settings.id3v2MajorVersion = 3;
-            cerr << Phrases::Warning << "The specified ID3v2 version \"" << args.id3v2VersionArg.values().front()
-                 << "\" is invalid and will be ingored." << Phrases::End;
+            cerr << Phrases::Error << "The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid." << Phrases::End
+                 << "note: Valid versions are 1, 2, 3 and 4." << endl;
+            exit(-1);
         }
     }
 
@@ -505,13 +514,15 @@ void setTagInfo(const SetTagInfoArgs &args)
                         if (segmentIndex < segmentCount) {
                             container->setTitle(newTitle, segmentIndex);
                         } else {
-                            cerr << Phrases::Warning << "The specified document title \"" << newTitle
-                                 << "\" can not be set because the file has not that many segments." << Phrases::End;
+                            diag.emplace_back(DiagLevel::Warning,
+                                argsToString(
+                                    "The specified document title \"", newTitle, "\" can not be set because the file has not that many segments."),
+                                context);
                         }
                         ++segmentIndex;
                     }
                 } else {
-                    cerr << Phrases::Warning << "Setting the document title is not supported for the file." << Phrases::End;
+                    diag.emplace_back(DiagLevel::Warning, "Setting the document title is not supported for the file.", context);
                 }
             }
 
@@ -761,12 +772,12 @@ void extractField(
     }
     if (((fieldDenotations.size() != 1) || (!attachmentInfo.hasId && !attachmentInfo.name))
         && ((fieldDenotations.size() == 1) && (attachmentInfo.hasId || attachmentInfo.name))) {
-        cerr << Phrases::Error << "Excactly one field or attachment needs to be specified." << Phrases::End;
-        return;
+        cerr << Phrases::Error << "Excactly one field or attachment needs to be specified." << Phrases::EndFlush;
+        exit(-1);
     }
     if (!inputFilesArg.isPresent() || inputFilesArg.values().empty()) {
-        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
-        return;
+        cerr << Phrases::Error << "No files have been specified." << Phrases::EndFlush;
+        exit(-1);
     }
 
     MediaFileInfo inputFileInfo;
@@ -900,7 +911,7 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
     // check whether files have been specified
     if (!filesArg.isPresent() || filesArg.values().empty()) {
         cerr << Phrases::Error << "No files have been specified." << Phrases::End;
-        return;
+        exit(-1);
     }
 
     RAPIDJSON_NAMESPACE::Document document(RAPIDJSON_NAMESPACE::kArrayType);

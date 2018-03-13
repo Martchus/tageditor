@@ -67,6 +67,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
     , valuesArg("values", 'n', "specifies the values to be set")
     , outputFilesArg("output-files", 'o', "specifies the output files; if present, the files specified with --files will not be modified")
     , backupDirArg("temp-dir", '\0', "specifies the directory for temporary/backup files", { "path" })
+    , layoutOnlyArg("layout-only", 'l', "confirms layout-only changes")
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setCombinable(true);
@@ -140,7 +141,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
     indexPosValueArg.setImplicit(true);
     indexPosValueArg.setRequired(true);
     indexPosArg.setCombinable(true);
-    indexPosArg.setExample(PROJECT_NAME " set comment=\"with faststart (enforced)\" --index-pos front --force -f /some/dir/*.m4a");
+    indexPosArg.setExample(PROJECT_NAME " set comment=\"with faststart\" --index-pos front --force --layout-only -f /some/dir/*.m4a");
     indexPosArg.setSubArguments({ &indexPosValueArg, &forceIndexPosArg });
     forceRewriteArg.setCombinable(true);
     valuesArg.setValueNames({ "title=foo", "album=bar", "cover=/path/to/file" });
@@ -163,7 +164,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
     setTagInfoArg.setSubArguments({ &valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg,
         &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
         &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
-        &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &verboseArg, &outputFilesArg });
+        &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &verboseArg, &outputFilesArg });
 }
 
 } // namespace Cli

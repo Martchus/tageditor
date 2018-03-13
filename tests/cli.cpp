@@ -845,7 +845,7 @@ void CliTests::testFileLayoutOptions()
     string stdout, stderr;
 
     const string mp4File1(workingCopyPath("mtx-test-data/alac/othertest-itunes.m4a"));
-    const char *const args1[] = { "tageditor", "set", "--tag-pos", "back", "--force", "-f", mp4File1.data(), nullptr };
+    const char *const args1[] = { "tageditor", "set", "--tag-pos", "back", "--force", "--layout-only", "-f", mp4File1.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
 
     const char *const args2[] = { "tageditor", "info", "-f", mp4File1.data(), nullptr };
@@ -877,7 +877,7 @@ void CliTests::testFileLayoutOptions()
         != string::npos);
     remove((mp4File2 + ".bak").data());
 
-    const char *const args6[] = { "tageditor", "set", "--index-pos", "front", "--force", "-f", mp4File2.data(), nullptr };
+    const char *const args6[] = { "tageditor", "set", "--index-pos", "front", "--force", "--layout-only", "-f", mp4File2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args6);
 
     TESTUTILS_ASSERT_EXEC(args4);
