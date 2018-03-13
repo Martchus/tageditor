@@ -132,37 +132,43 @@ void printDiagMessages(const Diagnostics &diag, const char *head, bool beVerbose
             case DiagLevel::Information:
                 break;
             default:
-                goto printNotifications;
+                goto printDiagMsg;
             }
         }
         return;
     }
 
-printNotifications:
+printDiagMsg:
     if (head) {
         cout << " - " << head << endl;
     }
     for (const auto &message : diag) {
         switch (message.level()) {
         case DiagLevel::Debug:
-            if (beVerbose) {
-                cout << "    Debug        ";
-                break;
-            } else {
+            if (!beVerbose) {
                 continue;
             }
+            cout << "    Debug        ";
+            break;
         case DiagLevel::Information:
-            if (beVerbose) {
-                cout << "    Information  ";
-                break;
-            } else {
+            if (!beVerbose) {
                 continue;
             }
+            cout << "    Information  ";
+            break;
         case DiagLevel::Warning:
+            setStyle(cout, Color::Yellow, ColorContext::Foreground, TextAttribute::Bold);
+            setStyle(cout, TextAttribute::Reset);
+            setStyle(cout, TextAttribute::Bold);
             cout << "    Warning      ";
+            setStyle(cout, TextAttribute::Reset);
             break;
         case DiagLevel::Critical:
+            setStyle(cout, Color::Red, ColorContext::Foreground, TextAttribute::Bold);
+            setStyle(cout, TextAttribute::Reset);
+            setStyle(cout, TextAttribute::Bold);
             cout << "    Error        ";
+            setStyle(cout, TextAttribute::Reset);
             break;
         default:;
         }
