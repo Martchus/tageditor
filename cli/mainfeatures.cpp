@@ -573,50 +573,51 @@ void setTagInfo(const SetTagInfoArgs &args)
                     // iterate through all denoted field values
                     for (const auto &fieldDenotation : fields) {
                         const FieldScope &denotedScope = fieldDenotation.first;
-                        // decide whether the scope of the denotation matches of the current tag
-                        if (!denotedScope.isTrack()
-                            && (denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType & tagType) != TagType::Unspecified)
-                            && (!targetSupported || denotedScope.tagTarget == tagTarget)) {
-                            // convert the values to TagValue
-                            vector<TagValue> convertedValues;
-                            for (const FieldValue *relevantDenotedValue : fieldDenotation.second.relevantValues) {
-                                // one of the denoted values
-                                if (!relevantDenotedValue->value.empty()) {
-                                    if (relevantDenotedValue->type == DenotationType::File) {
-                                        try {
-                                            // assume the file refers to a picture
-                                            MediaFileInfo fileInfo(relevantDenotedValue->value);
-                                            Diagnostics diag;
-                                            fileInfo.open(true);
-                                            fileInfo.parseContainerFormat(diag);
-                                            auto buff = make_unique<char[]>(fileInfo.size());
-                                            fileInfo.stream().seekg(0);
-                                            fileInfo.stream().read(buff.get(), fileInfo.size());
-                                            TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
-                                            value.setMimeType(fileInfo.mimeType());
-                                            convertedValues.emplace_back(move(value));
-                                        } catch (const TagParser::Failure &) {
-                                            diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
-                                        } catch (...) {
-                                            ::IoUtilities::catchIoFailure();
-                                            diag.emplace_back(
-                                                DiagLevel::Critical, "An IO error occured when parsing the specified cover file.", context);
-                                        }
-                                    } else {
-                                        convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
-                                    }
-                                } else {
-                                    // if the denoted value is empty, just assign an empty TagValue to remove the field
-                                    convertedValues.emplace_back();
-                                }
+                        // skip values which scope does not match the current tag
+                        if (denotedScope.isTrack()
+                            || !(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType & tagType) != TagType::Unspecified)
+                            || !(!targetSupported || denotedScope.tagTarget == tagTarget)) {
+                            continue;
+                        }
+                        // convert the values to TagValue
+                        vector<TagValue> convertedValues;
+                        for (const FieldValue *relevantDenotedValue : fieldDenotation.second.relevantValues) {
+                            // assign an empty TagValue to remove the field if denoted value is empty
+                            if (relevantDenotedValue->value.empty()) {
+                                convertedValues.emplace_back();
+                                continue;
                             }
-                            // finally set the values
+                            // add text value
+                            if (relevantDenotedValue->type != DenotationType::File) {
+                                convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
+                                continue;
+                            }
+                            // add value from file
                             try {
-                                denotedScope.field.setValues(tag, tagType, convertedValues);
-                            } catch (const ConversionException &e) {
-                                diag.emplace_back(DiagLevel::Critical,
-                                    argsToString("Unable to parse denoted field ID \"", denotedScope.field.name(), "\": ", e.what()), context);
+                                // assume the file refers to a picture
+                                MediaFileInfo fileInfo(relevantDenotedValue->value);
+                                Diagnostics diag;
+                                fileInfo.open(true);
+                                fileInfo.parseContainerFormat(diag);
+                                auto buff = make_unique<char[]>(fileInfo.size());
+                                fileInfo.stream().seekg(0);
+                                fileInfo.stream().read(buff.get(), fileInfo.size());
+                                TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
+                                value.setMimeType(fileInfo.mimeType());
+                                convertedValues.emplace_back(move(value));
+                            } catch (const TagParser::Failure &) {
+                                diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
+                            } catch (...) {
+                                ::IoUtilities::catchIoFailure();
+                                diag.emplace_back(DiagLevel::Critical, "An IO error occured when parsing the specified cover file.", context);
                             }
+                        }
+                        // finally set the values
+                        try {
+                            denotedScope.field.setValues(tag, tagType, convertedValues);
+                        } catch (const ConversionException &e) {
+                            diag.emplace_back(DiagLevel::Critical,
+                                argsToString("Unable to parse denoted field ID \"", denotedScope.field.name(), "\": ", e.what()), context);
                         }
                     }
                 }
@@ -625,40 +626,43 @@ void setTagInfo(const SetTagInfoArgs &args)
             // alter tracks
             for (AbstractTrack *track : fileInfo.tracks()) {
                 for (const auto &fieldDenotation : fields) {
+                    // skip empty values
                     const auto &values = fieldDenotation.second.relevantValues;
                     if (values.empty()) {
                         continue;
                     }
 
+                    // skip values which scope does not match the current track
                     const FieldScope &denotedScope = fieldDenotation.first;
-                    // decide whether the scope of the denotation matches of the current track
-                    if (denotedScope.allTracks
-                        || find(denotedScope.trackIds.cbegin(), denotedScope.trackIds.cend(), track->id()) != denotedScope.trackIds.cend()) {
-                        const FieldId &field = denotedScope.field;
-                        const string &value = values.front()->value;
-                        try {
-                            if (field.denotes("name")) {
-                                track->setName(value);
-                            } else if (field.denotes("language")) {
-                                track->setLanguage(value);
-                            } else if (field.denotes("tracknumber")) {
-                                track->setTrackNumber(stringToNumber<uint32>(value));
-                            } else if (field.denotes("enabled")) {
-                                track->setEnabled(stringToBool(value));
-                            } else if (field.denotes("forced")) {
-                                track->setForced(stringToBool(value));
-                            } else if (field.denotes("default")) {
-                                track->setDefault(stringToBool(value));
-                            } else {
-                                diag.emplace_back(DiagLevel::Critical,
-                                    argsToString("Denoted track property name \"", field.denotation(), "\" is invalid"),
-                                    argsToString("setting meta-data of track ", track->id()));
-                            }
-                        } catch (const ConversionException &e) {
+                    if (!denotedScope.allTracks
+                        && find(denotedScope.trackIds.cbegin(), denotedScope.trackIds.cend(), track->id()) == denotedScope.trackIds.cend()) {
+                        continue;
+                    }
+
+                    const FieldId &field = denotedScope.field;
+                    const string &value = values.front()->value;
+                    try {
+                        if (field.denotes("name")) {
+                            track->setName(value);
+                        } else if (field.denotes("language")) {
+                            track->setLanguage(value);
+                        } else if (field.denotes("tracknumber")) {
+                            track->setTrackNumber(stringToNumber<uint32>(value));
+                        } else if (field.denotes("enabled")) {
+                            track->setEnabled(stringToBool(value));
+                        } else if (field.denotes("forced")) {
+                            track->setForced(stringToBool(value));
+                        } else if (field.denotes("default")) {
+                            track->setDefault(stringToBool(value));
+                        } else {
                             diag.emplace_back(DiagLevel::Critical,
-                                argsToString("Unable to parse value for track property \"", field.denotation(), "\": ", e.what()),
+                                argsToString("Denoted track property name \"", field.denotation(), "\" is invalid"),
                                 argsToString("setting meta-data of track ", track->id()));
                         }
+                    } catch (const ConversionException &e) {
+                        diag.emplace_back(DiagLevel::Critical,
+                            argsToString("Unable to parse value for track property \"", field.denotation(), "\": ", e.what()),
+                            argsToString("setting meta-data of track ", track->id()));
                     }
                 }
             }
@@ -678,44 +682,40 @@ void setTagInfo(const SetTagInfoArgs &args)
                 || args.removeExistingAttachmentsArg.isPresent()) {
                 static const string context("setting attachments");
                 fileInfo.parseAttachments(diag);
-                if (fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok) {
-                    if (container) {
-                        // ignore all existing attachments if argument is specified
-                        if (args.removeExistingAttachmentsArg.isPresent()) {
-                            for (size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
-                                container->attachment(i)->setIgnored(false);
-                            }
-                            attachmentsModified = true;
+                if (fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok && container) {
+                    // ignore all existing attachments if argument is specified
+                    if (args.removeExistingAttachmentsArg.isPresent()) {
+                        for (size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
+                            container->attachment(i)->setIgnored(false);
                         }
-                        // add/update/remove attachments
-                        AttachmentInfo currentInfo;
-                        currentInfo.action = AttachmentAction::Add;
-                        for (size_t i = 0, occurrences = args.addAttachmentArg.occurrences(); i != occurrences; ++i) {
-                            for (const char *value : args.addAttachmentArg.values(i)) {
-                                currentInfo.parseDenotation(value);
-                            }
-                            attachmentsModified |= currentInfo.next(container, diag);
+                        attachmentsModified = true;
+                    }
+                    // add/update/remove attachments
+                    AttachmentInfo currentInfo;
+                    currentInfo.action = AttachmentAction::Add;
+                    for (size_t i = 0, occurrences = args.addAttachmentArg.occurrences(); i != occurrences; ++i) {
+                        for (const char *value : args.addAttachmentArg.values(i)) {
+                            currentInfo.parseDenotation(value);
                         }
-                        currentInfo.action = AttachmentAction::Update;
-                        for (size_t i = 0, occurrences = args.updateAttachmentArg.occurrences(); i != occurrences; ++i) {
-                            for (const char *value : args.updateAttachmentArg.values(i)) {
-                                currentInfo.parseDenotation(value);
-                            }
-                            attachmentsModified |= currentInfo.next(container, diag);
+                        attachmentsModified |= currentInfo.next(container, diag);
+                    }
+                    currentInfo.action = AttachmentAction::Update;
+                    for (size_t i = 0, occurrences = args.updateAttachmentArg.occurrences(); i != occurrences; ++i) {
+                        for (const char *value : args.updateAttachmentArg.values(i)) {
+                            currentInfo.parseDenotation(value);
                         }
-                        currentInfo.action = AttachmentAction::Remove;
-                        for (size_t i = 0, occurrences = args.removeAttachmentArg.occurrences(); i != occurrences; ++i) {
-                            for (const char *value : args.removeAttachmentArg.values(i)) {
-                                currentInfo.parseDenotation(value);
-                            }
-                            attachmentsModified |= currentInfo.next(container, diag);
+                        attachmentsModified |= currentInfo.next(container, diag);
+                    }
+                    currentInfo.action = AttachmentAction::Remove;
+                    for (size_t i = 0, occurrences = args.removeAttachmentArg.occurrences(); i != occurrences; ++i) {
+                        for (const char *value : args.removeAttachmentArg.values(i)) {
+                            currentInfo.parseDenotation(value);
                         }
-                    } else {
-                        diag.emplace_back(
-                            DiagLevel::Critical, "Unable to assign attachments because the container object has not been initialized.", context);
+                        attachmentsModified |= currentInfo.next(container, diag);
                     }
                 } else {
-                    // notification will be added by the file info automatically
+                    diag.emplace_back(
+                        DiagLevel::Critical, "Unable to assign attachments because the container object has not been initialized.", context);
                 }
             }
 
