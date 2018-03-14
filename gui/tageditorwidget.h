@@ -122,6 +122,7 @@ private:
     void updateTagSelectionComboBox();
     void updateFileStatusStatus();
     void updateTagManagementMenu();
+    void updateKeepPreviousValuesButton();
     void insertTitleFromFilename();
     bool confirmCreationOfId3TagForUnsupportedFile();
 

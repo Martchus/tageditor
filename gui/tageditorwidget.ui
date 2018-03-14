@@ -308,7 +308,7 @@ currently shown tag.</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>No, disable this feature</string>
+    <string>Clear previous values</string>
    </property>
   </action>
   <action name="actionKeep_previous_values_within_same_dir">
@@ -316,7 +316,7 @@ currently shown tag.</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Yes, but only if both files are in the same directory</string>
+    <string>Keep previous values, but only if both files are in the same directory</string>
    </property>
   </action>
   <action name="actionKeep_previous_values_always">
@@ -324,7 +324,7 @@ currently shown tag.</string>
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Yes, regardless where the files are stored</string>
+    <string>Keep previous values, regardless where the files are stored</string>
    </property>
   </action>
   <action name="actionManage_tags_automatically_when_loading_file">

@@ -572,6 +572,21 @@ void TagEditorWidget::updateTagManagementMenu()
     m_changeTargetMenu->setEnabled(!m_changeTargetMenu->actions().empty());
 }
 
+void TagEditorWidget::updateKeepPreviousValuesButton()
+{
+    switch (Settings::values().editor.adoptFields) {
+    case Settings::AdoptFields::Never:
+        m_ui->keepPreviousValuesPushButton->setText(tr("Clear previous values"));
+        break;
+    case Settings::AdoptFields::WithinDirectory:
+        m_ui->keepPreviousValuesPushButton->setText(tr("Keep previous values in same dir"));
+        break;
+    case Settings::AdoptFields::Always:
+        m_ui->keepPreviousValuesPushButton->setText(tr("Keep previous values"));
+        break;
+    }
+}
+
 /*!
  * \brief Inserts the title from the filename if no title is available from the tags.
  * \remarks Does nothing if there are no tags assigned or if this feature is not enabled.
@@ -1351,14 +1366,15 @@ void TagEditorWidget::handleReturnPressed()
 
 void TagEditorWidget::handleKeepPreviousValuesActionTriggered(QAction *action)
 {
-    auto &settings = Settings::values().editor;
+    auto &adoptFields = Settings::values().editor.adoptFields;
     if (action == m_ui->actionKeep_previous_values_never) {
-        settings.adoptFields = Settings::AdoptFields::Never;
+        adoptFields = Settings::AdoptFields::Never;
     } else if (action == m_ui->actionKeep_previous_values_within_same_dir) {
-        settings.adoptFields = Settings::AdoptFields::WithinDirectory;
+        adoptFields = Settings::AdoptFields::WithinDirectory;
     } else if (action == m_ui->actionKeep_previous_values_always) {
-        settings.adoptFields = Settings::AdoptFields::Always;
+        adoptFields = Settings::AdoptFields::Always;
     }
+    updateKeepPreviousValuesButton();
 }
 
 /*!
@@ -1379,6 +1395,7 @@ void TagEditorWidget::applySettingsFromDialog()
         m_ui->actionKeep_previous_values_always->setChecked(true);
         break;
     }
+    updateKeepPreviousValuesButton();
     m_ui->actionManage_tags_automatically_when_loading_file->setChecked(settings.tagPocessing.autoTagManagement);
     foreachTagEdit(bind(&TagEdit::setCoverButtonsHidden, _1, settings.editor.hideCoverButtons));
     // ensure info view is displayed/not displayed according to settings
