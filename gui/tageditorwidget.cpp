@@ -93,11 +93,14 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     // setup UI
     m_ui->setupUi(this);
     makeHeading(m_ui->fileNameLabel);
+
     // setup (web) view
     initInfoView();
+
     // setup file watcher
     m_fileWatcher = new QFileSystemWatcher(this);
     m_fileChangedOnDisk = false;
+
     // setup command link button icons
     m_ui->saveButton->setIcon(style()->standardIcon(QStyle::SP_DialogSaveButton, nullptr, m_ui->saveButton));
     m_ui->deleteTagsButton->setIcon(style()->standardIcon(QStyle::SP_DialogResetButton, nullptr, m_ui->deleteTagsButton));
@@ -111,6 +114,7 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     connect(group, &QActionGroup::triggered, this, &TagEditorWidget::handleKeepPreviousValuesActionTriggered);
     m_keepPreviousValuesMenu->addActions(group->actions());
     m_ui->keepPreviousValuesPushButton->setMenu(m_keepPreviousValuesMenu);
+
     // setup m_tagOptionsMenu, m_addTagMenu, m_removeTagMenu, m_changeTargetMenu
     m_tagOptionsMenu = new QMenu(this);
     m_tagOptionsMenu->addAction(m_ui->actionManage_tags_automatically_when_loading_file);
@@ -130,6 +134,7 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     m_changeTargetMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-properties")));
     m_tagOptionsMenu->addMenu(m_changeTargetMenu);
     m_ui->tagOptionsPushButton->setMenu(m_tagOptionsMenu);
+
     // other widgets
     updateFileStatusStatus();
     m_ui->abortButton->setVisible(false);
@@ -141,6 +146,7 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     connect(m_ui->deleteTagsButton, &QPushButton::clicked, this, &TagEditorWidget::deleteAllTagsAndSave);
     connect(m_ui->nextButton, &QPushButton::clicked, this, &TagEditorWidget::saveAndShowNextFile);
     connect(m_ui->closeButton, &QPushButton::clicked, this, &TagEditorWidget::closeFile);
+
     //  misc
     connect(m_ui->abortButton, &QPushButton::clicked, [this] {
         m_abortClicked = true;
@@ -149,6 +155,8 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     connect(m_ui->tagSelectionComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), m_ui->stackedWidget,
         &QStackedWidget::setCurrentIndex);
     connect(m_fileWatcher, &QFileSystemWatcher::fileChanged, this, &TagEditorWidget::fileChangedOnDisk);
+    m_fileInfo.setWritingApplication(APP_NAME " v" APP_VERSION);
+
     // apply settings
     applySettingsFromDialog();
 }

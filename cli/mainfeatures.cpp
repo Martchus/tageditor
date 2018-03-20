@@ -11,6 +11,8 @@
 #include "../misc/utility.h"
 #endif
 
+#include "resources/config.h"
+
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractchapter.h>
 #include <tagparser/abstracttrack.h>
@@ -473,6 +475,7 @@ void setTagInfo(const SetTagInfoArgs &args)
     fileInfo.setIndexPosition(parsePositionDenotation(args.indexPosArg, args.indexPosValueArg, ElementPosition::BeforeData));
     fileInfo.setForceIndexPosition(args.forceIndexPosArg.isPresent());
     fileInfo.setForceRewrite(args.forceRewriteArg.isPresent());
+    fileInfo.setWritingApplication(APP_NAME " v" APP_VERSION);
 
     // set backup path
     if (args.backupDirArg.isPresent()) {
