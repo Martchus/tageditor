@@ -13,7 +13,7 @@ class ChecklistModel;
 
 namespace TagParser {
 class MediaFileInfo;
-enum class ContainerFormat;
+enum class ContainerFormat : unsigned int;
 } // namespace TagParser
 
 namespace QtGui {
