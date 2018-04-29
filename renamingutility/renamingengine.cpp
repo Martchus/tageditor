@@ -40,19 +40,20 @@ RenamingEngine::RenamingEngine(QObject *parent)
 #ifndef TAGEDITOR_NO_JSENGINE
 bool RenamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
 {
-    if (TAGEDITOR_JS_IS_VALID_PROG(program)) {
-        m_errorMessage.clear();
-        m_errorLineNumber = 0;
-        m_program = program;
-        return true;
-    } else if (program.isError()) {
+    if (program.isError()) {
         m_errorMessage = program.property(QStringLiteral("message")).toString();
         m_errorLineNumber = TAGEDITOR_JS_INT(program.property(QStringLiteral("lineNumber")));
-    } else {
-        m_errorMessage = tr("Program is not callable.");
+        return false;
+    } else if (!TAGEDITOR_JS_IS_VALID_PROG(program)) {
+        m_errorMessage = tr("Program is not callable. Please don't close a function you didn't open.");
         m_errorLineNumber = 0;
+        return false;
     }
-    return false;
+
+    m_errorMessage.clear();
+    m_errorLineNumber = 0;
+    m_program = program;
+    return true;
 }
 #endif
 
@@ -288,55 +289,56 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
     // make file info for the specified item available in the script
     m_tagEditorQObj->setFileInfo(fileInfo, item);
     // execute script
-    auto scriptResult = m_program.call();
+    const auto scriptResult(m_program.call());
     if (scriptResult.isError()) {
         // handle error
         item->setErrorOccured(true);
         item->setNote(scriptResult.toString());
-    } else {
-        // create preview for action
-        const QString &newName = m_tagEditorQObj->newName();
-        const QString &newRelativeDirectory = m_tagEditorQObj->newRelativeDirectory();
-        switch (m_tagEditorQObj->action()) {
-        case ActionType::None:
-            item->setNote(tr("no action specified"));
-            break;
-        case ActionType::Rename:
-            if (!newRelativeDirectory.isEmpty()) {
-                FileSystemItem *counterpartParent = item->root()->makeChildAvailable(newRelativeDirectory);
-                const QString &counterpartName = newName.isEmpty() ? item->name() : newName;
-                if (counterpartParent->findChild(counterpartName, item)) {
-                    item->setNote(tr("name is already used at new location"));
-                    item->setErrorOccured(true);
-                } else {
-                    auto *counterpart = new FileSystemItem(ItemStatus::New, item->type(), counterpartName, counterpartParent);
-                    item->setCounterpart(counterpart);
-                    counterpart->setCheckable(true);
-                    counterpart->setChecked(true);
-                }
-            } else if (!newName.isEmpty()) {
-                item->setNewName(newName);
-            }
-            if (FileSystemItem *newItem = item->counterpart()) {
-                if ((newItem->name().isEmpty() || newItem->name() == item->name()) && (newItem->parent() == item->parent())) {
-                    item->setNote(tr("name doesn't change"));
-                } else if (newItem->parent() && newItem->parent()->findChild(newItem->name(), newItem)) {
-                    item->setNote(tr("generated name is already used"));
-                    item->setErrorOccured(true);
-                } else if (newItem->parent() == item->parent()) {
-                    item->setNote(tr("will be renamed"));
-                    newItem->setCheckable(true);
-                    newItem->setChecked(true);
-                } else {
-                    item->setNote(tr("will be moved"));
-                }
+        return;
+    }
+
+    // create preview for action
+    const QString &newName = m_tagEditorQObj->newName();
+    const QString &newRelativeDirectory = m_tagEditorQObj->newRelativeDirectory();
+    switch (m_tagEditorQObj->action()) {
+    case ActionType::None:
+        item->setNote(tr("no action specified"));
+        break;
+    case ActionType::Rename:
+        if (!newRelativeDirectory.isEmpty()) {
+            FileSystemItem *counterpartParent = item->root()->makeChildAvailable(newRelativeDirectory);
+            const QString &counterpartName = newName.isEmpty() ? item->name() : newName;
+            if (counterpartParent->findChild(counterpartName, item)) {
+                item->setNote(tr("name is already used at new location"));
+                item->setErrorOccured(true);
             } else {
-                item->setNote(tr("can not be renamed"));
+                auto *counterpart = new FileSystemItem(ItemStatus::New, item->type(), counterpartName, counterpartParent);
+                item->setCounterpart(counterpart);
+                counterpart->setCheckable(true);
+                counterpart->setChecked(true);
             }
-            break;
-        default:
-            item->setNote(tr("skipped"));
+        } else if (!newName.isEmpty()) {
+            item->setNewName(newName);
         }
+        if (FileSystemItem *newItem = item->counterpart()) {
+            if ((newItem->name().isEmpty() || newItem->name() == item->name()) && (newItem->parent() == item->parent())) {
+                item->setNote(tr("name doesn't change"));
+            } else if (newItem->parent() && newItem->parent()->findChild(newItem->name(), newItem)) {
+                item->setNote(tr("generated name is already used"));
+                item->setErrorOccured(true);
+            } else if (newItem->parent() == item->parent()) {
+                item->setNote(tr("will be renamed"));
+                newItem->setCheckable(true);
+                newItem->setChecked(true);
+            } else {
+                item->setNote(tr("will be moved"));
+            }
+        } else {
+            item->setNote(tr("can not be renamed"));
+        }
+        break;
+    default:
+        item->setNote(tr("skipped"));
     }
 }
 #endif
