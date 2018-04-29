@@ -1,4 +1,4 @@
-// Created via CMake from template webviewdefs.h.in
+// Created via CMake from template jsdefs.h.in
 // WARNING! Any changes to this file will be overwritten by the next CMake run!
 
 #ifndef TAGEDITOR_JAVA_SCRIPT_DEFINES
@@ -22,7 +22,7 @@
 # define TAGEDITOR_JS_QOBJECT(engine, obj) engine.newQObject(obj, QScriptEngine::ScriptOwnership)
 # define TAGEDITOR_JS_INT(value) value.toInt32()
 # define TAGEDITOR_JS_IS_VALID_PROG(program) (!program.isError() && program.isFunction())
-#elif !defined(TAGEDITOR_NO_WEBVIEW)
+#elif !defined(TAGEDITOR_NO_JSENGINE)
 # error "No definition for JavaScript provider present."
 #endif
 
