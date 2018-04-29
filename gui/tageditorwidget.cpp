@@ -39,6 +39,7 @@
 #include <QFileInfo>
 #include <QFileSystemModel>
 #include <QFileSystemWatcher>
+#include <QGuiApplication>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMessageBox>
@@ -697,7 +698,7 @@ void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &)
             for (const QModelIndex &index : selection) {
                 text << index.data().toString();
             }
-            QApplication::clipboard()->setText(text.join(QChar(' ')));
+            QGuiApplication::clipboard()->setText(text.join(QChar(' ')));
             // TODO: improve copied text
         }
     });
@@ -721,7 +722,7 @@ void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &)
 {
     QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoWebView->selectedText().isEmpty());
-    connect(&copyAction, &QAction::triggered, [this] { QApplication::clipboard()->setText(m_infoWebView->selectedText()); });
+    connect(&copyAction, &QAction::triggered, [this] { QGuiApplication::clipboard()->setText(m_infoWebView->selectedText()); });
     QAction saveAction(QIcon::fromTheme(QStringLiteral("document-save")), tr("Save ..."), nullptr);
     saveAction.setDisabled(m_fileInfoHtml.isEmpty());
     connect(&saveAction, &QAction::triggered, this, &TagEditorWidget::saveFileInfo);
@@ -1100,7 +1101,7 @@ bool TagEditorWidget::startSaving()
     if (m_fileOperationOngoing) {
         static const QString errorMsg(tr("Unable to start saving process because there an other process hasn't finished yet."));
         emit statusMessage(errorMsg);
-        QMessageBox::warning(this, QApplication::applicationName(), errorMsg);
+        QMessageBox::warning(this, QCoreApplication::applicationName(), errorMsg);
         return false;
     }
 
@@ -1230,7 +1231,7 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         static const QString processingErrorMsg(tr("The tags couldn't be saved. See the info box for detail."));
         static const QString ioErrorMsg(tr("The tags couldn't be saved because an IO error occured."));
         const auto &errorMsg = ioError ? ioErrorMsg : processingErrorMsg;
-        QMessageBox::critical(this, QApplication::applicationName(), errorMsg);
+        QMessageBox::critical(this, QCoreApplication::applicationName(), errorMsg);
         emit statusMessage(errorMsg);
         m_ui->makingNotificationWidget->setText(errorMsg);
         m_ui->makingNotificationWidget->setNotificationType(NotificationType::Critical);
@@ -1297,12 +1298,12 @@ bool TagEditorWidget::handleFileInfoUnavailable()
         return true;
     }
     if (!fileInfo().isOpen()) {
-        QMessageBox::information(this, QApplication::applicationName(), tr("No file is opened."));
+        QMessageBox::information(this, QCoreApplication::applicationName(), tr("No file is opened."));
         return true;
     }
 
     if (generateFileInfoHtml().isEmpty()) {
-        QMessageBox::information(this, QApplication::applicationName(), tr("No file information available."));
+        QMessageBox::information(this, QCoreApplication::applicationName(), tr("No file information available."));
         return true;
     }
     return false;
@@ -1311,7 +1312,7 @@ bool TagEditorWidget::handleFileInfoUnavailable()
 bool TagEditorWidget::writeFileInfoToFile(QFile &file)
 {
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
-        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file \"%1\".").arg(file.fileName()));
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to open file \"%1\".").arg(file.fileName()));
         return false;
     }
     QTextStream stream(&file);
@@ -1321,7 +1322,7 @@ bool TagEditorWidget::writeFileInfoToFile(QFile &file)
 
     if (file.error() != QFileDevice::NoError) {
         QMessageBox::critical(
-            this, QApplication::applicationName(), tr("Unable to write to file \"%1\".\n%2").arg(file.fileName(), file.errorString()));
+            this, QCoreApplication::applicationName(), tr("Unable to write to file \"%1\".\n%2").arg(file.fileName(), file.errorString()));
         return false;
     }
     return true;
@@ -1338,7 +1339,7 @@ void TagEditorWidget::saveFileInfo()
 
     const QString path(QFileDialog::getSaveFileName(this, tr("Save file information - ") + QCoreApplication::applicationName()));
     if (path.isEmpty()) {
-        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to open file."));
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to open file."));
         return;
     }
 
@@ -1427,21 +1428,22 @@ void TagEditorWidget::addTag(const function<TagParser::Tag *(TagParser::MediaFil
         return;
     }
 
-    if (Tag *tag = createTag(m_fileInfo)) {
-        if (std::find(m_tags.cbegin(), m_tags.cend(), tag) != m_tags.cend()) {
-            QMessageBox::warning(this, windowTitle(), tr("A tag (with the selected target) already exists."));
-            return;
-        }
-
-        m_tags.push_back(tag);
-        updateTagEditsAndAttachmentEdits(true, m_tags.size() > 1 ? PreviousValueHandling::Keep : PreviousValueHandling::Auto);
-        updateTagSelectionComboBox();
-        updateTagManagementMenu();
-        updateFileStatusStatus();
-        insertTitleFromFilename();
-    } else {
+    Tag *const tag = createTag(m_fileInfo);
+    if (!tag) {
         QMessageBox::warning(this, windowTitle(), tr("The tag can not be created."));
+        return;
     }
+    if (std::find(m_tags.cbegin(), m_tags.cend(), tag) != m_tags.cend()) {
+        QMessageBox::warning(this, windowTitle(), tr("A tag (with the selected target) already exists."));
+        return;
+    }
+
+    m_tags.push_back(tag);
+    updateTagEditsAndAttachmentEdits(true, m_tags.size() > 1 ? PreviousValueHandling::Keep : PreviousValueHandling::Auto);
+    updateTagSelectionComboBox();
+    updateTagManagementMenu();
+    updateFileStatusStatus();
+    insertTitleFromFilename();
 }
 
 /*!
@@ -1451,53 +1453,61 @@ void TagEditorWidget::addTag(const function<TagParser::Tag *(TagParser::MediaFil
  */
 void TagEditorWidget::removeTag(Tag *tag)
 {
-    if (tag) {
-        if (m_fileOperationOngoing) {
-            emit statusMessage(tr("Unable to remove the tag because the current process hasn't been finished yet."));
-            return;
-        }
-        if (!m_fileInfo.isOpen()) {
-            emit statusMessage(tr("Unable to remove the tag because no file is opened."));
-            return;
+    if (!tag) {
+        return;
+    }
+    if (m_fileOperationOngoing) {
+        emit statusMessage(tr("Unable to remove the tag because the current process hasn't been finished yet."));
+        return;
+    }
+    if (!m_fileInfo.isOpen()) {
+        emit statusMessage(tr("Unable to remove the tag because no file is opened."));
+        return;
+    }
+
+    // remove tag itself
+    m_fileInfo.removeTag(tag);
+    m_tags.erase(remove(m_tags.begin(), m_tags.end(), tag), m_tags.end());
+
+    // remove tag from all TagEdit widgets
+    vector<TagEdit *> toRemove;
+    for (int index = 0, count = m_ui->stackedWidget->count(); index < count; ++index) {
+        auto *const edit = qobject_cast<TagEdit *>(m_ui->stackedWidget->widget(index));
+        if (!edit || !edit->tags().contains(tag)) {
+            continue;
         }
 
-        m_fileInfo.removeTag(tag);
-        // remove tag from m_tags
-        m_tags.erase(remove(m_tags.begin(), m_tags.end(), tag), m_tags.end());
-        // remove tag from all TagEdit widgets
-        vector<TagEdit *> toRemove;
-        for (int index = 0, count = m_ui->stackedWidget->count(); index < count; ++index) {
-            TagEdit *edit = qobject_cast<TagEdit *>(m_ui->stackedWidget->widget(index));
-            if (edit && edit->tags().contains(tag)) {
-                QList<Tag *> tagsOfEdit = edit->tags();
-                tagsOfEdit.removeAll(tag);
-                if (tagsOfEdit.empty()) {
-                    // no tags left in the edit
-                    if (m_tags.empty()) {
-                        // there are no other tag edits -> just disable the edit
-                        edit->setTag(nullptr, false);
-                    } else {
-                        // there are still other tag edits -> remove the edit
-                        toRemove.push_back(edit);
-                    }
-                } else {
-                    // there are still tags left, reassign remaining tags (keeping the previous values)
-                    edit->setPreviousValueHandling(PreviousValueHandling::Keep);
-                    edit->setTags(tagsOfEdit, true);
-                }
-            }
+        QList<Tag *> tagsOfEdit = edit->tags();
+        tagsOfEdit.removeAll(tag);
+
+        // reassign remaining tags (keeping the previous values)
+        if (!tagsOfEdit.empty()) {
+            edit->setPreviousValueHandling(PreviousValueHandling::Keep);
+            edit->setTags(tagsOfEdit, true);
+            continue;
         }
-        // remove TagEdit widgets
-        for (TagEdit *edit : toRemove) {
-            m_ui->tagSelectionComboBox->removeItem(m_ui->stackedWidget->indexOf(edit));
-            m_ui->stackedWidget->removeWidget(edit);
-            delete edit;
+
+        // handle case when no tags left in the edit
+        if (m_tags.empty()) {
+            // disable the edit if there are no other tag edits
+            edit->setTag(nullptr, false);
+        } else {
+            // remove the edit if there are still other tag edits
+            toRemove.push_back(edit);
         }
-        // update affected widgets
-        updateTagSelectionComboBox();
-        updateTagManagementMenu();
-        updateFileStatusStatus();
     }
+
+    // remove TagEdit widgets
+    for (TagEdit *edit : toRemove) {
+        m_ui->tagSelectionComboBox->removeItem(m_ui->stackedWidget->indexOf(edit));
+        m_ui->stackedWidget->removeWidget(edit);
+        delete edit;
+    }
+
+    // update affected widgets
+    updateTagSelectionComboBox();
+    updateTagManagementMenu();
+    updateFileStatusStatus();
 }
 
 /*!
@@ -1507,28 +1517,30 @@ void TagEditorWidget::removeTag(Tag *tag)
  */
 void TagEditorWidget::changeTarget(Tag *tag)
 {
-    if (tag) {
-        if (m_fileOperationOngoing) {
-            emit statusMessage(tr("Unable to change the target because the current process hasn't been finished yet."));
-            return;
-        }
-        if (!m_fileInfo.isOpen()) {
-            emit statusMessage(tr("Unable to change the target because no file is opened."));
-            return;
-        }
-        if (!tag->supportsTarget()) {
-            QMessageBox::warning(this, windowTitle(), tr("Can not change the target of the selected tag because the tag does not support targets."));
-            return;
-        }
-
-        EnterTargetDialog targetDlg(this);
-        targetDlg.setTarget(tag->target(), &m_fileInfo);
-        if (targetDlg.exec() == QDialog::Accepted) {
-            tag->setTarget(targetDlg.target());
-            updateTagSelectionComboBox();
-            updateTagManagementMenu();
-        }
+    if (!tag) {
+        return;
     }
+    if (m_fileOperationOngoing) {
+        emit statusMessage(tr("Unable to change the target because the current process hasn't been finished yet."));
+        return;
+    }
+    if (!m_fileInfo.isOpen()) {
+        emit statusMessage(tr("Unable to change the target because no file is opened."));
+        return;
+    }
+    if (!tag->supportsTarget()) {
+        QMessageBox::warning(this, windowTitle(), tr("Can not change the target of the selected tag because the tag does not support targets."));
+        return;
+    }
+
+    EnterTargetDialog targetDlg(this);
+    targetDlg.setTarget(tag->target(), &m_fileInfo);
+    if (targetDlg.exec() != QDialog::Accepted) {
+        return;
+    }
+    tag->setTarget(targetDlg.target());
+    updateTagSelectionComboBox();
+    updateTagManagementMenu();
 }
 
 } // namespace QtGui
