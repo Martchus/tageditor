@@ -965,4 +965,4 @@ void applyGeneralConfig(const Argument &timeSapnFormatArg)
 {
     timeSpanOutputFormat = parseTimeSpanOutputFormat(timeSapnFormatArg, TimeSpanOutputFormat::WithMeasures);
 }
-}
+} // namespace Cli
