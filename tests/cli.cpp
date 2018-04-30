@@ -46,7 +46,8 @@ enum class TagStatus { Original, TestMetaDataPresent, Removed };
 class CliTests : public TestFixture {
     CPPUNIT_TEST_SUITE(CliTests);
 #ifdef PLATFORM_UNIX
-    CPPUNIT_TEST(testBasicReadingAndWriting);
+    CPPUNIT_TEST(testBasicReading);
+    CPPUNIT_TEST(testBasicWriting);
     CPPUNIT_TEST(testSpecifyingNativeFieldIds);
     CPPUNIT_TEST(testHandlingOfTargets);
     CPPUNIT_TEST(testId3SpecificOptions);
@@ -70,7 +71,8 @@ public:
     void tearDown();
 
 #ifdef PLATFORM_UNIX
-    void testBasicReadingAndWriting();
+    void testBasicReading();
+    void testBasicWriting();
     void testSpecifyingNativeFieldIds();
     void testHandlingOfTargets();
     void testId3SpecificOptions();
@@ -142,13 +144,14 @@ bool testNotContainsSubstrings(const StringType &str, std::initializer_list<cons
 /*!
  * \brief Tests basic reading and writing of tags.
  */
-void CliTests::testBasicReadingAndWriting()
+void CliTests::testBasicReading()
 {
-    cout << "\nBasic reading and writing" << endl;
+    cout << "\nBasic reading" << endl;
     string stdout, stderr;
+
     // get specific field
-    const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
-    const string mkvFileBackup(mkvFile + ".bak");
+    const auto mkvFile(testFilePath("matroska_wave1/test2.mkv"));
+    const auto flacFile(testFilePath("flac/test.flac"));
     const char *const args1[] = { "tageditor", "get", "title", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
@@ -160,15 +163,49 @@ void CliTests::testBasicReadingAndWriting()
     const char *const args2[] = { "tageditor", "get", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
+    // clang-format off
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { "Title             Elephant Dream - test 2", "Year              2010",
-            "Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC" }));
+        { "Matroska tag",
+          "Title             Elephant Dream - test 2",
+          "Year              2010",
+          "Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC"
+        }));
+    // clang-format on
+
+    // test a file with some more fields
+    const char *const args3[] = { "tageditor", "get", "-f", flacFile.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC(args3);
+    CPPUNIT_ASSERT(stderr.empty());
+    // clang-format off
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout,
+        { "Vorbis comment",
+          "Title             Sad Song",
+          "Album             Don't Go Away (Apple Lossless)",
+          "Artist            Oasis",
+          "Genre             Alternative & Punk",
+          "Year              1998",
+          "Track             3/4",
+          "Disk              1/1",
+          "Encoder           Lavf",
+          "Composer          Noel Gallagher"
+        }));
+    // clang-format on
+}
+
+void CliTests::testBasicWriting()
+{
+    cout << "\nBasic writing" << endl;
+    string stdout, stderr;
+
+    const auto mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
+    const auto mkvFileBackup(mkvFile + ".bak");
+    const char *const args1[] = { "tageditor", "get", "-f", mkvFile.data(), nullptr };
 
     // set some fields, keep other field
-    const char *const args3[] = { "tageditor", "set", "title=A new title", "genre=Testfile", "-f", mkvFile.data(), nullptr };
-    TESTUTILS_ASSERT_EXEC(args3);
-    CPPUNIT_ASSERT(stdout.find("Changes have been applied") != string::npos);
+    const char *const args2[] = { "tageditor", "set", "title=A new title", "genre=Testfile", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
+    CPPUNIT_ASSERT(stdout.find("Changes have been applied") != string::npos);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { "Title             A new title", "Genre             Testfile", "Year              2010",
@@ -177,9 +214,9 @@ void CliTests::testBasicReadingAndWriting()
     remove(mkvFileBackup.data());
 
     // set some fields, discard other
-    const char *const args4[] = { "tageditor", "set", "title=Foo", "artist=Bar", "--remove-other-fields", "-f", mkvFile.data(), nullptr };
-    TESTUTILS_ASSERT_EXEC(args4);
-    TESTUTILS_ASSERT_EXEC(args2);
+    const char *const args3[] = { "tageditor", "set", "title=Foo", "artist=Bar", "--remove-other-fields", "-f", mkvFile.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC(args3);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Title             Foo", "Artist            Bar" }));
     CPPUNIT_ASSERT(stdout.find("Year") == string::npos);
