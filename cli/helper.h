@@ -279,7 +279,7 @@ inline void printProperty(
     }
 }
 
-template <typename NumberType, Traits::EnableIfAny<std::is_integral<NumberType>, std::is_floating_point<NumberType>>...>
+template <typename NumberType, Traits::EnableIfAny<std::is_integral<NumberType>, std::is_floating_point<NumberType>>* = nullptr>
 inline void printProperty(
     const char *propName, const NumberType value, const char *suffix = nullptr, bool force = false, ApplicationUtilities::Indentation indentation = 4)
 {
