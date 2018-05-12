@@ -53,8 +53,8 @@ void displayFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const App
     const ApplicationUtilities::Argument &verboseArg);
 void generateFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &inputFileArg,
     const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
-void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &filesArg,
-    const ApplicationUtilities::Argument &verboseArg);
+void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &showUnsupportedArg,
+    const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
 void extractField(const ApplicationUtilities::Argument &fieldArg, const ApplicationUtilities::Argument &attachmentArg,
     const ApplicationUtilities::Argument &inputFilesArg, const ApplicationUtilities::Argument &outputFileArg,

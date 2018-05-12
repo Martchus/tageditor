@@ -164,8 +164,10 @@ int main(int argc, char *argv[])
     fieldsArg.setImplicit(true);
     OperationArgument displayTagInfoArg("get", 'g', "displays the values of all specified tag fields (displays all fields if none specified)",
         PROJECT_NAME " get title album artist -f /some/dir/*.m4a");
-    displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, std::cref(fieldsArg), std::cref(filesArg), std::cref(verboseArg)));
-    displayTagInfoArg.setSubArguments({ &fieldsArg, &filesArg, &verboseArg });
+    ConfigValueArgument showUnsupportedArg("show-unsupported", 'u', "shows unsupported fields (has only effect when no field names specified)");
+    displayTagInfoArg.setCallback(
+        std::bind(Cli::displayTagInfo, std::cref(fieldsArg), std::cref(showUnsupportedArg), std::cref(filesArg), std::cref(verboseArg)));
+    displayTagInfoArg.setSubArguments({ &fieldsArg, &showUnsupportedArg, &filesArg, &verboseArg });
     // set tag info
     Cli::SetTagInfoArgs setTagInfoArgs(filesArg, verboseArg);
     // extract cover

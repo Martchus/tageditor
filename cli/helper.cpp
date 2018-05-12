@@ -213,9 +213,25 @@ void printFieldName(const char *fieldName, size_t fieldNameLen)
 {
     cout << "    " << fieldName;
     // also write padding
+    if (fieldNameLen >= 18) {
+        // write at least one space
+        cout << ' ';
+        return;
+    }
     for (auto i = fieldNameLen; i < 18; ++i) {
         cout << ' ';
     }
+}
+
+void printTagValue(const TagValue &value)
+{
+    try {
+        cout << value.toString(TagTextEncoding::Utf8);
+    } catch (const ConversionException &) {
+        // handle case when value can not be displayed as string
+        cout << "can't display as string (see --extract)";
+    }
+    cout << '\n';
 }
 
 void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool skipEmpty)
@@ -243,19 +259,48 @@ void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool s
         // print values
         for (const auto &value : values) {
             printFieldName(fieldName, fieldNameLen);
-            try {
-                cout << value->toString(TagTextEncoding::Utf8);
-            } catch (const ConversionException &) {
-                // handle case when value can not be displayed as string
-                cout << "can't display as string (see --extract)";
-            }
-            cout << '\n';
+            printTagValue(*value);
         }
 
     } catch (const ConversionException &e) {
         // handle conversion error which might happen when parsing field denotation
         printFieldName(fieldName, fieldNameLen);
         cout << "unable to parse - " << e.what() << '\n';
+    }
+}
+
+template <typename ConcreteTag> void printNativeFields(const Tag *tag)
+{
+    const auto *const concreteTag = static_cast<const ConcreteTag *>(tag);
+    for (const auto &field : concreteTag->fields()) {
+        // skip all fields which are supported anyways
+        if (concreteTag->knownField(field.first) != KnownField::Invalid) {
+            continue;
+        }
+
+        const auto fieldId(ConcreteTag::FieldType::fieldIdToString(field.first));
+        printFieldName(fieldId.data(), fieldId.size());
+        printTagValue(field.second.value());
+    }
+}
+
+void printNativeFields(const Tag *tag)
+{
+    switch (tag->type()) {
+    case TagType::Id3v2Tag:
+        printNativeFields<Id3v2Tag>(tag);
+        break;
+    case TagType::Mp4Tag:
+        printNativeFields<Mp4Tag>(tag);
+        break;
+    case TagType::MatroskaTag:
+        printNativeFields<MatroskaTag>(tag);
+        break;
+    case TagType::VorbisComment:
+    case TagType::OggVorbisComment:
+        printNativeFields<VorbisComment>(tag);
+        break;
+    default:;
     }
 }
 

@@ -279,7 +279,7 @@ inline void printProperty(
     }
 }
 
-template <typename NumberType, Traits::EnableIfAny<std::is_integral<NumberType>, std::is_floating_point<NumberType>>* = nullptr>
+template <typename NumberType, Traits::EnableIfAny<std::is_integral<NumberType>, std::is_floating_point<NumberType>> * = nullptr>
 inline void printProperty(
     const char *propName, const NumberType value, const char *suffix = nullptr, bool force = false, ApplicationUtilities::Indentation indentation = 4)
 {
@@ -289,6 +289,7 @@ inline void printProperty(
 }
 
 void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool skipEmpty);
+void printNativeFields(const Tag *tag);
 
 ChronoUtilities::TimeSpanOutputFormat parseTimeSpanOutputFormat(
     const ApplicationUtilities::Argument &usageArg, ChronoUtilities::TimeSpanOutputFormat defaultFormat);

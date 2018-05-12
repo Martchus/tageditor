@@ -301,7 +301,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
     }
 }
 
-void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const Argument &verboseArg)
+void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedArg, const Argument &filesArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
 
@@ -325,29 +325,32 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &filesArg, const A
             fileInfo.parseTags(diag);
             cout << "Tag information for \"" << file << "\":\n";
             const auto tags = fileInfo.tags();
-            if (!tags.empty()) {
-                // iterate through all tags
-                for (const auto *tag : tags) {
-                    // determine tag type
-                    const TagType tagType = tag->type();
-                    // write tag name and target, eg. MP4/iTunes tag
-                    cout << " - " << TextAttribute::Bold << tagName(tag) << TextAttribute::Reset << '\n';
-                    // iterate through fields specified by the user
-                    if (fields.empty()) {
-                        for (auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
-                            printField(FieldScope(field), tag, tagType, true);
-                        }
-                    } else {
-                        for (const auto &fieldDenotation : fields) {
-                            const FieldScope &denotedScope = fieldDenotation.first;
-                            if (denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType | tagType) != TagType::Unspecified) {
-                                printField(denotedScope, tag, tagType, false);
-                            }
+            if (tags.empty()) {
+                cout << " - File has no (supported) tag information.\n";
+                continue;
+            }
+            // iterate through all tags
+            for (const auto *tag : tags) {
+                // determine tag type
+                const TagType tagType = tag->type();
+                // write tag name and target, eg. MP4/iTunes tag
+                cout << " - " << TextAttribute::Bold << tagName(tag) << TextAttribute::Reset << '\n';
+                // iterate through fields specified by the user
+                if (fields.empty()) {
+                    for (auto field = firstKnownField; field != KnownField::Invalid; field = nextKnownField(field)) {
+                        printField(FieldScope(field), tag, tagType, true);
+                    }
+                    if (showUnsupportedArg.isPresent()) {
+                        printNativeFields(tag);
+                    }
+                } else {
+                    for (const auto &fieldDenotation : fields) {
+                        const FieldScope &denotedScope = fieldDenotation.first;
+                        if (denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType | tagType) != TagType::Unspecified) {
+                            printField(denotedScope, tag, tagType, false);
                         }
                     }
                 }
-            } else {
-                cout << " - File has no (supported) tag information.\n";
             }
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;

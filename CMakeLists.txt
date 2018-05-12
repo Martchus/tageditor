@@ -11,8 +11,8 @@ set(META_APP_DESCRIPTION "A tageditor with Qt GUI and command line interface. Su
 set(META_GUI_OPTIONAL true)
 set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 3)
-set(META_VERSION_MINOR 0)
-set(META_VERSION_PATCH 1)
+set(META_VERSION_MINOR 1)
+set(META_VERSION_PATCH 0)
 
 # add project files
 set(HEADER_FILES
