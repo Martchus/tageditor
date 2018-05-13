@@ -18,6 +18,7 @@
 #include <c++utilities/io/catchiofailure.h>
 
 #include <QAction>
+#include <QCoreApplication>
 #include <QCursor>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -80,16 +81,17 @@ PicturePreviewSelection::~PicturePreviewSelection()
 
 /*!
  * \brief Sets the \a value of the current tag field manually using the given \a previousValueHandling.
+ *
+ * Used for editing tags programmatically, eg. in TagEditorWidget::insertTitleFromFilename() and DbQueryWidget::applyResults().
  */
 void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
     assert(m_currentTypeIndex < m_values.size());
     TagValue &currentValue = m_values[m_currentTypeIndex];
-    if (previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
-        if (previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty()) {
-            currentValue = value; // TODO: move(value);
-            emit pictureChanged();
-        }
+    if ((previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty())
+            && (previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty())) {
+        currentValue = value; // TODO: move(value);
+        emit pictureChanged();
     }
     updatePreview(m_currentTypeIndex);
 }
@@ -315,7 +317,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
             this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
         if (ok) {
             if ((fileInfo.size() < 10485760)
-                || (QMessageBox::warning(this, QApplication::applicationName(),
+                || (QMessageBox::warning(this, QCoreApplication::applicationName(),
                         tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No)
                        == QMessageBox::No)) {
                 auto buff = make_unique<char[]>(fileInfo.size());
@@ -327,10 +329,10 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
             }
         }
     } catch (const TagParser::Failure &) {
-        QMessageBox::critical(this, QApplication::applicationName(), tr("Unable to parse specified cover file."));
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to parse specified cover file."));
     } catch (...) {
         ::IoUtilities::catchIoFailure();
-        QMessageBox::critical(this, QApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
     }
     updatePreview(m_currentTypeIndex);
 }
@@ -342,7 +344,7 @@ void PicturePreviewSelection::removeSelected()
 {
     if (m_currentTypeIndex < m_values.size()) {
         if (m_values[m_currentTypeIndex].isEmpty()) {
-            QMessageBox::information(this, QApplication::applicationName(), tr("There is no cover to remove."));
+            QMessageBox::information(this, QCoreApplication::applicationName(), tr("There is no cover to remove."));
         } else {
             m_values[m_currentTypeIndex].clearData();
             updatePreview(m_currentTypeIndex);
@@ -361,23 +363,25 @@ void PicturePreviewSelection::extractSelected()
     assert(m_currentTypeIndex < m_values.size());
     TagValue &value = m_values[m_currentTypeIndex];
     if (value.isEmpty()) {
-        QMessageBox::information(this, QApplication::applicationName(), tr("There is no image attached to be extracted."));
-    } else {
-        const auto path = QFileDialog::getSaveFileName(this, tr("Where do you want to save the cover?"));
-        if (!path.isEmpty()) {
-            QFile file(path);
-            if (file.open(QIODevice::WriteOnly)) {
-                if (file.write(value.dataPointer(), value.dataSize()) > 0) {
-                    QMessageBox::information(this, QApplication::applicationName(), tr("The cover has extracted."));
-                } else {
-                    QMessageBox::warning(this, QApplication::applicationName(), tr("Unable to write to output file."));
-                }
-                file.close();
-            } else {
-                QMessageBox::warning(this, QApplication::applicationName(), tr("Unable to open output file."));
-            }
-        }
+        QMessageBox::information(this, QCoreApplication::applicationName(), tr("There is no image attached to be extracted."));
+        return;
     }
+
+    const auto path = QFileDialog::getSaveFileName(this, tr("Where do you want to save the cover?"));
+    if (path.isEmpty()) {
+        return;
+    }
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("Unable to open output file."));
+        return;
+    }
+    if (file.write(value.dataPointer(), value.dataSize()) > 0) {
+        QMessageBox::information(this, QCoreApplication::applicationName(), tr("The cover has extracted."));
+    } else {
+        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("Unable to write to output file."));
+    }
+    file.close();
 }
 
 /*!
@@ -394,18 +398,18 @@ void PicturePreviewSelection::displaySelected()
             if (file.open(QFile::ReadOnly)) {
                 img = QImage::fromData(file.readAll());
             } else {
-                QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be found."));
+                QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image can't be found."));
                 return;
             }
         } else {
             img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
         }
         if (img.isNull()) {
-            QMessageBox::warning(this, QApplication::applicationName(), tr("The attached image can't be displayed."));
+            QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image can't be displayed."));
         } else {
             QDialog dlg;
             dlg.setWindowFlags(Qt::Tool);
-            dlg.setWindowTitle(tr("Cover - %1").arg(QApplication::applicationName()));
+            dlg.setWindowTitle(tr("Cover - %1").arg(QCoreApplication::applicationName()));
             QBoxLayout layout(QBoxLayout::Up);
             layout.setMargin(0);
             QGraphicsView view(&dlg);
@@ -418,7 +422,7 @@ void PicturePreviewSelection::displaySelected()
             dlg.exec();
         }
     } else {
-        QMessageBox::warning(this, QApplication::applicationName(), tr("There is no image attached."));
+        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("There is no image attached."));
     }
 }
 

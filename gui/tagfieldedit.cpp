@@ -162,6 +162,8 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
 
 /*!
  * \brief Sets the \a value of the current tag field manually using the given \a previousValueHandling.
+ *
+ * Used for editing tags programmatically, eg. in TagEditorWidget::insertTitleFromFilename() and DbQueryWidget::applyResults().
  */
 bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
