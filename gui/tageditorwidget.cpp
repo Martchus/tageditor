@@ -28,6 +28,7 @@
 #include <qtutilities/widgets/clearlineedit.h>
 
 #include <c++utilities/conversion/stringconversion.h>
+#include <c++utilities/io/ansiescapecodes.h>
 #include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/path.h>
 
@@ -51,9 +52,11 @@
 
 #include <algorithm>
 #include <functional>
+#include <iostream>
 
 using namespace std;
 using namespace std::placeholders;
+using namespace EscapeCodes;
 using namespace Utility;
 using namespace Dialogs;
 using namespace Widgets;
@@ -89,7 +92,6 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     , m_nextFileAfterSaving(false)
     , m_makingResultsAvailable(false)
     , m_abortClicked(false)
-    , m_fileOperationOngoing(false)
 {
     // setup UI
     m_ui->setupUi(this);
@@ -167,6 +169,10 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
  */
 TagEditorWidget::~TagEditorWidget()
 {
+    if (isFileOperationOngoing()) {
+        cout << Phrases::Warning << "Waiting for the ongoing file operation to finish ..." << Phrases::EndFlush;
+        m_ongoingFileOperation.waitForFinished();
+    }
 }
 
 /*!
@@ -772,7 +778,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     if (!forceRefresh && sameFile) {
         return true;
     }
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         emit statusMessage(tr("Unable to load the selected file \"%1\" because the current process hasn't finished yet.").arg(path));
         return false;
     }
@@ -835,9 +841,8 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         }
         QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
     };
-    m_fileOperationOngoing = true;
     // perform the operation concurrently
-    QtConcurrent::run(startThread);
+    m_ongoingFileOperation = QtConcurrent::run(startThread);
     // inform user
     static const auto statusMsg(tr("The file is beeing parsed ..."));
     m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Progress);
@@ -852,7 +857,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
  */
 bool TagEditorWidget::reparseFile()
 {
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         emit statusMessage(tr("Unable to reload the file because the current process hasn't finished yet."));
         return false;
     }
@@ -871,7 +876,6 @@ bool TagEditorWidget::reparseFile()
  */
 void TagEditorWidget::showFile(char result)
 {
-    m_fileOperationOngoing = false;
     if (result == IoError) {
         // update status
         updateFileStatusStatus();
@@ -990,7 +994,7 @@ void TagEditorWidget::saveAndShowNextFile()
  */
 bool TagEditorWidget::applyEntriesAndSaveChangings()
 {
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         static const QString statusMsg(tr("Unable to apply the entered tags to the file because the current process hasn't finished yet."));
         emit statusMessage(statusMsg);
         return false;
@@ -1032,7 +1036,7 @@ bool TagEditorWidget::applyEntriesAndSaveChangings()
  */
 bool TagEditorWidget::deleteAllTagsAndSave()
 {
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         static const QString statusMsg(tr("Unable to delete all tags from the file because the current process hasn't been finished yet."));
         emit statusMessage(statusMsg);
         return false;
@@ -1098,7 +1102,7 @@ bool TagEditorWidget::deleteAllTagsAndSave()
  */
 bool TagEditorWidget::startSaving()
 {
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         static const QString errorMsg(tr("Unable to start saving process because there an other process hasn't finished yet."));
         emit statusMessage(errorMsg);
         QMessageBox::warning(this, QCoreApplication::applicationName(), errorMsg);
@@ -1160,9 +1164,8 @@ bool TagEditorWidget::startSaving()
         }
         QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
     };
-    m_fileOperationOngoing = true;
     // use another thread to perform the operation
-    QtConcurrent::run(startThread);
+    m_ongoingFileOperation = QtConcurrent::run(startThread);
     return true;
 }
 
@@ -1176,7 +1179,6 @@ bool TagEditorWidget::startSaving()
  */
 void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
 {
-    m_fileOperationOngoing = false;
     m_ui->abortButton->setHidden(true);
     m_ui->makingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
     m_ui->makingNotificationWidget->setNotificationSubject(NotificationSubject::Saving);
@@ -1277,7 +1279,7 @@ void TagEditorWidget::fileChangedOnDisk(const QString &path)
  */
 void TagEditorWidget::closeFile()
 {
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         emit statusMessage("Unable to close the file because the current process hasn't been finished yet.");
         return;
     }
@@ -1293,7 +1295,7 @@ void TagEditorWidget::closeFile()
 
 bool TagEditorWidget::handleFileInfoUnavailable()
 {
-    if (fileOperationOngoing()) {
+    if (isFileOperationOngoing()) {
         emit statusMessage(tr("Unable to save file information because the current process hasn't been finished yet."));
         return true;
     }
@@ -1419,7 +1421,7 @@ void TagEditorWidget::applySettingsFromDialog()
  */
 void TagEditorWidget::addTag(const function<TagParser::Tag *(TagParser::MediaFileInfo &)> &createTag)
 {
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         emit statusMessage("Unable to add a tag because the current process hasn't been finished yet.");
         return;
     }
@@ -1456,7 +1458,7 @@ void TagEditorWidget::removeTag(Tag *tag)
     if (!tag) {
         return;
     }
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         emit statusMessage(tr("Unable to remove the tag because the current process hasn't been finished yet."));
         return;
     }
@@ -1520,7 +1522,7 @@ void TagEditorWidget::changeTarget(Tag *tag)
     if (!tag) {
         return;
     }
-    if (m_fileOperationOngoing) {
+    if (isFileOperationOngoing()) {
         emit statusMessage(tr("Unable to change the target because the current process hasn't been finished yet."));
         return;
     }

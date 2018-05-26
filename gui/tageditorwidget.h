@@ -8,6 +8,7 @@
 #include <tagparser/mediafileinfo.h>
 
 #include <QByteArray>
+#include <QFuture>
 #include <QWidget>
 
 #include <functional>
@@ -39,13 +40,14 @@ class TagEditorWidget : public QWidget {
     Q_PROPERTY(QByteArray fileInfoHtml READ fileInfoHtml)
     Q_PROPERTY(bool fileNameVisible READ isFileNameVisible WRITE setFileNameVisible)
     Q_PROPERTY(bool buttonsVisible READ areButtonsVisible WRITE setButtonVisible)
+    Q_PROPERTY(bool fileOperationOngoing READ isFileOperationOngoing)
 
 public:
     explicit TagEditorWidget(QWidget *parent = nullptr);
     ~TagEditorWidget();
 
 public:
-    bool fileOperationOngoing() const;
+    bool isFileOperationOngoing() const;
     const QString &currentPath() const;
     const QString &currentDir() const;
     TagParser::MediaFileInfo &fileInfo();
@@ -153,18 +155,18 @@ private:
     // status
     TagParser::Diagnostics m_diag;
     TagParser::Diagnostics m_diagReparsing;
+    QFuture<void> m_ongoingFileOperation;
     bool m_nextFileAfterSaving;
     bool m_makingResultsAvailable;
     bool m_abortClicked;
-    bool m_fileOperationOngoing;
 };
 
 /*!
  * \brief Returns the mutex which is internally used for thread-synchronization.
  */
-inline bool TagEditorWidget::fileOperationOngoing() const
+inline bool TagEditorWidget::isFileOperationOngoing() const
 {
-    return m_fileOperationOngoing;
+    return m_ongoingFileOperation.isRunning();
 }
 
 /*!

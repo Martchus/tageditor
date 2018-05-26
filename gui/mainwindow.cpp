@@ -21,6 +21,7 @@
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
 
+#include <QCoreApplication>
 #include <QFileDialog>
 #include <QFileSystemModel>
 #include <QMessageBox>
@@ -54,7 +55,7 @@ enum LoadingResult : char { ParsingSuccessful, FatalParsingError, IoError };
  */
 bool MainWindow::fileOperationOngoing() const
 {
-    return m_ui->tagEditorWidget->fileOperationOngoing();
+    return m_ui->tagEditorWidget->isFileOperationOngoing();
 }
 
 /*!
@@ -225,6 +226,13 @@ bool MainWindow::event(QEvent *event)
     auto &settings = Settings::values();
     switch (event->type()) {
     case QEvent::Close:
+        if (m_ui->tagEditorWidget->isFileOperationOngoing()) {
+            event->ignore();
+            static const auto warning(tr("Unable to close while the file operation is still ongoing."));
+            QMessageBox::warning(this, QCoreApplication::applicationName(), warning);
+            return true;
+        }
+
         // save settings
         settings.mainWindow.geometry = saveGeometry();
         settings.mainWindow.state = saveState();
