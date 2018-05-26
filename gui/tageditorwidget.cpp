@@ -1500,7 +1500,7 @@ void TagEditorWidget::removeTag(Tag *tag)
     }
 
     // remove TagEdit widgets
-    for (TagEdit *edit : toRemove) {
+    for (TagEdit *const edit : toRemove) {
         m_ui->tagSelectionComboBox->removeItem(m_ui->stackedWidget->indexOf(edit));
         m_ui->stackedWidget->removeWidget(edit);
         delete edit;

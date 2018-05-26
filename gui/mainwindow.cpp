@@ -260,7 +260,7 @@ void MainWindow::pathEntered()
             m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
             m_ui->pathLineEdit->setProperty("classNames", QStringList());
         } else {
-            m_ui->pathLineEdit->setProperty("classNames", QStringList() << QStringLiteral("input-invalid"));
+            m_ui->pathLineEdit->setProperty("classNames", QStringList({ QStringLiteral("input-invalid") }));
         }
         updateStyle(m_ui->pathLineEdit);
     }
@@ -489,7 +489,7 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
 void MainWindow::showNextFileNotFound()
 {
     static const QString errormsg(tr("Unable to show the next file because it can't be found anymore."));
-    QMessageBox::warning(this, QApplication::applicationName(), errormsg);
+    QMessageBox::warning(this, QCoreApplication::applicationName(), errormsg);
     m_ui->statusBar->showMessage(errormsg);
 }
 

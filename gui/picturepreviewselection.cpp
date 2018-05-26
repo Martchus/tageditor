@@ -89,7 +89,7 @@ void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandl
     assert(m_currentTypeIndex < m_values.size());
     TagValue &currentValue = m_values[m_currentTypeIndex];
     if ((previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty())
-            && (previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty())) {
+        && (previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty())) {
         currentValue = value; // TODO: move(value);
         emit pictureChanged();
     }
