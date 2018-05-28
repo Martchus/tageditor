@@ -41,6 +41,7 @@
 #include <QFileSystemModel>
 #include <QFileSystemWatcher>
 #include <QGuiApplication>
+#include <QHeaderView>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMessageBox>
