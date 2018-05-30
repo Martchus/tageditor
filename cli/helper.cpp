@@ -504,8 +504,8 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             continue;
         } else if (applyTargetConfiguration(scope.tagTarget, fieldDenotationString)) {
             continue;
-        } else if (!strncmp(fieldDenotationString, "track=", 6)) {
-            const vector<string> parts = splitString<vector<string>>(fieldDenotationString + 6, ",", EmptyPartsTreat::Omit);
+        } else if (!strncmp(fieldDenotationString, "track-id=", 9)) {
+            const vector<string> parts = splitString<vector<string>>(fieldDenotationString + 9, ",", EmptyPartsTreat::Omit);
             bool allTracks = false;
             vector<uint64> trackIds;
             trackIds.reserve(parts.size());
@@ -513,14 +513,13 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                 if (part == "all" || part == "any") {
                     allTracks = true;
                     break;
-                } else {
-                    try {
-                        trackIds.emplace_back(stringToNumber<uint64>(part));
-                    } catch (const ConversionException &) {
-                        cerr << Phrases::Error << "The value provided with the \"track\"-specifier is invalid." << Phrases::End
-                             << "note: It must be a comma-separated list of track IDs." << endl;
-                        exit(-1);
-                    }
+                }
+                try {
+                    trackIds.emplace_back(stringToNumber<uint64>(part));
+                } catch (const ConversionException &) {
+                    cerr << Phrases::Error << "The value provided with the \"track\"-specifier is invalid." << Phrases::End
+                         << "note: It must be a comma-separated list of track IDs." << endl;
+                    exit(-1);
                 }
             }
             scope.allTracks = allTracks;

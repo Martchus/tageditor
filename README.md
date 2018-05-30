@@ -201,7 +201,7 @@ Here are some Bash examples which illustrate getting and setting tag information
 
 * Removes the "forced" flag from all tracks, flags the track with the ID 2 as "default" and sets its language to "ger":  
   ```
-  tageditor set track=all forced=no track=2 default=yes language=ger
+  tageditor set track-id=all forced=no track-id=2 default=yes language=ger
   ```
 
     - So modifying track attributes is possible as well and it works like setting tag fields.

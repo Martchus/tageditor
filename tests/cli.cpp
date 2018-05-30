@@ -356,8 +356,8 @@ void CliTests::testId3SpecificOptions()
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 
     // convert remaining ID3v2 tag to version 2, add an ID3v1 tag again and set a field with unicode char by the way
-    const char *const args3[] = { "tageditor", "set", "album=Dóuble Nickels On The Dime", "--id3v1-usage", "always", "--id3v2-version", "2",
-        "--id3-init-on-create", "-f", mp3File1.data(), nullptr };
+    const char *const args3[] = { "tageditor", "set", "album=Dóuble Nickels On The Dime", "track=5/10", "--id3v1-usage", "always", "--id3v2-version",
+        "2", "--id3-init-on-create", "-f", mp3File1.data(), nullptr };
     CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
@@ -368,7 +368,7 @@ void CliTests::testId3SpecificOptions()
           "    Genre             Punk Rock\n"
           "    Year              1984\n"
           "    Comment           ExactAudioCopy v0.95b4\n"
-          "    Track             4\n",
+          "    Track             5\n",
             " - \e[1mID3v2 tag (version 2.2.0)\e[0m\n"
             "    Title             Cohesion\n"
             "    Album             Dóuble Nickels On The Dime\n"
@@ -376,7 +376,7 @@ void CliTests::testId3SpecificOptions()
             "    Genre             Punk Rock\n"
             "    Year              1984\n"
             "    Comment           ExactAudioCopy v0.95b4\n"
-            "    Track             4/43\n"
+            "    Track             5/10\n"
             "    Duration          00:00:00\n"
             "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)" }));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1.data()));
@@ -737,9 +737,9 @@ void CliTests::testSettingTrackMetaData()
     // test Matroska file
     const string mkvFile(workingCopyPath("matroska_wave1/test2.mkv"));
     const string mp4File(workingCopyPath("mtx-test-data/aac/he-aacv2-ps.m4a"));
-    const char *const args1[] = { "tageditor", "set", "title=title of tag", "track=1863976627", "name=video track", "track=3134325680",
-        "name=audio track", "language=ger", "default=yes", "forced=yes", "tag=any", "artist=setting tag value again", "track=any", "name1=sbr and ps",
-        "language1=eng", "-f", mkvFile.data(), mp4File.data(), nullptr };
+    const char *const args1[] = { "tageditor", "set", "title=title of tag", "track-id=1863976627", "name=video track", "track-id=3134325680",
+        "name=audio track", "language=ger", "default=yes", "forced=yes", "tag=any", "artist=setting tag value again", "track-id=any",
+        "name1=sbr and ps", "language1=eng", "-f", mkvFile.data(), mp4File.data(), nullptr };
     const char *const args2[] = { "tageditor", "info", "-f", mkvFile.data(), nullptr };
     const char *const args3[] = { "tageditor", "get", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);

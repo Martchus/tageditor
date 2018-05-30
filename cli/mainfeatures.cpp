@@ -76,7 +76,7 @@ namespace Cli {
 
 #define TAG_MODIFIER "tag=id3v1 tag=id3v2 tag=id3 tag=itunes tag=vorbis tag=matroska tag=all"
 
-#define TRACK_MODIFIER "track= track=all"
+#define TRACK_MODIFIER "track-id= track=all"
 
 #define TARGET_MODIFIER                                                                                                                              \
     "target-level target-levelname target-tracks target-tracks\n"                                                                                    \
