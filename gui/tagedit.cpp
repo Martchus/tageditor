@@ -22,7 +22,7 @@ namespace QtGui {
 
 /*!
  * \class QtGui::TagEdit
- * \brief The TagEdit widget allows the user to edit Media::Tag objects.
+ * \brief The TagEdit widget allows the user to edit TagParser::Tag objects.
  */
 
 /*!

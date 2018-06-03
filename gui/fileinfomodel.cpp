@@ -170,10 +170,10 @@ template <class ElementType, bool isAdditional = false> void addElementNode(cons
 
 /*!
  * \class FileInfoModel
- * \brief The FileInfoModel displays overall information from a Media::MediaFileInfo instance.
+ * \brief The FileInfoModel displays overall information from a TagParser::MediaFileInfo instance.
  *
- * The model assumes that the specified Media::MediaFileInfo instance has been parsed already.
- * The model is not updated automatically when the state of the Media::MediaFileInfo changes.
+ * The model assumes that the specified TagParser::MediaFileInfo instance has been parsed already.
+ * The model is not updated automatically when the state of the TagParser::MediaFileInfo changes.
  * To update the model, just call setFileInfo() again.
  */
 
@@ -207,7 +207,7 @@ QVariant FileInfoModel::headerData(int section, Qt::Orientation orientation, int
 }
 
 /*!
- * \brief Returns the currently assigned Media::MediaFileInfo.
+ * \brief Returns the currently assigned TagParser::MediaFileInfo.
  */
 const MediaFileInfo *FileInfoModel::fileInfo() const
 {
@@ -215,7 +215,7 @@ const MediaFileInfo *FileInfoModel::fileInfo() const
 }
 
 /*!
- * \brief Assigns a Media::MediaFileInfo.
+ * \brief Assigns a TagParser::MediaFileInfo.
  * \remarks Causes updating the internal cache and resets the model.
  */
 void FileInfoModel::setFileInfo(MediaFileInfo &fileInfo, Diagnostics &diag, Diagnostics *diagReparsing)

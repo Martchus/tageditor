@@ -34,7 +34,7 @@ namespace Cli {
 namespace Json {
 
 /*!
- * \brief Converts the specified Media::TagValue to an object suitable for JSON serialization.
+ * \brief Converts the specified TagParser::TagValue to an object suitable for JSON serialization.
  */
 TagValue::TagValue(const TagParser::TagValue &tagValue, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : mimeType(tagValue.mimeType())
@@ -96,8 +96,8 @@ TagValue::TagValue(const TagParser::TagValue &tagValue, RAPIDJSON_NAMESPACE::Doc
 }
 
 /*!
- * \brief Copies a Media::TagTarget for serialization.
- * \remarks Due to the lack of getter/setter support in Reflective RapidJSON we can't use Media::TagTarget directly.
+ * \brief Copies a TagParser::TagTarget for serialization.
+ * \remarks Due to the lack of getter/setter support in Reflective RapidJSON we can't use TagParser::TagTarget directly.
  */
 TargetInfo::TargetInfo(const TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : level(tagTarget.level())
@@ -111,7 +111,7 @@ TargetInfo::TargetInfo(const TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document
 }
 
 /*!
- * \brief Copies relevant information from Media::Tag for serialization (especially the fields).
+ * \brief Copies relevant information from TagParser::Tag for serialization (especially the fields).
  */
 TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
     : format(tag.typeName())
@@ -132,7 +132,7 @@ TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &a
 }
 
 /*!
- * \brief Copies relevant information from Media::MediaFileInfo for serialization.
+ * \brief Copies relevant information from TagParser::MediaFileInfo for serialization.
  * \remarks The \a mediaFileInfo must have been parsed before.
  */
 FileInfo::FileInfo(const TagParser::MediaFileInfo &mediaFileInfo, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator)
