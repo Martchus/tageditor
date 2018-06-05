@@ -21,6 +21,7 @@
 #include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMenu>
+#include <QStyle>
 #include <QTextBrowser>
 
 #include <functional>

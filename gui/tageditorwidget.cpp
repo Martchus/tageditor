@@ -47,6 +47,7 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QPlainTextEdit>
+#include <QStyle>
 #include <QTemporaryFile>
 #include <QTreeView>
 #include <QtConcurrent>

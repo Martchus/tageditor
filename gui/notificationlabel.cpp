@@ -9,6 +9,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QStringBuilder>
+#include <QStyle>
 #include <QStyleOption>
 
 #include <cmath>

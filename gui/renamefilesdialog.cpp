@@ -19,6 +19,7 @@
 #include <QItemSelectionModel>
 #include <QMenu>
 #include <QMessageBox>
+#include <QStyle>
 #include <QTextStream>
 
 using namespace Dialogs;
