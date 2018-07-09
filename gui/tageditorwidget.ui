@@ -28,7 +28,7 @@
    <item>
     <widget class="NotificationLabel" name="parsingNotificationWidget" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
@@ -200,7 +200,7 @@ currently shown tag.</string>
      <item>
       <widget class="NotificationLabel" name="makingNotificationWidget" native="true">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+        <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
