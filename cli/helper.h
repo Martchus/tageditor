@@ -36,12 +36,12 @@ namespace Cli {
 
 enum class DenotationType { Normal, Increment, File };
 
-inline TagType operator|(TagType lhs, TagType rhs)
+constexpr TagType operator|(TagType lhs, TagType rhs)
 {
     return static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
 }
 
-inline TagType operator&(TagType lhs, TagType rhs)
+constexpr TagType operator&(TagType lhs, TagType rhs)
 {
     return static_cast<TagType>(static_cast<unsigned int>(lhs) & static_cast<unsigned int>(rhs));
 }

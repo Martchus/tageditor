@@ -16,7 +16,7 @@ enum class AttachmentAction { Add, Update, Remove };
 
 class AttachmentInfo {
 public:
-    AttachmentInfo();
+    constexpr AttachmentInfo();
     void parseDenotation(const char *denotation);
     void apply(TagParser::AbstractContainer *container, TagParser::Diagnostics &diag);
     void apply(TagParser::AbstractAttachment *attachment, TagParser::Diagnostics &diag);
@@ -32,7 +32,7 @@ public:
     const char *desc;
 };
 
-inline AttachmentInfo::AttachmentInfo()
+constexpr AttachmentInfo::AttachmentInfo()
     : action(AttachmentAction::Add)
     , id(0)
     , hasId(false)
