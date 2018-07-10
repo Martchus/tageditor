@@ -482,7 +482,7 @@ void setTagInfo(const SetTagInfoArgs &args)
 
     // set backup path
     if (args.backupDirArg.isPresent()) {
-        BackupHelper::backupDirectory() = args.backupDirArg.values().front();
+        fileInfo.setBackupDirectory(args.backupDirArg.values().front());
     }
 
     // iterate through all specified files

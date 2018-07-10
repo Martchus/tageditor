@@ -81,7 +81,7 @@ void restore()
     v.editor.autoCompletition.formatNames = settings.value(QStringLiteral("formatnames"), false).toBool();
     v.editor.autoCompletition.fixUmlauts = settings.value(QStringLiteral("fixumlauts"), false).toBool();
     settings.endGroup();
-    BackupHelper::backupDirectory() = settings.value(QStringLiteral("tempdir")).toString().toStdString();
+    v.editor.backupDirectory = settings.value(QStringLiteral("tempdir")).toString().toStdString();
     v.editor.hideCoverButtons = settings.value(QStringLiteral("hidecoverbtn"), false).toBool();
     settings.endGroup();
 
@@ -223,7 +223,7 @@ void save()
     settings.setValue(QStringLiteral("formatnames"), v.editor.autoCompletition.formatNames);
     settings.setValue(QStringLiteral("fixumlauts"), v.editor.autoCompletition.fixUmlauts);
     settings.endGroup();
-    settings.setValue(QStringLiteral("tempdir"), QString::fromStdString(BackupHelper::backupDirectory()));
+    settings.setValue(QStringLiteral("tempdir"), QString::fromStdString(v.editor.backupDirectory));
     settings.setValue(QStringLiteral("hidecoverbtn"), v.editor.hideCoverButtons);
     settings.endGroup();
 

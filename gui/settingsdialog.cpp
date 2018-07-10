@@ -142,7 +142,7 @@ EditorTempOptionPage::~EditorTempOptionPage()
 bool EditorTempOptionPage::apply()
 {
     if (hasBeenShown()) {
-        BackupHelper::backupDirectory() = ui()->directoryWidget->lineEdit()->text().toStdString();
+        values().editor.backupDirectory = ui()->directoryWidget->lineEdit()->text().toStdString();
     }
     return true;
 }
@@ -150,7 +150,7 @@ bool EditorTempOptionPage::apply()
 void EditorTempOptionPage::reset()
 {
     if (hasBeenShown()) {
-        ui()->directoryWidget->lineEdit()->setText(QString::fromStdString(BackupHelper::backupDirectory()));
+        ui()->directoryWidget->lineEdit()->setText(QString::fromStdString(values().editor.backupDirectory));
     }
 }
 

@@ -35,6 +35,7 @@ struct AutoCompletition {
 
 struct Editor {
     Editor();
+    std::string backupDirectory;
     AdoptFields adoptFields = AdoptFields::Never;
     bool saveAndShowNextOnEnter = false;
     bool askBeforeDeleting = true;
