@@ -46,7 +46,7 @@ constexpr TagType operator&(TagType lhs, TagType rhs)
     return static_cast<TagType>(static_cast<unsigned int>(lhs) & static_cast<unsigned int>(rhs));
 }
 
-inline TagType &operator|=(TagType &lhs, TagType rhs)
+constexpr TagType &operator|=(TagType &lhs, TagType rhs)
 {
     return lhs = static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
 }
@@ -67,8 +67,8 @@ public:
     bool setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &values) const;
 
 private:
-    typedef std::function<std::vector<const TagValue *>(const Tag *, TagType)> GetValuesForNativeFieldType;
-    typedef std::function<bool(Tag *, TagType, const std::vector<TagValue> &)> SetValuesForNativeFieldType;
+    using GetValuesForNativeFieldType = std::function<std::vector<const TagValue *>(const Tag *, TagType)>;
+    using SetValuesForNativeFieldType = std::function<bool(Tag *, TagType, const std::vector<TagValue> &)>;
     FieldId(const char *nativeField, std::size_t nativeFieldSize, const GetValuesForNativeFieldType &valuesForNativeField,
         const SetValuesForNativeFieldType &setValuesForNativeField);
     template <class ConcreteTag> static FieldId fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize);
@@ -239,7 +239,7 @@ struct FieldValues {
     std::vector<FieldValue> allValues;
     std::vector<FieldValue *> relevantValues;
 };
-typedef std::unordered_map<FieldScope, FieldValues> FieldDenotations;
+using FieldDenotations = std::unordered_map<FieldScope, FieldValues>;
 
 // declare/define actual helpers
 
