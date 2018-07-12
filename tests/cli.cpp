@@ -575,16 +575,33 @@ void CliTests::testMultipleValuesPerField()
 {
     cout << "\nMultiple values per field" << endl;
     string stdout, stderr;
-    const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
-    const string mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
-    const char *const args1[]
-        = { "tageditor", "set", "artist=test1", "+artist=test2", "+artist=test3", "artist=test4", "-f", mkvFile1.data(), mkvFile2.data(), nullptr };
+    const auto mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
+    const auto mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
+    const auto mp3File(workingCopyPath("misc/multiple_id3v2_4_values.mp3"));
+
+    const char *const args0[] = { "tageditor", "get", "-f", mp3File.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC(args0);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout,
+        {
+            "Artist            B-Front",
+            "Artist            Second Artist Example",
+            "Genre             Hardstyle",
+            "Genre             Test",
+            "Genre             Example",
+            "Genre             Hard Dance",
+        }));
+
+    const char *const args1[] = { "tageditor", "set", "artist=test1", "+artist=test2", "+artist=test3", "artist=test4", "artist=the only one",
+        "genre2=foo", "+genre=bar", "-f", mkvFile1.data(), mkvFile2.data(), mp3File.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
 
     const char *const args2[] = { "tageditor", "get", "-f", mkvFile1.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Artist            test1", "Artist            test2", "Artist            test3" }));
     CPPUNIT_ASSERT(stdout.find("Artist            test4") == string::npos); // should be in mkvFile2
+    CPPUNIT_ASSERT(stdout.find("Artist            the only one") == string::npos); // should be in mp3File
+    CPPUNIT_ASSERT(stdout.find("Genre             foo") == string::npos); // should be in mp3File
+    CPPUNIT_ASSERT(stdout.find("Genre             bar") == string::npos); // should be in mp3File
 
     const char *const args3[] = { "tageditor", "get", "-f", mkvFile2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args3);
@@ -592,11 +609,28 @@ void CliTests::testMultipleValuesPerField()
     CPPUNIT_ASSERT(stdout.find("Artist            test2") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Artist            test3") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Artist            test4") != string::npos);
+    CPPUNIT_ASSERT(stdout.find("Artist            the only one") == string::npos); // should be in mp3File
+    CPPUNIT_ASSERT(stdout.find("Genre             foo") == string::npos); // should be in mp3File
+    CPPUNIT_ASSERT(stdout.find("Genre             bar") == string::npos); // should be in mp3File
+
+    TESTUTILS_ASSERT_EXEC(args0);
+    CPPUNIT_ASSERT(stdout.find("Artist            test1") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Artist            test2") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Artist            test3") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Artist            test4") == string::npos);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout,
+        {
+            "Artist            the only one",
+            "Genre             foo",
+            "Genre             bar",
+        }));
 
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile2.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile1 + ".bak").data()));
     CPPUNIT_ASSERT_EQUAL(0, remove((mkvFile2 + ".bak").data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove((mp3File + ".bak").data()));
 }
 
 /*!
