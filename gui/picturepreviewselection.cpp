@@ -151,68 +151,66 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
         previousValueHandling = PreviousValueHandling::Update;
     }
     m_currentTypeIndex = 0;
-    if (m_tag) {
-        if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
-            m_ui->switchTypeComboBox->setHidden(false);
-            m_ui->switchTypeLabel->setHidden(false);
-            if (!m_ui->switchTypeComboBox->count()) {
-                m_ui->switchTypeComboBox->addItems(QStringList()
-                    << tr("Other") << tr("32x32 File icon") << tr("Other file icon") << tr("Cover (front)") << tr("Cover (back)")
-                    << tr("Leaflet page") << tr("Media (e. g. label side of CD)") << tr("Lead artist/performer/soloist") << tr("Artist/performer")
-                    << tr("Conductor") << tr("Band/Orchestra") << tr("Composer") << tr("Lyricist/text writer") << tr("Recording Location")
-                    << tr("During recording") << tr("During performance") << tr("Movie/video screen capture") << tr("A bright coloured fish")
-                    << tr("Illustration") << tr("Band/artist logotype") << tr("Publisher/Studio logotype"));
-            }
-            int first;
-            switch (m_tag->type()) {
-            case TagType::Id3v2Tag:
-                first = fetchId3v2CoverValues(
-                    static_cast<Id3v2Tag *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
-                break;
-            case TagType::VorbisComment:
-            case TagType::OggVorbisComment:
-                first = fetchId3v2CoverValues(
-                    static_cast<VorbisComment *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
-                break;
-            default:
-                first = 0;
-            }
-            if (first >= 0) {
-                m_ui->switchTypeComboBox->setCurrentIndex(first);
-            }
-            m_currentTypeIndex = m_ui->switchTypeComboBox->currentIndex();
-            connect(m_ui->switchTypeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
-                &PicturePreviewSelection::typeSwitched);
-        } else {
-            m_ui->switchTypeComboBox->setHidden(true);
-            m_ui->switchTypeLabel->setHidden(true);
-            m_currentTypeIndex = 0;
-            const TagValue &value = m_tag->value(m_field);
-            if (previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
-                if (m_values.size()) {
-                    if (previousValueHandling != PreviousValueHandling::Keep || m_values[0].isEmpty()) {
-                        m_values[0] = value;
-                    }
-                } else {
-                    m_values << value;
-                }
-            }
+    if (!m_tag) {
+        setEnabled(false);
+        return;
+    }
+    if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
+        m_ui->switchTypeComboBox->setHidden(false);
+        m_ui->switchTypeLabel->setHidden(false);
+        if (!m_ui->switchTypeComboBox->count()) {
+            m_ui->switchTypeComboBox->addItems(QStringList({ tr("Other"), tr("32x32 File icon"), tr("Other file icon"), tr("Cover (front)"),
+                tr("Cover (back)"), tr("Leaflet page"), tr("Media (e. g. label side of CD)"), tr("Lead artist/performer/soloist"),
+                tr("Artist/performer"), tr("Conductor"), tr("Band/Orchestra"), tr("Composer"), tr("Lyricist/text writer"), tr("Recording Location"),
+                tr("During recording"), tr("During performance"), tr("Movie/video screen capture"), tr("A bright coloured fish"), tr("Illustration"),
+                tr("Band/artist logotype"), tr("Publisher/Studio logotype") }));
+        }
+        int first;
+        switch (m_tag->type()) {
+        case TagType::Id3v2Tag:
+            first
+                = fetchId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
+            break;
+        case TagType::VorbisComment:
+        case TagType::OggVorbisComment:
+            first = fetchId3v2CoverValues(
+                static_cast<VorbisComment *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
+            break;
+        default:
+            first = 0;
+        }
+        if (first >= 0) {
+            m_ui->switchTypeComboBox->setCurrentIndex(first);
+        }
+        m_currentTypeIndex = m_ui->switchTypeComboBox->currentIndex();
+        connect(m_ui->switchTypeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
+            &PicturePreviewSelection::typeSwitched);
+    } else {
+        m_ui->switchTypeComboBox->setHidden(true);
+        m_ui->switchTypeLabel->setHidden(true);
+        m_currentTypeIndex = 0;
+        const TagValue &value = m_tag->value(m_field);
+        if (previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty()) {
             if (m_values.size()) {
-                m_values.erase(m_values.begin() + 1, m_values.end());
+                if (previousValueHandling != PreviousValueHandling::Keep || m_values[0].isEmpty()) {
+                    m_values[0] = value;
+                }
             } else {
-                m_values << TagValue();
+                m_values << value;
             }
         }
-        bool hideDesc = !m_tag->supportsDescription(m_field);
-        m_ui->descriptionLineEdit->setHidden(hideDesc);
-        m_ui->descriptionLabel->setHidden(hideDesc);
-        updatePreview(m_currentTypeIndex);
-        updateDescription(m_currentTypeIndex);
-        setEnabled(true);
-    } else {
-        m_currentTypeIndex = 0;
-        setEnabled(false);
+        if (m_values.size()) {
+            m_values.erase(m_values.begin() + 1, m_values.end());
+        } else {
+            m_values << TagValue();
+        }
     }
+    const auto hideDesc = !m_tag->supportsDescription(m_field);
+    m_ui->descriptionLineEdit->setHidden(hideDesc);
+    m_ui->descriptionLabel->setHidden(hideDesc);
+    updatePreview(m_currentTypeIndex);
+    updateDescription(m_currentTypeIndex);
+    setEnabled(true);
 }
 
 /*!
