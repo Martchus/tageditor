@@ -155,7 +155,7 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
     default:;
     }
     // setup description line edit
-    if (m_descriptionLineEdit && includeDescription) {
+    if (m_descriptionLineEdit && m_descriptionLineEdit->isEnabled() && includeDescription) {
         value.setDescription(Utility::qstringToString(m_descriptionLineEdit->text(), encoding), encoding);
     }
     return value;
@@ -608,15 +608,25 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             }
         }
     }
-    if (m_descriptionLineEdit && (previousValueHandling != PreviousValueHandling::Keep || m_descriptionLineEdit->isCleared())) {
-        try {
-            QString desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
-            applyAutoCorrection(desc);
-            m_descriptionLineEdit->setText(desc);
-        } catch (const ConversionException &) {
-            conversionError = true;
-            m_descriptionLineEdit->clear();
+    const auto shouldHaveDescriptionLineEdit = m_dataType != TagDataType::Picture && hasDescription();
+    if (shouldHaveDescriptionLineEdit) {
+        if (!m_descriptionLineEdit) {
+            setupDescriptionLineEdit();
         }
+        m_descriptionLineEdit->setEnabled(true);
+        if (previousValueHandling != PreviousValueHandling::Keep || m_descriptionLineEdit->isCleared()) {
+            try {
+                QString desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
+                applyAutoCorrection(desc);
+                m_descriptionLineEdit->setText(desc);
+            } catch (const ConversionException &) {
+                conversionError = true;
+                m_descriptionLineEdit->clear();
+            }
+        }
+    } else if (m_descriptionLineEdit) {
+        m_descriptionLineEdit->setEnabled(false);
+        m_descriptionLineEdit->clear();
     }
     if (updateRestoreButton && m_restoreButton) {
         m_restoreButton->setVisible((!updated && m_restoreButton->isVisible()) || m_tags->size() > 1);
