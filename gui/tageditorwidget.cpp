@@ -1121,15 +1121,17 @@ bool TagEditorWidget::startSaving()
     // remove current path from file watcher
     m_fileWatcher->removePath(m_currentPath);
     // use current configuration
-    const auto &settings = Settings::values().tagPocessing.fileLayout;
-    m_fileInfo.setForceRewrite(settings.forceRewrite);
-    m_fileInfo.setTagPosition(settings.preferredTagPosition);
-    m_fileInfo.setForceTagPosition(settings.forceTagPosition);
-    m_fileInfo.setIndexPosition(settings.preferredIndexPosition);
-    m_fileInfo.setForceIndexPosition(settings.forceIndexPosition);
-    m_fileInfo.setMinPadding(settings.minPadding);
-    m_fileInfo.setMaxPadding(settings.maxPadding);
-    m_fileInfo.setPreferredPadding(settings.preferredPadding);
+    const auto &settings = Settings::values();
+    const auto &fileLayoutSettings = settings.tagPocessing.fileLayout;
+    m_fileInfo.setForceRewrite(fileLayoutSettings.forceRewrite);
+    m_fileInfo.setTagPosition(fileLayoutSettings.preferredTagPosition);
+    m_fileInfo.setForceTagPosition(fileLayoutSettings.forceTagPosition);
+    m_fileInfo.setIndexPosition(fileLayoutSettings.preferredIndexPosition);
+    m_fileInfo.setForceIndexPosition(fileLayoutSettings.forceIndexPosition);
+    m_fileInfo.setMinPadding(fileLayoutSettings.minPadding);
+    m_fileInfo.setMaxPadding(fileLayoutSettings.maxPadding);
+    m_fileInfo.setPreferredPadding(fileLayoutSettings.preferredPadding);
+    m_fileInfo.setBackupDirectory(settings.editor.backupDirectory);
     const auto startThread = [this] {
         // define functions to show the saving progress and to actually applying the changes
         const auto showPercentage([this](const AbortableProgressFeedback &progress) {
