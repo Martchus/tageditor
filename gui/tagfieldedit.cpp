@@ -498,6 +498,7 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
     while (i.hasPrevious()) {
         Tag *tag = i.previous();
         const TagValue &value = tag->value(m_field);
+        // FIXME: use tag->values(m_field) and handle all values
         if (!value.isEmpty()) {
             updateValue(value, previousValueHandling);
             if (m_pictureSelection) {
@@ -507,7 +508,7 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
             return;
         }
     }
-    updateValue(TagValue::empty(), previousValueHandling);
+    updateValue(TagValue(), previousValueHandling);
     if (m_pictureSelection && !pictureSelectionUpdated) {
         if (m_tags->size()) {
             m_pictureSelection->setTagField(m_tags->last(), m_field, previousValueHandling);
@@ -543,14 +544,19 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     bool conversionError = false;
     bool updated = false;
     concretizePreviousValueHandling(previousValueHandling);
+
+    // setup widget for editing value
     if (m_lineEdit || m_comboBox || m_plainTextEdit) {
-        QString text;
-        try {
-            text = Utility::tagValueToQString(value);
-        } catch (const ConversionException &) {
-            conversionError = true;
-        }
-        applyAutoCorrection(text);
+        const auto text([&] {
+            try {
+                auto text(Utility::tagValueToQString(value));
+                applyAutoCorrection(text);
+                return text;
+            } catch (const ConversionException &) {
+                conversionError = true;
+                return QString();
+            }
+        }());
         if (previousValueHandling == PreviousValueHandling::Clear || !text.isEmpty()) {
             if (m_lineEdit && (previousValueHandling != PreviousValueHandling::Keep || m_lineEdit->isCleared())) {
                 m_lineEdit->setText(text);
@@ -568,12 +574,14 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     }
     if (m_spinBoxes.first) {
         if (m_spinBoxes.second) {
-            PositionInSet pos;
-            try {
-                pos = value.toPositionInSet();
-            } catch (const ConversionException &) {
-                conversionError = true;
-            }
+            const auto pos([&] {
+                try {
+                    return value.toPositionInSet();
+                } catch (const ConversionException &) {
+                    conversionError = true;
+                    return PositionInSet();
+                }
+            }());
             if (previousValueHandling == PreviousValueHandling::Clear || pos.position()) {
                 if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
                     m_spinBoxes.first->setValue(pos.position());
@@ -590,13 +598,14 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
                 }
             }
         } else {
-            int num;
-            try {
-                num = value.toInteger();
-            } catch (const ConversionException &) {
-                conversionError = true;
-                num = 0;
-            }
+            const auto num([&] {
+                try {
+                    return value.toInteger();
+                } catch (const ConversionException &) {
+                    conversionError = true;
+                    return 0;
+                }
+            }());
             if (previousValueHandling == PreviousValueHandling::Clear || num) {
                 if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
                     m_spinBoxes.first->setValue(num);
@@ -608,6 +617,8 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             }
         }
     }
+
+    // setup description line edit
     const auto shouldHaveDescriptionLineEdit = m_dataType != TagDataType::Picture && hasDescription();
     if (shouldHaveDescriptionLineEdit) {
         if (!m_descriptionLineEdit) {
@@ -616,7 +627,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         m_descriptionLineEdit->setEnabled(true);
         if (previousValueHandling != PreviousValueHandling::Keep || m_descriptionLineEdit->isCleared()) {
             try {
-                QString desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
+                auto desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
                 applyAutoCorrection(desc);
                 m_descriptionLineEdit->setText(desc);
             } catch (const ConversionException &) {
@@ -631,10 +642,20 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     if (updateRestoreButton && m_restoreButton) {
         m_restoreButton->setVisible((!updated && m_restoreButton->isVisible()) || m_tags->size() > 1);
     }
-    const initializer_list<ButtonOverlay *> widgets = { m_lineEdit, m_comboBox, m_spinBoxes.first, m_spinBoxes.second };
+
+    // setup info button
+    const auto widgets = initializer_list<ButtonOverlay *>{ m_lineEdit, m_comboBox, m_spinBoxes.first, m_spinBoxes.second };
     const auto canApplyField = canApply(m_field);
-    if (conversionError || !canApplyField) {
-        const QPixmap pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")).pixmap(16));
+    if (!conversionError && canApplyField) {
+        for (auto *const overlay : widgets) {
+            if (overlay) {
+                overlay->disableInfoButton();
+            }
+        }
+        return;
+    }
+    const auto pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")).pixmap(16));
+    const auto text([&] {
         QString text;
         if (conversionError) {
             text = tr("The value of this field could not be read from the file because it couldn't be converted properly.");
@@ -645,16 +666,11 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         if (!canApplyField) {
             text += tr("The field can not be applied when saving the file and will be lost.");
         }
-        for (ButtonOverlay *overlay : widgets) {
-            if (overlay) {
-                overlay->enableInfoButton(pixmap, text);
-            }
-        }
-    } else {
-        for (ButtonOverlay *overlay : widgets) {
-            if (overlay) {
-                overlay->disableInfoButton();
-            }
+        return text;
+    }());
+    for (auto *const overlay : widgets) {
+        if (overlay) {
+            overlay->enableInfoButton(pixmap, text);
         }
     }
 }
@@ -790,6 +806,7 @@ void TagFieldEdit::apply()
             if (!tag->canEncodingBeUsed(encoding)) {
                 encoding = tag->proposedTextEncoding();
             }
+            // FIXME: use tag->setValues(...) and to set multiple values
             tag->setValue(m_field, value(encoding, tag->supportsDescription(m_field)));
         }
     }
