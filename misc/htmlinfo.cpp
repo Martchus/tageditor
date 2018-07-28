@@ -618,9 +618,7 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Display size"), qstr(track->displaySize().toString()));
         }
         if (track->pixelAspectRatio().isValid()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Pixel Aspect Ratio"),
-                QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ")
-                    % QString::number(track->pixelAspectRatio().denominator));
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Pixel Aspect Ratio"), qstr(track->pixelAspectRatio().toString()));
         }
         if (!track->cropping().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Cropping"), qstr(track->cropping().toString()));

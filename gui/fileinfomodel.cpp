@@ -406,9 +406,7 @@ void FileInfoModel::updateCache()
                     trackHelper.appendRow(tr("Pixel size"), track->pixelSize());
                     trackHelper.appendRow(tr("Display size"), track->displaySize());
                     if (track->pixelAspectRatio().isValid()) {
-                        trackHelper.appendRow(tr("Pixel Aspect Ratio"),
-                            QString::number(track->pixelAspectRatio().numerator) % QStringLiteral(" : ")
-                                % QString::number(track->pixelAspectRatio().denominator));
+                        trackHelper.appendRow(tr("Pixel Aspect Ratio"), track->pixelAspectRatio().toString());
                     }
                     trackHelper.appendRow(tr("Cropping"), track->cropping());
                     trackHelper.appendRow(tr("Resolution"), track->resolution());
