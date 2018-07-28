@@ -210,6 +210,15 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     }
                     printProperty("Duration", track->duration());
                     printProperty("FPS", track->fps());
+                    if (!track->pixelSize().isNull()) {
+                        printProperty("Pixel size", track->pixelSize().toString());
+                    }
+                    if (!track->displaySize().isNull()) {
+                        printProperty("Display size", track->displaySize().toString());
+                    }
+                    if (track->pixelAspectRatio().isValid()) {
+                        printProperty("Pixel Aspect Ratio", track->pixelAspectRatio().toString());
+                    }
                     if (track->channelConfigString()) {
                         printProperty("Channel config", track->channelConfigString());
                     } else {
