@@ -492,29 +492,27 @@ QLabel *TagFieldEdit::setupTypeNotSupportedLabel()
  */
 void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
 {
-    QListIterator<Tag *> i(tags());
-    i.toBack();
-    bool pictureSelectionUpdated = false;
-    while (i.hasPrevious()) {
-        Tag *tag = i.previous();
-        const TagValue &value = tag->value(m_field);
+    // use the values from the last tag which has the specified field
+    for (auto i = tags().crbegin(), end = tags().crend(); i != end; ++i) {
         // FIXME: use tag->values(m_field) and handle all values
-        if (!value.isEmpty()) {
-            updateValue(value, previousValueHandling);
-            if (m_pictureSelection) {
-                m_pictureSelection->setTagField(tag, m_field, previousValueHandling);
-                pictureSelectionUpdated = true;
-            }
-            return;
+        auto *const tag = *i;
+        const TagValue &value = tag->value(m_field);
+        if (value.isEmpty()) {
+            continue;
         }
+
+        updateValue(value, previousValueHandling);
+        if (m_pictureSelection) {
+            m_pictureSelection->setTagField(tag, m_field, previousValueHandling);
+        }
+        return;
     }
+
+    // set an empty value
     updateValue(TagValue(), previousValueHandling);
-    if (m_pictureSelection && !pictureSelectionUpdated) {
-        if (m_tags->size()) {
-            m_pictureSelection->setTagField(m_tags->last(), m_field, previousValueHandling);
-        } else {
-            m_pictureSelection->setTagField(nullptr, m_field, previousValueHandling);
-        }
+    if (m_pictureSelection) {
+        // pass the last tag if present so the picture selection can operate on that tag instance and won't be disabled
+        m_pictureSelection->setTagField(m_tags->isEmpty() ? nullptr : m_tags->back(), m_field, previousValueHandling);
     }
 }
 

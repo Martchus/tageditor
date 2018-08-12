@@ -182,6 +182,9 @@ template <class ElementType, bool isAdditional = false> void addElementNode(cons
  */
 FileInfoModel::FileInfoModel(QObject *parent)
     : QStandardItemModel(parent)
+    , m_file(nullptr)
+    , m_diag(nullptr)
+    , m_diagReparsing(nullptr)
 {
 }
 
@@ -263,7 +266,7 @@ void FileInfoModel::updateCache()
         Diagnostics &diag = m_diagReparsing ? *m_diagReparsing : *m_diag;
 
         // get container
-        AbstractContainer *container = m_file->container();
+        auto *const container = m_file->container();
 
         // get root item from model
         QStandardItem *rootItem = invisibleRootItem();
