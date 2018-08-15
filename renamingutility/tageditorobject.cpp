@@ -176,6 +176,8 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     fileInfoObject.setProperty(QStringLiteral("mimeType"), QString::fromUtf8(fileInfo.mimeType()) TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("suitableSuffix"), QString::fromUtf8(fileInfo.containerFormatAbbreviation()) TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("technicalSummary"), QString::fromUtf8(fileInfo.technicalSummary().data()) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("hasAudioTracks"), fileInfo.hasTracksOfType(MediaType::Audio) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("hasVideoTracks"), fileInfo.hasTracksOfType(MediaType::Video) TAGEDITOR_JS_READONLY);
 
     // gather tag information
     const vector<Tag *> tags = fileInfo.tags();
