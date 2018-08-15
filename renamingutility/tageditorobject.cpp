@@ -228,30 +228,29 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileName(const QString &fileName)
 TAGEDITOR_JS_VALUE TagEditorObject::allFiles(const QString &dirName)
 {
     const QDir dir(dirName);
-    if (dir.exists()) {
-        const auto files(dir.entryList(QDir::Files));
-        auto entriesObj = m_engine->newArray(static_cast<uint>(files.size()));
-        quint32 counter = 0;
-        for (const auto &file : files) {
-            entriesObj.setProperty(counter, file TAGEDITOR_JS_READONLY);
-            ++counter;
-        }
-        return entriesObj;
-    } else {
+    if (!dir.exists()) {
         return TAGEDITOR_JS_VALUE();
     }
+    const auto files(dir.entryList(QDir::Files));
+    auto entriesObj = m_engine->newArray(static_cast<uint>(files.size()));
+    quint32 counter = 0;
+    for (const auto &file : files) {
+        entriesObj.setProperty(counter++, file TAGEDITOR_JS_READONLY);
+    }
+    return entriesObj;
 }
 
 TAGEDITOR_JS_VALUE TagEditorObject::firstFile(const QString &dirName)
 {
     const QDir dir(dirName);
-    if (dir.exists()) {
-        const auto files(dir.entryList(QDir::Files));
-        if (!files.empty()) {
-            return TAGEDITOR_JS_VALUE(files.first());
-        }
+    if (!dir.exists()) {
+        return TAGEDITOR_JS_VALUE();
     }
-    return TAGEDITOR_JS_VALUE();
+    const auto files(dir.entryList(QDir::Files));
+    if (files.empty()) {
+        return TAGEDITOR_JS_VALUE();
+    }
+    return TAGEDITOR_JS_VALUE(files.first());
 }
 
 void TagEditorObject::writeLog(const QString &message)

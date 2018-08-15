@@ -15,23 +15,28 @@ FilteredFileSystemItemModel::FilteredFileSystemItemModel(ItemStatus statusFilter
 
 bool FilteredFileSystemItemModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    QModelIndex sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
-    if (sourceIndex.isValid()) {
-        if (FileSystemItem *item = reinterpret_cast<FileSystemItem *>(sourceIndex.internalPointer())) {
-            if (item->status() == m_statusFilter) {
-                return true;
-            } else if (item->status() == ItemStatus::Current && !item->counterpart() && !item->note().isEmpty()) {
-                return true;
-            } else if (item->type() == ItemType::Dir) {
-                QModelIndex child = sourceIndex.child(0, 0);
-                while (child.isValid()) {
-                    if (filterAcceptsRow(child.row(), sourceIndex)) {
-                        return true;
-                    }
-                    child = sourceIndex.child(child.row() + 1, 0);
-                }
-            }
+    const auto sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
+    if (!sourceIndex.isValid()) {
+        return false;
+    }
+    const auto *const item = reinterpret_cast<FileSystemItem *>(sourceIndex.internalPointer());
+    if (!item) {
+        return false;
+    }
+
+    if (item->status() == m_statusFilter || (item->status() == ItemStatus::Current && !item->counterpart() && !item->note().isEmpty())) {
+        return true;
+    }
+    if (item->type() != ItemType::Dir) {
+        return false;
+    }
+
+    auto child = sourceIndex.child(0, 0);
+    while (child.isValid()) {
+        if (filterAcceptsRow(child.row(), sourceIndex)) {
+            return true;
         }
+        child = sourceIndex.child(child.row() + 1, 0);
     }
     return false;
 }
@@ -43,9 +48,8 @@ bool FilteredFileSystemItemModel::filterAcceptsColumn(int sourceColumn, const QM
         return sourceColumn == 0;
     case ItemStatus::New:
         return sourceColumn == 1 || sourceColumn == 2;
-    default:
-        return false;
     }
+    return false;
 }
 
 } // namespace RenamingUtility

@@ -34,7 +34,7 @@ FileSystemItem::FileSystemItem(ItemStatus status, ItemType type, const QString &
 
 FileSystemItem::~FileSystemItem()
 {
-    for (FileSystemItem *child : m_children) {
+    for (auto *const child : m_children) {
         child->m_parent = nullptr;
         delete child;
     }
@@ -45,14 +45,15 @@ FileSystemItem::~FileSystemItem()
 
 void FileSystemItem::setParent(FileSystemItem *parent)
 {
-    if (parent != m_parent) {
-        if (m_parent) {
-            m_parent->m_children.removeAll(this);
-        }
-        m_parent = parent;
-        if (m_parent && !m_parent->m_children.contains(this)) {
-            m_parent->m_children << this;
-        }
+    if (parent == m_parent) {
+        return;
+    }
+    if (m_parent) {
+        m_parent->m_children.removeAll(this);
+    }
+    m_parent = parent;
+    if (m_parent && !m_parent->m_children.contains(this)) {
+        m_parent->m_children << this;
     }
 }
 
@@ -100,19 +101,16 @@ bool FileSystemItem::setNewName(const QString &newName)
 {
     switch (m_status) {
     case ItemStatus::Current:
-        if (!m_counterpart) {
-            if (m_parent) {
-                m_counterpart = new FileSystemItem(ItemStatus::New, m_type, newName);
-                m_counterpart->m_counterpart = this;
-                m_counterpart->setParent(m_parent);
-            } else {
-                // parent required
-                return false;
-            }
-        } else {
+        if (m_counterpart) {
             m_counterpart->setName(newName);
+            return true;
         }
-        return true;
+        if (m_parent) {
+            m_counterpart = new FileSystemItem(ItemStatus::New, m_type, newName, m_parent);
+            m_counterpart->m_counterpart = this;
+            return true;
+        }
+        return false;
     case ItemStatus::New:
         setName(newName);
         return true;
@@ -122,7 +120,7 @@ bool FileSystemItem::setNewName(const QString &newName)
 
 FileSystemItem *FileSystemItem::findChild(const QString &name) const
 {
-    for (FileSystemItem *child : m_children) {
+    for (auto *const child : m_children) {
         if (child->name() == name) {
             return child;
         }
@@ -132,7 +130,7 @@ FileSystemItem *FileSystemItem::findChild(const QString &name) const
 
 FileSystemItem *FileSystemItem::findChild(const QString &name, const FileSystemItem *exclude) const
 {
-    for (FileSystemItem *child : m_children) {
+    for (auto *const child : m_children) {
         if (child != exclude && child->name() == name) {
             return child;
         }
@@ -142,23 +140,24 @@ FileSystemItem *FileSystemItem::findChild(const QString &name, const FileSystemI
 
 FileSystemItem *FileSystemItem::makeChildAvailable(const QString &relativePath)
 {
-    QStringList dirs = relativePath.split(QDir::separator(), QString::SkipEmptyParts);
-    FileSystemItem *parent = this;
-    if (!dirs.isEmpty()) {
-        if (relativePath.startsWith(QChar('/'))) {
-            // we actually just got an absolute path
-            // -> just leave the / there to handle absolute path as well
-            dirs.front().prepend(QChar('/'));
+    auto dirs = relativePath.split(QDir::separator(), QString::SkipEmptyParts);
+    if (dirs.isEmpty()) {
+        return this;
+    }
+
+    auto *parent = this;
+    if (relativePath.startsWith(QChar('/'))) {
+        // we actually just got an absolute path
+        // -> just leave the / there to handle absolute path as well
+        dirs.front().prepend(QChar('/'));
+    }
+    for (const QString &dir : dirs) {
+        auto *child = parent->findChild(dir);
+        if (!child) {
+            child = new FileSystemItem(ItemStatus::New, ItemType::Dir, dir, parent);
+            child->setNote(QCoreApplication::translate("RenamingUtility::FileSystemItem", "will be created"));
         }
-        for (const QString &dir : dirs) {
-            FileSystemItem *child = parent->findChild(dir);
-            if (!child) {
-                child = new FileSystemItem(ItemStatus::New, ItemType::Dir, dir);
-                child->setParent(parent);
-                child->setNote(QCoreApplication::translate("RenamingUtility::FileSystemItem", "will be created"));
-            }
-            parent = child;
-        }
+        parent = child;
     }
     return parent;
 }
@@ -179,13 +178,14 @@ QString FileSystemItem::relativeDir() const
 
 void FileSystemItem::relativePath(QString &res) const
 {
-    if (m_parent) {
-        m_parent->relativePath(res);
-        if (!res.isEmpty()) {
-            res.append(QLatin1Char('/'));
-        }
-        res.append(name());
+    if (!m_parent) {
+        return;
     }
+    m_parent->relativePath(res);
+    if (!res.isEmpty()) {
+        res.append(QLatin1Char('/'));
+    }
+    res.append(name());
 }
 
 QString FileSystemItem::relativePath() const
@@ -197,17 +197,16 @@ QString FileSystemItem::relativePath() const
 
 bool FileSystemItem::hasSibling(const QString &name) const
 {
-    if (m_parent) {
-        const QList<FileSystemItem *> &siblings = m_parent->children();
-        for (const FileSystemItem *siblingItem : siblings) {
-            if (siblingItem == this) {
-                continue;
-            }
-            if (!siblingItem->newName().isEmpty() && siblingItem->newName() == name) {
-                return true;
-            } else if (siblingItem->name() == name) {
-                return true;
-            }
+    if (!m_parent) {
+        return false;
+    }
+    const auto &siblings = m_parent->children();
+    for (const auto *const siblingItem : siblings) {
+        if (siblingItem == this) {
+            continue;
+        }
+        if ((!siblingItem->newName().isEmpty() && siblingItem->newName() == name) || siblingItem->name() == name) {
+            return true;
         }
     }
     return false;

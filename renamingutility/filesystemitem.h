@@ -48,7 +48,7 @@ public:
     void setChecked(bool checked);
     bool checkable() const;
     void setCheckable(bool checkable);
-    int row();
+    int row() const;
     void relativeDir(QString &res) const;
     QString relativeDir() const;
     void relativePath(QString &res) const;
@@ -186,9 +186,9 @@ inline void FileSystemItem::setCheckable(bool checkable)
     m_checkable = checkable;
 }
 
-inline int FileSystemItem::row()
+inline int FileSystemItem::row() const
 {
-    return m_parent ? m_parent->children().indexOf(this) : -1;
+    return m_parent ? m_parent->children().indexOf(const_cast<FileSystemItem *>(this)) : -1;
 }
 
 } // namespace RenamingUtility

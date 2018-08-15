@@ -204,7 +204,7 @@ unique_ptr<FileSystemItem> RenamingEngine::generatePreview(const QDir &dir, File
 
 void RenamingEngine::applyChangings(FileSystemItem *parentItem)
 {
-    for (FileSystemItem *item : parentItem->children()) {
+    for (auto *const item : parentItem->children()) {
         if (!item->applied() && !item->errorOccured()) {
             switch (item->status()) {
             case ItemStatus::New: {
@@ -277,7 +277,7 @@ void RenamingEngine::applyChangings(FileSystemItem *parentItem)
 
 void RenamingEngine::setError(const QList<FileSystemItem *> items)
 {
-    for (FileSystemItem *item : items) {
+    for (auto *const item : items) {
         item->setErrorOccured(true);
         item->setNote(tr("skipped due to error of superior item"));
     }
