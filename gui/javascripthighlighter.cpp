@@ -7,69 +7,78 @@ JavaScriptHighlighter::JavaScriptHighlighter(QTextDocument *parent)
 {
     HighlightingRule rule;
 
-    m_keywordFormat.setForeground(Qt::darkBlue);
     m_keywordFormat.setFontWeight(QFont::Bold);
     static const QStringList keywordPatterns{ QStringLiteral("\\bvar\\b"), QStringLiteral("\\bArray\\b"), QStringLiteral("\\bfunction\\b"),
         QStringLiteral("\\breturn\\b"), QStringLiteral("\\barguments\\b"), QStringLiteral("\\bif\\b"), QStringLiteral("\\belse\\b"),
         QStringLiteral("\\bfor\\b"), QStringLiteral("\\bswitch\\b"), QStringLiteral("\\bcase\\b"), QStringLiteral("\\bbreak\\b"),
         QStringLiteral("\\bwhile\\b"), QStringLiteral("\\bundefined\\b"), QStringLiteral("\\continue\\b") };
-    for (const QString &pattern : keywordPatterns) {
-        rule.pattern = QRegExp(pattern);
+    for (const auto &pattern : keywordPatterns) {
+        rule.pattern = QRegularExpression(pattern);
+        rule.pattern.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
         rule.format = m_keywordFormat;
         m_highlightingRules.append(rule);
     }
 
-    m_singleLineCommentFormat.setForeground(Qt::red);
-    rule.pattern = QRegExp(QStringLiteral("//[^\n]*"));
+    m_singleLineCommentFormat.setForeground(Qt::darkGray);
+    rule.pattern = QRegularExpression(QStringLiteral("//[^\n]*"));
     rule.format = m_singleLineCommentFormat;
     m_highlightingRules.append(rule);
 
-    m_multiLineCommentFormat.setForeground(Qt::red);
+    m_multiLineCommentFormat.setForeground(Qt::darkGray);
 
-    m_quotationFormat.setForeground(Qt::darkGreen);
-    rule.pattern = QRegExp(QStringLiteral("\".*\""));
-    rule.format = m_quotationFormat;
+    m_regexFormat.setForeground(Qt::darkMagenta);
+    rule.pattern = QRegularExpression(QStringLiteral("/.*/"));
+    rule.pattern.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    rule.format = m_regexFormat;
     m_highlightingRules.append(rule);
 
-    m_functionFormat.setFontItalic(true);
-    m_functionFormat.setForeground(Qt::blue);
-    rule.pattern = QRegExp(QStringLiteral("(?!if)\\b[A-Za-z0-9_]+(?=\\()"));
+    m_stringFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegularExpression(QStringLiteral("\".*\""));
+    rule.pattern.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    rule.format = m_stringFormat;
+    m_highlightingRules.append(rule);
+
+    m_functionFormat.setForeground(Qt::darkBlue);
+    rule.pattern = QRegularExpression(QStringLiteral("(?!if)\\b[A-Za-z0-9_]+(?=\\()"));
+    rule.pattern.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
     rule.format = m_functionFormat;
     m_highlightingRules.append(rule);
 
-    m_commentStartExpression = QRegExp(QStringLiteral("/\\*"));
-    m_commentEndExpression = QRegExp(QStringLiteral("\\*/"));
+    m_commentStartExpression = QRegularExpression(QStringLiteral("/\\*"));
+    m_commentEndExpression = QRegularExpression(QStringLiteral("\\*/"));
 }
 
 void JavaScriptHighlighter::highlightBlock(const QString &text)
 {
-    for (const HighlightingRule &rule : m_highlightingRules) {
-        QRegExp expression(rule.pattern);
-        int index = expression.indexIn(text);
-        while (index >= 0) {
-            int length = expression.matchedLength();
+    for (const auto &rule : m_highlightingRules) {
+        const auto &expression(rule.pattern);
+        auto match = expression.match(text);
+        while (match.hasMatch()) {
+            const auto index = match.capturedStart();
+            const auto length = match.capturedLength();
             setFormat(index, length, rule.format);
-            index = expression.indexIn(text, index + length);
+            match = expression.match(text, index + length);
         }
     }
     setCurrentBlockState(0);
 
-    int startIndex = 0;
+    auto startIndex = 0;
     if (previousBlockState() != 1) {
-        startIndex = m_commentStartExpression.indexIn(text);
+        startIndex = m_commentStartExpression.match(text).capturedStart();
     }
 
     while (startIndex >= 0) {
-        int endIndex = m_commentEndExpression.indexIn(text, startIndex);
-        int commentLength;
-        if (endIndex == -1) {
+        const auto endMatch = m_commentEndExpression.match(text, startIndex);
+        const auto endIndex = endMatch.capturedStart();
+        const auto commentLength = [&] {
+            if (endIndex >= 0) {
+                return endIndex - startIndex + endMatch.capturedLength();
+            }
             setCurrentBlockState(1);
-            commentLength = text.length() - startIndex;
-        } else {
-            commentLength = endIndex - startIndex + m_commentEndExpression.matchedLength();
-        }
+            return text.length() - startIndex;
+        }();
         setFormat(startIndex, commentLength, m_multiLineCommentFormat);
-        startIndex = m_commentStartExpression.indexIn(text, startIndex + commentLength);
+        startIndex = m_commentStartExpression.match(text, startIndex + commentLength).capturedStart();
     }
 }
 

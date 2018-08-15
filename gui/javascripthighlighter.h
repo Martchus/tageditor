@@ -1,6 +1,7 @@
 #ifndef JAVASCRIPTHIGHLIGHTER_H
 #define JAVASCRIPTHIGHLIGHTER_H
 
+#include <QRegularExpression>
 #include <QSyntaxHighlighter>
 
 namespace QtGui {
@@ -12,23 +13,24 @@ public:
     JavaScriptHighlighter(QTextDocument *parent = nullptr);
 
 protected:
-    void highlightBlock(const QString &text);
+    void highlightBlock(const QString &text) override;
 
 private:
     struct HighlightingRule {
-        QRegExp pattern;
+        QRegularExpression pattern;
         QTextCharFormat format;
     };
     QVector<HighlightingRule> m_highlightingRules;
 
-    QRegExp m_commentStartExpression;
-    QRegExp m_commentEndExpression;
+    QRegularExpression m_commentStartExpression;
+    QRegularExpression m_commentEndExpression;
 
     QTextCharFormat m_keywordFormat;
     QTextCharFormat m_classFormat;
     QTextCharFormat m_singleLineCommentFormat;
     QTextCharFormat m_multiLineCommentFormat;
-    QTextCharFormat m_quotationFormat;
+    QTextCharFormat m_stringFormat;
+    QTextCharFormat m_regexFormat;
     QTextCharFormat m_functionFormat;
 };
 
