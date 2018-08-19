@@ -101,32 +101,34 @@ DbQueryWidget::~DbQueryWidget()
 
 void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
 {
-    if (tagEdit) {
-        // set title, album and artist
-        m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
-        m_ui->albumLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Album)));
-        m_ui->artistLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Artist)));
+    if (!tagEdit) {
+        return;
+    }
 
-        // set track number, or if not available part number
-        bool trackValueOk = false;
-        try {
-            TagValue trackValue = tagEdit->value(KnownField::TrackPosition);
-            if (!trackValue.isEmpty()) {
-                m_ui->trackSpinBox->setValue(trackValue.toPositionInSet().position());
-                trackValueOk = true;
-            }
-        } catch (const ConversionException &) {
+    // set title, album and artist
+    m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
+    m_ui->albumLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Album)));
+    m_ui->artistLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Artist)));
+
+    // set track number, or if not available part number
+    bool trackValueOk = false;
+    try {
+        TagValue trackValue = tagEdit->value(KnownField::TrackPosition);
+        if (!trackValue.isEmpty()) {
+            m_ui->trackSpinBox->setValue(trackValue.toPositionInSet().position());
+            trackValueOk = true;
         }
-        if (!trackValueOk) {
-            TagValue trackValue = tagEdit->value(KnownField::PartNumber);
-            if (!trackValue.isEmpty()) {
-                m_ui->trackSpinBox->setValue(trackValue.toInteger());
-                trackValueOk = true;
-            }
+    } catch (const ConversionException &) {
+    }
+    if (!trackValueOk) {
+        TagValue trackValue = tagEdit->value(KnownField::PartNumber);
+        if (!trackValue.isEmpty()) {
+            m_ui->trackSpinBox->setValue(trackValue.toInteger());
+            trackValueOk = true;
         }
-        if (!trackValueOk) {
-            m_ui->trackSpinBox->clear();
-        }
+    }
+    if (!trackValueOk) {
+        m_ui->trackSpinBox->clear();
     }
 }
 
@@ -186,50 +188,52 @@ void DbQueryWidget::searchLyricsWikia()
 
 void DbQueryWidget::abortSearch()
 {
-    if (m_model) {
-        if (m_model->isFetchingCover()) {
-            // call abort to abort fetching cover
-            m_model->abort();
-        } else if (!m_model->areResultsAvailable()) {
-            // delete model to abort search
-            m_ui->resultsTreeView->setModel(nullptr);
-            delete m_model;
-            m_model = nullptr;
+    if (!m_model) {
+        return;
+    }
+    if (m_model->isFetchingCover()) {
+        // call abort to abort fetching cover
+        m_model->abort();
+    } else if (!m_model->areResultsAvailable()) {
+        // delete model to abort search
+        m_ui->resultsTreeView->setModel(nullptr);
+        delete m_model;
+        m_model = nullptr;
 
-            // update status
-            m_ui->notificationLabel->setNotificationType(NotificationType::Information);
-            m_ui->notificationLabel->setText(tr("Aborted"));
-            setStatus(true);
-        }
+        // update status
+        m_ui->notificationLabel->setNotificationType(NotificationType::Information);
+        m_ui->notificationLabel->setText(tr("Aborted"));
+        setStatus(true);
     }
 }
 
 void DbQueryWidget::showResults()
 {
-    if (m_model) {
-        if (m_model->errorList().isEmpty()) {
-            m_ui->notificationLabel->setNotificationType(NotificationType::TaskComplete);
-            if (m_model->results().isEmpty()) {
-                m_ui->notificationLabel->setText(tr("No results available"));
-            } else {
-                m_ui->notificationLabel->setText(tr("%1 result(s) available", 0, m_model->results().size()).arg(m_model->results().size()));
-            }
-        } else {
-            m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
-            m_ui->notificationLabel->clearText();
-            for (const QString &error : m_model->errorList()) {
-                m_ui->notificationLabel->appendLine(error);
-            }
-        }
-        if (m_model->results().isEmpty()) {
-            m_ui->applyPushButton->setEnabled(false);
-        } else {
-            m_ui->resultsTreeView->selectionModel()->setCurrentIndex(
-                m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
-            m_ui->applyPushButton->setEnabled(m_tagEditorWidget->activeTagEdit());
-        }
-        setStatus(true);
+    if (!m_model) {
+        return;
     }
+    if (m_model->errorList().isEmpty()) {
+        m_ui->notificationLabel->setNotificationType(NotificationType::TaskComplete);
+        if (m_model->results().isEmpty()) {
+            m_ui->notificationLabel->setText(tr("No results available"));
+        } else {
+            m_ui->notificationLabel->setText(tr("%1 result(s) available", nullptr, m_model->results().size()).arg(m_model->results().size()));
+        }
+    } else {
+        m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
+        m_ui->notificationLabel->clearText();
+        for (const QString &error : m_model->errorList()) {
+            m_ui->notificationLabel->appendLine(error);
+        }
+    }
+    if (m_model->results().isEmpty()) {
+        m_ui->applyPushButton->setEnabled(false);
+    } else {
+        m_ui->resultsTreeView->selectionModel()->setCurrentIndex(
+            m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        m_ui->applyPushButton->setEnabled(m_tagEditorWidget->activeTagEdit());
+    }
+    setStatus(true);
 }
 
 void DbQueryWidget::setStatus(bool aborted)
@@ -254,9 +258,9 @@ void DbQueryWidget::fileStatusChanged(bool, bool hasTags)
 void DbQueryWidget::applySelectedResults()
 {
     // check whether model, tag edit and current selection exist
-    if (TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-        if (const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
-            const QModelIndexList selection = selectionModel->selection().indexes();
+    if (auto *const tagEdit = m_tagEditorWidget->activeTagEdit()) {
+        if (const auto *const selectionModel = m_ui->resultsTreeView->selectionModel()) {
+            const auto selection = selectionModel->selection().indexes();
             if (!selection.isEmpty()) {
                 applyResults(tagEdit, selection.front());
             }
@@ -290,9 +294,9 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
     }
 
     // determine already present title, album and artist
-    const TagValue givenTitle = tagEdit->value(KnownField::Title);
-    const TagValue givenAlbum = tagEdit->value(KnownField::Album);
-    const TagValue givenArtist = tagEdit->value(KnownField::Artist);
+    const auto givenTitle = tagEdit->value(KnownField::Title);
+    const auto givenAlbum = tagEdit->value(KnownField::Album);
+    const auto givenArtist = tagEdit->value(KnownField::Artist);
 
     // also determine already present track number (which is a little bit more complex -> TODO: improve backend API)
     int givenTrack;
@@ -352,71 +356,79 @@ void DbQueryWidget::autoInsertMatchingResults()
  */
 void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultIndex)
 {
-    if (m_model) {
-        // determine previous value handling
-        PreviousValueHandling previousValueHandling
-            = m_ui->overrideCheckBox->isChecked() ? PreviousValueHandling::Update : PreviousValueHandling::Keep;
+    if (!m_model) {
+        return;
+    }
 
-        // loop through all fields
-        for (const ChecklistItem &item : values().dbQuery.fields.items()) {
-            if (item.isChecked()) {
-                // field should be used
-                const auto field = static_cast<KnownField>(item.id().toInt());
-                int row = resultIndex.row();
-                TagValue value = m_model->fieldValue(row, field);
+    // determine previous value handling
+    const auto previousValueHandling = m_ui->overrideCheckBox->isChecked() ? PreviousValueHandling::Update : PreviousValueHandling::Keep;
 
-                if (value.isEmpty()) {
-                    // cover and lyrics might be fetched belated
-                    switch (field) {
-                    case KnownField::Cover:
-                        if (m_model->fetchCover(resultIndex)) {
-                            // cover is available now
-                            tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
-                        } else {
-                            // cover is fetched asynchronously
-                            // -> show status
-                            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                            m_ui->notificationLabel->appendLine(tr("Retrieving cover art to be applied ..."));
-                            setStatus(false);
-                            // -> apply cover when available
-                            connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
-                                if (row == index.row()) {
-                                    if (TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-                                        tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
-                                    }
-                                }
-                            });
-                        }
-                        break;
+    // loop through all fields
+    for (const ChecklistItem &item : values().dbQuery.fields.items()) {
+        if (!item.isChecked()) {
+            continue;
+        }
 
-                    case KnownField::Lyrics:
-                        if (m_model->fetchLyrics(resultIndex)) {
-                            // lyrics are available now
-                            tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
-                        } else {
-                            // lyrics are fetched asynchronously
-                            // -> show status
-                            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-                            m_ui->notificationLabel->appendLine(tr("Retrieving lyrics to be applied ..."));
-                            setStatus(false);
-                            // -> apply cover when available
-                            connect(m_model, &QueryResultsModel::lyricsAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
-                                if (row == index.row()) {
-                                    if (TagEdit *tagEdit = m_tagEditorWidget->activeTagEdit()) {
-                                        tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
-                                    }
-                                }
-                            });
-                        }
-                        break;
+        // determine the field to be used and its value
+        const auto field = static_cast<KnownField>(item.id().toInt());
+        const auto row = resultIndex.row();
+        const auto value = m_model->fieldValue(row, field);
 
-                    default:;
-                    }
-                } else {
-                    // any other fields are just set
-                    tagEdit->setValue(field, value, previousValueHandling);
-                }
+        // set the value if available
+        if (!value.isEmpty()) {
+            tagEdit->setValue(field, value, previousValueHandling);
+            continue;
+        }
+
+        // cover and lyrics might be fetched asynchronously
+        switch (field) {
+        case KnownField::Cover:
+            if (m_model->fetchCover(resultIndex)) {
+                // cover is available now
+                tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                continue;
             }
+
+            // cover is fetched asynchronously
+            // -> show status
+            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+            m_ui->notificationLabel->appendLine(tr("Retrieving cover art to be applied ..."));
+            setStatus(false);
+            // -> apply cover when available
+            connect(m_model, &QueryResultsModel::coverAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
+                if (row != index.row()) {
+                    return;
+                }
+                if (auto *const tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                    tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                }
+            });
+            break;
+
+        case KnownField::Lyrics:
+            if (m_model->fetchLyrics(resultIndex)) {
+                // lyrics are available now
+                tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
+                continue;
+            }
+
+            // lyrics are fetched asynchronously
+            // -> show status
+            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+            m_ui->notificationLabel->appendLine(tr("Retrieving lyrics to be applied ..."));
+            setStatus(false);
+            // -> apply cover when available
+            connect(m_model, &QueryResultsModel::lyricsAvailable, [this, row, previousValueHandling](const QModelIndex &index) {
+                if (row != index.row()) {
+                    return;
+                }
+                if (auto *const tagEdit = m_tagEditorWidget->activeTagEdit()) {
+                    tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
+                }
+            });
+            break;
+
+        default:;
         }
     }
 }
@@ -428,93 +440,98 @@ void DbQueryWidget::insertSearchTermsFromActiveTagEdit()
 
 void DbQueryWidget::showResultsContextMenu()
 {
-    if (const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel()) {
-        const QModelIndexList selection = selectionModel->selection().indexes();
-        if (!selection.isEmpty()) {
-            QMenu contextMenu;
-            if (m_ui->applyPushButton->isEnabled()) {
-                contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this,
-                    static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
-            }
-            if (m_model && m_model->areResultsAvailable()) {
-                if (!contextMenu.isEmpty()) {
-                    contextMenu.addSeparator();
-                }
-                contextMenu.addAction(
-                    QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
-                contextMenu.addAction(
-                    QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, &DbQueryWidget::fetchAndShowLyricsForSelection);
-                contextMenu.addAction(
-                    QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
-            }
-            contextMenu.exec(QCursor::pos());
-        }
+    const auto *const selectionModel = m_ui->resultsTreeView->selectionModel();
+    if (!selectionModel) {
+        return;
     }
+    const auto selection = selectionModel->selection().indexes();
+    if (selection.isEmpty()) {
+        return;
+    }
+    QMenu contextMenu;
+    if (m_ui->applyPushButton->isEnabled()) {
+        contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this,
+            static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
+    }
+    if (m_model && m_model->areResultsAvailable()) {
+        if (!contextMenu.isEmpty()) {
+            contextMenu.addSeparator();
+        }
+        contextMenu.addAction(
+            QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
+        contextMenu.addAction(
+            QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, &DbQueryWidget::fetchAndShowLyricsForSelection);
+        contextMenu.addAction(
+            QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
+    }
+    contextMenu.exec(QCursor::pos());
 }
 
 void DbQueryWidget::fetchAndShowCoverForSelection()
 {
-    const QModelIndex selectedIndex = this->selectedIndex();
+    const auto selectedIndex = this->selectedIndex();
     if (!selectedIndex.isValid()) {
         return;
     }
 
-    if (const QByteArray *cover = m_model->cover(selectedIndex)) {
+    if (const QByteArray *const cover = m_model->cover(selectedIndex)) {
         showCover(*cover);
-    } else {
-        if (m_model->fetchCover(selectedIndex)) {
-            if (const QByteArray *cover = m_model->cover(selectedIndex)) {
-                showCover(*cover);
-            } else {
-                // cover couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
-            }
+        return;
+    }
+
+    if (m_model->fetchCover(selectedIndex)) {
+        if (const QByteArray *const cover = m_model->cover(selectedIndex)) {
+            showCover(*cover);
         } else {
-            // cover is fetched asynchronously
-            // -> memorize index to be shown
-            m_coverIndex = selectedIndex.row();
-            // -> show status
-            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-            m_ui->notificationLabel->setText(tr("Retrieving cover art ..."));
-            setStatus(false);
+            // cover couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
         }
+    } else {
+        // cover is fetched asynchronously
+        // -> memorize index to be shown
+        m_coverIndex = selectedIndex.row();
+        // -> show status
+        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+        m_ui->notificationLabel->setText(tr("Retrieving cover art ..."));
+        setStatus(false);
     }
 }
 
 void DbQueryWidget::fetchAndShowLyricsForSelection()
 {
-    const QModelIndex selectedIndex = this->selectedIndex();
+    const auto selectedIndex = this->selectedIndex();
     if (!selectedIndex.isValid()) {
         return;
     }
 
-    if (const QString *lyrics = m_model->lyrics(selectedIndex)) {
+    if (const QString *const lyrics = m_model->lyrics(selectedIndex)) {
         showLyrics(*lyrics);
-    } else {
-        if (m_model->fetchLyrics(selectedIndex)) {
-            if (const QByteArray *cover = m_model->cover(selectedIndex)) {
-                showLyrics(*cover);
-            } else {
-                // lyrics couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
-            }
+        return;
+    }
+
+    if (m_model->fetchLyrics(selectedIndex)) {
+        if (const QByteArray *cover = m_model->cover(selectedIndex)) {
+            showLyrics(*cover);
         } else {
-            // lyrics are fetched asynchronously
-            // -> memorize index to be shown
-            m_lyricsIndex = selectedIndex.row();
-            // -> show status
-            m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
-            m_ui->notificationLabel->setText(tr("Retrieving lyrics ..."));
-            setStatus(false);
+            // lyrics couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
         }
+    } else {
+        // lyrics are fetched asynchronously
+        // -> memorize index to be shown
+        m_lyricsIndex = selectedIndex.row();
+        // -> show status
+        m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+        m_ui->notificationLabel->setText(tr("Retrieving lyrics ..."));
+        setStatus(false);
     }
 }
 
 void DbQueryWidget::openSelectionInBrowser()
 {
-    const QModelIndex selectedIndex = this->selectedIndex();
+    const auto selectedIndex = this->selectedIndex();
     if (!selectedIndex.isValid()) {
         return;
     }
-    const QUrl url(m_model->webUrl(selectedIndex));
+    const auto url = m_model->webUrl(selectedIndex);
     if (url.isEmpty()) {
         m_ui->notificationLabel->appendLine(tr("No web URL available."));
         return;
@@ -611,11 +628,11 @@ QModelIndex DbQueryWidget::selectedIndex() const
     if (!m_model) {
         return QModelIndex();
     }
-    const QItemSelectionModel *selectionModel = m_ui->resultsTreeView->selectionModel();
+    const auto *const selectionModel = m_ui->resultsTreeView->selectionModel();
     if (!selectionModel) {
         return QModelIndex();
     }
-    const QModelIndexList selection = selectionModel->selectedRows();
+    const auto selection = selectionModel->selectedRows();
     if (selection.size() != 1) {
         return QModelIndex();
     }

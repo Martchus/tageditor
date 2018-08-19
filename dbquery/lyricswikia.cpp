@@ -22,7 +22,7 @@ static const QString defaultLyricsWikiaUrl(QStringLiteral("https://lyrics.wikia.
 
 QUrl lyricsWikiaApiUrl()
 {
-    const QString &lyricsWikiaUrl = Settings::values().dbQuery.lyricsWikiaUrl;
+    const auto &lyricsWikiaUrl = Settings::values().dbQuery.lyricsWikiaUrl;
     return QUrl((lyricsWikiaUrl.isEmpty() ? defaultLyricsWikiaUrl : lyricsWikiaUrl) + QStringLiteral("/api.php"));
 }
 
@@ -33,33 +33,35 @@ LyricsWikiaResultsModel::LyricsWikiaResultsModel(SongDescription &&initialSongDe
 
 bool LyricsWikiaResultsModel::fetchCover(const QModelIndex &index)
 {
-    if (!index.parent().isValid() && index.row() < m_results.size()) {
-        SongDescription &desc = m_results[index.row()];
-        if (!desc.cover.isEmpty()) {
-            // cover is already available -> nothing to do
-        } else if (!desc.albumId.isEmpty()) {
-            try {
-                // the item belongs to an album which cover has already been fetched
-                desc.cover = m_coverData.at(desc.albumId);
-            } catch (const out_of_range &) {
-                if (desc.coverUrl.isEmpty()) {
-                    // request the cover URL
-                    auto *reply = requestAlbumDetails(desc);
-                    addReply(reply, bind(&LyricsWikiaResultsModel::handleAlbumDetailsReplyFinished, this, reply, index.row()));
-                    setFetchingCover(true);
-                    return false;
-                } else {
-                    // request the cover art
-                    auto *reply = networkAccessManager().get(QNetworkRequest(QUrl(desc.coverUrl)));
-                    addReply(reply, bind(&LyricsWikiaResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
-                    setFetchingCover(true);
-                    return false;
-                }
-            }
+    if (index.parent().isValid() || index.row() >= m_results.size()) {
+        return true;
+    }
+    SongDescription &desc = m_results[index.row()];
+    if (!desc.cover.isEmpty()) {
+        // cover is already available -> nothing to do
+        return true;
+    }
+    if (desc.albumId.isEmpty()) {
+        m_errorList << tr("Unable to fetch cover: Album ID unknown");
+        emit resultsAvailable();
+        return true;
+    }
+    try {
+        // the item belongs to an album which cover has already been fetched
+        desc.cover = m_coverData.at(desc.albumId);
+    } catch (const out_of_range &) {
+        if (desc.coverUrl.isEmpty()) {
+            // request the cover URL
+            auto *const reply = requestAlbumDetails(desc);
+            addReply(reply, bind(&LyricsWikiaResultsModel::handleAlbumDetailsReplyFinished, this, reply, index.row()));
+            setFetchingCover(true);
         } else {
-            m_errorList << tr("Unable to fetch cover: Album ID unknown");
-            emit resultsAvailable();
+            // request the cover art
+            auto *const reply = networkAccessManager().get(QNetworkRequest(QUrl(desc.coverUrl)));
+            addReply(reply, bind(&LyricsWikiaResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
+            setFetchingCover(true);
         }
+        return false;
     }
     return true;
 }
@@ -90,42 +92,27 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
     QXmlStreamReader xmlReader(data);
 
     // parse XML tree
+    // clang-format off
 #include <qtutilities/misc/xmlparsermacros.h>
-    children
-    {
-        iftag("getArtistResponse")
-        {
+    children {
+        iftag("getArtistResponse") {
             QString artist;
-            children
-            {
-                iftag("artist")
-                {
+            children {
+                iftag("artist") {
                     artist = text;
-                }
-                eliftag("albums")
-                {
-                    children
-                    {
-                        iftag("albumResult")
-                        {
+                } eliftag("albums") {
+                    children {
+                        iftag("albumResult") {
                             QString album, year;
                             QList<SongDescription> songs;
-                            children
-                            {
-                                iftag("album")
-                                {
+                            children {
+                                iftag("album") {
                                     album = text;
-                                }
-                                eliftag("year")
-                                {
+                                } eliftag("year") {
                                     year = text;
-                                }
-                                eliftag("songs")
-                                {
-                                    children
-                                    {
-                                        iftag("item")
-                                        {
+                                } eliftag("songs") {
+                                    children {
+                                        iftag("item") {
                                             songs << SongDescription();
                                             songs.back().title = text;
                                             songs.back().track = songs.size();
@@ -139,7 +126,7 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
                             if ((m_initialDescription.album.isEmpty() || m_initialDescription.album == album)
                                 && (m_initialDescription.year.isEmpty() || m_initialDescription.year == year)
                                 && (!m_initialDescription.totalTracks || m_initialDescription.totalTracks == songs.size())) {
-                                for (SongDescription &song : songs) {
+                                for (auto &song : songs) {
                                     if ((m_initialDescription.title.isEmpty() || m_initialDescription.title == song.title)
                                         && (!m_initialDescription.track || m_initialDescription.track == song.track)) {
                                         song.album = album;
@@ -166,6 +153,7 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
         else_skip
     }
 #include <qtutilities/misc/undefxmlparsermacros.h>
+    // clang-format on
 
     // check for parsing errors
     switch (xmlReader.error()) {
@@ -230,25 +218,18 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
     QUrl parsedUrl;
 
     // parse XML tree
+    // clang-format off
     QXmlStreamReader xmlReader(data);
 #include <qtutilities/misc/xmlparsermacros.h>
-    children
-    {
-        iftag("LyricsResult")
-        {
+    children {
+        iftag("LyricsResult") {
             SongDescription parsedDesc;
-            children
-            {
-                iftag("artist")
-                {
+            children {
+                iftag("artist") {
                     parsedDesc.artist = text;
-                }
-                eliftag("song")
-                {
+                } eliftag("song") {
                     parsedDesc.title = text;
-                }
-                eliftag("url")
-                {
+                } eliftag("url") {
                     parsedUrl = text;
                 }
                 else_skip
@@ -264,6 +245,7 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
         else_skip
     }
 #include <qtutilities/misc/undefxmlparsermacros.h>
+    // clang-format on
 
     // check for parsing errors
     switch (xmlReader.error()) {
@@ -296,12 +278,12 @@ void LyricsWikiaResultsModel::handleLyricsReplyFinished(QNetworkReply *reply, in
     QByteArray data;
     if (auto *newReply = evaluateReplyResults(reply, data, true)) {
         addReply(newReply, bind(&LyricsWikiaResultsModel::handleLyricsReplyFinished, this, newReply, row));
-    } else {
-        if (!data.isEmpty()) {
-            parseLyricsResults(row, data);
-        }
-        setResultsAvailable(true);
+        return;
     }
+    if (!data.isEmpty()) {
+        parseLyricsResults(row, data);
+    }
+    setResultsAvailable(true);
 }
 
 void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data)
@@ -318,13 +300,13 @@ void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data
     const QString html(data);
 
     // parse lyrics from HTML
-    const int lyricsStart = html.indexOf(QLatin1String("<div class='lyricbox'>"));
+    const auto lyricsStart = html.indexOf(QLatin1String("<div class='lyricbox'>"));
     if (lyricsStart < 0) {
         m_errorList << tr("Song details requested for %1/%2 do not contain lyrics").arg(assocDesc.artist, assocDesc.title);
         setResultsAvailable(true);
         return;
     }
-    const int lyricsEnd = html.indexOf(QLatin1String("<div class='lyricsbreak'></div>"), lyricsStart);
+    const auto lyricsEnd = html.indexOf(QLatin1String("<div class='lyricsbreak'></div>"), lyricsStart);
     QTextDocument textDoc;
     textDoc.setHtml(html.mid(lyricsStart, (lyricsEnd > lyricsStart) ? (lyricsEnd - lyricsStart) : -1));
     assocDesc.lyrics = textDoc.toPlainText();
@@ -384,7 +366,7 @@ void LyricsWikiaResultsModel::parseAlbumDetailsAndFetchCover(int row, const QByt
     }
 
     // request the cover art
-    auto *reply = networkAccessManager().get(QNetworkRequest(QUrl(assocDesc.coverUrl)));
+    auto *const reply = networkAccessManager().get(QNetworkRequest(QUrl(assocDesc.coverUrl)));
     addReply(reply, bind(&LyricsWikiaResultsModel::handleCoverReplyFinished, this, reply, assocDesc.albumId, row));
 }
 

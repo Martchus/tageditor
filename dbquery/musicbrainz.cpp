@@ -25,25 +25,29 @@ MusicBrainzResultsModel::MusicBrainzResultsModel(SongDescription &&initialSongDe
 
 bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
 {
-    if (!index.parent().isValid() && index.row() < m_results.size()) {
-        SongDescription &desc = m_results[index.row()];
-        if (!desc.cover.isEmpty()) {
-            // cover is already available -> nothing to do
-        } else if (!desc.albumId.isEmpty()) {
-            try {
-                // the item belongs to an album which cover has already been fetched
-                desc.cover = m_coverData.at(desc.albumId);
-            } catch (const out_of_range &) {
-                // request the cover art
-                auto *reply = queryCoverArtArchive(desc.albumId);
-                addReply(reply, bind(&MusicBrainzResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
-                setFetchingCover(true);
-                return false;
-            }
-        } else {
-            m_errorList << tr("Unable to fetch cover: Album ID unknown");
-            emit resultsAvailable();
-        }
+    if (index.parent().isValid() || index.row() >= m_results.size()) {
+        return true;
+    }
+    SongDescription &desc = m_results[index.row()];
+    if (!desc.cover.isEmpty()) {
+        // cover is already available -> nothing to do
+        return true;
+    }
+
+    if (desc.albumId.isEmpty()) {
+        m_errorList << tr("Unable to fetch cover: Album ID unknown");
+        emit resultsAvailable();
+        return true;
+    }
+    try {
+        // the item belongs to an album which cover has already been fetched
+        desc.cover = m_coverData.at(desc.albumId);
+    } catch (const out_of_range &) {
+        // request the cover art
+        auto *const reply = queryCoverArtArchive(desc.albumId);
+        addReply(reply, bind(&MusicBrainzResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
+        setFetchingCover(true);
+        return false;
     }
     return true;
 }
@@ -64,90 +68,61 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
     QXmlStreamReader xmlReader(data);
 
     // parse XML tree
+    // clang-format off
 #include <qtutilities/misc/xmlparsermacros.h>
-    children
-    {
-        iftag("metadata")
-        {
-            children
-            {
-                iftag("recording-list")
-                {
-                    children
-                    {
-                        iftag("recording")
-                        {
+    children {
+        iftag("metadata") {
+            children {
+                iftag("recording-list") {
+                    children {
+                        iftag("recording") {
                             SongDescription currentDescription(attribute("id").toString());
-                            children{ iftag("title"){ currentDescription.title = text;
-                        }
-                        eliftag("artist-credit")
-                        {
-                            children
-                            {
-                                iftag("name-credit")
-                                {
-                                    children
-                                    {
-                                        iftag("artist")
-                                        {
-                                            children
-                                            {
-                                                iftag("name")
-                                                {
-                                                    currentDescription.artist = text;
+                            children {
+                                iftag("title") {
+                                    currentDescription.title = text;
+                                } eliftag("artist-credit") {
+                                    children {
+                                        iftag("name-credit") {
+                                            children {
+                                                iftag("artist") {
+                                                    children {
+                                                        iftag("name") {
+                                                            currentDescription.artist = text;
+                                                        }
+                                                        else_skip
+                                                    }
                                                 }
                                                 else_skip
                                             }
                                         }
                                         else_skip
                                     }
-                                }
-                                else_skip
-                            }
-                        }
-                        eliftag("release-list")
-                        {
-                            children
-                            {
-                                iftag("release")
-                                {
-                                    if (currentDescription.albumId.isEmpty()) {
-                                        currentDescription.albumId = attribute("id").toString();
-                                    }
-                                    children
-                                    {
-                                        iftag("title")
-                                        {
-                                            currentDescription.album = text;
-                                        }
-                                        eliftag("date")
-                                        {
-                                            currentDescription.year = text;
-                                        }
-                                        eliftag("medium-list")
-                                        {
-                                            children
-                                            {
-                                                iftag("medium")
-                                                {
-                                                    children
-                                                    {
-                                                        iftag("position")
-                                                        {
-                                                            currentDescription.disk = text.toUInt();
-                                                        }
-                                                        eliftag("track-list")
-                                                        {
-                                                            currentDescription.totalTracks = attribute("count").toUInt();
-                                                            children
-                                                            {
-                                                                iftag("track")
-                                                                {
-                                                                    children
-                                                                    {
-                                                                        iftag("number")
-                                                                        {
-                                                                            currentDescription.track = text.toUInt();
+                                } eliftag("release-list") {
+                                    children {
+                                        iftag("release") {
+                                            if (currentDescription.albumId.isEmpty()) {
+                                                currentDescription.albumId = attribute("id").toString();
+                                            }
+                                            children {
+                                                iftag("title") {
+                                                    currentDescription.album = text;
+                                                } eliftag("date") {
+                                                    currentDescription.year = text;
+                                                } eliftag("medium-list") {
+                                                    children {
+                                                        iftag("medium") {
+                                                            children {
+                                                                iftag("position") {
+                                                                    currentDescription.disk = text.toInt();
+                                                                } eliftag("track-list") {
+                                                                    currentDescription.totalTracks = attribute("count").toInt();
+                                                                    children {
+                                                                        iftag("track") {
+                                                                            children {
+                                                                                iftag("number") {
+                                                                                    currentDescription.track = text.toInt();
+                                                                                } else_skip
+                                                                            }
                                                                         }
                                                                         else_skip
                                                                     }
@@ -163,44 +138,36 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                         }
                                         else_skip
                                     }
-                                }
-                                else_skip
-                            }
-                        }
-                        eliftag("tag-list")
-                        {
-                            children
-                            {
-                                iftag("tag")
-                                {
-                                    children
-                                    {
-                                        iftag("name")
-                                        {
-                                            if (!currentDescription.genre.isEmpty()) {
-                                                currentDescription.genre.append(QLatin1Char(' '));
+                                } eliftag("tag-list") {
+                                    children {
+                                        iftag("tag") {
+                                            children {
+                                                iftag("name") {
+                                                    if (!currentDescription.genre.isEmpty()) {
+                                                        currentDescription.genre.append(QLatin1Char(' '));
+                                                    }
+                                                    currentDescription.genre.append(text);
+                                                }
+                                                else_skip
                                             }
-                                            currentDescription.genre.append(text);
                                         }
                                         else_skip
                                     }
                                 }
                                 else_skip
                             }
+                            m_results << currentDescription;
                         }
                         else_skip
                     }
-                    m_results << currentDescription;
                 }
                 else_skip
             }
         }
         else_skip
     }
-}
-else_skip
-} // namespace QtGui
 #include <qtutilities/misc/undefxmlparsermacros.h>
+// clang-format on
 
 // check for parsing errors
 switch (xmlReader.error()) {
@@ -217,7 +184,7 @@ endResetModel();
 
 QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
 {
-    static const QString defaultMusicBrainzUrl(QStringLiteral("https://musicbrainz.org/ws/2/recording/"));
+    static const auto defaultMusicBrainzUrl(QStringLiteral("https://musicbrainz.org/ws/2/recording/"));
 
     // compose parts
     QStringList parts;
@@ -236,7 +203,7 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
     }
 
     // compose URL
-    const QString &musicBrainzUrl = Settings::values().dbQuery.musicBrainzUrl;
+    const auto &musicBrainzUrl = Settings::values().dbQuery.musicBrainzUrl;
     QUrl url(musicBrainzUrl.isEmpty() ? defaultMusicBrainzUrl : (musicBrainzUrl + QStringLiteral("/recording/")));
     QUrlQuery query;
     query.addQueryItem(QStringLiteral("query"), parts.join(QStringLiteral(" AND ")));
@@ -250,8 +217,8 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
 
 QNetworkReply *queryCoverArtArchive(const QString &albumId)
 {
-    static const QString defaultArchiveUrl(QStringLiteral("https://coverartarchive.org"));
-    const QString &coverArtArchiveUrl = Settings::values().dbQuery.coverArtArchiveUrl;
+    static const auto defaultArchiveUrl(QStringLiteral("https://coverartarchive.org"));
+    const auto &coverArtArchiveUrl = Settings::values().dbQuery.coverArtArchiveUrl;
     return networkAccessManager().get(QNetworkRequest(QUrl(
         (coverArtArchiveUrl.isEmpty() ? defaultArchiveUrl : coverArtArchiveUrl) % QStringLiteral("/release/") % albumId % QStringLiteral("/front"))));
 }

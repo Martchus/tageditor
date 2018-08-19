@@ -59,36 +59,37 @@ QUrl QueryResultsModel::webUrl(const QModelIndex &index)
 
 TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
 {
-    if (row < m_results.size()) {
-        const SongDescription &res = m_results.at(row);
-        switch (knownField) {
-        case KnownField::Title:
-            returnValue(title);
-        case KnownField::Album:
-            returnValue(album);
-        case KnownField::Artist:
-            returnValue(artist);
-        case KnownField::Genre:
-            returnValue(genre);
-        case KnownField::Year:
-            returnValue(year);
-        case KnownField::TrackPosition:
-            return TagValue(PositionInSet(res.track, res.totalTracks));
-        case KnownField::PartNumber:
-            return TagValue(res.track);
-        case KnownField::TotalParts:
-            return TagValue(res.totalTracks);
-        case KnownField::Cover:
-            if (!res.cover.isEmpty()) {
-                TagValue tagValue(res.cover.data(), static_cast<size_t>(res.cover.size()), TagDataType::Picture);
-                tagValue.setMimeType(containerMimeType(parseSignature(res.cover.data(), res.cover.size())));
-                return tagValue;
-            }
-            break;
-        case KnownField::Lyrics:
-            returnValue(lyrics);
-        default:;
+    if (row >= m_results.size()) {
+        return TagValue();
+    }
+    const SongDescription &res = m_results.at(row);
+    switch (knownField) {
+    case KnownField::Title:
+        returnValue(title);
+    case KnownField::Album:
+        returnValue(album);
+    case KnownField::Artist:
+        returnValue(artist);
+    case KnownField::Genre:
+        returnValue(genre);
+    case KnownField::Year:
+        returnValue(year);
+    case KnownField::TrackPosition:
+        return TagValue(PositionInSet(res.track, res.totalTracks));
+    case KnownField::PartNumber:
+        return TagValue(res.track);
+    case KnownField::TotalParts:
+        return TagValue(res.totalTracks);
+    case KnownField::Cover:
+        if (!res.cover.isEmpty()) {
+            TagValue tagValue(res.cover.data(), static_cast<size_t>(res.cover.size()), TagDataType::Picture);
+            tagValue.setMimeType(containerMimeType(parseSignature(res.cover.data(), res.cover.size())));
+            return tagValue;
         }
+        break;
+    case KnownField::Lyrics:
+        returnValue(lyrics);
+    default:;
     }
     return TagValue();
 }
@@ -97,38 +98,39 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
 
 QVariant QueryResultsModel::data(const QModelIndex &index, int role) const
 {
-    if (index.isValid() && index.row() < m_results.size()) {
-        const SongDescription &res = m_results.at(index.row());
-        switch (role) {
-        case Qt::DisplayRole:
-            switch (index.column()) {
-            case TitleCol:
-                return res.title;
-            case AlbumCol:
-                return res.album;
-            case ArtistCol:
-                return res.artist;
-            case GenreCol:
-                return res.genre;
-            case YearCol:
-                return res.year;
-            case TrackCol:
-                if (res.track) {
-                    return res.track;
-                } else {
-                    return QString();
-                }
-            case TotalTracksCol:
-                if (res.totalTracks) {
-                    return res.totalTracks;
-                } else {
-                    return QString();
-                }
-            default:;
+    if (!index.isValid() || index.row() >= m_results.size()) {
+        return QVariant();
+    }
+    const SongDescription &res = m_results.at(index.row());
+    switch (role) {
+    case Qt::DisplayRole:
+        switch (index.column()) {
+        case TitleCol:
+            return res.title;
+        case AlbumCol:
+            return res.album;
+        case ArtistCol:
+            return res.artist;
+        case GenreCol:
+            return res.genre;
+        case YearCol:
+            return res.year;
+        case TrackCol:
+            if (res.track) {
+                return res.track;
+            } else {
+                return QString();
             }
-            break;
+        case TotalTracksCol:
+            if (res.totalTracks) {
+                return res.totalTracks;
+            } else {
+                return QString();
+            }
         default:;
         }
+        break;
+    default:;
     }
     return QVariant();
 }
@@ -186,11 +188,12 @@ int QueryResultsModel::columnCount(const QModelIndex &parent) const
 
 const QByteArray *QueryResultsModel::cover(const QModelIndex &index) const
 {
-    if (!index.parent().isValid() && index.row() < m_results.size()) {
-        const QByteArray &cover = m_results.at(index.row()).cover;
-        if (!cover.isEmpty()) {
-            return &cover;
-        }
+    if (!index.isValid() || index.row() >= m_results.size()) {
+        return nullptr;
+    }
+    const auto &cover = m_results.at(index.row()).cover;
+    if (!cover.isEmpty()) {
+        return &cover;
     }
     return nullptr;
 }
@@ -216,11 +219,12 @@ bool QueryResultsModel::fetchCover(const QModelIndex &index)
 
 const QString *QueryResultsModel::lyrics(const QModelIndex &index) const
 {
-    if (!index.parent().isValid() && index.row() < m_results.size()) {
-        const QString &lyrics = m_results.at(index.row()).lyrics;
-        if (!lyrics.isEmpty()) {
-            return &lyrics;
-        }
+    if (!index.isValid() || index.row() >= m_results.size()) {
+        return nullptr;
+    }
+    const auto &lyrics = m_results.at(index.row()).lyrics;
+    if (!lyrics.isEmpty()) {
+        return &lyrics;
     }
     return nullptr;
 }
@@ -268,16 +272,16 @@ HttpResultsModel::~HttpResultsModel()
  */
 void HttpResultsModel::handleInitialReplyFinished()
 {
-    auto *reply = static_cast<QNetworkReply *>(sender());
+    auto *const reply = static_cast<QNetworkReply *>(sender());
     QByteArray data;
-    if (auto *newReply = evaluateReplyResults(reply, data, false)) {
+    if (auto *const newReply = evaluateReplyResults(reply, data, false)) {
         addReply(newReply, this, &HttpResultsModel::handleInitialReplyFinished);
-    } else {
-        if (!data.isEmpty()) {
-            parseInitialResults(data);
-        }
-        setResultsAvailable(true); // update status, emit resultsAvailable()
+        return;
     }
+    if (!data.isEmpty()) {
+        parseInitialResults(data);
+    }
+    setResultsAvailable(true); // update status, emit resultsAvailable()
 }
 
 QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByteArray &data, bool alwaysFollowRedirection)
@@ -286,37 +290,35 @@ QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByt
     reply->deleteLater();
     m_replies.removeAll(reply);
 
-    if (reply->error() == QNetworkReply::NoError) {
-        const QVariant redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
-        if (!redirectionTarget.isNull()) {
-            // there's a redirection available
-            // -> resolve new URL
-            const QUrl newUrl = reply->url().resolved(redirectionTarget.toUrl());
-            // -> ask user whether to follow redirection unless alwaysFollowRedirection is true
-            if (!alwaysFollowRedirection) {
-                const QString message
-                    = tr("<p>Do you want to redirect form <i>%1</i> to <i>%2</i>?</p>").arg(reply->url().toString(), newUrl.toString());
-                alwaysFollowRedirection
-                    = QMessageBox::question(nullptr, tr("Search"), message, QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
-            }
-            if (alwaysFollowRedirection) {
-                return networkAccessManager().get(QNetworkRequest(newUrl));
-            } else {
-                m_errorList << tr("Redirection to: ") + newUrl.toString();
-                return nullptr;
-            }
-        } else {
-            if ((data = reply->readAll()).isEmpty()) {
-                m_errorList << tr("Server replied no data.");
-            }
-#ifdef DEBUG_BUILD
-            cerr << "Results from HTTP query:" << endl;
-            cerr << data.data() << endl;
-#endif
-        }
-    } else {
+    if (reply->error() != QNetworkReply::NoError) {
         m_errorList << reply->errorString();
+        return nullptr;
     }
+    const auto redirectionTarget = reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
+    if (redirectionTarget.isNull()) {
+        // read all data if it is not redirection
+        if ((data = reply->readAll()).isEmpty()) {
+            m_errorList << tr("Server replied no data.");
+        }
+#ifdef DEBUG_BUILD
+        cerr << "Results from HTTP query:" << endl;
+        cerr << data.data() << endl;
+#endif
+        return nullptr;
+    }
+
+    // there's a redirection available
+    // -> resolve new URL
+    const auto newUrl = reply->url().resolved(redirectionTarget.toUrl());
+    // -> ask user whether to follow redirection unless alwaysFollowRedirection is true
+    if (!alwaysFollowRedirection) {
+        const auto message = tr("<p>Do you want to redirect form <i>%1</i> to <i>%2</i>?</p>").arg(reply->url().toString(), newUrl.toString());
+        alwaysFollowRedirection = QMessageBox::question(nullptr, tr("Search"), message, QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes;
+    }
+    if (alwaysFollowRedirection) {
+        return networkAccessManager().get(QNetworkRequest(newUrl));
+    }
+    m_errorList << tr("Redirection to: ") + newUrl.toString();
     return nullptr;
 }
 
@@ -325,40 +327,41 @@ QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByt
  */
 void HttpResultsModel::abort()
 {
-    if (!m_replies.isEmpty()) {
-        qDeleteAll(m_replies);
-        m_replies.clear();
-        // must update status manually because handleReplyFinished() won't be called anymore
-        m_errorList << tr("Aborted by user.");
-        setResultsAvailable(true);
+    if (m_replies.isEmpty()) {
+        return;
     }
+    qDeleteAll(m_replies);
+    m_replies.clear();
+    // must update status manually because handleReplyFinished() won't be called anymore
+    m_errorList << tr("Aborted by user.");
+    setResultsAvailable(true);
 }
 
 void HttpResultsModel::handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row)
 {
     QByteArray data;
-    if (auto *newReply = evaluateReplyResults(reply, data, true)) {
+    if (auto *const newReply = evaluateReplyResults(reply, data, true)) {
         addReply(newReply, bind(&HttpResultsModel::handleCoverReplyFinished, this, newReply, albumId, row));
-    } else {
-        if (!data.isEmpty()) {
-            parseCoverResults(albumId, row, data);
-        }
-        setResultsAvailable(true);
+        return;
     }
+    if (!data.isEmpty()) {
+        parseCoverResults(albumId, row, data);
+    }
+    setResultsAvailable(true);
 }
 
 void HttpResultsModel::parseCoverResults(const QString &albumId, int row, const QByteArray &data)
 {
     // add cover -> determine album ID and row
-    if (!albumId.isEmpty() && row < m_results.size()) {
-        if (!data.isEmpty()) {
-            m_coverData[albumId] = data;
-            m_results[row].cover = data;
-            emit coverAvailable(index(row, 0));
-        }
-    } else {
+    if (albumId.isEmpty() || row >= m_results.size()) {
         m_errorList << tr("Internal error: context for cover reply invalid");
         setResultsAvailable(true);
+        return;
+    }
+    if (!data.isEmpty()) {
+        m_coverData[albumId] = data;
+        m_results[row].cover = data;
+        emit coverAvailable(index(row, 0));
     }
     setFetchingCover(false);
 }
