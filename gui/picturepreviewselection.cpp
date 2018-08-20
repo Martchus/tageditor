@@ -15,6 +15,7 @@
 
 #include <qtutilities/misc/conversion.h>
 
+#include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/catchiofailure.h>
 
 #include <QAction>
@@ -33,6 +34,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QMimeData>
+#include <QStringBuilder>
 
 #include <cassert>
 #include <functional>
@@ -57,6 +59,7 @@ PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWi
     , m_rectItem(nullptr)
     , m_tag(tag)
     , m_field(field)
+    , m_currentFileSize(0)
     , m_currentTypeIndex(0)
 {
     m_ui->setupUi(this);
@@ -214,6 +217,29 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
 }
 
 /*!
+ * \brief Updates the tooltip to show the current file size and MIME-type.
+ */
+void PicturePreviewSelection::updateSizeAndMimeType(size_t fileSize, const QSize &resolution, const QString &mimeType)
+{
+    QStringList info;
+    info.reserve(3);
+    if (fileSize) {
+        info << QString::fromStdString(ConversionUtilities::dataSizeToString(fileSize));
+    }
+    if (!resolution.isEmpty()) {
+        info << QString::number(resolution.width()) % QStringLiteral(" x ") % QString::number(resolution.height()) % QStringLiteral(" px");
+    }
+    if (!mimeType.isEmpty()) {
+        info << mimeType;
+    }
+
+    m_currentFileSize = fileSize;
+    m_currentResolution = resolution;
+    m_currentMimeType = mimeType;
+    setToolTip(info.join(QChar('\n')));
+}
+
+/*!
  * \brief Pushes the ID3v2 cover values to the specified \a tag.
  * \param tag Specifies a tag to push the values to.
  * \param field Specifies the field.
@@ -282,6 +308,7 @@ void PicturePreviewSelection::clear()
     }
     updatePreview(m_currentTypeIndex);
     updateDescription(m_currentTypeIndex);
+    updateSizeAndMimeType(0, QSize(), QString());
 }
 
 /*!
@@ -388,40 +415,49 @@ void PicturePreviewSelection::extractSelected()
 void PicturePreviewSelection::displaySelected()
 {
     assert(m_currentTypeIndex < m_values.size());
-    TagValue &value = m_values[m_currentTypeIndex];
-    if (!value.isEmpty()) {
-        QImage img;
-        if (value.mimeType() == "-->") {
-            QFile file(Utility::stringToQString(value.toString(), value.dataEncoding()));
-            if (file.open(QFile::ReadOnly)) {
-                img = QImage::fromData(file.readAll());
-            } else {
-                QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image can't be found."));
-                return;
-            }
+    const auto &value = m_values[m_currentTypeIndex];
+    if (value.isEmpty()) {
+        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("There is no image attached."));
+        return;
+    }
+
+    // load image
+    QImage img;
+    if (value.mimeType() == "-->") {
+        const auto fileName(Utility::stringToQString(value.toString(), value.dataEncoding()));
+        QFile file(fileName);
+        if (file.open(QFile::ReadOnly)) {
+            img = QImage::fromData(file.readAll());
         } else {
-            img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
-        }
-        if (img.isNull()) {
-            QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image can't be displayed."));
-        } else {
-            QDialog dlg;
-            dlg.setWindowFlags(Qt::Tool);
-            dlg.setWindowTitle(tr("Cover - %1").arg(QCoreApplication::applicationName()));
-            QBoxLayout layout(QBoxLayout::Up);
-            layout.setMargin(0);
-            QGraphicsView view(&dlg);
-            QGraphicsScene scene;
-            layout.addWidget(&view);
-            scene.addItem(new QGraphicsPixmapItem(QPixmap::fromImage(img)));
-            view.setScene(&scene);
-            view.show();
-            dlg.setLayout(&layout);
-            dlg.exec();
+            QMessageBox::warning(this, QCoreApplication::applicationName(),
+                tr("The attached image can't be found. It is supposed to be stored as external file \"%1\".").arg(fileName));
+            return;
         }
     } else {
-        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("There is no image attached."));
+        img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
     }
+    if (img.isNull()) {
+        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image can't be displayed."));
+        return;
+    }
+
+    // show dialog
+    QDialog dlg;
+    dlg.setWindowFlags(Qt::Tool);
+    const auto additionalInfo = toolTip().replace(QLatin1String("\n"), QLatin1String(", "));
+    const auto title = !additionalInfo.isEmpty() ? tr("Cover - %1 - %2").arg(additionalInfo, QCoreApplication::applicationName())
+                                                 : tr("Cover - %1").arg(QCoreApplication::applicationName());
+    dlg.setWindowTitle(title);
+    QBoxLayout layout(QBoxLayout::Up);
+    layout.setMargin(0);
+    QGraphicsView view(&dlg);
+    QGraphicsScene scene;
+    layout.addWidget(&view);
+    scene.addItem(new QGraphicsPixmapItem(QPixmap::fromImage(img)));
+    view.setScene(&scene);
+    view.show();
+    dlg.setLayout(&layout);
+    dlg.exec();
 }
 
 /*!
@@ -430,14 +466,16 @@ void PicturePreviewSelection::displaySelected()
 void PicturePreviewSelection::changeMimeTypeOfSelected()
 {
     assert(m_currentTypeIndex < m_values.size());
-    TagValue &selectedCover = m_values[m_currentTypeIndex];
+    auto &selectedCover = m_values[m_currentTypeIndex];
     auto mimeType = QString::fromUtf8(selectedCover.mimeType().data());
     bool ok;
     mimeType = QInputDialog::getText(
         this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
-    if (ok) {
-        selectedCover.setMimeType(mimeType.toUtf8().data());
+    if (!ok) {
+        return;
     }
+    selectedCover.setMimeType(mimeType.toUtf8().data());
+    updateSizeAndMimeType(m_currentFileSize, m_currentResolution, mimeType);
 }
 
 /*!
@@ -591,9 +629,10 @@ void PicturePreviewSelection::updatePreview(int index)
         QImage img;
         if (value.mimeType() == "-->") {
             QFile file(Utility::stringToQString(value.toString(), value.dataEncoding()));
-            if (file.open(QFile::ReadOnly))
+            if (file.open(QFile::ReadOnly)) {
                 img = QImage::fromData(file.readAll());
-            else {
+                updateSizeAndMimeType(static_cast<std::size_t>(file.size()), img.size(), QString());
+            } else {
                 m_textItem->setPlainText(tr("The attached image can't be found."));
                 m_textItem->setVisible(true);
                 m_pixmapItem->setVisible(false);
@@ -601,6 +640,7 @@ void PicturePreviewSelection::updatePreview(int index)
             }
         } else {
             img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
+            updateSizeAndMimeType(value.dataSize(), img.size(), QString::fromStdString(value.mimeType()));
         }
         if (img.isNull()) {
             m_pixmap = QPixmap();

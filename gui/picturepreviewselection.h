@@ -5,6 +5,7 @@
 
 #include <tagparser/tag.h>
 
+#include <QSize>
 #include <QWidget>
 
 #include <memory>
@@ -72,6 +73,7 @@ private slots:
 
 private:
     void setup(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    void updateSizeAndMimeType(std::size_t fileSize, const QSize &resolution, const QString &mimeType);
 
     std::unique_ptr<Ui::PicturePreviewSelection> m_ui;
     QGraphicsScene *m_scene;
@@ -82,6 +84,9 @@ private:
     TagParser::Tag *m_tag;
     TagParser::KnownField m_field;
     QList<TagParser::TagValue> m_values;
+    std::size_t m_currentFileSize;
+    QSize m_currentResolution;
+    QString m_currentMimeType;
     int m_currentTypeIndex;
 };
 
