@@ -229,8 +229,10 @@ void DbQueryWidget::showResults()
     if (m_model->results().isEmpty()) {
         m_ui->applyPushButton->setEnabled(false);
     } else {
-        m_ui->resultsTreeView->selectionModel()->setCurrentIndex(
-            m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        auto *const selectionModel(m_ui->resultsTreeView->selectionModel());
+        if (selectionModel->selection().isEmpty()) {
+            selectionModel->setCurrentIndex(m_model->index(0, 0), QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        }
         m_ui->applyPushButton->setEnabled(m_tagEditorWidget->activeTagEdit());
     }
     setStatus(true);
