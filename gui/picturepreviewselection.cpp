@@ -277,23 +277,24 @@ template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField fiel
  */
 void PicturePreviewSelection::apply()
 {
-    if (m_tag) {
-        if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
-            switch (m_tag->type()) {
-            case TagType::Id3v2Tag:
-                pushId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values);
-                break;
-            case TagType::VorbisComment:
-                pushId3v2CoverValues(static_cast<VorbisComment *>(m_tag), m_field, m_values);
-                break;
-            default:;
-            }
+    if (!m_tag) {
+        return;
+    }
+    if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
+        switch (m_tag->type()) {
+        case TagType::Id3v2Tag:
+            pushId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values);
+            break;
+        case TagType::VorbisComment:
+            pushId3v2CoverValues(static_cast<VorbisComment *>(m_tag), m_field, m_values);
+            break;
+        default:;
+        }
+    } else {
+        if (m_values.size()) {
+            m_tag->setValue(m_field, m_values.first());
         } else {
-            if (m_values.size()) {
-                m_tag->setValue(m_field, m_values.first());
-            } else {
-                m_tag->setValue(m_field, TagValue());
-            }
+            m_tag->setValue(m_field, TagValue());
         }
     }
 }
@@ -317,7 +318,7 @@ void PicturePreviewSelection::clear()
 void PicturePreviewSelection::addOfSelectedType()
 {
     assert(m_currentTypeIndex < m_values.size());
-    QString path = QFileDialog::getOpenFileName(this, tr("Select a picture to add as cover"));
+    const auto path = QFileDialog::getOpenFileName(this, tr("Select a picture to add as cover"));
     if (!path.isEmpty()) {
         addOfSelectedType(path);
     }
@@ -507,7 +508,7 @@ void PicturePreviewSelection::resizeEvent(QResizeEvent *)
 
 void PicturePreviewSelection::dragEnterEvent(QDragEnterEvent *event)
 {
-    const auto *mimeData = event->mimeData();
+    const auto *const mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
         for (const auto &url : mimeData->urls()) {
             if (url.scheme() == QLatin1String("file")) {
@@ -521,7 +522,7 @@ void PicturePreviewSelection::dragEnterEvent(QDragEnterEvent *event)
 
 void PicturePreviewSelection::dropEvent(QDropEvent *event)
 {
-    const auto *mimeData = event->mimeData();
+    const auto *const mimeData = event->mimeData();
     if (mimeData->hasUrls()) {
         for (const auto &url : mimeData->urls()) {
             if (url.scheme() == QLatin1String("file")) {
@@ -619,7 +620,7 @@ void PicturePreviewSelection::updatePreview(int index)
         m_rectItem->setVisible(!isEnabled());
         m_scene->addItem(m_rectItem);
     }
-    TagValue &value = m_values[index];
+    const auto &value = m_values[index];
     if (value.isEmpty()) {
         m_textItem->setVisible(true);
         m_textItem->setPlainText(tr("No image (of the selected type) attached."));
@@ -661,7 +662,7 @@ void PicturePreviewSelection::updatePreview(int index)
 void PicturePreviewSelection::showContextMenu()
 {
     QMenu menu;
-    QAction *addAction = menu.addAction(m_ui->addButton->text());
+    auto *const addAction = menu.addAction(m_ui->addButton->text());
     addAction->setIcon(QIcon::fromTheme(QStringLiteral("list-add")));
     connect(addAction, &QAction::triggered, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
     if (m_ui->extractButton->isEnabled()) {
@@ -671,23 +672,23 @@ void PicturePreviewSelection::showContextMenu()
     }
     menu.addSeparator();
     if (m_ui->removeButton->isEnabled()) {
-        QAction *removeAction = menu.addAction(m_ui->removeButton->text());
+        auto *const removeAction = menu.addAction(m_ui->removeButton->text());
         removeAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-delete")));
         connect(removeAction, &QAction::triggered, this, &PicturePreviewSelection::removeSelected);
     }
     if (m_ui->restoreButton->isEnabled()) {
-        QAction *restoreAction = menu.addAction(m_ui->restoreButton->text());
+        auto *const restoreAction = menu.addAction(m_ui->restoreButton->text());
         restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("document-revert")));
         connect(restoreAction, &QAction::triggered, std::bind(&PicturePreviewSelection::setup, this, PreviousValueHandling::Clear));
     }
     menu.addSeparator();
     if (m_ui->extractButton->isEnabled()) {
-        QAction *extractAction = menu.addAction(m_ui->extractButton->text());
+        auto *const extractAction = menu.addAction(m_ui->extractButton->text());
         extractAction->setIcon(QIcon::fromTheme(QStringLiteral("document-save")));
         connect(extractAction, &QAction::triggered, this, &PicturePreviewSelection::extractSelected);
     }
     if (m_ui->displayButton->isEnabled()) {
-        QAction *displayAction = menu.addAction(m_ui->displayButton->text());
+        auto *const displayAction = menu.addAction(m_ui->displayButton->text());
         displayAction->setIcon(QIcon::fromTheme(QStringLiteral("image-x-generic")));
         connect(displayAction, &QAction::triggered, this, &PicturePreviewSelection::displaySelected);
     }

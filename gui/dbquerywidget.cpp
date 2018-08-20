@@ -113,7 +113,7 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
     // set track number, or if not available part number
     bool trackValueOk = false;
     try {
-        TagValue trackValue = tagEdit->value(KnownField::TrackPosition);
+        const auto trackValue = tagEdit->value(KnownField::TrackPosition);
         if (!trackValue.isEmpty()) {
             m_ui->trackSpinBox->setValue(trackValue.toPositionInSet().position());
             trackValueOk = true;
@@ -121,7 +121,7 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
     } catch (const ConversionException &) {
     }
     if (!trackValueOk) {
-        TagValue trackValue = tagEdit->value(KnownField::PartNumber);
+        const auto trackValue = tagEdit->value(KnownField::PartNumber);
         if (!trackValue.isEmpty()) {
             m_ui->trackSpinBox->setValue(trackValue.toInteger());
             trackValueOk = true;
