@@ -75,6 +75,8 @@ See the release section on GitHub.
 * Tumbleweed, Leap 42.3, Fedora 26, Fedora 27
     * for RPM \*.spec files and binary repository checkout the
       [openSUSE Build Service](https://build.opensuse.org/project/show/home:mkittler)
+* Exherbo
+    * there is a [package in the platypus repository](https://git.exherbo.org/summer/packages/media-sound/tageditor)
 * Gentoo
     * packages are provided by perfect7gentleman; checkout his
       [repository](https://github.com/perfect7gentleman/pg_overlay)
