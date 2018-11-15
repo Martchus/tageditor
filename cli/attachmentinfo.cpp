@@ -142,7 +142,7 @@ void AttachmentInfo::reset()
 bool AttachmentInfo::next(AbstractContainer *container, TagParser::Diagnostics &diag)
 {
     if (!id && !path && !name && !mime && !desc) {
-        // skip empty attachment infos
+        // skip empty attachment info
         return false;
     }
     apply(container, diag);
