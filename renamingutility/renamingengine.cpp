@@ -338,7 +338,7 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         }
         break;
     default:
-        item->setNote(tr("skipped"));
+        item->setNote(m_tagEditorQObj->note().isEmpty() ? tr("skipped") : m_tagEditorQObj->note());
     }
 }
 #endif

@@ -145,6 +145,8 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
 
     // add basic file information
     auto fileInfoObject = m_engine->newObject();
+    fileInfoObject.setProperty(QStringLiteral("currentPath"), QString::fromUtf8(fileInfo.path().data()));
+    fileInfoObject.setProperty(QStringLiteral("currentPathWithoutExtension"), QString::fromUtf8(fileInfo.pathWithoutExtension().data()));
     fileInfoObject.setProperty(QStringLiteral("currentName"), QString::fromUtf8(fileInfo.fileName(false).data()));
     fileInfoObject.setProperty(QStringLiteral("currentBaseName"), QString::fromUtf8(fileInfo.fileName(true).data()));
     QString suffix = fromNativeFileName(fileInfo.extension().data());
@@ -154,7 +156,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     fileInfoObject.setProperty(QStringLiteral("currentSuffix"), suffix TAGEDITOR_JS_READONLY);
 
     // parse further file information
-    bool criticalParseingErrorOccured = false;
+    bool criticalParseingErrorOccured = false, ioErrorOccured = false;
     try {
         fileInfo.parseEverything(diag);
     } catch (const Failure &) {
@@ -163,6 +165,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     } catch (...) {
         ::IoUtilities::catchIoFailure();
         criticalParseingErrorOccured = true;
+        ioErrorOccured = true;
     }
 
     // gather notifications
@@ -170,6 +173,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     diagObj << diag;
     criticalParseingErrorOccured |= diag.level() >= DiagLevel::Critical;
     fileInfoObject.setProperty(QStringLiteral("hasCriticalMessages"), criticalParseingErrorOccured);
+    fileInfoObject.setProperty(QStringLiteral("ioErrorOccured"), ioErrorOccured);
     fileInfoObject.setProperty(QStringLiteral("diagMessages"), diagObj);
 
     // add MIME-type, suitable suffix and technical summary
@@ -270,9 +274,10 @@ void TagEditorObject::move(const QString &newRelativeDirectory)
     m_action = ActionType::Rename;
 }
 
-void TagEditorObject::skip()
+void TagEditorObject::skip(const QString &note)
 {
     m_action = ActionType::Skip;
+    m_note = note;
 }
 
 } // namespace RenamingUtility

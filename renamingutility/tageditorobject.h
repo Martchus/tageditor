@@ -24,6 +24,7 @@ class TagEditorObject : public QObject {
     Q_PROPERTY(bool isFile READ isFile)
     Q_PROPERTY(QString newName READ newName WRITE rename)
     Q_PROPERTY(QString newRelativeDirectory READ newRelativeDirectory WRITE move)
+    Q_PROPERTY(QString note READ note)
 
 public:
     explicit TagEditorObject(TAGEDITOR_JS_ENGINE *engine);
@@ -38,6 +39,7 @@ public:
     bool isFile() const;
     const QString &newName() const;
     const QString &newRelativeDirectory() const;
+    const QString &note() const;
 
 public slots:
     TAGEDITOR_JS_VALUE parseFileInfo(const QString &fileName);
@@ -47,7 +49,7 @@ public slots:
     void writeLog(const QString &message);
     void rename(const QString &newName);
     void move(const QString &newRelativeDirectory);
-    void skip();
+    void skip(const QString &note = QString());
 
 private:
     TAGEDITOR_JS_ENGINE *m_engine;
@@ -58,11 +60,17 @@ private:
     ActionType m_action;
     QString m_newName;
     QString m_newRelativeDirectory;
+    QString m_note;
 };
 
 inline ActionType TagEditorObject::action() const
 {
     return m_action;
+}
+
+inline const QString &TagEditorObject::note() const
+{
+    return m_note;
 }
 
 } // namespace RenamingUtility
