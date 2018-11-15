@@ -125,7 +125,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
     items << mkItem(KnownField::Composer, Qt::Unchecked);
     items << mkItem(KnownField::Rating, Qt::Unchecked);
     items << mkItem(KnownField::Description, Qt::Unchecked);
-    setItems(items);
+    setItems(std::move(items));
 }
 
 KnownFieldModel::KnownFieldModel(const QList<Models::ChecklistItem> &items, QObject *parent)

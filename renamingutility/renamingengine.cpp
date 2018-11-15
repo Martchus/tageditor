@@ -306,13 +306,13 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         break;
     case ActionType::Rename:
         if (!newRelativeDirectory.isEmpty()) {
-            FileSystemItem *counterpartParent = item->root()->makeChildAvailable(newRelativeDirectory);
+            FileSystemItem *const counterpartParent = item->root()->makeChildAvailable(newRelativeDirectory);
             const QString &counterpartName = newName.isEmpty() ? item->name() : newName;
             if (counterpartParent->findChild(counterpartName, item)) {
                 item->setNote(tr("name is already used at new location"));
                 item->setErrorOccured(true);
             } else {
-                auto *counterpart = new FileSystemItem(ItemStatus::New, item->type(), counterpartName, counterpartParent);
+                auto *const counterpart = new FileSystemItem(ItemStatus::New, item->type(), counterpartName, counterpartParent);
                 item->setCounterpart(counterpart);
                 counterpart->setCheckable(true);
                 counterpart->setChecked(true);
@@ -320,7 +320,7 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         } else if (!newName.isEmpty()) {
             item->setNewName(newName);
         }
-        if (FileSystemItem *newItem = item->counterpart()) {
+        if (FileSystemItem *const newItem = item->counterpart()) {
             if ((newItem->name().isEmpty() || newItem->name() == item->name()) && (newItem->parent() == item->parent())) {
                 item->setNote(tr("name doesn't change"));
             } else if (newItem->parent() && newItem->parent()->findChild(newItem->name(), newItem)) {

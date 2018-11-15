@@ -34,8 +34,8 @@ public:
     explicit KnownFieldModel(QObject *parent = nullptr, DefaultSelection defaultSelection = DefaultSelection::None);
     explicit KnownFieldModel(const QList<Models::ChecklistItem> &items, QObject *parent = nullptr);
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    virtual QString labelForId(const QVariant &id) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    QString labelForId(const QVariant &id) const override;
 #endif
 };
 
