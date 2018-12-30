@@ -866,7 +866,7 @@ void CliTests::testExtraction()
     MediaFileInfo extractedInfo("/tmp/extracted.jpeg");
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat(diag);
-    CPPUNIT_ASSERT_EQUAL(22771_st, extractedInfo.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<uint64>(22771), extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     extractedInfo.invalidate();
 
@@ -879,7 +879,7 @@ void CliTests::testExtraction()
     TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat(diag);
-    CPPUNIT_ASSERT_EQUAL(22771_st, extractedInfo.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<uint64>(22771), extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp4File2.data()));
