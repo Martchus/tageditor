@@ -38,6 +38,8 @@ static constexpr struct {
     { "composer", KnownField::Composer },
     { "rating", KnownField::Rating },
     { "description", KnownField::Description },
+    { "vendor", KnownField::Vendor },
+    { "albumartist", KnownField::AlbumArtist },
 };
 
 const char *fieldDenotation(TagParser::KnownField knownField)

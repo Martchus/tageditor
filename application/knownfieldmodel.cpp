@@ -76,6 +76,8 @@ const char *KnownFieldModel::fieldName(KnownField field)
         return QT_TR_NOOP("Description");
     case KnownField::Vendor:
         return QT_TR_NOOP("Vendor");
+    case KnownField::AlbumArtist:
+        return QT_TR_NOOP("Album artist");
     default:
         return "";
     }
@@ -95,37 +97,40 @@ QString KnownFieldModel::labelForId(const QVariant &id) const
 KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelection)
     : ChecklistModel(parent)
 {
-    QList<ChecklistItem> items;
-    items.reserve(27);
-    Qt::CheckState defaultSelected = defaultSelection == DefaultSelection::CommonFields ? Qt::Checked : Qt::Unchecked;
-    items << mkItem(KnownField::Title, defaultSelected);
-    items << mkItem(KnownField::Album, defaultSelected);
-    items << mkItem(KnownField::Artist, defaultSelected);
-    items << mkItem(KnownField::Genre, defaultSelected);
-    items << mkItem(KnownField::Year, defaultSelected);
-    items << mkItem(KnownField::Comment, defaultSelected);
-    items << mkItem(KnownField::Bpm, Qt::Unchecked);
-    items << mkItem(KnownField::Bps, Qt::Unchecked);
-    items << mkItem(KnownField::Lyricist, defaultSelected);
-    items << mkItem(KnownField::TrackPosition, defaultSelected);
-    items << mkItem(KnownField::DiskPosition, defaultSelected);
-    items << mkItem(KnownField::PartNumber, defaultSelected);
-    items << mkItem(KnownField::TotalParts, defaultSelected);
-    items << mkItem(KnownField::Encoder, defaultSelected);
-    items << mkItem(KnownField::RecordDate, defaultSelected);
-    items << mkItem(KnownField::Performers, defaultSelected);
-    items << mkItem(KnownField::Length, Qt::Unchecked);
-    items << mkItem(KnownField::Language, Qt::Unchecked);
-    items << mkItem(KnownField::EncoderSettings, Qt::Unchecked);
-    items << mkItem(KnownField::Lyrics, defaultSelected);
-    items << mkItem(KnownField::SynchronizedLyrics, Qt::Unchecked);
-    items << mkItem(KnownField::Grouping, Qt::Unchecked);
-    items << mkItem(KnownField::RecordLabel, Qt::Unchecked);
-    items << mkItem(KnownField::Cover, defaultSelected);
-    items << mkItem(KnownField::Composer, Qt::Unchecked);
-    items << mkItem(KnownField::Rating, Qt::Unchecked);
-    items << mkItem(KnownField::Description, Qt::Unchecked);
-    setItems(std::move(items));
+    const auto defaultSelected = defaultSelection == DefaultSelection::CommonFields ? Qt::Checked : Qt::Unchecked;
+    // clang-format off
+    setItems({
+         mkItem(KnownField::Title, defaultSelected),
+         mkItem(KnownField::Album, defaultSelected),
+         mkItem(KnownField::Artist, defaultSelected),
+         mkItem(KnownField::Genre, defaultSelected),
+         mkItem(KnownField::Year, defaultSelected),
+         mkItem(KnownField::Comment, defaultSelected),
+         mkItem(KnownField::AlbumArtist, defaultSelected),
+         mkItem(KnownField::Bpm, Qt::Unchecked),
+         mkItem(KnownField::Bps, Qt::Unchecked),
+         mkItem(KnownField::Lyricist, defaultSelected),
+         mkItem(KnownField::TrackPosition, defaultSelected),
+         mkItem(KnownField::DiskPosition, defaultSelected),
+         mkItem(KnownField::PartNumber, defaultSelected),
+         mkItem(KnownField::TotalParts, defaultSelected),
+         mkItem(KnownField::Encoder, defaultSelected),
+         mkItem(KnownField::RecordDate, defaultSelected),
+         mkItem(KnownField::Performers, defaultSelected),
+         mkItem(KnownField::Length, Qt::Unchecked),
+         mkItem(KnownField::Language, Qt::Unchecked),
+         mkItem(KnownField::EncoderSettings, Qt::Unchecked),
+         mkItem(KnownField::Lyrics, defaultSelected),
+         mkItem(KnownField::SynchronizedLyrics, Qt::Unchecked),
+         mkItem(KnownField::Grouping, Qt::Unchecked),
+         mkItem(KnownField::RecordLabel, Qt::Unchecked),
+         mkItem(KnownField::Cover, defaultSelected),
+         mkItem(KnownField::Composer, Qt::Unchecked),
+         mkItem(KnownField::Rating, Qt::Unchecked),
+         mkItem(KnownField::Description, Qt::Unchecked),
+         mkItem(KnownField::Vendor, Qt::Unchecked),
+    });
+    // clang-format on
 }
 
 KnownFieldModel::KnownFieldModel(const QList<Models::ChecklistItem> &items, QObject *parent)
