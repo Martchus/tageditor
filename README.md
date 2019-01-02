@@ -191,8 +191,8 @@ Here are some Bash examples which illustrate getting and setting tag information
   tageditor set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a
   ```
 
-    - In particular, the custom field `FOO` is set to `bar1` in test.mkv and the custom field `©foo`
-      is set to `bar2` in test.m4a. So the prefixes tell the tag editor that the specified field
+    - In particular, the custom field `FOO` is set to `bar1` in file.mkv and the custom field `©foo`
+      is set to `bar2` in file.m4a. So the prefixes tell the tag editor that the specified field
       ID is a native field ID of a particular tag format rather than a generic identifier. Native
       fields are only applied to the corresponding format of course.
     - The following prefixes are supported:
