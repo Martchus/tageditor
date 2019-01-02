@@ -814,9 +814,14 @@ void extractField(
                 // iterate through all tags
                 for (const Tag *tag : tags) {
                     const TagType tagType = tag->type();
-                    for (const pair<FieldScope, FieldValues> &fieldDenotation : fieldDenotations) {
+                    for (const auto &fieldDenotation : fieldDenotations) {
                         try {
-                            for (const TagValue *value : fieldDenotation.first.field.values(tag, tagType)) {
+                            const auto valuesForField = fieldDenotation.first.field.values(tag, tagType);
+                            // skip if field ID is format specific and not relevant for the current format
+                            if (!valuesForField.second) {
+                                continue;
+                            }
+                            for (const TagValue *value : valuesForField.first) {
                                 values.emplace_back(value, joinStrings({ tag->typeName(), numberToString(values.size()) }, "-", true));
                             }
                         } catch (const ConversionException &e) {

@@ -240,7 +240,12 @@ void CliTests::testSpecifyingNativeFieldIds()
     const string mkvFileBackup(mkvFile + ".bak");
     const string mp4File(workingCopyPath("mtx-test-data/aac/he-aacv2-ps.m4a"));
     const string mp4FileBackup(mp4File + ".bak");
-    const char *const args1[] = { "tageditor", "set", "mkv:FOO=bar", "mp4:©foo=bar", "mp4:invalid", "-f", mkvFile.data(), mp4File.data(), nullptr };
+    const string vorbisFile(workingCopyPath("mtx-test-data/ogg/qt4dance_medium.ogg"));
+    const string vorbisFileBackup(vorbisFile + ".bak");
+    const string opusFile(workingCopyPath("mtx-test-data/opus/v-opus.ogg"));
+    const string opusFileBackup(opusFile + ".bak");
+    const char *const args1[] = { "tageditor", "set", "mkv:FOO=bar", "mp4:©foo=bar", "mp4:invalid", "vorbis:BAR=foo", "-f", mkvFile.data(),
+        mp4File.data(), vorbisFile.data(), opusFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
     // FIXME: provide a way to specify raw data type
@@ -248,13 +253,14 @@ void CliTests::testSpecifyingNativeFieldIds()
         stdout, { "making MP4 tag field ©foo: It was not possible to find an appropriate raw data type id. UTF-8 will be assumed." }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Unable to parse denoted field ID \"invalid\": MP4 ID must be exactly 4 chars" }));
 
-    const char *const args2[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "generic:year", "-f", mkvFile.data(), nullptr };
+    const char *const args2[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              2010" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "FOO               bar" }));
 
-    const char *const args3[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "mp4:invalid", "generic:year", "-f", mp4File.data(), nullptr };
+    const char *const args3[]
+        = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "mp4:invalid", "generic:year", "-f", mp4File.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "test" }));
@@ -263,10 +269,26 @@ void CliTests::testSpecifyingNativeFieldIds()
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "©foo             bar" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "invalid           unable to parse - MP4 ID must be exactly 4 chars" }));
 
+    const char *const args4[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "-f", vorbisFile.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC(args4);
+    CPPUNIT_ASSERT(stderr.empty());
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              none" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "BAR               foo" }));
+
+    const char *const args5[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "-f", opusFile.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC(args5);
+    CPPUNIT_ASSERT(stderr.empty());
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              none" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "BAR               foo" }));
+
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFileBackup.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp4File.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp4FileBackup.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(vorbisFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(vorbisFileBackup.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(opusFile.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(opusFileBackup.data()));
 }
 
 /*!

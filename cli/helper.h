@@ -63,15 +63,16 @@ public:
     const char *name() const;
     bool denotes(const char *knownDenotation) const;
     const std::string &denotation() const;
-    std::vector<const TagValue *> values(const Tag *tag, TagType tagType) const;
+    std::pair<std::vector<const TagValue *>, bool> values(const Tag *tag, TagType tagType) const;
     bool setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &values) const;
 
 private:
-    using GetValuesForNativeFieldType = std::function<std::vector<const TagValue *>(const Tag *, TagType)>;
+    using GetValuesForNativeFieldType = std::function<std::pair<std::vector<const TagValue *>, bool>(const Tag *, TagType)>;
     using SetValuesForNativeFieldType = std::function<bool(Tag *, TagType, const std::vector<TagValue> &)>;
     FieldId(const char *nativeField, std::size_t nativeFieldSize, const GetValuesForNativeFieldType &valuesForNativeField,
         const SetValuesForNativeFieldType &setValuesForNativeField);
-    template <class ConcreteTag> static FieldId fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize);
+    template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
+    static FieldId fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize);
 
     KnownField m_knownField;
     std::string m_denotation;

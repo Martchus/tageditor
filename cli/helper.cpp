@@ -244,20 +244,25 @@ void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool s
         // parse field denotation
         const auto &values = scope.field.values(tag, tagType);
 
+        // skip values if format-specific field ID used which is not applicable for the current tag
+        if (!values.second) {
+            return;
+        }
+
         // skip empty values (unless prevented)
-        if (skipEmpty && values.empty()) {
+        if (skipEmpty && values.first.empty()) {
             return;
         }
 
         // print empty value (if not prevented)
-        if (values.empty()) {
+        if (values.first.empty()) {
             printFieldName(fieldName, fieldNameLen);
             cout << "none\n";
             return;
         }
 
         // print values
-        for (const auto &value : values) {
+        for (const auto &value : values.first) {
             printFieldName(fieldName, fieldNameLen);
             printTagValue(*value);
         }
@@ -485,7 +490,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                     } else if (part == "itunes" || part == "mp4") {
                         tagType |= TagType::Mp4Tag;
                     } else if (part == "vorbis") {
-                        tagType |= TagType::VorbisComment;
+                        tagType |= TagType::VorbisComment | TagType::OggVorbisComment;
                     } else if (part == "matroska") {
                         tagType |= TagType::MatroskaTag;
                     } else if (part == "all" || part == "any") {
@@ -608,19 +613,22 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
     return fields;
 }
 
-template <class ConcreteTag>
-std::vector<const TagValue *> valuesForNativeField(const char *idString, std::size_t idStringSize, const Tag *tag, TagType tagType)
+template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
+std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(const char *idString, std::size_t idStringSize, const Tag *tag, TagType tagType)
 {
-    if (tagType != ConcreteTag::tagType) {
-        return vector<const TagValue *>();
+    auto res = make_pair<std::vector<const TagValue *>, bool>({}, false);
+    if ((tagType & tagTypeMask) == TagType::Unspecified) {
+        return res;
     }
-    return static_cast<const ConcreteTag *>(tag)->values(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize));
+    res.first = static_cast<const ConcreteTag *>(tag)->values(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize));
+    res.second = true;
+    return res;
 }
 
-template <class ConcreteTag>
+template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
 bool setValuesForNativeField(const char *idString, std::size_t idStringSize, Tag *tag, TagType tagType, const std::vector<TagValue> &values)
 {
-    if (tagType != ConcreteTag::tagType) {
+    if ((tagType & tagTypeMask) == TagType::Unspecified) {
         return false;
     }
     return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize), values);
@@ -636,10 +644,10 @@ inline FieldId::FieldId(const char *nativeField, std::size_t nativeFieldSize, co
 }
 
 /// \remarks This wrapper is required because specifying c'tor template args is not possible.
-template <class ConcreteTag> FieldId FieldId::fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize)
+template <class ConcreteTag, TagType tagTypeMask> FieldId FieldId::fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize)
 {
-    return FieldId(nativeFieldId, nativeFieldIdSize, bind(&valuesForNativeField<ConcreteTag>, nativeFieldId, nativeFieldIdSize, _1, _2),
-        bind(&setValuesForNativeField<ConcreteTag>, nativeFieldId, nativeFieldIdSize, _1, _2, _3));
+    return FieldId(nativeFieldId, nativeFieldIdSize, bind(&valuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, nativeFieldIdSize, _1, _2),
+        bind(&setValuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, nativeFieldIdSize, _1, _2, _3));
 }
 
 FieldId FieldId::fromTagDenotation(const char *denotation, size_t denotationSize)
@@ -650,7 +658,7 @@ FieldId FieldId::fromTagDenotation(const char *denotation, size_t denotationSize
     } else if (!strncmp(denotation, "mp4:", 4)) {
         return FieldId::fromNativeField<Mp4Tag>(denotation + 4, denotationSize - 4);
     } else if (!strncmp(denotation, "vorbis:", 7)) {
-        return FieldId::fromNativeField<VorbisComment>(denotation + 7, denotationSize - 7);
+        return FieldId::fromNativeField<VorbisComment, TagType::VorbisComment | TagType::OggVorbisComment>(denotation + 7, denotationSize - 7);
     } else if (!strncmp(denotation, "id3:", 7)) {
         return FieldId::fromNativeField<Id3v2Tag>(denotation + 4, denotationSize - 4);
     } else if (!strncmp(denotation, "generic:", 8)) {
@@ -671,13 +679,16 @@ FieldId FieldId::fromTrackDenotation(const char *denotation, size_t denotationSi
     return FieldId(KnownField::Invalid, denotation, denotationSize);
 }
 
-std::vector<const TagValue *> FieldId::values(const Tag *tag, TagType tagType) const
+std::pair<std::vector<const TagValue *>, bool> FieldId::values(const Tag *tag, TagType tagType) const
 {
+    auto res = make_pair<std::vector<const TagValue *>, bool>({}, false);
     if (!m_nativeField.empty()) {
-        return m_valuesForNativeField(tag, tagType);
+        res = m_valuesForNativeField(tag, tagType);
     } else {
-        return tag->values(m_knownField);
+        res.first = tag->values(m_knownField);
+        res.second = true;
     }
+    return res;
 }
 
 bool FieldId::setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &values) const
