@@ -13,6 +13,7 @@ set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 3)
 set(META_VERSION_MINOR 1)
 set(META_VERSION_PATCH 3)
+set(META_ADD_DEFAULT_CPP_UNIT_TEST_APPLICATION ON)
 
 # add project files
 set(HEADER_FILES
@@ -131,16 +132,9 @@ set(WIDGETS_UI_FILES
     gui/dbquerywidget.ui
 )
 
-#set(QUICK_HEADER_FILES
-#)
-#set(QUICK_SRC_FILES
-#    resources/icons.qrc
-#)
-
 set(TEST_HEADER_FILES
 )
 set(TEST_SRC_FILES
-    tests/cppunit.cpp
     tests/cli.cpp
 )
 
@@ -205,7 +199,7 @@ set(REQUIRED_ICONS
 )
 
 # find c++utilities
-find_package(c++utilities 4.12.0 REQUIRED)
+find_package(c++utilities 4.17.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
