@@ -478,7 +478,7 @@ ClearLineEdit *TagFieldEdit::setupDescriptionLineEdit()
  */
 QLabel *TagFieldEdit::setupTypeNotSupportedLabel()
 {
-    auto *const label = new QLabel(tr("editing widget for field type not supported"), this);
+    auto *const label = new QLabel(tr("no widget for editing this field type available"), this);
     m_layout->addWidget(label);
     m_widgets << label;
     return label;
