@@ -615,8 +615,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 fileInfo.open(true);
                                 fileInfo.parseContainerFormat(diag);
                                 auto buff = make_unique<char[]>(fileInfo.size());
-                                fileInfo.stream().seekg(0);
-                                fileInfo.stream().read(buff.get(), fileInfo.size());
+                                fileInfo.stream().seekg(static_cast<streamoff>(fileInfo.containerOffset()));
+                                fileInfo.stream().read(buff.get(), static_cast<streamoff>(fileInfo.size()));
                                 TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
                                 value.setMimeType(fileInfo.mimeType());
                                 convertedValues.emplace_back(move(value));
