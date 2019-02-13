@@ -116,6 +116,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setExample(PROJECT_NAME
         " set title=\"Title of \"{1st,2nd,3rd}\" file\" title=\"Title of \"{4..16}\"th file\" album=\"The Album\" -f /some/dir/*.m4a\n" PROJECT_NAME
+        " set title=\"Title for track \"{1..25} album=\"Album with 25 tracks on one disk\" track+=1/25 disk=1/1 -f *.m4a" PROJECT_NAME
         " set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a\n" PROJECT_NAME
         " set title0=\"Title for both files\" album1=\"Album for 2nd file\" -f file1.ogg file2.mp3\n" PROJECT_NAME
         " set target-level=30 target-tracks=3134325680 title=\"Title for track 3134325680\" \\\n"
