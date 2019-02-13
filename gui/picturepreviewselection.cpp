@@ -337,23 +337,30 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
         fileInfo.open(true);
         fileInfo.parseContainerFormat(diag);
         // TODO: show diagnostic messages
+
         auto mimeType = QString::fromUtf8(fileInfo.mimeType());
         bool ok;
         mimeType = QInputDialog::getText(
-            this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
-        if (ok) {
-            if ((fileInfo.size() < 10485760)
-                || (QMessageBox::warning(this, QCoreApplication::applicationName(),
-                        tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No)
-                       == QMessageBox::No)) {
-                auto buff = make_unique<char[]>(fileInfo.size());
-                fileInfo.stream().seekg(0);
-                fileInfo.stream().read(buff.get(), fileInfo.size());
-                selectedCover.assignData(std::move(buff), fileInfo.size(), TagDataType::Picture);
-                selectedCover.setMimeType(mimeType.toUtf8().constData());
-                emit pictureChanged();
-            }
+            this, tr("Enter/confirm MIME type"), tr("Confirm or enter the MIME type of the selected file."), QLineEdit::Normal, mimeType, &ok);
+        if (!ok) {
+            return;
         }
+
+        if ((fileInfo.size() >= 10485760)
+            && (QMessageBox::warning(this, QCoreApplication::applicationName(),
+                    tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No)
+                   == QMessageBox::No)) {
+            return;
+        }
+
+        const auto mimeTypeUtf8(mimeType.toUtf8());
+        auto buff = make_unique<char[]>(fileInfo.size());
+        fileInfo.stream().seekg(static_cast<streamsize>(fileInfo.containerOffset()));
+        fileInfo.stream().read(buff.get(), static_cast<streamsize>(fileInfo.size()));
+        selectedCover.assignData(std::move(buff), fileInfo.size(), TagDataType::Picture);
+        selectedCover.setMimeType(mimeTypeUtf8.constData());
+        emit pictureChanged();
+
     } catch (const TagParser::Failure &) {
         QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to parse specified cover file."));
     } catch (...) {
