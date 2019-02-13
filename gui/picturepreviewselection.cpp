@@ -17,6 +17,7 @@
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/catchiofailure.h>
+#include <c++utilities/misc/traits.h>
 
 #include <QAction>
 #include <QCoreApplication>
@@ -42,6 +43,7 @@
 
 #include <cassert>
 #include <functional>
+#include <limits>
 #include <memory>
 #include <stdexcept>
 
@@ -269,8 +271,13 @@ template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField fiel
                 pair->second.setValue(TagValue());
             }
         } else if (!values[index].isEmpty()) {
-            typename TagType::FieldType field(id, values[index]);
-            field.setTypeInfo(index);
+            using FieldType = typename TagType::FieldType;
+            using TypeInfoType = typename FieldType::TypeInfoType;
+            using IndexCompareType = typename Traits::Conditional<std::is_unsigned<TypeInfoType>, make_unsigned<decltype(index)>::type, TypeInfoType>;
+            FieldType field(id, values[index]);
+            if (static_cast<IndexCompareType>(index) < numeric_limits<TypeInfoType>::max()) {
+                field.setTypeInfo(static_cast<TypeInfoType>(index));
+            }
             fields.insert(std::make_pair(id, field));
         }
     }
@@ -472,7 +479,7 @@ void PicturePreviewSelection::extractSelected()
         QMessageBox::warning(this, QCoreApplication::applicationName(), tr("Unable to open output file."));
         return;
     }
-    if (file.write(value.dataPointer(), value.dataSize()) > 0) {
+    if (value.dataSize() <= numeric_limits<qint64>::max() && file.write(value.dataPointer(), static_cast<qint64>(value.dataSize())) > 0) {
         QMessageBox::information(this, QCoreApplication::applicationName(), tr("The cover has extracted."));
     } else {
         QMessageBox::warning(this, QCoreApplication::applicationName(), tr("Unable to write to output file."));
@@ -504,8 +511,8 @@ void PicturePreviewSelection::displaySelected()
                 tr("The attached image can't be found. It is supposed to be stored as external file \"%1\".").arg(fileName));
             return;
         }
-    } else {
-        img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
+    } else if (value.dataSize() < numeric_limits<int>::max()) {
+        img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), static_cast<int>(value.dataSize()));
     }
     if (img.isNull()) {
         QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image can't be displayed."));
@@ -709,8 +716,8 @@ void PicturePreviewSelection::updatePreview(int index)
                 m_pixmapItem->setVisible(false);
                 return;
             }
-        } else {
-            img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), value.dataSize());
+        } else if (value.dataSize() < numeric_limits<int>::max()) {
+            img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), static_cast<int>(value.dataSize()));
             updateSizeAndMimeType(value.dataSize(), img.size(), QString::fromStdString(value.mimeType()));
         }
         if (img.isNull()) {
