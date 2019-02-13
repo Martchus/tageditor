@@ -308,8 +308,14 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         if (!newRelativeDirectory.isEmpty()) {
             FileSystemItem *const counterpartParent = item->root()->makeChildAvailable(newRelativeDirectory);
             const QString &counterpartName = newName.isEmpty() ? item->name() : newName;
-            if (counterpartParent->findChild(counterpartName, item)) {
-                item->setNote(tr("name is already used at new location"));
+            if (const auto *const conflictingItem = counterpartParent->findChild(counterpartName, item)) {
+                QString conflictingName;
+                if (const auto *const conflictingCounterpart = conflictingItem->counterpart()) {
+                    conflictingCounterpart->relativePath(conflictingName);
+                } else {
+                    conflictingName = conflictingItem->currentName();
+                }
+                item->setNote(tr("name is already used at new location by '%1'").arg(conflictingName));
                 item->setErrorOccured(true);
             } else {
                 auto *const counterpart = new FileSystemItem(ItemStatus::New, item->type(), counterpartName, counterpartParent);
@@ -333,7 +339,7 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
             } else {
                 item->setNote(tr("will be moved"));
             }
-        } else {
+        } else if (item->note().isEmpty()) {
             item->setNote(tr("can not be renamed"));
         }
         break;
