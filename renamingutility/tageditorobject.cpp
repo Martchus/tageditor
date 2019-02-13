@@ -46,10 +46,11 @@ TAGEDITOR_JS_VALUE &operator<<(TAGEDITOR_JS_VALUE &diagObject, const Diagnostics
 TAGEDITOR_JS_VALUE &operator<<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
 {
     // add text fields
-    static const char *fieldNames[] = { "title", "artist", "album", "year", "comment", "genre", "encoder", "language", "description", nullptr };
-    static const KnownField fields[] = { KnownField::Title, KnownField::Artist, KnownField::Album, KnownField::Year, KnownField::Comment,
-        KnownField::Genre, KnownField::Encoder, KnownField::Language, KnownField::Description };
-    const char **fieldName = fieldNames;
+    static const char *const fieldNames[]
+        = { "title", "artist", "albumartist", "album", "year", "comment", "genre", "encoder", "language", "description", nullptr };
+    static const KnownField fields[] = { KnownField::Title, KnownField::Artist, KnownField::AlbumArtist, KnownField::Album, KnownField::Year,
+        KnownField::Comment, KnownField::Genre, KnownField::Encoder, KnownField::Language, KnownField::Description };
+    const char *const *fieldName = fieldNames;
     const KnownField *field = fields;
     for (; *fieldName; ++fieldName, ++field) {
         try {

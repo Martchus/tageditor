@@ -114,8 +114,11 @@ if (fileInfo.currentSuffix === "tmp") {
 // define an array for the fields to be joined later
 var fields = []
 
-// get the artist, remove invalid characters and add it to fields array
-var artist = validFileName(tag.artist)
+// get the artist (preferably album artist), remove invalid characters and add it to fields array
+var artist = validFileName(tag.albumartist)
+if (artist.length === 0) {
+    artist = validFileName(tag.artist)
+}
 if (includeArtist && !isPartOfCollection(tag) && notEmpty(artist)) {
     fields.push(artist)
 }
@@ -183,7 +186,10 @@ if (!distDir) {
     return
 }
 var path = [distDir]
-var artist = validDirectoryName(tag.artist)
+var artist = validDirectoryName(tag.albumartist)
+if (artist.length === 0) {
+    artist = validDirectoryName(tag.artist)
+}
 if (isPartOfCollection(tag)) {
     path.push(collectionsDir)
 } else if (isMiscFile(tag)) {
