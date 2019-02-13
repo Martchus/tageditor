@@ -182,7 +182,27 @@ currently shown tag.</string>
         </layout>
        </item>
        <item>
-        <widget class="QStackedWidget" name="stackedWidget"/>
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth">
+          <number>0</number>
+         </property>
+         <property name="horizontalScrollBarPolicy">
+          <enum>Qt::ScrollBarAlwaysOff</enum>
+         </property>
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+         </property>
+         <widget class="QStackedWidget" name="stackedWidget"/>
+        </widget>
        </item>
       </layout>
      </widget>
