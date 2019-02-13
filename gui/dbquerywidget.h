@@ -51,6 +51,9 @@ private slots:
     void setStatus(bool aborted);
     void fileStatusChanged(bool opened, bool hasTags);
     void showResultsContextMenu();
+#ifndef QT_NO_CLIPBOARD
+    void copySelectedResult();
+#endif
     void fetchAndShowCoverForSelection();
     void fetchAndShowLyricsForSelection();
     void openSelectionInBrowser();
@@ -72,6 +75,7 @@ private:
     int m_coverIndex, m_lyricsIndex;
     QMenu *m_menu;
     QAction *m_insertPresentDataAction;
+    QPoint m_contextMenuPos;
 };
 
 } // namespace QtGui

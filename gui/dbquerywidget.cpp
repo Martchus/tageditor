@@ -23,6 +23,9 @@
 #include <QMenu>
 #include <QStyle>
 #include <QTextBrowser>
+#ifndef QT_NO_CLIPBOARD
+#include <QClipboard>
+#endif
 
 #include <functional>
 
@@ -456,6 +459,9 @@ void DbQueryWidget::showResultsContextMenu()
             static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
     }
     if (m_model && m_model->areResultsAvailable()) {
+#ifndef QT_NO_CLIPBOARD
+        contextMenu.addAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy value"), this, &DbQueryWidget::copySelectedResult);
+#endif
         if (!contextMenu.isEmpty()) {
             contextMenu.addSeparator();
         }
@@ -466,8 +472,31 @@ void DbQueryWidget::showResultsContextMenu()
         contextMenu.addAction(
             QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
     }
-    contextMenu.exec(QCursor::pos());
+    m_contextMenuPos = QCursor::pos();
+    contextMenu.exec(m_contextMenuPos);
 }
+
+#ifndef QT_NO_CLIPBOARD
+void DbQueryWidget::copySelectedResult()
+{
+    auto *const clipboard = QGuiApplication::clipboard();
+    if (!clipboard) {
+        return;
+    }
+    const auto selectedIndex = this->selectedIndex();
+    if (!selectedIndex.isValid()) {
+        return;
+    }
+    const auto clickedColumnIndex = m_ui->resultsTreeView->indexAt(m_ui->resultsTreeView->mapFromGlobal(m_contextMenuPos));
+    if (!clickedColumnIndex.isValid()) {
+        return;
+    }
+    const auto value = m_model->data(m_model->index(selectedIndex.row(), clickedColumnIndex.column()));
+    if (value.isValid()) {
+        clipboard->setText(value.toString());
+    }
+}
+#endif
 
 void DbQueryWidget::fetchAndShowCoverForSelection()
 {
