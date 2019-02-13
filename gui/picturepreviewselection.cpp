@@ -35,6 +35,10 @@
 #include <QMessageBox>
 #include <QMimeData>
 #include <QStringBuilder>
+#ifndef QT_NO_CLIPBOARD
+#include <QBuffer>
+#include <QClipboard>
+#endif
 
 #include <cassert>
 #include <functional>
@@ -370,6 +374,65 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
     updatePreview(m_currentTypeIndex);
 }
 
+#ifndef QT_NO_CLIPBOARD
+void PicturePreviewSelection::pasteOfSelectedTypeAsJpeg()
+{
+    pasteOfSelectedType("JPEG");
+}
+
+void PicturePreviewSelection::pasteOfSelectedTypeAsPng()
+{
+    pasteOfSelectedType("PNG");
+}
+
+void PicturePreviewSelection::pasteOfSelectedType(const char *format)
+{
+    // load image from clipboard
+    auto *const clipboard = QGuiApplication::clipboard();
+    const auto image = clipboard ? clipboard->image() : QImage();
+    if (image.isNull()) {
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to load image from clipboard."));
+        return;
+    }
+
+    // set default MIME type
+    QString mimeType;
+    if (strcmp(format, "JPEG") == 0) {
+        mimeType = QStringLiteral("image/jpeg");
+    } else if (strcmp(format, "PNG") == 0) {
+        mimeType = QStringLiteral("image/png");
+    }
+
+    // save image to buffer
+    QByteArray imageData;
+    QBuffer buffer(&imageData);
+    buffer.open(QIODevice::WriteOnly);
+    if (!image.save(&buffer, format)) {
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to save image from clipboard."));
+        return;
+    }
+
+    // ask for MIME type
+    if (mimeType.isEmpty()) {
+        bool ok;
+        mimeType
+            = QInputDialog::getText(this, tr("Enter MIME type"), tr("Enter the MIME type for the pasted image."), QLineEdit::Normal, mimeType, &ok);
+        if (!ok) {
+            return;
+        }
+    }
+
+    // assign image
+    assert(m_currentTypeIndex < m_values.size());
+    TagValue &selectedCover = m_values[m_currentTypeIndex];
+    const auto mimeTypeUtf8(mimeType.toUtf8());
+    selectedCover.assignData(imageData.data(), static_cast<size_t>(imageData.size()), TagDataType::Picture);
+    selectedCover.setMimeType(mimeTypeUtf8.constData());
+
+    updatePreview(m_currentTypeIndex);
+}
+#endif
+
 /*!
  * \brief Removes the selected picture.
  */
@@ -672,6 +735,20 @@ void PicturePreviewSelection::showContextMenu()
     auto *const addAction = menu.addAction(m_ui->addButton->text());
     addAction->setIcon(QIcon::fromTheme(QStringLiteral("list-add")));
     connect(addAction, &QAction::triggered, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
+#ifndef QT_NO_CLIPBOARD
+    const auto *const clipboard = QGuiApplication::clipboard();
+    const auto *const mimeData = clipboard ? clipboard->mimeData() : nullptr;
+    if (mimeData && mimeData->hasImage()) {
+        auto *const pasteJpegAction = menu.addAction(tr("Paste from clipboard as JPEG"));
+        pasteJpegAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-paste")));
+        connect(pasteJpegAction, &QAction::triggered, this,
+            static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::pasteOfSelectedTypeAsJpeg));
+        auto *const pastePngAction = menu.addAction(tr("Paste from clipboard as PNG"));
+        pastePngAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-paste")));
+        connect(pastePngAction, &QAction::triggered, this,
+            static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::pasteOfSelectedTypeAsPng));
+    }
+#endif
     if (m_ui->extractButton->isEnabled()) {
         QAction *mimeAction = menu.addAction(tr("Change MIME-type"));
         mimeAction->setIcon(QIcon::fromTheme(QStringLiteral("document-properties")));

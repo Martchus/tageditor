@@ -49,6 +49,11 @@ public slots:
     void clear();
     void addOfSelectedType();
     void addOfSelectedType(const QString &path);
+#ifndef QT_NO_CLIPBOARD
+    void pasteOfSelectedTypeAsJpeg();
+    void pasteOfSelectedTypeAsPng();
+    void pasteOfSelectedType(const char *format);
+#endif
     void removeSelected();
     void extractSelected();
     void displaySelected();
