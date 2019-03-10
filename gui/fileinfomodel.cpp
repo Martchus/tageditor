@@ -391,8 +391,12 @@ void FileInfoModel::updateCache()
                     trackHelper.appendRow(tr("Format/codec ID"), track->formatId());
                     trackHelper.appendRow(tr("Size"), track->size());
                     trackHelper.appendRow(tr("Duration"), track->duration());
-                    trackHelper.appendRow(tr("Avg. bitrate"), bitrateToString(track->bitrate()));
-                    trackHelper.appendRow(tr("Max. bitrate"), bitrateToString(track->maxBitrate()));
+                    if (track->bitrate() > 0.0) {
+                        trackHelper.appendRow(tr("Avg. bitrate"), bitrateToString(track->bitrate()));
+                    }
+                    if (track->maxBitrate() > 0.0) {
+                        trackHelper.appendRow(tr("Max. bitrate"), bitrateToString(track->maxBitrate()));
+                    }
                     trackHelper.appendRow(tr("Creation time"), track->creationTime());
                     trackHelper.appendRow(tr("Modification time"), track->modificationTime());
                     trackHelper.appendRow(tr("Language"), track->language());

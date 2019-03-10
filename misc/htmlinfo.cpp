@@ -570,10 +570,10 @@ public:
                 qstr(track->duration().toString(TimeSpanOutputFormat::WithMeasures)) % QStringLiteral(" (")
                     % QString::number(track->duration().totalTicks()) % QChar(')'));
         }
-        if (track->bitrate() != 0.0) {
+        if (track->bitrate() > 0.0) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Avg. bitrate"), qstr(bitrateToString(track->bitrate())));
         }
-        if (track->maxBitrate() != 0.0) {
+        if (track->maxBitrate() > 0.0) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Maximum bitrate"), qstr(bitrateToString(track->maxBitrate())));
         }
         if (!track->creationTime().isNull()) {
