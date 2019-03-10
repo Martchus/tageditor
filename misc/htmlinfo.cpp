@@ -913,7 +913,7 @@ public:
         if (!duration.isNull()) {
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(duration.toString(TimeSpanOutputFormat::WithMeasures)));
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Overall avg. bitrate"),
-                qstr(bitrateToString(0.0078125 * m_file.size() / duration.totalSeconds())));
+                qstr(bitrateToString(m_file.overallAverageBitrate())));
         }
         const char *const mimeType = m_file.mimeType();
         if (*mimeType) {

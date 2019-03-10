@@ -278,7 +278,7 @@ void FileInfoModel::updateCache()
         const TimeSpan duration = m_file->duration();
         if (!duration.isNull()) {
             rootHelper.appendRow(tr("Duration"), duration);
-            rootHelper.appendRow(tr("Overall avg. bitrate"), bitrateToString(0.0078125 * m_file->size() / duration.totalSeconds()));
+            rootHelper.appendRow(tr("Overall avg. bitrate"), bitrateToString(m_file->overallAverageBitrate()));
         }
         const char *const mimeType = m_file->mimeType();
         if (*mimeType) {
