@@ -162,6 +162,15 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             // print general/container-related info
             cout << "Technical information for \"" << file << "\":\n";
             cout << " - " << TextAttribute::Bold << "Container format: " << fileInfo.containerFormatName() << Phrases::End;
+            printProperty("Size", dataSizeToString(fileInfo.size()));
+            if (const char *const mimeType = fileInfo.mimeType()) {
+                printProperty("Mime-type", mimeType);
+            }
+            const auto duration = fileInfo.duration();
+            if (!duration.isNull()) {
+                printProperty("Duration", duration);
+                printProperty("Overall avg. bitrate", bitrateToString(fileInfo.overallAverageBitrate()));
+            }
             if (const auto container = fileInfo.container()) {
                 size_t segmentIndex = 0;
                 for (const auto &title : container->titles()) {
@@ -177,7 +186,6 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                 printProperty("Version", container->version());
                 printProperty("Document read version", container->doctypeReadVersion());
                 printProperty("Document version", container->doctypeVersion());
-                printProperty("Duration", container->duration());
                 printProperty("Creation time", container->creationTime());
                 printProperty("Modification time", container->modificationTime());
                 printProperty("Tag position", container->determineTagPosition(diag));
@@ -227,7 +235,9 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     if (track->extensionChannelConfigString()) {
                         printProperty("Extension channel config", track->extensionChannelConfigString());
                     }
-                    printProperty("Bitrate", track->bitrate(), "kbit/s");
+                    if (track->bitrate() > 0.0) {
+                        printProperty("Bitrate", bitrateToString(track->bitrate()));
+                    }
                     printProperty("Bits per sample", track->bitsPerSample());
                     printProperty("Sampling frequency", track->samplingFrequency(), "Hz");
                     printProperty("Extension sampling frequency", track->extensionSamplingFrequency(), "Hz");
