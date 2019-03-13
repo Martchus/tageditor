@@ -276,11 +276,11 @@ template <> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element
 {
     switch (element->id()) {
     case MatroskaIds::SeekID: {
-        const uint64 seekId = element->readUInteger();
+        const std::uint64_t seekId = element->readUInteger();
         writer.writeCharacters(QStringLiteral(", denoted type: 0x"));
         writer.writeCharacters(QString::number(seekId, 16));
-        if (seekId <= numeric_limits<uint32>::max()) {
-            const char *const seekIdName = matroskaIdName(static_cast<uint32>(seekId));
+        if (seekId <= numeric_limits<std::uint32_t>::max()) {
+            const char *const seekIdName = matroskaIdName(static_cast<std::uint32_t>(seekId));
             if (*seekIdName) {
                 writer.writeCharacters(QStringLiteral(" \""));
                 writer.writeCharacters(QString::fromLatin1(seekIdName));
@@ -291,7 +291,7 @@ template <> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element
     }
     case MatroskaIds::SeekPosition: {
         writer.writeCharacters(QStringLiteral(", denoted position: "));
-        const uint64 seekPos = element->readUInteger();
+        const std::uint64_t seekPos = element->readUInteger();
         const auto seekPosStr = QString::number(seekPos);
         writer.writeStartElement(QStringLiteral("span"));
         writer.writeAttribute(QStringLiteral("data-role"), QStringLiteral("offset"));
@@ -684,8 +684,8 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(attachment->name()));
         }
         if (attachment->data()) {
-            rowMaker.mkRow(
-                QCoreApplication::translate("HtmlInfo", "Size"), qstr(dataSizeToString(static_cast<uint64>(attachment->data()->size()), true)));
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Size"),
+                qstr(dataSizeToString(static_cast<std::uint64_t>(attachment->data()->size()), true)));
         }
         if (!attachment->mimeType().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Mime-type"), qstr(attachment->mimeType()));
@@ -728,7 +728,7 @@ public:
         }
         if (!chapter.tracks().empty()) {
             QStringList trackIds;
-            for (uint64 id : chapter.tracks()) {
+            for (std::uint64_t id : chapter.tracks()) {
                 trackIds << QString::number(id);
             }
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tracks"), trackIds.join(QStringLiteral(", ")));
@@ -912,8 +912,7 @@ public:
         const TimeSpan duration = m_file.duration();
         if (!duration.isNull()) {
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(duration.toString(TimeSpanOutputFormat::WithMeasures)));
-            m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Overall avg. bitrate"),
-                qstr(bitrateToString(m_file.overallAverageBitrate())));
+            m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Overall avg. bitrate"), qstr(bitrateToString(m_file.overallAverageBitrate())));
         }
         const char *const mimeType = m_file.mimeType();
         if (*mimeType) {

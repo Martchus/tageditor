@@ -3,8 +3,6 @@
 
 #include <tagparser/diagnostics.h>
 
-#include <c++utilities/conversion/types.h>
-
 namespace TagParser {
 class AbstractContainer;
 class AbstractAttachment;
@@ -24,7 +22,7 @@ public:
     bool next(TagParser::AbstractContainer *container, TagParser::Diagnostics &diag);
 
     AttachmentAction action;
-    uint64 id;
+    std::uint64_t id;
     bool hasId;
     const char *path;
     const char *name;

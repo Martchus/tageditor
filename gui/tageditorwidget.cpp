@@ -29,7 +29,6 @@
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/ansiescapecodes.h>
-#include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/path.h>
 
 #include <QCheckBox>
@@ -817,8 +816,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                 // try to open with write access
                 try {
                     m_fileInfo.reopen(false);
-                } catch (...) {
-                    ::IoUtilities::catchIoFailure();
+                } catch (const std::ios_base::failure &) {
                     // try to open read-only if opening with write access failed
                     m_fileInfo.reopen(true);
                 }
@@ -828,8 +826,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
             } catch (const Failure &) {
                 // the file has been opened; parsing notifications will be shown in the info box
                 result = FatalParsingError;
-            } catch (...) {
-                ::IoUtilities::catchIoFailure();
+            } catch (const std::ios_base::failure &) {
                 // the file could not be opened because an IO error occured
                 m_fileInfo.close(); // ensure file is closed
                 result = IoError;
@@ -1155,8 +1152,7 @@ bool TagEditorWidget::startSaving()
                 m_fileInfo.applyChanges(m_diag, progress);
             } catch (const Failure &) {
                 processingError = true;
-            } catch (...) {
-                ::IoUtilities::catchIoFailure();
+            } catch (const std::ios_base::failure &) {
                 ioError = true;
             }
         } catch (const exception &e) {

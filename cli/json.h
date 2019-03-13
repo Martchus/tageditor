@@ -31,7 +31,7 @@ struct TargetInfo : ReflectiveRapidJSON::JsonSerializable<TargetInfo> {
     using IdContainerType = TagParser::TagTarget::IdContainerType;
     TargetInfo(const TagParser::TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
 
-    uint64 level;
+    std::uint64_t level;
     std::string levelName;
     IdContainerType tracks;
     IdContainerType chapters;

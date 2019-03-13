@@ -21,7 +21,7 @@ using namespace TagParser;
 
 namespace QtGui {
 
-void addIds(vector<uint64> &target, ChecklistModel *sourceModel)
+void addIds(vector<std::uint64_t> &target, ChecklistModel *sourceModel)
 {
     for (const auto &item : sourceModel->items()) {
         if (item.isChecked()) {
@@ -30,9 +30,9 @@ void addIds(vector<uint64> &target, ChecklistModel *sourceModel)
     }
 }
 
-template <class T> void addIds(ChecklistModel *targetModel, const T &fileIds, const vector<uint64> &targetIds)
+template <class T> void addIds(ChecklistModel *targetModel, const T &fileIds, const vector<std::uint64_t> &targetIds)
 {
-    QList<uint64> ids;
+    QList<std::uint64_t> ids;
     QList<ChecklistItem> items;
     for (const auto &i : fileIds) {
         items << ChecklistItem(QVariant::fromValue(i->id()), QString::fromUtf8(i->label().data()),
@@ -47,7 +47,7 @@ template <class T> void addIds(ChecklistModel *targetModel, const T &fileIds, co
     targetModel->setItems(items);
 }
 
-void addIds(ChecklistModel *targetModel, const vector<uint64> &targetIds)
+void addIds(ChecklistModel *targetModel, const vector<std::uint64_t> &targetIds)
 {
     QList<ChecklistItem> items;
     for (auto id : targetIds) {
@@ -89,14 +89,14 @@ EnterTargetDialog::~EnterTargetDialog()
 
 void EnterTargetDialog::updateLevelNamePlaceholderText(int i)
 {
-    const char *levelName = i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<uint32>(i))) : nullptr;
+    const char *levelName = i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : nullptr;
     m_ui->levelNameLineEdit->setPlaceholderText(levelName ? QString::fromUtf8(levelName) : QString());
 }
 
 TagParser::TagTarget EnterTargetDialog::target() const
 {
     TagTarget target;
-    target.setLevel(static_cast<uint64>(m_ui->levelSpinBox->value()));
+    target.setLevel(static_cast<std::uint64_t>(m_ui->levelSpinBox->value()));
     target.setLevelName(m_ui->levelNameLineEdit->text().toUtf8().data());
     addIds(target.tracks(), m_tracksModel);
     addIds(target.chapters(), m_chaptersModel);

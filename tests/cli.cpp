@@ -1,5 +1,5 @@
+#include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
-#include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/misc.h>
 #include <c++utilities/io/path.h>
 
@@ -697,7 +697,7 @@ void CliTests::testHandlingAttachments()
     origFile.exceptions(ios_base::failbit | ios_base::badbit), extFile.exceptions(ios_base::failbit | ios_base::badbit);
     origFile.open(mkvFile2.data() + 5, ios_base::in | ios_base::binary), extFile.open("/tmp/extracted.mkv", ios_base::in | ios_base::binary);
     origFile.seekg(0, ios_base::end), extFile.seekg(0, ios_base::end);
-    int64 origFileSize = origFile.tellg(), extFileSize = extFile.tellg();
+    std::int64_t origFileSize = origFile.tellg(), extFileSize = extFile.tellg();
     CPPUNIT_ASSERT_EQUAL(origFileSize, extFileSize);
     for (origFile.seekg(0), extFile.seekg(0); origFileSize > 0; --origFileSize) {
         CPPUNIT_ASSERT_EQUAL(origFile.get(), extFile.get());
@@ -900,7 +900,7 @@ void CliTests::testExtraction()
     MediaFileInfo extractedInfo("/tmp/extracted.jpeg");
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat(diag);
-    CPPUNIT_ASSERT_EQUAL(static_cast<uint64>(22771), extractedInfo.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<std::uint64_t>(22771), extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     extractedInfo.invalidate();
 
@@ -913,7 +913,7 @@ void CliTests::testExtraction()
     TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat(diag);
-    CPPUNIT_ASSERT_EQUAL(static_cast<uint64>(22771), extractedInfo.size());
+    CPPUNIT_ASSERT_EQUAL(static_cast<std::uint64_t>(22771), extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp4File2.data()));

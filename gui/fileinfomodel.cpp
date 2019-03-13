@@ -512,7 +512,7 @@ void FileInfoModel::updateCache()
                 }
                 if (!chapter->tracks().empty()) {
                     QStringList trackIds;
-                    for (const uint64 id : chapter->tracks()) {
+                    for (const auto id : chapter->tracks()) {
                         trackIds << QString::number(id);
                     }
                     chapterHelper.appendRow(tr("Tracks"), trackIds.join(QStringLiteral(", ")));

@@ -169,26 +169,26 @@ set(REQUIRED_ICONS
     view-media-lyrics)
 
 # find c++utilities
-find_package(c++utilities 4.17.0 REQUIRED)
+set(CONFIGURATION_PACKAGE_SUFFIX "" CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
+find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} 5.0.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
 # find qtutilities
 if (WIDGETS_GUI OR QUICK_GUI)
-    find_package(qtutilities 5.7.0 REQUIRED)
+    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX} 6.0.0 REQUIRED)
     use_qt_utilities()
 endif ()
 
 # find tagparser
-find_package(tagparser 8.3.0 REQUIRED)
+find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 9.0.0 REQUIRED)
 use_tag_parser()
-list(APPEND TEST_LIBRARIES ${TAG_PARSER_SHARED_LIB})
 
 # enable experimental JSON export
 option(ENABLE_JSON_EXPORT "enable JSON export" OFF)
 if (ENABLE_JSON_EXPORT)
     # find reflective-rapidjson
-    find_package(reflective_rapidjson REQUIRED)
+    find_package(reflective_rapidjson${CONFIGURATION_PACKAGE_SUFFIX} REQUIRED)
     use_reflective_rapidjson()
 
     # add additional source files
@@ -204,20 +204,20 @@ if (ENABLE_JSON_EXPORT)
                                         OUTPUT_LISTS
                                         HEADER_FILES
                                         CLANG_OPTIONS_FROM_TARGETS
-                                        tageditor)
+                                        ${META_TARGET_NAME})
 
     # add compile definitions
     list(APPEND META_PRIVATE_COMPILE_DEFINITIONS ${META_PROJECT_VARNAME_UPPER}_JSON_EXPORT)
 endif ()
 
-# add Qt modules which can currently not be detected automatically
+# add Qt modules which can not be detected automatically
 list(APPEND ADDITIONAL_QT_MODULES Concurrent Network)
 
 # include modules to apply configuration
 if (WIDGETS_GUI OR QUICK_GUI)
     include(QtGuiConfig)
-    include(JsProviderConfig)
-    include(WebViewProviderConfig)
+    include(QtJsProviderConfig)
+    include(QtWebViewProviderConfig)
     include(QtConfig)
 endif ()
 include(WindowsResources)
@@ -230,10 +230,10 @@ include(ConfigHeader)
 add_desktop_file()
 
 # create custom desktop file for launching the renaming utility separately
-add_custom_desktop_file("${META_PROJECT_NAME}-renamingutility"
-                        "Renaming utility (${META_APP_NAME})"
-                        "Renaming utility (${META_APP_NAME})"
-                        "Tool to rename files using its tag information"
-                        "${META_APP_CATEGORIES}"
-                        "${META_PROJECT_NAME} qt-gui --renaming-utility"
-                        "${META_PROJECT_NAME}")
+add_custom_desktop_file(FILE_NAME "${META_ID}-renamingutility"
+                        DESKTOP_FILE_APP_NAME "Renaming utility (${META_APP_NAME})"
+                        DESKTOP_FILE_GENERIC_NAME "Renaming utility (${META_APP_NAME})"
+                        DESKTOP_FILE_DESCRIPTION "Tool to rename files using its tag information"
+                        DESKTOP_FILE_CATEGORIES "${META_APP_CATEGORIES}"
+                        DESKTOP_FILE_CMD "${META_TARGET_NAME} qt-gui --renaming-utility"
+                        DESKTOP_FILE_ICON "${META_PROJECT_NAME}")

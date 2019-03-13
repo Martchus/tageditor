@@ -16,7 +16,6 @@
 #include <qtutilities/misc/conversion.h>
 
 #include <c++utilities/conversion/stringconversion.h>
-#include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/misc/traits.h>
 
 #include <QAction>
@@ -374,8 +373,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
 
     } catch (const TagParser::Failure &) {
         QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to parse specified cover file."));
-    } catch (...) {
-        ::IoUtilities::catchIoFailure();
+    } catch (const std::ios_base::failure &) {
         QMessageBox::critical(this, QCoreApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
     }
     updatePreview(m_currentTypeIndex);

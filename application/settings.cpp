@@ -146,7 +146,7 @@ void restore()
     default:
         v.tagPocessing.creationSettings.id3v2usage = TagUsage::Always;
     };
-    v.tagPocessing.creationSettings.id3v2MajorVersion = static_cast<byte>(settings.value(QStringLiteral("versiontobeused")).toUInt());
+    v.tagPocessing.creationSettings.id3v2MajorVersion = static_cast<std::uint8_t>(settings.value(QStringLiteral("versiontobeused")).toUInt());
     if (v.tagPocessing.creationSettings.id3v2MajorVersion < 1 || v.tagPocessing.creationSettings.id3v2MajorVersion > 4) {
         v.tagPocessing.creationSettings.id3v2MajorVersion = 3;
     }

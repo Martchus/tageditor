@@ -76,14 +76,14 @@ TagValue::TagValue(const TagParser::TagValue &tagValue, RAPIDJSON_NAMESPACE::Doc
             if (tagValue.dataSize() > (1024 * 1024)) {
                 throw ConversionUtilities::ConversionException("size is too big");
             }
-            ReflectiveRapidJSON::JsonReflector::push(ConversionUtilities::encodeBase64(reinterpret_cast<const byte *>(tagValue.dataPointer()), static_cast<uint32>(tagValue.dataSize())), value, allocator);
+            ReflectiveRapidJSON::JsonReflector::push(ConversionUtilities::encodeBase64(reinterpret_cast<const std::uint8_t *>(tagValue.dataPointer()), static_cast<std::uint32_t>(tagValue.dataSize())), value, allocator);
             kind = "picture";
             break;
         case TagDataType::Binary:
             if (tagValue.dataSize() > (1024 * 1024)) {
                 throw ConversionUtilities::ConversionException("size is too big");
             }
-            ReflectiveRapidJSON::JsonReflector::push(ConversionUtilities::encodeBase64(reinterpret_cast<const byte *>(tagValue.dataPointer()), static_cast<uint32>(tagValue.dataSize())), value, allocator);
+            ReflectiveRapidJSON::JsonReflector::push(ConversionUtilities::encodeBase64(reinterpret_cast<const std::uint8_t *>(tagValue.dataPointer()), static_cast<std::uint32_t>(tagValue.dataSize())), value, allocator);
             kind = "binary";
             break;
         default:

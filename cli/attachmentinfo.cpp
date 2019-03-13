@@ -20,7 +20,7 @@ void AttachmentInfo::parseDenotation(const char *denotation)
 {
     if (!strncmp(denotation, "id=", 3)) {
         try {
-            id = stringToNumber<uint64, string>(denotation + 3);
+            id = stringToNumber<std::uint64_t, string>(denotation + 3);
             hasId = true;
         } catch (const ConversionException &) {
             cerr << "The specified attachment ID \"" << (denotation + 3) << "\" is invalid.";

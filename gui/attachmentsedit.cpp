@@ -10,7 +10,6 @@
 
 #include <qtutilities/misc/conversion.h>
 
-#include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/copy.h>
 #include <c++utilities/io/nativefilestream.h>
 
@@ -115,9 +114,9 @@ void AttachmentsEdit::showFileSelection()
         } catch (const Failure &) {
             QMessageBox::warning(this, QApplication::applicationName(),
                 tr("The file couldn't be added because the attachments of the file could not be parsed successfully."));
-        } catch (...) {
-            ::IoUtilities::catchIoFailure();
-            QMessageBox::warning(this, QApplication::applicationName(), tr("The file couldn't be added because an IO error occured."));
+        } catch (const std::ios_base::failure &failure) {
+            QMessageBox::warning(this, QApplication::applicationName(),
+                tr("The file couldn't be added because an IO error occured: ") + QString::fromLocal8Bit(failure.what()));
         }
     }
 }
@@ -139,9 +138,9 @@ void AttachmentsEdit::extractSelected()
                         file.open(toNativeFileName(fileName).data(), ios_base::out | ios_base::binary);
                         CopyHelper<0x1000> helper;
                         helper.copy(input, file, data->size());
-                    } catch (...) {
-                        ::IoUtilities::catchIoFailure();
-                        QMessageBox::warning(this, QApplication::applicationName(), tr("An IO error occured when extracting the attached file."));
+                    } catch (const std::ios_base::failure &failure) {
+                        QMessageBox::warning(this, QApplication::applicationName(),
+                            tr("An IO error occured when extracting the attached file: ") + QString::fromLocal8Bit(failure.what()));
                     }
                 }
             } else {

@@ -4,8 +4,6 @@
 #include "./knownfieldmodel.h"
 #include "./targetlevelmodel.h"
 
-#include <c++utilities/conversion/types.h>
-
 #include <tagparser/abstractcontainer.h>
 #include <tagparser/settings.h>
 #include <tagparser/tag.h>

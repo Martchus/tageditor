@@ -388,14 +388,14 @@ ElementPosition parsePositionDenotation(const Argument &posArg, const Argument &
     return defaultPos;
 }
 
-uint64 parseUInt64(const Argument &arg, uint64 defaultValue)
+std::uint64_t parseUInt64(const Argument &arg, std::uint64_t defaultValue)
 {
     if (arg.isPresent()) {
         try {
             if (*arg.values().front() == '0' && *(arg.values().front() + 1) == 'x') {
-                return stringToNumber<uint64>(arg.values().front() + 2, 16);
+                return stringToNumber<std::uint64_t>(arg.values().front() + 2, 16);
             } else {
-                return stringToNumber<uint64>(arg.values().front());
+                return stringToNumber<std::uint64_t>(arg.values().front());
             }
         } catch (const ConversionException &) {
             cerr << Phrases::Error << "The specified value \"" << arg.values().front() << "\" is no valid unsigned integer." << Phrases::EndFlush;
@@ -427,7 +427,7 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
     if (!configStr.empty()) {
         if (configStr.compare(0, 13, "target-level=") == 0) {
             try {
-                target.setLevel(stringToNumber<uint64>(configStr.substr(13)));
+                target.setLevel(stringToNumber<std::uint64_t>(configStr.substr(13)));
             } catch (const ConversionException &) {
                 cerr << Phrases::Error << "The specified target level \"" << configStr.substr(13) << "\" is invalid." << Phrases::End
                      << "note: The target level must be an unsigned integer." << endl;
@@ -512,7 +512,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
         } else if (!strncmp(fieldDenotationString, "track-id=", 9)) {
             const vector<string> parts = splitString<vector<string>>(fieldDenotationString + 9, ",", EmptyPartsTreat::Omit);
             bool allTracks = false;
-            vector<uint64> trackIds;
+            vector<std::uint64_t> trackIds;
             trackIds.reserve(parts.size());
             for (const auto &part : parts) {
                 if (part == "all" || part == "any") {
@@ -520,7 +520,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                     break;
                 }
                 try {
-                    trackIds.emplace_back(stringToNumber<uint64>(part));
+                    trackIds.emplace_back(stringToNumber<std::uint64_t>(part));
                 } catch (const ConversionException &) {
                     cerr << Phrases::Error << "The value provided with the \"track\"-specifier is invalid." << Phrases::End
                          << "note: It must be a comma-separated list of track IDs." << endl;

@@ -15,7 +15,6 @@
 #include <qtutilities/misc/conversion.h>
 
 #include <c++utilities/conversion/conversionexception.h>
-#include <c++utilities/io/catchiofailure.h>
 
 #include <QDir>
 
@@ -163,8 +162,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     } catch (const Failure &) {
         // parsing notifications will be addded anyways
         criticalParseingErrorOccured = true;
-    } catch (...) {
-        ::IoUtilities::catchIoFailure();
+    } catch (const std::ios_base::failure &) {
         criticalParseingErrorOccured = true;
         ioErrorOccured = true;
     }
@@ -189,7 +187,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     auto combinedTagObject = m_engine->newObject();
     auto combinedTagNotifications = m_engine->newArray();
     auto tagsObject = m_engine->newArray(static_cast<uint>(tags.size()));
-    uint32 tagIndex = 0;
+    std::uint32_t tagIndex = 0;
     for (auto tagIterator = tags.cbegin(), end = tags.cend(); tagIterator != end; ++tagIterator, ++tagIndex) {
         const Tag &tag = **tagIterator;
         auto tagObject = m_engine->newObject();
@@ -205,7 +203,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     // gather track information
     const vector<AbstractTrack *> tracks = fileInfo.tracks();
     auto tracksObject = m_engine->newArray(static_cast<uint>(tracks.size()));
-    uint32 trackIndex = 0;
+    std::uint32_t trackIndex = 0;
     for (auto trackIterator = tracks.cbegin(), end = tracks.cend(); trackIterator != end; ++trackIterator, ++trackIndex) {
         const AbstractTrack &track = **trackIterator;
         auto trackObject = m_engine->newObject();

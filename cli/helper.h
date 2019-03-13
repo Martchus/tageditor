@@ -121,7 +121,7 @@ struct FieldScope {
     TagType tagType;
     TagTarget tagTarget;
     bool allTracks;
-    std::vector<uint64> trackIds;
+    std::vector<std::uint64_t> trackIds;
 };
 
 inline FieldScope::FieldScope(KnownField field, TagType tagType, TagTarget tagTarget)
@@ -208,7 +208,7 @@ template <> struct hash<TagTarget> {
     std::size_t operator()(const TagTarget &target) const
     {
         using std::hash;
-        return ((hash<uint64>()(target.level()) ^ (hash<TagTarget::IdContainerType>()(target.tracks()) << 1)) >> 1)
+        return ((hash<std::uint64_t>()(target.level()) ^ (hash<TagTarget::IdContainerType>()(target.tracks()) << 1)) >> 1)
             ^ (hash<TagTarget::IdContainerType>()(target.attachments()) << 1);
     }
 };
@@ -228,7 +228,7 @@ template <> struct hash<FieldScope> {
         using std::hash;
         return (hash<FieldId>()(scope.field) ^ (hash<TagType>()(scope.tagType) << 1) >> 1)
             ^ (hash<TagTarget>()(scope.tagTarget) ^ (static_cast<unsigned long>(scope.allTracks) << 4)
-                  ^ (hash<vector<uint64>>()(scope.trackIds) << 1) >> 1);
+                  ^ (hash<vector<std::uint64_t>>()(scope.trackIds) << 1) >> 1);
     }
 };
 
@@ -298,7 +298,7 @@ TagUsage parseUsageDenotation(const ApplicationUtilities::Argument &usageArg, Ta
 TagTextEncoding parseEncodingDenotation(const ApplicationUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);
 ElementPosition parsePositionDenotation(
     const ApplicationUtilities::Argument &posArg, const ApplicationUtilities::Argument &valueArg, ElementPosition defaultPos);
-uint64 parseUInt64(const ApplicationUtilities::Argument &arg, uint64 defaultValue);
+std::uint64_t parseUInt64(const ApplicationUtilities::Argument &arg, std::uint64_t defaultValue);
 TagTarget::IdContainerType parseIds(const std::string &concatenatedIds);
 bool applyTargetConfiguration(TagTarget &target, const std::string &configStr);
 FieldDenotations parseFieldDenotations(const ApplicationUtilities::Argument &fieldsArg, bool readOnly);

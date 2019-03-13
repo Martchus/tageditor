@@ -33,7 +33,6 @@
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/ansiescapecodes.h>
-#include <c++utilities/io/catchiofailure.h>
 #include <c++utilities/io/nativefilestream.h>
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
@@ -127,8 +126,7 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         }
     } catch (const TagParser::Failure &) {
         cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
-    } catch (...) {
-        ::IoUtilities::catchIoFailure();
+    } catch (const std::ios_base::failure &) {
         cerr << Phrases::Error << "An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
     }
 #else
@@ -283,7 +281,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     printProperty("MIME-type", attachment->mimeType());
                     printProperty("Description", attachment->description());
                     if (attachment->data()) {
-                        printProperty("Size", dataSizeToString(static_cast<uint64>(attachment->data()->size()), true));
+                        printProperty("Size", dataSizeToString(static_cast<std::uint64_t>(attachment->data()->size()), true));
                     }
                     cout << '\n';
                 }
@@ -310,9 +308,8 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
 
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
-        } catch (...) {
-            ::IoUtilities::catchIoFailure();
-            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
+        } catch (const std::ios_base::failure &) {
+            cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"" << Phrases::EndFlush;
         }
 
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
@@ -373,8 +370,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
             }
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
-        } catch (...) {
-            ::IoUtilities::catchIoFailure();
+        } catch (const std::ios_base::failure &) {
             cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
@@ -453,7 +449,7 @@ void setTagInfo(const SetTagInfoArgs &args)
     // parse ID3v2 version
     if (args.id3v2VersionArg.isPresent()) {
         try {
-            settings.id3v2MajorVersion = stringToNumber<byte>(args.id3v2VersionArg.values().front());
+            settings.id3v2MajorVersion = stringToNumber<std::uint8_t>(args.id3v2VersionArg.values().front());
             if (settings.id3v2MajorVersion < 1 || settings.id3v2MajorVersion > 4) {
                 throw ConversionException();
             }
@@ -632,8 +628,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 convertedValues.emplace_back(move(value));
                             } catch (const TagParser::Failure &) {
                                 diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
-                            } catch (...) {
-                                ::IoUtilities::catchIoFailure();
+                            } catch (const std::ios_base::failure &) {
                                 diag.emplace_back(DiagLevel::Critical, "An IO error occured when parsing the specified cover file.", context);
                             }
                         }
@@ -672,7 +667,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         } else if (field.denotes("language")) {
                             track->setLanguage(value);
                         } else if (field.denotes("tracknumber")) {
-                            track->setTrackNumber(stringToNumber<uint32>(value));
+                            track->setTrackNumber(stringToNumber<std::uint32_t>(value));
                         } else if (field.denotes("enabled")) {
                             track->setEnabled(stringToBool(value));
                         } else if (field.denotes("forced")) {
@@ -768,8 +763,7 @@ void setTagInfo(const SetTagInfoArgs &args)
         } catch (const TagParser::Failure &) {
             finalizeLog();
             cerr << " - " << Phrases::Error << "A parsing failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
-        } catch (...) {
-            ::IoUtilities::catchIoFailure();
+        } catch (const std::ios_base::failure &) {
             finalizeLog();
             cerr << " - " << Phrases::Error << "An IO failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
         }
@@ -860,8 +854,7 @@ void extractField(
                             outputFileStream.write(value.first->dataPointer(), value.first->dataSize());
                             outputFileStream.flush();
                             cout << " - Value has been saved to \"" << path << "\"." << endl;
-                        } catch (...) {
-                            ::IoUtilities::catchIoFailure();
+                        } catch (const std::ios_base::failure &) {
                             cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\"." << Phrases::End;
                         }
                     }
@@ -911,8 +904,7 @@ void extractField(
                             attachment.first->data()->copyTo(outputFileStream);
                             outputFileStream.flush();
                             cout << " - Value has been saved to \"" << path << "\"." << endl;
-                        } catch (...) {
-                            ::IoUtilities::catchIoFailure();
+                        } catch (const std::ios_base::failure &) {
                             cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\"." << Phrases::EndFlush;
                         }
                     }
@@ -925,8 +917,7 @@ void extractField(
 
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
-        } catch (...) {
-            ::IoUtilities::catchIoFailure();
+        } catch (const std::ios_base::failure &) {
             cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::End;
         }
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
@@ -961,8 +952,7 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
             jsonData.emplace_back(fileInfo, document.GetAllocator());
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
-        } catch (...) {
-            ::IoUtilities::catchIoFailure();
+        } catch (const std::ios_base::failure &) {
             cerr << Phrases::Error << "An IO failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
     }
