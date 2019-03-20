@@ -15,6 +15,7 @@
 
 #include <c++utilities/chrono/datetime.h>
 #include <c++utilities/conversion/stringconversion.h>
+#include <c++utilities/misc/traits.h>
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
 #include <QApplication>
@@ -88,7 +89,8 @@ public:
         }
     }
 
-    void appendRow(const QString &label, uint64 number)
+    template<typename IntegralType, Traits::EnableIf<std::is_integral<IntegralType>> * = nullptr>
+    void appendRow(const QString &label, IntegralType number)
     {
         if (number) {
             appendRow(label, QString::number(number));
@@ -358,7 +360,7 @@ void FileInfoModel::updateCache()
                 } else {
                     setItem(currentRow, 1,
                         defaultItem(tr("%1 track(s): ", nullptr, trQuandity(tracks.size())).arg(tracks.size())
-                            + QString::fromUtf8(summary.data(), summary.size())));
+                            + QString::fromUtf8(summary.data(), trQuandity(summary.size()))));
                 }
 
                 size_t number = 0;
@@ -469,7 +471,7 @@ void FileInfoModel::updateCache()
                     ItemHelper attachHelper(attachmentItem);
                     attachHelper.appendRow(tr("ID"), attachment->id());
                     attachHelper.appendRow(tr("Name"), attachment->name());
-                    attachHelper.appendRow(tr("Size"), dataSizeToString(attachment->data()->size()));
+                    attachHelper.appendRow(tr("Size"), dataSizeToString(static_cast<std::uint64_t>(attachment->data()->size())));
                     attachHelper.appendRow(tr("Mime-type"), attachment->mimeType());
                     attachHelper.appendRow(tr("Description"), attachment->description());
                     attachmentsItem->appendRow(attachmentItem);
