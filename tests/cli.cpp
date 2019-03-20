@@ -729,12 +729,15 @@ void CliTests::testDisplayingInfo()
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \e[1mContainer format: Matroska\e[0m\n"
+          "    Size                          20.16 MiB\n"
+          "    Mime-type                     video/x-matroska\n"
+          "    Duration                      47 s 509 ms\n"
+          "    Overall avg. bitrate          3.48 Mbit/s\n"
           "    Document type                 matroska\n"
           "    Read version                  1\n"
           "    Version                       1\n"
           "    Document read version         2\n"
           "    Document version              2\n"
-          "    Duration                      47 s 509 ms\n"
           "    Tag position                  before data\n"
           "    Index position                before data\n",
             " - \e[1mTracks: H.264-576p / AAC-LC-2ch\e[0m\n"
@@ -758,8 +761,11 @@ void CliTests::testDisplayingInfo()
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \e[1mContainer format: MPEG-4 Part 14\e[0m\n"
-          "    Document type                 mp42\n"
+          "    Size                          898.34 KiB\n"
+          "    Mime-type                     audio/mp4\n"
           "    Duration                      3 min\n"
+          "    Overall avg. bitrate          39.9 kbit/s\n"
+          "    Document type                 mp42\n"
           "    Creation time                 2014-12-10 16:22:41\n"
           "    Modification time             2014-12-10 16:22:41\n",
             " - \e[1mTracks: HE-AAC-2ch\e[0m\n"
@@ -803,12 +809,15 @@ void CliTests::testSettingTrackMetaData()
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \e[1mContainer format: Matroska\e[0m\n"
+          "    Size                          20.16 MiB\n"
+          "    Mime-type                     video/x-matroska\n"
+          "    Duration                      47 s 509 ms\n"
+          "    Overall avg. bitrate          3.48 Mbit/s\n"
           "    Document type                 matroska\n"
           "    Read version                  1\n"
           "    Version                       1\n"
           "    Document read version         2\n"
           "    Document version              2\n"
-          "    Duration                      47 s 509 ms\n"
           "    Tag position                  before data\n"
           "    Index position                before data\n",
             " - \e[1mTracks: H.264-576p / AAC-LC-2ch-ger\e[0m\n"
@@ -841,8 +850,11 @@ void CliTests::testSettingTrackMetaData()
     TESTUTILS_ASSERT_EXEC(args4);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \e[1mContainer format: MPEG-4 Part 14\e[0m\n"
-          "    Document type                 mp42\n"
+          "    Size                          898.48 KiB\n"
+          "    Mime-type                     audio/mp4\n"
           "    Duration                      3 min\n"
+          "    Overall avg. bitrate          39.9 kbit/s\n"
+          "    Document type                 mp42\n"
           "    Creation time                 2014-12-10 16:22:41\n"
           "    Modification time             2014-12-10 16:22:41\n",
             " - \e[1mTracks: HE-AAC-2ch-eng\e[0m\n"
