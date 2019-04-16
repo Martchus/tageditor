@@ -18,7 +18,7 @@ using namespace Utility;
 
 namespace QtGui {
 
-static const QString defaultLyricsWikiaUrl(QStringLiteral("https://lyrics.wikia.com"));
+static const QString defaultLyricsWikiaUrl(QStringLiteral("https://lyrics.fandom.com"));
 
 QUrl lyricsWikiaApiUrl()
 {
