@@ -264,6 +264,7 @@ bool EditorDbQueryOptionsPage::apply()
     if (hasBeenShown()) {
         auto &settings = values().dbQuery;
         settings.musicBrainzUrl = ui()->musicBrainzUrlLineEdit->text();
+        settings.lyricsWikiaUrl = ui()->lyricWikiUrlLineEdit->text();
         settings.coverArtArchiveUrl = ui()->coverArtArchiveUrlLineEdit->text();
     }
     return true;
@@ -274,6 +275,7 @@ void EditorDbQueryOptionsPage::reset()
     if (hasBeenShown()) {
         const auto &settings = values().dbQuery;
         ui()->musicBrainzUrlLineEdit->setText(settings.musicBrainzUrl);
+        ui()->lyricWikiUrlLineEdit->setText(settings.lyricsWikiaUrl);
         ui()->coverArtArchiveUrlLineEdit->setText(settings.coverArtArchiveUrl);
     }
 }

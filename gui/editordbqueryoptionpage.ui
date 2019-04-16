@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QtGui::EditorDbQueryOptionsPage</class>
  <widget class="QWidget" name="QtGui::EditorDbQueryOptionsPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>222</width>
-    <height>74</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>MusicBrainz</string>
   </property>
@@ -31,17 +23,31 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="2" column="0">
     <widget class="QLabel" name="coverArtArchiveUrlLabel">
      <property name="text">
       <string>Cover Art Archive URL</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
+   <item row="2" column="1">
     <widget class="Widgets::ClearLineEdit" name="coverArtArchiveUrlLineEdit">
      <property name="placeholderText">
       <string>http://coverartarchive.org</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="lyricWikiUrlLabel">
+     <property name="text">
+      <string>LyricWiki URL</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="lyricWikiUrlLineEdit">
+     <property name="placeholderText">
+      <string>https://lyrics.fandom.com</string>
      </property>
     </widget>
    </item>
