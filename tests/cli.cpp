@@ -850,7 +850,7 @@ void CliTests::testSettingTrackMetaData()
     TESTUTILS_ASSERT_EXEC(args4);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \e[1mContainer format: MPEG-4 Part 14\e[0m\n"
-          "    Size                          898.48 KiB\n"
+          "    Size                          898.49 KiB\n"
           "    Mime-type                     audio/mp4\n"
           "    Duration                      3 min\n"
           "    Overall avg. bitrate          39.9 kbit/s\n"
