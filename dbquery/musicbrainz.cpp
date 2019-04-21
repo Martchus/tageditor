@@ -25,31 +25,38 @@ MusicBrainzResultsModel::MusicBrainzResultsModel(SongDescription &&initialSongDe
 
 bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
 {
+    // FIXME: avoid code duplication with lyricswikia.cpp
+
+    // find song description
     if (index.parent().isValid() || index.row() >= m_results.size()) {
         return true;
     }
     SongDescription &desc = m_results[index.row()];
+
+    // skip if cover is already available
     if (!desc.cover.isEmpty()) {
-        // cover is already available -> nothing to do
         return true;
     }
 
+    // fail if album ID is unknown
     if (desc.albumId.isEmpty()) {
         m_errorList << tr("Unable to fetch cover: Album ID unknown");
         emit resultsAvailable();
         return true;
     }
-    try {
-        // the item belongs to an album which cover has already been fetched
-        desc.cover = m_coverData.at(desc.albumId);
-    } catch (const out_of_range &) {
-        // request the cover art
-        auto *const reply = queryCoverArtArchive(desc.albumId);
-        addReply(reply, bind(&MusicBrainzResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
-        setFetchingCover(true);
-        return false;
+
+    // skip if the item belongs to an album which cover has already been fetched
+    const auto coverData = m_coverData.find(desc.albumId);
+    if (coverData != m_coverData.end()) {
+        desc.cover = coverData->second;
+        return true;
     }
-    return true;
+
+    // request the cover art
+    auto *const reply = queryCoverArtArchive(desc.albumId);
+    addReply(reply, bind(&MusicBrainzResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
+    setFetchingCover(true);
+    return false;
 }
 
 QUrl MusicBrainzResultsModel::webUrl(const QModelIndex &index)

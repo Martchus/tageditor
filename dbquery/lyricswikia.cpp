@@ -33,55 +33,72 @@ LyricsWikiaResultsModel::LyricsWikiaResultsModel(SongDescription &&initialSongDe
 
 bool LyricsWikiaResultsModel::fetchCover(const QModelIndex &index)
 {
+    // FIXME: avoid code duplication with musicbrainz.cpp
+
+    // find song description
     if (index.parent().isValid() || index.row() >= m_results.size()) {
         return true;
     }
     SongDescription &desc = m_results[index.row()];
+
+    // skip if cover is already available
     if (!desc.cover.isEmpty()) {
-        // cover is already available -> nothing to do
         return true;
     }
+
+    // fail if album ID is unknown
     if (desc.albumId.isEmpty()) {
         m_errorList << tr("Unable to fetch cover: Album ID unknown");
         emit resultsAvailable();
         return true;
     }
-    try {
-        // the item belongs to an album which cover has already been fetched
-        desc.cover = m_coverData.at(desc.albumId);
-    } catch (const out_of_range &) {
-        if (desc.coverUrl.isEmpty()) {
-            // request the cover URL
-            auto *const reply = requestAlbumDetails(desc);
-            addReply(reply, bind(&LyricsWikiaResultsModel::handleAlbumDetailsReplyFinished, this, reply, index.row()));
-            setFetchingCover(true);
-        } else {
-            // request the cover art
-            auto *const reply = networkAccessManager().get(QNetworkRequest(QUrl(desc.coverUrl)));
-            addReply(reply, bind(&LyricsWikiaResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
-            setFetchingCover(true);
-        }
-        return false;
+
+    // skip if the item belongs to an album which cover has already been fetched
+    const auto coverData = m_coverData.find(desc.albumId);
+    if (coverData != m_coverData.end()) {
+        desc.cover = coverData->second;
+        return true;
     }
-    return true;
+
+    // start http request
+    if (desc.coverUrl.isEmpty()) {
+        // request the cover URL
+        auto *const reply = requestAlbumDetails(desc);
+        addReply(reply, bind(&LyricsWikiaResultsModel::handleAlbumDetailsReplyFinished, this, reply, index.row()));
+        setFetchingCover(true);
+    } else {
+        // request the cover art
+        auto *const reply = networkAccessManager().get(QNetworkRequest(QUrl(desc.coverUrl)));
+        addReply(reply, bind(&LyricsWikiaResultsModel::handleCoverReplyFinished, this, reply, desc.albumId, index.row()));
+        setFetchingCover(true);
+    }
+    return false;
 }
 
 bool LyricsWikiaResultsModel::fetchLyrics(const QModelIndex &index)
 {
-    if (!index.parent().isValid() && index.row() < m_results.size()) {
-        SongDescription &desc = m_results[index.row()];
-        if (!desc.lyrics.isEmpty()) {
-            // lyrics already available -> nothing to do
-        } else if (!desc.artist.isEmpty() && !desc.title.isEmpty()) {
-            auto *reply = requestSongDetails(desc);
-            addReply(reply, bind(&LyricsWikiaResultsModel::handleSongDetailsFinished, this, reply, index.row()));
-            return false;
-        } else {
-            m_errorList << tr("Unable to fetch lyrics: Artist or title is unknown.");
-            emit resultsAvailable();
-        }
+    // find song description
+    if (index.parent().isValid() || index.row() >= m_results.size()) {
+        return true;
     }
-    return true;
+    SongDescription &desc = m_results[index.row()];
+
+    // skip if lyrics already present
+    if (!desc.lyrics.isEmpty()) {
+        return true;
+    }
+
+    // fail if artist or title unknown
+    if (desc.artist.isEmpty() || desc.title.isEmpty()) {
+        m_errorList << tr("Unable to fetch lyrics: Artist or title is unknown.");
+        emit resultsAvailable();
+        return true;
+    }
+
+    // request lyrics
+    auto *reply = requestSongDetails(desc);
+    addReply(reply, bind(&LyricsWikiaResultsModel::handleSongDetailsFinished, this, reply, index.row()));
+    return false;
 }
 
 void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)

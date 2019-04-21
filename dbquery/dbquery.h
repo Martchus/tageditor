@@ -110,8 +110,8 @@ inline bool QueryResultsModel::isFetchingCover() const
 class HttpResultsModel : public QueryResultsModel {
     Q_OBJECT
 public:
-    ~HttpResultsModel();
-    void abort();
+    ~HttpResultsModel() override;
+    void abort() override;
 
 protected:
     HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);

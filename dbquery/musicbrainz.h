@@ -16,11 +16,11 @@ private:
 
 public:
     MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
-    bool fetchCover(const QModelIndex &index);
-    QUrl webUrl(const QModelIndex &index);
+    bool fetchCover(const QModelIndex &index) override;
+    QUrl webUrl(const QModelIndex &index) override;
 
 protected:
-    void parseInitialResults(const QByteArray &data);
+    void parseInitialResults(const QByteArray &data) override;
 
 private:
     What m_what;
