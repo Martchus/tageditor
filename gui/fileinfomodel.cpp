@@ -89,7 +89,7 @@ public:
         }
     }
 
-    template<typename IntegralType, Traits::EnableIf<std::is_integral<IntegralType>> * = nullptr>
+    template <typename IntegralType, Traits::EnableIf<std::is_integral<IntegralType>> * = nullptr>
     void appendRow(const QString &label, IntegralType number)
     {
         if (number) {

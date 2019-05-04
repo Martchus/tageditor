@@ -228,7 +228,7 @@ template <> struct hash<FieldScope> {
         using std::hash;
         return (hash<FieldId>()(scope.field) ^ (hash<TagType>()(scope.tagType) << 1) >> 1)
             ^ (hash<TagTarget>()(scope.tagTarget) ^ (static_cast<unsigned long>(scope.allTracks) << 4)
-                  ^ (hash<vector<std::uint64_t>>()(scope.trackIds) << 1) >> 1);
+                ^ (hash<vector<std::uint64_t>>()(scope.trackIds) << 1) >> 1);
     }
 };
 

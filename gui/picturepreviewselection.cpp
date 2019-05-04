@@ -359,7 +359,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
         if ((fileInfo.size() >= 10485760)
             && (QMessageBox::warning(this, QCoreApplication::applicationName(),
                     tr("The selected file is very large (for a cover). Do you want to continue?"), QMessageBox::Yes, QMessageBox::No)
-                   == QMessageBox::No)) {
+                == QMessageBox::No)) {
             return;
         }
 

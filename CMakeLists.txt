@@ -169,7 +169,8 @@ set(REQUIRED_ICONS
     view-media-lyrics)
 
 # find c++utilities
-set(CONFIGURATION_PACKAGE_SUFFIX "" CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
+set(CONFIGURATION_PACKAGE_SUFFIX ""
+    CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
 find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} 5.0.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
@@ -230,10 +231,17 @@ include(ConfigHeader)
 add_desktop_file()
 
 # create custom desktop file for launching the renaming utility separately
-add_custom_desktop_file(FILE_NAME "${META_ID}-renamingutility"
-                        DESKTOP_FILE_APP_NAME "Renaming utility (${META_APP_NAME})"
-                        DESKTOP_FILE_GENERIC_NAME "Renaming utility (${META_APP_NAME})"
-                        DESKTOP_FILE_DESCRIPTION "Tool to rename files using its tag information"
-                        DESKTOP_FILE_CATEGORIES "${META_APP_CATEGORIES}"
-                        DESKTOP_FILE_CMD "${META_TARGET_NAME} qt-gui --renaming-utility"
-                        DESKTOP_FILE_ICON "${META_PROJECT_NAME}")
+add_custom_desktop_file(FILE_NAME
+                        "${META_ID}-renamingutility"
+                        DESKTOP_FILE_APP_NAME
+                        "Renaming utility (${META_APP_NAME})"
+                        DESKTOP_FILE_GENERIC_NAME
+                        "Renaming utility (${META_APP_NAME})"
+                        DESKTOP_FILE_DESCRIPTION
+                        "Tool to rename files using its tag information"
+                        DESKTOP_FILE_CATEGORIES
+                        "${META_APP_CATEGORIES}"
+                        DESKTOP_FILE_CMD
+                        "${META_TARGET_NAME} qt-gui --renaming-utility"
+                        DESKTOP_FILE_ICON
+                        "${META_PROJECT_NAME}")
