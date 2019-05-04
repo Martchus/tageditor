@@ -237,7 +237,7 @@ void printModelIndex(const QModelIndex &index, QString &res, int level)
             res += data;
         }
         const auto nextInCol = index.sibling(index.row(), index.column() + 1);
-        const auto child = index.child(0, 0);
+        const auto child = index.model()->index(0, 0, index);
         const auto next = index.sibling(index.row() + 1, 0);
         if (nextInCol.isValid()) {
             printModelIndex(nextInCol, res, level);

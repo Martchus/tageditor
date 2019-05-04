@@ -459,7 +459,7 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
             return;
         } else {
             // files and subdirectories have been fetched already
-            next = currentIndex.child(0, currentIndex.column());
+            next = currentIndex.model()->index(0, currentIndex.column(), currentIndex);
         }
     }
     if (!next.isValid()) {

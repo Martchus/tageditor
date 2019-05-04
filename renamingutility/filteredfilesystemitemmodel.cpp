@@ -15,7 +15,8 @@ FilteredFileSystemItemModel::FilteredFileSystemItemModel(ItemStatus statusFilter
 
 bool FilteredFileSystemItemModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
-    const auto sourceIndex = sourceModel()->index(sourceRow, 0, sourceParent);
+    const auto *const sourceModel = this->sourceModel();
+    const auto sourceIndex = sourceModel->index(sourceRow, 0, sourceParent);
     if (!sourceIndex.isValid()) {
         return false;
     }
@@ -31,12 +32,12 @@ bool FilteredFileSystemItemModel::filterAcceptsRow(int sourceRow, const QModelIn
         return false;
     }
 
-    auto child = sourceIndex.child(0, 0);
+    auto child = sourceModel->index(0, 0, sourceIndex);
     while (child.isValid()) {
         if (filterAcceptsRow(child.row(), sourceIndex)) {
             return true;
         }
-        child = sourceIndex.child(child.row() + 1, 0);
+        child = sourceModel->index(child.row() + 1, 0, sourceIndex);
     }
     return false;
 }
