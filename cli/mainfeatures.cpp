@@ -67,7 +67,7 @@ using namespace Utility;
 namespace Cli {
 
 #define FIELD_NAMES                                                                                                                                  \
-    "title album artist genre year comment bpm bps lyricist disk part totalparts encoder\n"                                                          \
+    "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n"                                                    \
     "      recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"                                             \
     "      recordlabel cover composer rating description vendor albumartist"
 
