@@ -46,6 +46,9 @@ public:
     bool setValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool hasDescription() const;
     bool canApply(TagParser::KnownField field) const;
+    bool isLocked() const;
+    void setLocked(bool locked);
+    void toggleLocked();
 
 public slots:
     void clear();
@@ -62,6 +65,7 @@ protected:
 private slots:
     void handleRestoreButtonClicked();
     void handleRestoreButtonDestroyed(QObject *obj = nullptr);
+    void handleLockButtonDestroyed(QObject *obj = nullptr);
 
 private:
     TagParser::TagDataType determineDataType();
@@ -80,6 +84,7 @@ private:
     void updateValue(
         const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
     Widgets::IconButton *setupRestoreButton();
+    Widgets::IconButton *setupLockButton();
     void showRestoreButton();
     void applyAutoCorrection(QString &textValue);
     void concretizePreviousValueHandling(PreviousValueHandling &previousValueHandling);
@@ -96,6 +101,8 @@ private:
     Widgets::ClearPlainTextEdit *m_plainTextEdit;
     Widgets::ClearLineEdit *m_descriptionLineEdit;
     Widgets::IconButton *m_restoreButton;
+    Widgets::IconButton *m_lockButton;
+    bool m_isLocked;
 };
 
 inline const QList<TagParser::Tag *> &TagFieldEdit::tags() const
@@ -106,6 +113,16 @@ inline const QList<TagParser::Tag *> &TagFieldEdit::tags() const
 inline TagParser::KnownField TagFieldEdit::field() const
 {
     return m_field;
+}
+
+inline bool TagFieldEdit::isLocked() const
+{
+    return m_isLocked;
+}
+
+inline void TagFieldEdit::toggleLocked()
+{
+    setLocked(!isLocked());
 }
 
 } // namespace QtGui

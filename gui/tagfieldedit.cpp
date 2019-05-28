@@ -71,6 +71,8 @@ TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::Known
     , m_plainTextEdit(nullptr)
     , m_descriptionLineEdit(nullptr)
     , m_restoreButton(nullptr)
+    , m_lockButton(nullptr)
+    , m_isLocked(false)
 {
     m_layout->setContentsMargins(QMargins());
     setLayout(m_layout);
@@ -214,6 +216,19 @@ bool TagFieldEdit::canApply(KnownField field) const
     return false;
 }
 
+void TagFieldEdit::setLocked(bool locked)
+{
+    if (locked == m_isLocked) {
+        return;
+    }
+    m_isLocked = locked;
+    if (m_lockButton) {
+        m_lockButton->setPixmap(QIcon::fromTheme(locked ? QStringLiteral("object-locked") : QStringLiteral("object-unlocked")).pixmap(16));
+        m_lockButton->setToolTip(
+            locked ? tr("Keep previous value only if not present in the next file") : tr("Keep previous value even if present in next file"));
+    }
+}
+
 /*!
  * \brief Sets whether the cover buttons are hidden.
  */
@@ -309,7 +324,8 @@ ClearLineEdit *TagFieldEdit::setupLineEdit()
     m_lineEdit = new ClearLineEdit(this);
     m_lineEdit->setPlaceholderText(tr("empty"));
     static_cast<ButtonOverlay *>(m_lineEdit)->setClearButtonEnabled(true);
-    m_lineEdit->insertCustomButton(0, setupRestoreButton());
+    m_lineEdit->insertCustomButton(0, setupLockButton());
+    m_lineEdit->insertCustomButton(1, setupRestoreButton());
     m_lineEdit->installEventFilter(this);
     connect(m_lineEdit, &ClearLineEdit::textChanged, this, &TagFieldEdit::showRestoreButton);
     m_layout->addWidget(m_lineEdit);
@@ -324,7 +340,8 @@ ClearPlainTextEdit *TagFieldEdit::setupPlainTextEdit()
 {
     m_plainTextEdit = new ClearPlainTextEdit(this);
     m_plainTextEdit->setClearButtonEnabled(true);
-    m_plainTextEdit->insertCustomButton(0, setupRestoreButton());
+    m_plainTextEdit->insertCustomButton(0, setupLockButton());
+    m_plainTextEdit->insertCustomButton(1, setupRestoreButton());
     connect(m_plainTextEdit->document(), &QTextDocument::contentsChanged, this, &TagFieldEdit::showRestoreButton);
     m_layout->addWidget(m_plainTextEdit);
     m_widgets << m_plainTextEdit;
@@ -366,7 +383,8 @@ ClearComboBox *TagFieldEdit::setupGenreComboBox()
         tr("Top 40"), tr("Trailer"), tr("Trance"), tr("Tribal"), tr("Trip-Hop"), tr("Trop Rock"), tr("Vocal"), tr("World Music") }));
     m_comboBox->setCurrentIndex(0);
     m_comboBox->setClearButtonEnabled(true);
-    m_comboBox->insertCustomButton(0, setupRestoreButton());
+    m_comboBox->insertCustomButton(0, setupLockButton());
+    m_comboBox->insertCustomButton(1, setupRestoreButton());
     m_comboBox->installEventFilter(this);
     m_comboBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     connect(m_comboBox, &ClearComboBox::currentTextChanged, this, &TagFieldEdit::showRestoreButton);
@@ -385,7 +403,8 @@ ClearSpinBox *TagFieldEdit::setupSpinBox()
     m_spinBoxes.first->setPlaceholderText(tr("empty"));
     m_spinBoxes.first->setMinimumHidden(true);
     m_spinBoxes.first->setClearButtonEnabled(true);
-    m_spinBoxes.first->insertCustomButton(0, setupRestoreButton());
+    m_spinBoxes.first->insertCustomButton(0, setupLockButton());
+    m_spinBoxes.first->insertCustomButton(1, setupRestoreButton());
     m_spinBoxes.first->installEventFilter(this);
     m_spinBoxes.first->setMaximum(32766);
     connect(m_spinBoxes.first, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreButton);
@@ -422,7 +441,8 @@ QPair<Widgets::ClearSpinBox *, Widgets::ClearSpinBox *> &TagFieldEdit::setupPosi
     m_spinBoxes.second->setClearButtonEnabled(true);
     m_spinBoxes.second->installEventFilter(this);
     m_spinBoxes.second->setMaximum(32766);
-    m_spinBoxes.second->insertCustomButton(0, setupRestoreButton());
+    m_spinBoxes.second->insertCustomButton(0, setupLockButton());
+    m_spinBoxes.second->insertCustomButton(1, setupRestoreButton());
     m_spinBoxes.second->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     connect(m_spinBoxes.second, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreButton);
     subLayout->addWidget(m_spinBoxes.second);
@@ -555,7 +575,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
                 return QString();
             }
         }());
-        if (previousValueHandling == PreviousValueHandling::Clear || !text.isEmpty()) {
+        if ((!m_isLocked || text.isEmpty()) && (previousValueHandling == PreviousValueHandling::Clear || !text.isEmpty())) {
             if (m_lineEdit && (previousValueHandling != PreviousValueHandling::Keep || m_lineEdit->isCleared())) {
                 m_lineEdit->setText(text);
                 updated = true;
@@ -580,19 +600,23 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
                     return PositionInSet();
                 }
             }());
-            if (previousValueHandling == PreviousValueHandling::Clear || pos.position()) {
-                if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
-                    m_spinBoxes.first->setValue(pos.position());
+            if (!m_isLocked || !pos.position()) {
+                if (previousValueHandling == PreviousValueHandling::Clear || pos.position()) {
+                    if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
+                        m_spinBoxes.first->setValue(pos.position());
+                        updated = true;
+                    }
+                } else if (previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
+                    m_spinBoxes.first->setValue(m_spinBoxes.first->value() + 1);
                     updated = true;
                 }
-            } else if (previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
-                m_spinBoxes.first->setValue(m_spinBoxes.first->value() + 1);
-                updated = true;
             }
-            if (previousValueHandling == PreviousValueHandling::Clear || pos.total()) {
-                if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.second->isCleared()) {
-                    m_spinBoxes.second->setValue(pos.total());
-                    updated = true;
+            if (!m_isLocked || !pos.total()) {
+                if (previousValueHandling == PreviousValueHandling::Clear || pos.total()) {
+                    if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.second->isCleared()) {
+                        m_spinBoxes.second->setValue(pos.total());
+                        updated = true;
+                    }
                 }
             }
         } else {
@@ -604,14 +628,16 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
                     return 0;
                 }
             }());
-            if (previousValueHandling == PreviousValueHandling::Clear || num) {
-                if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
-                    m_spinBoxes.first->setValue(num);
+            if (!m_isLocked || !num) {
+                if (previousValueHandling == PreviousValueHandling::Clear || num) {
+                    if (previousValueHandling != PreviousValueHandling::Keep || m_spinBoxes.first->isCleared()) {
+                        m_spinBoxes.first->setValue(num);
+                        updated = true;
+                    }
+                } else if (previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
+                    m_spinBoxes.first->setValue(m_spinBoxes.first->value() + 1);
                     updated = true;
                 }
-            } else if (previousValueHandling == PreviousValueHandling::IncrementUpdate && !m_spinBoxes.first->isCleared()) {
-                m_spinBoxes.first->setValue(m_spinBoxes.first->value() + 1);
-                updated = true;
             }
         }
     }
@@ -627,10 +653,14 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             try {
                 auto desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
                 applyAutoCorrection(desc);
-                m_descriptionLineEdit->setText(desc);
+                if (!m_isLocked || desc.isEmpty()) {
+                    m_descriptionLineEdit->setText(desc);
+                }
             } catch (const ConversionException &) {
                 conversionError = true;
-                m_descriptionLineEdit->clear();
+                if (!m_isLocked) {
+                    m_descriptionLineEdit->clear();
+                }
             }
         }
     } else if (m_descriptionLineEdit) {
@@ -639,6 +669,9 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     }
     if (updateRestoreButton && m_restoreButton) {
         m_restoreButton->setVisible((!updated && m_restoreButton->isVisible()) || m_tags->size() > 1);
+    }
+    if (updated) {
+        setLocked(false);
     }
 
     // setup info button
@@ -652,7 +685,9 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         }
         return;
     }
-    const auto pixmap(QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")).pixmap(16));
+    const auto pixmap(
+        QIcon::fromTheme(QStringLiteral("emblem-error"), QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")))
+            .pixmap(16));
     const auto text([&] {
         QString text;
         if (conversionError) {
@@ -678,17 +713,34 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
  */
 IconButton *TagFieldEdit::setupRestoreButton()
 {
-    if (!m_restoreButton) { // setup restore button
-        m_restoreButton = new IconButton(this);
-        m_restoreButton->setPixmap(
-            /*QIcon::fromTheme(QStringLiteral("edit-undo"), */ QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-menu.png") /*)*/)
-                .pixmap(16));
-        m_restoreButton->setToolTip(tr("Restore value as it is currently present in the file"));
-        connect(m_restoreButton, &IconButton::clicked, this, &TagFieldEdit::handleRestoreButtonClicked);
-        // ownership might be transfered to a child widget/layout
-        connect(m_restoreButton, &IconButton::destroyed, this, &TagFieldEdit::handleRestoreButtonDestroyed);
+    if (m_restoreButton) {
+        return m_restoreButton;
     }
+    m_restoreButton = new IconButton(this);
+    m_restoreButton->setPixmap(
+        QIcon::fromTheme(QStringLiteral("edit-undo"), QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-menu.png"))).pixmap(16));
+    m_restoreButton->setToolTip(tr("Restore value as it is currently present in the file"));
+    connect(m_restoreButton, &IconButton::clicked, this, &TagFieldEdit::handleRestoreButtonClicked);
+    // ownership might be transfered to a child widget/layout
+    connect(m_restoreButton, &IconButton::destroyed, this, &TagFieldEdit::handleRestoreButtonDestroyed);
     return m_restoreButton;
+}
+
+/*!
+ * \brief Internally called by the other setup methods to create the "lock button".
+ */
+IconButton *TagFieldEdit::setupLockButton()
+{
+    if (m_lockButton) {
+        return m_lockButton;
+    }
+    m_isLocked = !m_isLocked;
+    m_lockButton = new IconButton(this);
+    setLocked(!m_isLocked);
+    connect(m_lockButton, &IconButton::clicked, this, &TagFieldEdit::toggleLocked);
+    // ownership might be transfered to a child widget/layout
+    connect(m_lockButton, &IconButton::destroyed, this, &TagFieldEdit::handleLockButtonDestroyed);
+    return m_lockButton;
 }
 
 /*!
@@ -850,11 +902,12 @@ void TagFieldEdit::handleRestoreButtonClicked()
     }
     QMenu menu;
     int i = 0;
-    for (Tag *const tag : tags()) {
+    for (auto *const tag : tags()) {
         const auto *const action = menu.addAction(tr("restore to value from %1 (%2)").arg(tag->typeName()).arg(++i));
-        connect(action, &QAction::triggered,
-            std::bind(static_cast<void (TagFieldEdit::*)(Tag *, PreviousValueHandling)>(&TagFieldEdit::updateValue), this, tag,
-                PreviousValueHandling::Clear));
+        connect(action, &QAction::triggered, [this, tag] {
+            setLocked(false);
+            updateValue(tag, PreviousValueHandling::Clear);
+        });
     }
     menu.exec(QCursor::pos());
 }
@@ -866,6 +919,16 @@ void TagFieldEdit::handleRestoreButtonDestroyed(QObject *obj)
 {
     if (obj == m_restoreButton) {
         m_restoreButton = nullptr;
+    }
+}
+
+/*!
+ * \brief Sets m_lockButton to nullptr when the restore button has been destroyed.
+ */
+void TagFieldEdit::handleLockButtonDestroyed(QObject *obj)
+{
+    if (obj == m_lockButton) {
+        m_lockButton = nullptr;
     }
 }
 

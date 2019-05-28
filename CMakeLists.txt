@@ -125,7 +125,11 @@ set(DOC_FILES README.md)
 set(REQUIRED_ICONS
     window-close
     document-open
+    edit-clear
     edit-copy
+    emblem-error
+    object-locked
+    object-unlocked
     preferences-other
     view-preview
     document-open-recent
