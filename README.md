@@ -258,11 +258,12 @@ When the Qt GUI is enabled, Qt 5 and [qtutilities](https://github.com/Martchus/q
 ### Building with Qt 5 GUI
 The following Qt 5 modules are requried: core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
 
-#### Select Qt modules for JavaScript and WebView
-* If Qt Script is installed on the system, the editor will link against it. Otherwise it will link against Qt QML.
-* To force usage of Qt Script/Qt QML or to disable both add `-DJS_PROVIDER=script/qml/none` to the CMake arguments.
-* If Qt WebKitWidgets is installed on the system, the editor will link against it. Otherwise it will link against Qt WebEngineWidgets.
-* To force usage of Qt WebKit/Qt WebEngine or to disable both add `-DWEBVIEW_PROVIDER=webkit/webengine/none` to the CMake arguments.
+### Select Qt module for web view and JavaScript
+* Add `-DWEBVIEW_PROVIDER:STRING=webkit/webengine/none` to the CMake arguments to use either Qt WebKit (works with
+  'revived' version as well), Qt WebEngine or no web view at all. If no web view is used, the file information can only
+  be shown using a plain tree view. Otherwise the user can choose between a web page and a tree view.
+* Add `-DJS_PROVIDER:STRING=script/qml/none` to the CMake arguments to use either Qt Script, Qt QML or no JavaScript
+  engine at all. If no JavaScript engine is used, the renaming utility is disabled.
 
 ### Building without Qt 5 GUI
 It is possible to build without the GUI if only the CLI is needed. In this case no Qt dependencies (including qtutilities) are required.
