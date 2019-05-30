@@ -220,7 +220,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QWidget" name="" native="true">
+           <widget class="QWidget" name="optionsWidget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
               <horstretch>0</horstretch>
@@ -246,7 +246,7 @@
              <item>
               <widget class="QCheckBox" name="overrideCheckBox">
                <property name="toolTip">
-                <string>Whether existing values of selected &quot;Fields to be used&quot; should be overridden with values from search result</string>
+                <string>Whether existing values of selected &quot;Fields to be used&quot; should be overridden with values from search result when clicking on &quot;Use selected row&quot; or on automatic insertion.</string>
                </property>
                <property name="text">
                 <string>Override existing values</string>
@@ -259,7 +259,7 @@
              <item>
               <widget class="QCheckBox" name="autoInsertCheckBox">
                <property name="toolTip">
-                <string>Whether matching values for selected &quot;Fields to be used&quot; from the search result should be inserted automatically when opening a file</string>
+                <string>Whether values for selected &quot;Fields to be used&quot; should be inserted automatically when opening a file. The row to insert the values from is determined from the existing title and/or track number fields of the file and disambiguated by taking the album and artist into account as well. It still makes sense to check that the correct row has been inserted before saving.</string>
                </property>
                <property name="text">
                 <string>Insert automatically</string>
