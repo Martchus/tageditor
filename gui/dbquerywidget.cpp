@@ -102,16 +102,22 @@ DbQueryWidget::~DbQueryWidget()
     values().dbQuery.override = m_ui->overrideCheckBox->isChecked();
 }
 
-void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
+void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpecific)
 {
     if (!tagEdit) {
         return;
     }
 
-    // set title, album and artist
-    m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
+    // set album and artist
     m_ui->albumLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Album)));
     m_ui->artistLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Artist)));
+
+    if (!songSpecific) {
+        return;
+    }
+
+    // set title
+    m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
 
     // set track number, or if not available part number
     bool trackValueOk = false;
