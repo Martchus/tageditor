@@ -64,6 +64,31 @@ TagValue TagEdit::value(KnownField field, TagTextEncoding encoding) const
     }
 }
 
+std::int32_t TagEdit::trackNumber() const
+{
+    std::int32_t trackNumber = 0;
+    try {
+        trackNumber = value(KnownField::TrackPosition).toPositionInSet().position();
+    } catch (const ConversionException &) {
+    }
+    if (trackNumber) {
+        return trackNumber;
+    }
+    for (const auto *const tag : tags()) {
+        if (tag->supportsTarget() && tag->targetLevel() != TagTargetLevel::Track) {
+            continue;
+        }
+        try {
+            trackNumber = value(KnownField::PartNumber).toInteger();
+        } catch (const ConversionException &) {
+        }
+        if (trackNumber) {
+            return trackNumber;
+        }
+    }
+    return trackNumber;
+}
+
 /*!
  * \brief Assigns the specified \a tag to the edit.
  * \param updateUi Specifies whether the UI of should be updated.

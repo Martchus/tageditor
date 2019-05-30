@@ -32,6 +32,7 @@ public:
     explicit TagEdit(QWidget *parent = nullptr);
     const QList<TagParser::Tag *> &tags() const;
     TagParser::TagValue value(TagParser::KnownField field, TagParser::TagTextEncoding encoding = TagParser::TagTextEncoding::Utf16LittleEndian) const;
+    std::int32_t trackNumber() const;
     void setTag(TagParser::Tag *tag, bool updateUi = true);
     void setTags(const QList<TagParser::Tag *> &tags, bool updateUi = true);
     bool setValue(

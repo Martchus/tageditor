@@ -116,29 +116,9 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpec
         return;
     }
 
-    // set title
+    // set title and track number
     m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
-
-    // set track number, or if not available part number
-    bool trackValueOk = false;
-    try {
-        const auto trackValue = tagEdit->value(KnownField::TrackPosition);
-        if (!trackValue.isEmpty()) {
-            m_ui->trackSpinBox->setValue(trackValue.toPositionInSet().position());
-            trackValueOk = true;
-        }
-    } catch (const ConversionException &) {
-    }
-    if (!trackValueOk) {
-        const auto trackValue = tagEdit->value(KnownField::PartNumber);
-        if (!trackValue.isEmpty()) {
-            m_ui->trackSpinBox->setValue(trackValue.toInteger());
-            trackValueOk = true;
-        }
-    }
-    if (!trackValueOk) {
-        m_ui->trackSpinBox->clear();
-    }
+    m_ui->trackSpinBox->setValue(tagEdit->trackNumber());
 }
 
 SongDescription DbQueryWidget::currentSongDescription() const
@@ -308,25 +288,7 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
     const auto givenTitle = tagEdit->value(KnownField::Title);
     const auto givenAlbum = tagEdit->value(KnownField::Album);
     const auto givenArtist = tagEdit->value(KnownField::Artist);
-
-    // also determine already present track number (which is a little bit more complex -> TODO: improve backend API)
-    int givenTrack;
-    try {
-        givenTrack = tagEdit->value(KnownField::TrackPosition).toPositionInSet().position();
-    } catch (const ConversionException &) {
-        givenTrack = 0;
-    }
-    if (!givenTrack) {
-        for (const Tag *tag : tagEdit->tags()) {
-            if (!tag->supportsTarget() || tag->targetLevel() == TagTargetLevel::Track) {
-                try {
-                    givenTrack = tagEdit->value(KnownField::PartNumber).toInteger();
-                } catch (const ConversionException &) {
-                }
-                break;
-            }
-        }
-    }
+    const auto givenTrack = tagEdit->trackNumber();
 
     if (givenTitle.isEmpty() || !givenTrack) {
         return;
