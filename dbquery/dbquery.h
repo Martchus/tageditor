@@ -27,6 +27,7 @@ struct SongDescription {
     QString album;
     QString albumId;
     QString artist;
+    QString artistId;
     QString year;
     QString genre;
     std::int32_t track;

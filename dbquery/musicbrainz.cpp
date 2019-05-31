@@ -10,11 +10,24 @@
 #include <QUrlQuery>
 #include <QXmlStreamReader>
 
+#include <algorithm>
 #include <functional>
+#include <map>
+#include <unordered_map>
+#include <vector>
 
 using namespace std;
 using namespace std::placeholders;
 using namespace Utility;
+
+namespace std {
+template <> struct hash<QString> {
+    std::size_t operator()(const QString &s) const
+    {
+        return qHash(s);
+    }
+};
+} // namespace std
 
 namespace QtGui {
 
@@ -72,11 +85,16 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
     // prepare parsing MusicBrainz meta data
     beginResetModel();
     m_results.clear();
-    QXmlStreamReader xmlReader(data);
+
+    // store all song information (called recordings by MusicBrainz)
+    vector<SongDescription> recordings;
+    // store all albums/collections (called releases by MusicBrainz) for a song
+    unordered_map<QString, vector<SongDescription>> releasesByRecording;
 
     // parse XML tree
+    QXmlStreamReader xmlReader(data);
     // clang-format off
-#include <qtutilities/misc/xmlparsermacros.h>
+    #include <qtutilities/misc/xmlparsermacros.h>
     children {
         iftag("metadata") {
             children {
@@ -92,6 +110,9 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                         iftag("name-credit") {
                                             children {
                                                 iftag("artist") {
+                                                    if (currentDescription.artistId.isEmpty()) {
+                                                        currentDescription.artistId = attribute("id").toString();
+                                                    }
                                                     children {
                                                         iftag("name") {
                                                             currentDescription.artist = text;
@@ -107,27 +128,46 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                 } eliftag("release-list") {
                                     children {
                                         iftag("release") {
-                                            if (currentDescription.albumId.isEmpty()) {
-                                                currentDescription.albumId = attribute("id").toString();
-                                            }
+                                            SongDescription releaseInfo;
+                                            releaseInfo.albumId = attribute("id").toString();
                                             children {
                                                 iftag("title") {
-                                                    currentDescription.album = text;
+                                                    releaseInfo.album = text;
+                                                } eliftag("artist-credit") {
+                                                    children {
+                                                       iftag("name-credit") {
+                                                           children {
+                                                               iftag("artist") {
+                                                                   if (currentDescription.artistId.isEmpty()) {
+                                                                       currentDescription.artistId = attribute("id").toString();
+                                                                   }
+                                                                   children {
+                                                                       iftag("name") {
+                                                                           currentDescription.artist = text;
+                                                                       }
+                                                                       else_skip
+                                                                   }
+                                                               }
+                                                               else_skip
+                                                           }
+                                                       }
+                                                       else_skip
+                                                    }
                                                 } eliftag("date") {
-                                                    currentDescription.year = text;
+                                                    releaseInfo.year = text;
                                                 } eliftag("medium-list") {
                                                     children {
                                                         iftag("medium") {
                                                             children {
                                                                 iftag("position") {
-                                                                    currentDescription.disk = text.toInt();
+                                                                    releaseInfo.disk = text.toInt();
                                                                 } eliftag("track-list") {
-                                                                    currentDescription.totalTracks = attribute("count").toInt();
+                                                                    releaseInfo.totalTracks = attribute("count").toInt();
                                                                     children {
                                                                         iftag("track") {
                                                                             children {
                                                                                 iftag("number") {
-                                                                                    currentDescription.track = text.toInt();
+                                                                                    releaseInfo.track = text.toInt();
                                                                                 } else_skip
                                                                             }
                                                                         }
@@ -142,6 +182,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                                 }
                                                 else_skip
                                             }
+                                            releasesByRecording[currentDescription.songId].emplace_back(move(releaseInfo));
                                         }
                                         else_skip
                                     }
@@ -151,7 +192,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                             children {
                                                 iftag("name") {
                                                     if (!currentDescription.genre.isEmpty()) {
-                                                        currentDescription.genre.append(QLatin1Char(' '));
+                                                        currentDescription.genre.append(QStringLiteral(", "));
                                                     }
                                                     currentDescription.genre.append(text);
                                                 }
@@ -163,7 +204,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                 }
                                 else_skip
                             }
-                            m_results << currentDescription;
+                            recordings.emplace_back(move(currentDescription));
                         }
                         else_skip
                     }
@@ -173,21 +214,61 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
         }
         else_skip
     }
-#include <qtutilities/misc/undefxmlparsermacros.h>
+    #include <qtutilities/misc/undefxmlparsermacros.h>
+
+    // populate results
+    // -> create a song for each recording/release combination and group those songs by their releases sorted ascendingly from oldest to latest
+    map<QString, vector<SongDescription>> recordingsByRelease;
+    for (const auto &recording : recordings) {
+        const auto &releases = releasesByRecording[recording.songId];
+        for (const auto &release : releases) {
+            // make a copy of the recording/song information and add release/album specific information to it
+            SongDescription releaseSpecificRecording = recording;
+            if (!release.album.isEmpty()) {
+                releaseSpecificRecording.album = release.album;
+                releaseSpecificRecording.albumId = release.albumId;
+            }
+            if (!release.artist.isEmpty()) {
+                releaseSpecificRecording.artist = release.artist;
+                releaseSpecificRecording.artistId = release.artistId;
+            }
+            if (release.track) {
+                releaseSpecificRecording.track = release.track;
+            }
+            if (release.totalTracks) {
+                releaseSpecificRecording.totalTracks = release.totalTracks;
+            }
+            if (release.disk) {
+                releaseSpecificRecording.disk = release.disk;
+            }
+            if (!release.year.isEmpty()) {
+                releaseSpecificRecording.year = release.year;
+            }
+            recordingsByRelease[release.year % QChar('-') % release.albumId].emplace_back(move(releaseSpecificRecording));
+        }
+    }
+    // -> sort recordings within each release by track number and add recordings to results
+    for (auto &releaseAndRecordings : recordingsByRelease) {
+        auto &recordings = releaseAndRecordings.second;
+        std::sort(recordings.begin(), recordings.end(), [](const auto &lhs, const auto &rhs) { return lhs.track < rhs.track; });
+        for (auto &recording : recordings) {
+            m_results << move(recording);
+        }
+    }
+
+    // check for parsing errors
+    switch (xmlReader.error()) {
+    case QXmlStreamReader::NoError:
+    case QXmlStreamReader::PrematureEndOfDocumentError:
+        break;
+    default:
+        m_errorList << xmlReader.errorString();
+    }
+
+    // promote changes
+    endResetModel();
+}
 // clang-format on
-
-// check for parsing errors
-switch (xmlReader.error()) {
-case QXmlStreamReader::NoError:
-case QXmlStreamReader::PrematureEndOfDocumentError:
-    break;
-default:
-    m_errorList << xmlReader.errorString();
-}
-
-// promote changes
-endResetModel();
-}
 
 QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
 {
