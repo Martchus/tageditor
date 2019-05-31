@@ -290,7 +290,7 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
     const auto givenArtist = tagEdit->value(KnownField::Artist);
     const auto givenTrack = tagEdit->trackNumber();
 
-    if (givenTitle.isEmpty() || !givenTrack) {
+    if (givenTitle.isEmpty() && !givenTrack) {
         return;
     }
 
