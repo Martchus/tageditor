@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QtGui::EditorAutoCorrectionOptionPage</class>
  <widget class="QWidget" name="QtGui::EditorAutoCorrectionOptionPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>346</width>
-    <height>446</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Auto correction</string>
   </property>
@@ -20,7 +12,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto correction/completion will be applied when showing the selected tag fields after &lt;span style=&quot; font-style:italic;&quot;&gt;loading&lt;/span&gt; a file but &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; before saving.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto correction/completion will be applied when showing the selected tag fields after &lt;span style=&quot; font-style:italic;&quot;&gt;loading&lt;/span&gt; a file but &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; before saving. So the tag values you see when opening a file are already corrected. However, when clicking the save button the tags are stored as they are with no further correction applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
