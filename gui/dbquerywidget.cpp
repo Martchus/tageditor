@@ -201,6 +201,8 @@ void DbQueryWidget::showResults()
     if (!m_model) {
         return;
     }
+
+    // update notification label
     if (m_model->errorList().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::TaskComplete);
         if (m_model->results().isEmpty()) {
@@ -215,6 +217,8 @@ void DbQueryWidget::showResults()
             m_ui->notificationLabel->appendLine(error);
         }
     }
+
+    // update push buttons
     if (m_model->results().isEmpty()) {
         m_ui->applyPushButton->setEnabled(false);
     } else {
@@ -224,6 +228,24 @@ void DbQueryWidget::showResults()
         }
         m_ui->applyPushButton->setEnabled(m_tagEditorWidget->activeTagEdit());
     }
+
+    // hide empty columns
+    for (int columnIndex = 0, columnCount = m_model->columnCount(), rowCount = m_model->rowCount(); columnIndex != columnCount; ++columnIndex) {
+        bool columnHasValues = false;
+        for (int rowIndex = 0; rowIndex != rowCount; ++rowIndex) {
+            const auto value = m_model->data(m_model->index(rowIndex, columnIndex));
+            if (value.isNull()) {
+                continue;
+            }
+            if (value.type() == QVariant::String && value.toString().isEmpty()) {
+                continue;
+            }
+            columnHasValues = true;
+            break;
+        }
+        m_ui->resultsTreeView->setColumnHidden(columnIndex, !columnHasValues);
+    }
+
     setStatus(true);
 }
 
