@@ -17,7 +17,12 @@ set(META_VERSION_PATCH 1)
 set(META_ADD_DEFAULT_CPP_UNIT_TEST_APPLICATION ON)
 
 # add project files
-set(HEADER_FILES cli/attachmentinfo.h cli/fieldmapping.h cli/helper.h cli/mainfeatures.h application/knownfieldmodel.h)
+set(HEADER_FILES
+    cli/attachmentinfo.h
+    cli/fieldmapping.h
+    cli/helper.h
+    cli/mainfeatures.h
+    application/knownfieldmodel.h)
 set(SRC_FILES
     application/main.cpp
     cli/attachmentinfo.cpp
@@ -184,7 +189,8 @@ set(REQUIRED_ICONS
     view-media-lyrics)
 
 # find c++utilities
-set(CONFIGURATION_PACKAGE_SUFFIX ""
+set(CONFIGURATION_PACKAGE_SUFFIX
+    ""
     CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
 find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} 5.0.0 REQUIRED)
 use_cpp_utilities()
