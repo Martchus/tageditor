@@ -336,7 +336,18 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
         }
 
         // apply results for matching row
-        applyResults(tagEdit, m_model->index(row, 0));
+        const auto rowIndex = m_model->index(row, 0);
+        applyResults(tagEdit, rowIndex);
+
+        // select the row which has just been applied
+        if (auto *const selectionModel = m_ui->resultsTreeView->selectionModel()) {
+            selectionModel->select(rowIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+        }
+
+        m_tagEditorWidget->addParsingNotificationLine(
+            tr("Inserted search result row %1 (with title \"%2\", album \"%3\" and artist \"%4\").")
+                .arg(row + 1)
+                .arg(tagValueToQString(rowTitle), tagValueToQString(rowAlbum), tagValueToQString(rowArtist)));
 
         // just take the first matching row for now
         break;
