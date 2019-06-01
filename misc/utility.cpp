@@ -9,6 +9,7 @@
 #include <tagparser/signature.h>
 #include <tagparser/tag.h>
 
+#include <c++utilities/conversion/binaryconversion.h>
 #include <c++utilities/io/path.h>
 
 #include <QAbstractItemModel>
@@ -46,60 +47,89 @@ const char *textEncodingToCodecName(TagTextEncoding textEncoding)
 
 QString tagValueToQString(const TagValue &value)
 {
-    if (!value.isEmpty()) {
-        switch (value.type()) {
-        case TagDataType::Text:
-            return dataToQString(value.dataPointer(), value.dataSize(), value.dataEncoding());
-        case TagDataType::Integer:
-            return QStringLiteral("%1").arg(value.toInteger());
-        case TagDataType::StandardGenreIndex:
-        case TagDataType::TimeSpan:
-        case TagDataType::PositionInSet:
-            return QString::fromUtf8(value.toString().c_str());
-        default:;
-        }
+    if (value.isEmpty()) {
+        return QString();
+    }
+    switch (value.type()) {
+    case TagDataType::Text:
+        return dataToQString(value.dataPointer(), value.dataSize(), value.dataEncoding());
+    case TagDataType::Integer:
+        return QString::number(value.toInteger());
+    case TagDataType::StandardGenreIndex:
+    case TagDataType::TimeSpan:
+    case TagDataType::PositionInSet:
+        return QString::fromStdString(value.toString());
+    default:;
     }
     return QString();
 }
 
 QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encoding)
 {
-    if (data && dataSize) {
-        const char *codecName = textEncodingToCodecName(encoding);
-        auto *codec = QTextCodec::codecForName(codecName);
-        if (!codec) {
-            codec = QTextCodec::codecForLocale();
-        }
-        return codec->toUnicode(data, static_cast<int>(dataSize));
+    if (!data || !dataSize) {
+        return QString();
     }
-    return QString();
+
+    switch (encoding) {
+    case TagTextEncoding::Latin1:
+    case TagTextEncoding::Unspecified:
+        return QString::fromLatin1(data, static_cast<int>(dataSize));
+    case TagTextEncoding::Utf8:
+        return QString::fromUtf8(data, static_cast<int>(dataSize));
+#if defined(CONVERSION_UTILITIES_BYTE_ORDER_LITTLE_ENDIAN)
+    case TagTextEncoding::Utf16LittleEndian:
+#else
+    case TagTextEncoding::Utf16BigEndian:
+#endif
+        return QString::fromUtf16(reinterpret_cast<const ushort *>(data), static_cast<int>(dataSize / (sizeof(ushort) / sizeof(char))));
+    default:;
+    }
+
+    const char *const codecName = textEncodingToCodecName(encoding);
+    const auto *codec = QTextCodec::codecForName(codecName);
+    if (!codec) {
+        codec = QTextCodec::codecForLocale();
+    }
+    return codec->toUnicode(data, static_cast<int>(dataSize));
 }
 
 QString stringToQString(const string &value, TagTextEncoding textEncoding)
 {
-    if (!value.empty()) {
-        const char *codecName = textEncodingToCodecName(textEncoding);
-        auto *codec = QTextCodec::codecForName(codecName);
-        if (!codec) {
-            codec = QTextCodec::codecForLocale();
-        }
-        return codec->toUnicode(value.c_str());
-    }
-    return QString();
+    return dataToQString(value.data(), value.size(), textEncoding);
 }
 
 string qstringToString(const QString &value, TagTextEncoding textEncoding)
 {
-    if (!value.isEmpty()) {
-        const char *codecName = textEncodingToCodecName(textEncoding);
+    if (value.isEmpty()) {
+        return string();
+    }
+    QByteArray encodedString;
+    switch (textEncoding) {
+    case TagTextEncoding::Latin1:
+    case TagTextEncoding::Unspecified:
+        encodedString = value.toLatin1();
+        break;
+    case TagTextEncoding::Utf8:
+        encodedString = value.toUtf8();
+        break;
+#if defined(CONVERSION_UTILITIES_BYTE_ORDER_LITTLE_ENDIAN)
+    case TagTextEncoding::Utf16LittleEndian:
+#else
+    case TagTextEncoding::Utf16BigEndian:
+#endif
+        encodedString = QByteArray(
+            reinterpret_cast<const char *>(value.utf16()), static_cast<int>(value.size() * static_cast<int>(sizeof(ushort) / sizeof(char))));
+        break;
+    default: {
+        const char *const codecName = textEncodingToCodecName(textEncoding);
         auto *codec = QTextCodec::codecForName(codecName);
         if (!codec) {
             codec = QTextCodec::codecForLocale();
         }
-        const auto encodedString = codec->fromUnicode(value);
-        return string(encodedString.data(), static_cast<string::size_type>(encodedString.size()));
+        encodedString = codec->fromUnicode(value);
     }
-    return string();
+    }
+    return string(encodedString.data(), static_cast<string::size_type>(encodedString.size()));
 }
 
 TagValue qstringToTagValue(const QString &value, TagTextEncoding textEncoding)
