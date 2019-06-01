@@ -49,6 +49,7 @@ public:
     bool isLocked() const;
     void setLocked(bool locked);
     void toggleLocked();
+    bool hasAutoCorrectionBeenApplied() const;
 
 public slots:
     void clear();
@@ -79,14 +80,14 @@ private:
     QWidget *setupFileSelection();
     Widgets::ClearLineEdit *setupDescriptionLineEdit();
     QLabel *setupTypeNotSupportedLabel();
-    void updateValue(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    void updateValue(TagParser::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    void updateValue(
+    bool updateValue(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    bool updateValue(TagParser::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    bool updateValue(
         const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
     Widgets::IconButton *setupRestoreButton();
     Widgets::IconButton *setupLockButton();
     void showRestoreButton();
-    void applyAutoCorrection(QString &textValue);
+    QString applyAutoCorrection(const QString &textValue);
     void concretizePreviousValueHandling(PreviousValueHandling &previousValueHandling);
 
     QVBoxLayout *m_layout;
@@ -103,6 +104,7 @@ private:
     Widgets::IconButton *m_restoreButton;
     Widgets::IconButton *m_lockButton;
     bool m_isLocked;
+    bool m_autoCorrectionApplied;
 };
 
 inline const QList<TagParser::Tag *> &TagFieldEdit::tags() const
@@ -123,6 +125,11 @@ inline bool TagFieldEdit::isLocked() const
 inline void TagFieldEdit::toggleLocked()
 {
     setLocked(!isLocked());
+}
+
+inline bool TagFieldEdit::hasAutoCorrectionBeenApplied() const
+{
+    return m_autoCorrectionApplied;
 }
 
 } // namespace QtGui

@@ -42,8 +42,8 @@ public:
     TagParser::KnownField field() const;
 
 public slots:
-    void setTagField(TagParser::Tag *tag, TagParser::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
-    void setValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    bool setTagField(TagParser::Tag *tag, TagParser::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    bool setValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
 
     void apply();
     void clear();
@@ -77,7 +77,7 @@ private slots:
     void showContextMenu();
 
 private:
-    void setup(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
+    bool setup(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     void updateSizeAndMimeType(std::size_t fileSize, const QSize &resolution, const QString &mimeType);
 
     std::unique_ptr<Ui::PicturePreviewSelection> m_ui;
@@ -118,11 +118,11 @@ inline TagParser::KnownField PicturePreviewSelection::field() const
  *
  * If \a tag is nullptr the widget is disabled. The widget will be re-setup.
  */
-inline void PicturePreviewSelection::setTagField(TagParser::Tag *tag, TagParser::KnownField field, PreviousValueHandling previousValueHandling)
+inline bool PicturePreviewSelection::setTagField(TagParser::Tag *tag, TagParser::KnownField field, PreviousValueHandling previousValueHandling)
 {
     m_tag = tag;
     m_field = field;
-    setup(previousValueHandling);
+    return setup(previousValueHandling);
 }
 
 } // namespace QtGui

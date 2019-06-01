@@ -174,6 +174,16 @@ bool TagEdit::hasField(KnownField field) const
     return false;
 }
 
+bool TagEdit::hasAutoCorrectionBeenApplied() const
+{
+    for (auto i = m_widgets.constBegin(), end = m_widgets.constEnd(); i != end; ++i) {
+        if (i.value()->hasAutoCorrectionBeenApplied()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /*!
  * \brief Generates a label for the currently assigned tags.
  *

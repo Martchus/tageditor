@@ -75,6 +75,7 @@ public slots:
     void openFileInfoInBrowser();
     // misc
     void applySettingsFromDialog();
+    void addParsingNotificationLine(const QString &line);
 
 signals:
     /// \brief Emitted when loading the next file has been triggered.

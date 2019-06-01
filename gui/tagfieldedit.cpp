@@ -170,11 +170,11 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
  */
 bool TagFieldEdit::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
-    updateValue(value, previousValueHandling, false);
+    bool updated = updateValue(value, previousValueHandling, false);
     if (m_pictureSelection) {
-        m_pictureSelection->setValue(value, previousValueHandling);
+        updated = m_pictureSelection->setValue(value, previousValueHandling) || updated;
     }
-    return true;
+    return updated;
 }
 
 /*!
@@ -510,7 +510,7 @@ QLabel *TagFieldEdit::setupTypeNotSupportedLabel()
  *
  * The new value is read from the assigned tag(s).
  */
-void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
+bool TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
 {
     // use the values from the last tag which has the specified field
     for (auto i = tags().crbegin(), end = tags().crend(); i != end; ++i) {
@@ -521,19 +521,20 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
             continue;
         }
 
-        updateValue(value, previousValueHandling);
+        bool updated = updateValue(value, previousValueHandling);
         if (m_pictureSelection) {
-            m_pictureSelection->setTagField(tag, m_field, previousValueHandling);
+            updated = m_pictureSelection->setTagField(tag, m_field, previousValueHandling) || updated;
         }
-        return;
+        return updated;
     }
 
     // set an empty value
-    updateValue(TagValue(), previousValueHandling);
+    bool updated = updateValue(TagValue(), previousValueHandling);
     if (m_pictureSelection) {
         // pass the last tag if present so the picture selection can operate on that tag instance and won't be disabled
-        m_pictureSelection->setTagField(m_tags->isEmpty() ? nullptr : m_tags->back(), m_field, previousValueHandling);
+        updated = m_pictureSelection->setTagField(m_tags->isEmpty() ? nullptr : m_tags->back(), m_field, previousValueHandling) || updated;
     }
+    return updated;
 }
 
 /*!
@@ -542,12 +543,13 @@ void TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
  * \param previousValueHandling Specifies how to deal with the previous value.
  * \remarks If \a tag is nullptr, the new value is empty.
  */
-void TagFieldEdit::updateValue(Tag *tag, PreviousValueHandling previousValueHandling)
+bool TagFieldEdit::updateValue(Tag *tag, PreviousValueHandling previousValueHandling)
 {
-    updateValue(tag ? tag->value(m_field) : TagValue::empty(), previousValueHandling);
+    bool updated = updateValue(tag ? tag->value(m_field) : TagValue::empty(), previousValueHandling);
     if (m_pictureSelection) {
-        m_pictureSelection->setTagField(tag, m_field, previousValueHandling);
+        updated = m_pictureSelection->setTagField(tag, m_field, previousValueHandling) || updated;
     }
+    return updated;
 }
 
 /*!
@@ -557,8 +559,9 @@ void TagFieldEdit::updateValue(Tag *tag, PreviousValueHandling previousValueHand
  * \param updateRestoreButton Specifies whether the "restore button" should be updated.
  * \remarks Does not update the picture preview selection.
  */
-void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling previousValueHandling, bool updateRestoreButton)
+bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling previousValueHandling, bool updateRestoreButton)
 {
+    bool autoCorrectionApplied = false;
     bool conversionError = false;
     bool updated = false;
     concretizePreviousValueHandling(previousValueHandling);
@@ -567,9 +570,12 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     if (m_lineEdit || m_comboBox || m_plainTextEdit) {
         const auto text([&] {
             try {
-                auto text(Utility::tagValueToQString(value));
-                applyAutoCorrection(text);
-                return text;
+                const auto text(Utility::tagValueToQString(value));
+                const auto correctedText = applyAutoCorrection(text);
+                if (correctedText != text) {
+                    autoCorrectionApplied = true;
+                }
+                return correctedText;
             } catch (const ConversionException &) {
                 conversionError = true;
                 return QString();
@@ -651,10 +657,13 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         m_descriptionLineEdit->setEnabled(true);
         if (previousValueHandling != PreviousValueHandling::Keep || m_descriptionLineEdit->isCleared()) {
             try {
-                auto desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
-                applyAutoCorrection(desc);
-                if (!m_isLocked || desc.isEmpty()) {
-                    m_descriptionLineEdit->setText(desc);
+                const auto desc = Utility::stringToQString(value.description(), value.descriptionEncoding());
+                const auto correctedDesc = applyAutoCorrection(desc);
+                if (correctedDesc != desc) {
+                    autoCorrectionApplied = true;
+                }
+                if (!m_isLocked || correctedDesc.isEmpty()) {
+                    m_descriptionLineEdit->setText(correctedDesc);
                 }
             } catch (const ConversionException &) {
                 conversionError = true;
@@ -673,6 +682,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     if (updated) {
         setLocked(false);
     }
+    m_autoCorrectionApplied = updated && autoCorrectionApplied;
 
     // setup info button
     const auto widgets = initializer_list<ButtonOverlay *>{ m_lineEdit, m_comboBox, m_spinBoxes.first, m_spinBoxes.second };
@@ -683,7 +693,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
                 overlay->disableInfoButton();
             }
         }
-        return;
+        return updated;
     }
     const auto pixmap(
         QIcon::fromTheme(QStringLiteral("emblem-error"), QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")))
@@ -706,6 +716,7 @@ void TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
             overlay->enableInfoButton(pixmap, text);
         }
     }
+    return updated;
 }
 
 /*!
@@ -756,8 +767,9 @@ void TagFieldEdit::showRestoreButton()
 /*!
  * \brief Applies auto correction (according to the settings) for the specified \a textValue.
  */
-void TagFieldEdit::applyAutoCorrection(QString &textValue)
+QString TagFieldEdit::applyAutoCorrection(const QString &textValue)
 {
+    QString correctedValue = textValue;
     const auto &settings = Settings::values().editor.autoCompletition;
     auto &fields = settings.fields.items();
     auto i = find_if(fields.constBegin(), fields.constEnd(), [this](const ChecklistItem &item) {
@@ -766,17 +778,18 @@ void TagFieldEdit::applyAutoCorrection(QString &textValue)
     });
     // if current field is in the list of auto correction fields and auto correction should be applied
     if (i == fields.constEnd() || !i->isChecked()) {
-        return;
+        return correctedValue;
     }
     if (settings.trimWhitespaces) {
-        textValue = textValue.trimmed();
-    }
-    if (settings.fixUmlauts) {
-        textValue = Utility::fixUmlauts(textValue);
+        correctedValue = correctedValue.trimmed();
     }
     if (settings.formatNames) {
-        textValue = Utility::formatName(textValue);
+        correctedValue = Utility::formatName(correctedValue);
     }
+    if (settings.fixUmlauts) {
+        correctedValue = Utility::fixUmlauts(correctedValue);
+    }
+    return correctedValue;
 }
 
 /*!

@@ -262,6 +262,7 @@ bool TagEditorWidget::event(QEvent *event)
                 return true;
             }
         }
+        break;
     }
     default:;
     }
@@ -332,6 +333,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
         break;
     default:;
     }
+
     // define helper function to fetch next edit
     TagEdit *edit; // holds current edit
     int widgetIndex = 0; // holds index of current edit in the stacked widget
@@ -348,6 +350,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
         // apply settings
         edit->setPreviousValueHandling(previousValueHandling);
     };
+
     // add/update TagEdit widgets
     if (m_tags.size()) {
         // create a lists of the targets and tags
@@ -364,12 +367,16 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
             }
         }
         // create a singe editor per target or seperate editors for each tag depending on the settings
+        bool hasAutoCorrectionBeenApplied = false;
         switch (Settings::values().editor.multipleTagHandling) {
         case Settings::MultipleTagHandling::SingleEditorPerTarget:
             // iterate through all targets in both cases
             for (int targetIndex = 0, targetCount = targets.size(); targetIndex < targetCount; ++targetIndex) {
                 fetchNextEdit();
                 edit->setTags(tagsByTarget.at(targetIndex), updateUi); // set all tags with the same target to a single edit
+                if (!hasAutoCorrectionBeenApplied) {
+                    hasAutoCorrectionBeenApplied = edit->hasAutoCorrectionBeenApplied();
+                }
                 ++widgetIndex;
             }
             break;
@@ -379,10 +386,16 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
                 for (Tag *tag : tagsByTarget.at(targetIndex)) {
                     fetchNextEdit();
                     edit->setTag(tag, updateUi); // use a separate edit for each tag
+                    if (!hasAutoCorrectionBeenApplied) {
+                        hasAutoCorrectionBeenApplied = edit->hasAutoCorrectionBeenApplied();
+                    }
                     ++widgetIndex;
                 }
             }
             break;
+        }
+        if (hasAutoCorrectionBeenApplied) {
+            addParsingNotificationLine(tr("Some values have been changed by the auto-correction."));
         }
     } else {
         // there are no tags -> leave one edit existend but ensure no tags are assigned
@@ -390,6 +403,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
         edit->setTag(nullptr, false);
         ++widgetIndex;
     }
+
     // add/update AttachmentsEdit widget
     if (m_fileInfo.areAttachmentsSupported()) {
         AttachmentsEdit *edit;
@@ -406,6 +420,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
         }
         ++widgetIndex;
     }
+
     // remove surplus edits
     while (widgetIndex < m_ui->stackedWidget->count()) {
         QWidget *toRemove = m_ui->stackedWidget->widget(widgetIndex);
@@ -609,19 +624,26 @@ void TagEditorWidget::updateKeepPreviousValuesButton()
  */
 void TagEditorWidget::insertTitleFromFilename()
 {
-    if (!m_tags.empty() && Settings::values().editor.autoCompletition.insertTitleFromFilename) {
-        QString title;
-        int trackNum;
-        parseFileName(m_fileName, title, trackNum);
-        const TagValue titleValue = qstringToTagValue(title, TagTextEncoding::Utf16LittleEndian);
-        foreachTagEdit([&titleValue](TagEdit *edit) {
-            for (const Tag *tag : edit->tags()) {
-                if (tag->supportsTarget() && tag->isTargetingLevel(TagTargetLevel::Part)) {
-                    return;
-                }
+    if (m_tags.empty() || !Settings::values().editor.autoCompletition.insertTitleFromFilename) {
+        return;
+    }
+    QString title;
+    int trackNum;
+    parseFileName(m_fileName, title, trackNum);
+    const auto titleValue = qstringToTagValue(title, TagTextEncoding::Utf16LittleEndian);
+    auto updated = false;
+    foreachTagEdit([&titleValue, &updated](TagEdit *const edit) {
+        for (const auto *const tag : edit->tags()) {
+            if (tag->supportsTarget() && tag->isTargetingLevel(TagTargetLevel::Part)) {
+                return;
             }
-            edit->setValue(KnownField::Title, titleValue, PreviousValueHandling::Keep);
-        });
+        }
+        if (edit->setValue(KnownField::Title, titleValue, PreviousValueHandling::Keep)) {
+            updated = true;
+        }
+    });
+    if (updated) {
+        addParsingNotificationLine(tr("Inserted title from filename."));
     }
 }
 
@@ -1412,6 +1434,11 @@ void TagEditorWidget::applySettingsFromDialog()
     // ensure info view is displayed/not displayed according to settings
     initInfoView();
     updateInfoView();
+}
+
+void TagEditorWidget::addParsingNotificationLine(const QString &line)
+{
+    m_ui->parsingNotificationWidget->appendLine(line);
 }
 
 /*!

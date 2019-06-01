@@ -44,6 +44,7 @@ public:
     void setPreviousValueHandling(PreviousValueHandling previousValueHandling);
     TagFieldEdit *tagFieldEdit(TagParser::KnownField field) const;
     QString generateLabel() const;
+    bool hasAutoCorrectionBeenApplied() const;
 
 public slots:
     void clear();

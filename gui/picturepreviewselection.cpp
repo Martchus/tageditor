@@ -92,16 +92,19 @@ PicturePreviewSelection::~PicturePreviewSelection()
  *
  * Used for editing tags programmatically, eg. in TagEditorWidget::insertTitleFromFilename() and DbQueryWidget::applyResults().
  */
-void PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
+bool PicturePreviewSelection::setValue(const TagValue &value, PreviousValueHandling previousValueHandling)
 {
     assert(m_currentTypeIndex < m_values.size());
     TagValue &currentValue = m_values[m_currentTypeIndex];
+    bool updated = false;
     if ((previousValueHandling == PreviousValueHandling::Clear || !value.isEmpty())
         && (previousValueHandling != PreviousValueHandling::Keep || currentValue.isEmpty())) {
         currentValue = value; // TODO: move(value);
+        updated = true;
         emit pictureChanged();
     }
     updatePreview(m_currentTypeIndex);
+    return updated;
 }
 
 /*!
@@ -153,7 +156,7 @@ int fetchId3v2CoverValues(
 /*!
  * \brief Sets the widget up.
  */
-void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
+bool PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
 {
     if (previousValueHandling == PreviousValueHandling::Auto) {
         previousValueHandling = PreviousValueHandling::Update;
@@ -161,7 +164,7 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
     m_currentTypeIndex = 0;
     if (!m_tag) {
         setEnabled(false);
-        return;
+        return false;
     }
     if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
         m_ui->switchTypeComboBox->setHidden(false);
@@ -219,6 +222,7 @@ void PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
     updatePreview(m_currentTypeIndex);
     updateDescription(m_currentTypeIndex);
     setEnabled(true);
+    return true;
 }
 
 /*!
