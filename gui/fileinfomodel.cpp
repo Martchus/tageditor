@@ -231,33 +231,47 @@ void FileInfoModel::setFileInfo(MediaFileInfo &fileInfo, Diagnostics &diag, Diag
     updateCache();
 }
 
-#if defined(TAGEDITOR_GUI_QTWIDGETS)
 const QIcon &FileInfoModel::informationIcon()
 {
-    static const QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-information")
+#ifdef GUI_QTWIDGETS
+                                                   ,
+        QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation)
+#endif
+    );
     return icon;
 }
 
 const QIcon &FileInfoModel::warningIcon()
 {
-    static const QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning);
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-warning")
+#ifdef GUI_QTWIDGETS
+                                                   ,
+        QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning)
+#endif
+    );
     return icon;
 }
 
 const QIcon &FileInfoModel::errorIcon()
 {
-    static const QIcon icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-error")
+#ifdef GUI_QTWIDGETS
+                                                   ,
+        QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical)
+#endif
+    );
     return icon;
 }
 
 const QIcon &FileInfoModel::debugIcon()
 {
-    static const QIcon icon = QIcon(QStringLiteral("/images/bug"));
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-question"));
     return icon;
 }
 
 /*!
- * \brief Internally called to create to cache the items.
+ * \brief Internally called to cache the items.
  */
 void FileInfoModel::updateCache()
 {
@@ -605,7 +619,5 @@ void FileInfoModel::updateCache()
     }
     endResetModel();
 }
-
-#endif
 
 } // namespace QtGui

@@ -1,6 +1,8 @@
 #include "./htmlinfo.h"
 #include "./utility.h"
 
+#include "../gui/fileinfomodel.h"
+
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractcontainer.h>
 #include <tagparser/abstracttrack.h>
@@ -246,25 +248,25 @@ QByteArray mkBase64(const QIcon &icon)
 
 const QByteArray &mkInfoIconData()
 {
-    static const QByteArray data = mkBase64(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation));
+    static const QByteArray data = mkBase64(QtGui::FileInfoModel::informationIcon());
     return data;
 }
 
 const QByteArray &mkWarningIconData()
 {
-    static const QByteArray data = mkBase64(QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning));
+    static const QByteArray data = mkBase64(QtGui::FileInfoModel::warningIcon());
     return data;
 }
 
 const QByteArray &mkErrorIconData()
 {
-    static const QByteArray data = mkBase64(QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical));
+    static const QByteArray data = mkBase64(QtGui::FileInfoModel::errorIcon());
     return data;
 }
 
 const QByteArray &mkDebugIconData()
 {
-    static const QByteArray data = mkBase64(QIcon(QStringLiteral(":/images/bug")));
+    static const QByteArray data = mkBase64(QtGui::FileInfoModel::debugIcon());
     return data;
 }
 

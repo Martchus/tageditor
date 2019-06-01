@@ -26,8 +26,18 @@ set(SRC_FILES
     cli/mainfeatures.cpp
     application/knownfieldmodel.cpp)
 
-set(GUI_HEADER_FILES application/targetlevelmodel.h application/settings.h misc/htmlinfo.h misc/utility.h)
-set(GUI_SRC_FILES application/targetlevelmodel.cpp application/settings.cpp misc/htmlinfo.cpp misc/utility.cpp)
+set(GUI_HEADER_FILES
+    application/targetlevelmodel.h
+    application/settings.h
+    gui/fileinfomodel.h
+    misc/htmlinfo.h
+    misc/utility.h)
+set(GUI_SRC_FILES
+    application/targetlevelmodel.cpp
+    application/settings.cpp
+    gui/fileinfomodel.cpp
+    misc/htmlinfo.cpp
+    misc/utility.cpp)
 
 set(WIDGETS_HEADER_FILES
     gui/entertargetdialog.h
@@ -49,7 +59,6 @@ set(WIDGETS_HEADER_FILES
     gui/tagedit.h
     gui/tagfieldedit.h
     gui/tageditorwidget.h
-    gui/fileinfomodel.h
     dbquery/dbquery.h
     dbquery/musicbrainz.h
     dbquery/lyricswikia.h
@@ -79,7 +88,6 @@ set(WIDGETS_SRC_FILES
     gui/tagedit.cpp
     gui/tagfieldedit.cpp
     gui/tageditorwidget.cpp
-    gui/fileinfomodel.cpp
     dbquery/dbquery.cpp
     dbquery/musicbrainz.cpp
     dbquery/lyricswikia.cpp
@@ -128,6 +136,9 @@ set(REQUIRED_ICONS
     edit-clear
     edit-copy
     emblem-error
+    emblem-warning
+    emblem-information
+    emblem-question
     object-locked
     object-unlocked
     preferences-other

@@ -1,6 +1,7 @@
 #ifndef FILEINFOMODEL_H
 #define FILEINFOMODEL_H
 
+#include <QIcon>
 #include <QStandardItemModel>
 
 #include <list>
@@ -22,12 +23,10 @@ public:
     const TagParser::MediaFileInfo *fileInfo() const;
     void setFileInfo(TagParser::MediaFileInfo &fileInfo, TagParser::Diagnostics &diag, TagParser::Diagnostics *diagReparsing = nullptr);
 
-#if defined(GUI_QTWIDGETS)
     static const QIcon &informationIcon();
     static const QIcon &warningIcon();
     static const QIcon &errorIcon();
     static const QIcon &debugIcon();
-#endif
 
 private:
     void updateCache();
