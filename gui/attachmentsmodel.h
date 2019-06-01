@@ -43,17 +43,17 @@ class AttachmentsModel : public QAbstractTableModel {
     Q_OBJECT
 public:
     AttachmentsModel(QObject *parent = nullptr);
-    ~AttachmentsModel();
+    ~AttachmentsModel() override;
 
-    QVariant data(const QModelIndex &index, int role) const;
-    bool setData(const QModelIndex &index, const QVariant &value, int role);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
-    int rowCount(const QModelIndex &parent = QModelIndex()) const;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    QVariant data(const QModelIndex &index, int role) const override;
+    bool setData(const QModelIndex &index, const QVariant &value, int role) override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
-    void revert();
-    bool submit();
+    void revert() override;
+    bool submit() override;
     void repealSelection();
 
     TagParser::AbstractAttachment *attachment(const QModelIndex &index);

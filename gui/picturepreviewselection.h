@@ -36,7 +36,7 @@ class PicturePreviewSelection : public QWidget {
 public:
     explicit PicturePreviewSelection(
         TagParser::Tag *tag = nullptr, TagParser::KnownField field = TagParser::KnownField::Invalid, QWidget *parent = nullptr);
-    ~PicturePreviewSelection();
+    ~PicturePreviewSelection() override;
 
     TagParser::Tag *tag() const;
     TagParser::KnownField field() const;
@@ -64,10 +64,10 @@ signals:
     void pictureChanged();
 
 protected:
-    void changeEvent(QEvent *event);
-    void resizeEvent(QResizeEvent *event);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dropEvent(QDropEvent *event);
+    void changeEvent(QEvent *event) override;
+    void resizeEvent(QResizeEvent *event) override;
+    void dragEnterEvent(QDragEnterEvent *event) override;
+    void dropEvent(QDropEvent *event) override;
 
 private slots:
     void typeSwitched(int index);

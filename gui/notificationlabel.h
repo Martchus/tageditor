@@ -38,8 +38,8 @@ public:
     std::size_t maxLineCount() const;
     std::size_t currentLineCount() const;
 
-    virtual QSize sizeHint() const;
-    virtual QSize minimumSizeHint() const;
+    QSize sizeHint() const override;
+    QSize minimumSizeHint() const override;
 
 public slots:
     void setText(const QString &text);
@@ -54,8 +54,8 @@ public slots:
     void setMaxLineCount(std::size_t maxLineCount);
 
 protected:
-    void paintEvent(QPaintEvent *event);
-    void mouseDoubleClickEvent(QMouseEvent *event);
+    void paintEvent(QPaintEvent *event) override;
+    void mouseDoubleClickEvent(QMouseEvent *event) override;
 
 private slots:
     void updateAnimation();

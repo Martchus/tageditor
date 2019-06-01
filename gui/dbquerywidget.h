@@ -29,7 +29,7 @@ class DbQueryWidget : public QWidget {
 
 public:
     explicit DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent = nullptr);
-    ~DbQueryWidget();
+    ~DbQueryWidget() override;
 
     void insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpecific = false);
     SongDescription currentSongDescription() const;
@@ -63,7 +63,7 @@ private slots:
     void showLyricsFromIndex(const QModelIndex &index);
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:
     void useQueryResults(QueryResultsModel *queryResults);

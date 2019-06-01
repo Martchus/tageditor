@@ -51,7 +51,7 @@ class SettingsDialog : public Dialogs::SettingsDialog {
     Q_OBJECT
 public:
     explicit SettingsDialog(QWidget *parent = nullptr);
-    ~SettingsDialog();
+    ~SettingsDialog() override;
 };
 
 } // namespace QtGui

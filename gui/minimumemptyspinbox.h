@@ -11,8 +11,8 @@ public:
     explicit MinimumEmptySpinBox(QWidget *parent = nullptr);
 
 protected:
-    virtual int valueFromText(const QString &text) const;
-    virtual QString textFromValue(int val) const;
+    int valueFromText(const QString &text) const override;
+    QString textFromValue(int val) const override;
 };
 
 } // namespace QtGui

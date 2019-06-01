@@ -8,13 +8,13 @@ namespace QtGui {
 class CodeEdit : public QPlainTextEdit {
 public:
     CodeEdit(QWidget *parent = nullptr);
-    ~CodeEdit();
+    ~CodeEdit() override;
 
     const QString &indentation() const;
     void setIndentation(const QString &indentation);
 
 protected:
-    void keyPressEvent(QKeyEvent *e);
+    void keyPressEvent(QKeyEvent *e) override;
 
 private:
     void handleReturn(QKeyEvent *e);

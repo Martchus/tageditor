@@ -24,7 +24,7 @@ public:
     void editText(const QString &text);
 
 protected:
-    virtual void contextMenuEvent(QContextMenuEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event) override;
 };
 
 } // namespace QtGui

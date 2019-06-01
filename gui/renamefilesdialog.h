@@ -26,13 +26,13 @@ class RenameFilesDialog : public QDialog {
 
 public:
     explicit RenameFilesDialog(QWidget *parent = nullptr);
-    ~RenameFilesDialog();
+    ~RenameFilesDialog() override;
 
     QString directory() const;
     void setDirectory(const QString &directory);
 
 protected:
-    bool event(QEvent *event);
+    bool event(QEvent *event) override;
 
 private slots:
     void showScriptFileSelectionDlg();

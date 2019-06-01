@@ -39,7 +39,7 @@ class MainWindow : public QMainWindow {
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    ~MainWindow() override;
 
     // file browser
     QString currentDirectory() const;
@@ -52,7 +52,7 @@ public slots:
     void startParsing(const QString &path);
 
 protected:
-    bool event(QEvent *event);
+    bool event(QEvent *event) override;
 
 private slots:
     // file selection

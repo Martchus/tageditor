@@ -18,7 +18,7 @@ class FileInfoModel : public QStandardItemModel {
 public:
     explicit FileInfoModel(QObject *parent = nullptr);
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     const TagParser::MediaFileInfo *fileInfo() const;
     void setFileInfo(TagParser::MediaFileInfo &fileInfo, TagParser::Diagnostics &diag, TagParser::Diagnostics *diagReparsing = nullptr);

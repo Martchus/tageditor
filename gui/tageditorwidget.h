@@ -44,7 +44,7 @@ class TagEditorWidget : public QWidget {
 
 public:
     explicit TagEditorWidget(QWidget *parent = nullptr);
-    ~TagEditorWidget();
+    ~TagEditorWidget() override;
 
 public:
     bool isFileOperationOngoing() const;
@@ -93,7 +93,7 @@ signals:
     void fileShown();
 
 protected:
-    bool event(QEvent *event);
+    bool event(QEvent *event) override;
 
 private slots:
     // editor

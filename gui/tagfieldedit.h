@@ -60,7 +60,7 @@ signals:
     void returnPressed();
 
 protected:
-    virtual bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
 
 private slots:
     void handleRestoreButtonClicked();

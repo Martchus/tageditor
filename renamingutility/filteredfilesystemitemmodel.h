@@ -17,8 +17,8 @@ public:
     void setStatusFilter(ItemStatus statusFilter);
 
 protected:
-    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-    bool filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const;
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+    bool filterAcceptsColumn(int sourceColumn, const QModelIndex &sourceParent) const override;
 
 private:
     ItemStatus m_statusFilter;

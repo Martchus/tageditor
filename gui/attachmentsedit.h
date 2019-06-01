@@ -23,7 +23,7 @@ class AttachmentsEdit : public QWidget {
 
 public:
     explicit AttachmentsEdit(TagParser::MediaFileInfo *fileInfo, QWidget *parent = nullptr);
-    ~AttachmentsEdit();
+    ~AttachmentsEdit() override;
 
     TagParser::MediaFileInfo *fileInfo();
     void setFileInfo(TagParser::MediaFileInfo *fileInfo, bool updateUi = true);

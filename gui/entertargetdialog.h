@@ -28,7 +28,7 @@ class EnterTargetDialog : public QDialog {
 
 public:
     explicit EnterTargetDialog(QWidget *parent = nullptr);
-    ~EnterTargetDialog();
+    ~EnterTargetDialog() override;
 
     TagParser::TagTarget target() const;
     void setTarget(const TagParser::TagTarget &target, const TagParser::MediaFileInfo *file = nullptr);

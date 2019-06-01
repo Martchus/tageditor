@@ -21,8 +21,8 @@ public:
     bool isFileAccepted(const QString &path) const;
 
 protected:
-    virtual bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
-    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) override;
 
 private:
     bool m_filterEnabled;
