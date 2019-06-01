@@ -80,6 +80,8 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
         return TagValue(res.track);
     case KnownField::TotalParts:
         return TagValue(res.totalTracks);
+    case KnownField::DiskPosition:
+        return TagValue(PositionInSet(res.disk));
     case KnownField::Cover:
         if (!res.cover.isEmpty()) {
             TagValue tagValue(res.cover.data(), static_cast<size_t>(res.cover.size()), TagDataType::Picture);
@@ -119,13 +121,19 @@ QVariant QueryResultsModel::data(const QModelIndex &index, int role) const
             if (res.track) {
                 return res.track;
             } else {
-                return QString();
+                return QVariant();
             }
         case TotalTracksCol:
             if (res.totalTracks) {
                 return res.totalTracks;
             } else {
-                return QString();
+                return QVariant();
+            }
+        case DiskCol:
+            if (res.disk) {
+                return res.disk;
+            } else {
+                return QVariant();
             }
         default:;
         }
@@ -157,14 +165,16 @@ QVariant QueryResultsModel::headerData(int section, Qt::Orientation orientation,
                 return tr("Album");
             case ArtistCol:
                 return tr("Artist");
+            case GenreCol:
+                return tr("Genre");
             case YearCol:
                 return tr("Year");
             case TrackCol:
                 return tr("Track");
             case TotalTracksCol:
                 return tr("Total tracks");
-            case GenreCol:
-                return tr("Genre");
+            case DiskCol:
+                return tr("Disk");
             default:;
             }
             break;
@@ -183,7 +193,7 @@ int QueryResultsModel::rowCount(const QModelIndex &parent) const
 
 int QueryResultsModel::columnCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : (TotalTracksCol + 1);
+    return parent.isValid() ? 0 : EndCol;
 }
 
 const QByteArray *QueryResultsModel::cover(const QModelIndex &index) const

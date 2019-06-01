@@ -50,6 +50,8 @@ public:
         YearCol,
         TrackCol,
         TotalTracksCol,
+        DiskCol,
+        EndCol,
     };
 
     const QList<SongDescription> &results() const;

@@ -89,6 +89,31 @@ std::int32_t TagEdit::trackNumber() const
     return trackNumber;
 }
 
+int32_t TagEdit::diskNumber() const
+{
+    std::int32_t diskNumber = 0;
+    try {
+        diskNumber = value(KnownField::DiskPosition).toPositionInSet().position();
+    } catch (const ConversionException &) {
+    }
+    if (diskNumber) {
+        return diskNumber;
+    }
+    for (const auto *const tag : tags()) {
+        if (!tag->supportsTarget() || tag->targetLevel() != TagTargetLevel::Part) {
+            continue;
+        }
+        try {
+            diskNumber = value(KnownField::PartNumber).toInteger();
+        } catch (const ConversionException &) {
+        }
+        if (diskNumber) {
+            return diskNumber;
+        }
+    }
+    return diskNumber;
+}
+
 /*!
  * \brief Assigns the specified \a tag to the edit.
  * \param updateUi Specifies whether the UI of should be updated.

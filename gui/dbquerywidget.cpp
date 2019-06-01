@@ -289,6 +289,7 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
     const auto givenAlbum = tagEdit->value(KnownField::Album);
     const auto givenArtist = tagEdit->value(KnownField::Artist);
     const auto givenTrack = tagEdit->trackNumber();
+    const auto givenDisk = tagEdit->diskNumber();
 
     if (givenTitle.isEmpty() && !givenTrack) {
         return;
@@ -296,10 +297,19 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
 
     // find row matching already present data
     for (int row = 0, rowCount = m_model->rowCount(); row != rowCount; ++row) {
-        if ((!givenTitle.isEmpty() && givenTitle != m_model->fieldValue(row, KnownField::Title))
-            || (!givenAlbum.isEmpty() && givenAlbum != m_model->fieldValue(row, KnownField::Album))
-            || (!givenArtist.isEmpty() && givenArtist != m_model->fieldValue(row, KnownField::Artist))
-            || (givenTrack && givenTrack != m_model->fieldValue(row, KnownField::PartNumber).toInteger())) {
+        // skip row if title, track, album or artist do not match
+        // -> ignore fields which aren't specified, though
+        // -> ignore track and disk mismatch if the title matches (likely the track/disk number has been taken over incorrectly)
+        const auto rowTitle = m_model->fieldValue(row, KnownField::Title);
+        const auto rowAlbum = m_model->fieldValue(row, KnownField::Album);
+        const auto rowArtist = m_model->fieldValue(row, KnownField::Artist);
+        const auto rowTrack = m_model->fieldValue(row, KnownField::PartNumber).toInteger();
+        const auto rowDisk = m_model->fieldValue(row, KnownField::DiskPosition).toInteger();
+        const auto titleMismatch = givenTitle != rowTitle;
+        if ((!givenTitle.isEmpty() && titleMismatch) || (!givenAlbum.isEmpty() && givenAlbum != rowAlbum)
+            || (!givenArtist.isEmpty() && givenArtist != rowArtist)
+            || (givenTrack && (givenTitle.isEmpty() || titleMismatch) && givenTrack != rowTrack)
+            || (givenDisk && rowDisk && (givenTitle.isEmpty() || titleMismatch) && givenDisk != rowDisk)) {
             continue;
         }
 
