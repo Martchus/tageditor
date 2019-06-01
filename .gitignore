@@ -1,5 +1,4 @@
 # C++ objects and libs
-
 *.slo
 *.lo
 *.o
@@ -11,7 +10,6 @@
 *.dylib
 
 # Qt-es
-
 /.qmake.cache
 /.qmake.stash
 *.pro.user
@@ -27,10 +25,9 @@ Makefile*
 *-build-*
 
 # QtCreator
-
 *.autosave
 
-#QtCtreator Qml
+# QtCtreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
 
@@ -42,3 +39,6 @@ Makefile*
 
 # clang-format
 /.clang-format
+
+# profiling with clang
+default.profraw
