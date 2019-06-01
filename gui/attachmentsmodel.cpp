@@ -89,17 +89,17 @@ void AttachmentItem::setActivated(bool activated)
 
 void AttachmentItem::revert()
 {
-    m_name = QString::fromUtf8(m_attachment->name().c_str());
-    m_description = QString::fromUtf8(m_attachment->description().c_str());
-    m_mimeType = QString::fromUtf8(m_attachment->mimeType().c_str());
+    m_name = QString::fromStdString(m_attachment->name());
+    m_description = QString::fromStdString(m_attachment->description());
+    m_mimeType = QString::fromStdString(m_attachment->mimeType());
     m_activated = !m_attachment->isIgnored();
 }
 
 void AttachmentItem::submit()
 {
-    m_attachment->setName(m_name.toUtf8().data());
-    m_attachment->setDescription(m_description.toUtf8().data());
-    m_attachment->setMimeType(m_mimeType.toUtf8().data());
+    m_attachment->setName(m_name.toUtf8().toStdString());
+    m_attachment->setDescription(m_description.toUtf8().toStdString());
+    m_attachment->setMimeType(m_mimeType.toUtf8().toStdString());
     m_attachment->setIgnored(!m_activated);
 }
 
