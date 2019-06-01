@@ -197,7 +197,7 @@ if (isPartOfCollection(tag)) {
 } else if (notEmpty(artist)) {
     path.push(artist)
 } else {
-    path.push(misc)
+    path.push(miscDir)
 }
 var album = validDirectoryName(tag.album)
 if (notEmpty(album)) {
