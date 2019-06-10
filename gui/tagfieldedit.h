@@ -14,12 +14,12 @@ QT_FORWARD_DECLARE_CLASS(QLabel)
 namespace TagParser {
 class TagValue;
 class Tag;
-DECLARE_ENUM_CLASS(KnownField, unsigned int);
-DECLARE_ENUM_CLASS(TagDataType, unsigned int);
-DECLARE_ENUM_CLASS(TagTextEncoding, unsigned int);
+enum class KnownField : unsigned int;
+enum class TagDataType : unsigned int;
+enum class TagTextEncoding : unsigned int;
 } // namespace TagParser
 
-namespace Widgets {
+namespace QtUtilities {
 class ButtonOverlay;
 class ClearLineEdit;
 class ClearComboBox;
@@ -71,21 +71,21 @@ private slots:
 private:
     TagParser::TagDataType determineDataType();
     void setupUi();
-    Widgets::ClearLineEdit *setupLineEdit();
-    Widgets::ClearPlainTextEdit *setupPlainTextEdit();
-    Widgets::ClearComboBox *setupGenreComboBox();
-    Widgets::ClearSpinBox *setupSpinBox();
-    QPair<Widgets::ClearSpinBox *, Widgets::ClearSpinBox *> &setupPositionInSetSpinBoxes();
+    QtUtilities::ClearLineEdit *setupLineEdit();
+    QtUtilities::ClearPlainTextEdit *setupPlainTextEdit();
+    QtUtilities::ClearComboBox *setupGenreComboBox();
+    QtUtilities::ClearSpinBox *setupSpinBox();
+    QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> &setupPositionInSetSpinBoxes();
     PicturePreviewSelection *setupPictureSelection();
     QWidget *setupFileSelection();
-    Widgets::ClearLineEdit *setupDescriptionLineEdit();
+    QtUtilities::ClearLineEdit *setupDescriptionLineEdit();
     QLabel *setupTypeNotSupportedLabel();
     bool updateValue(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool updateValue(TagParser::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool updateValue(
         const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
-    Widgets::IconButton *setupRestoreButton();
-    Widgets::IconButton *setupLockButton();
+    QtUtilities::IconButton *setupRestoreButton();
+    QtUtilities::IconButton *setupLockButton();
     void showRestoreButton();
     QString applyAutoCorrection(const QString &textValue);
     void concretizePreviousValueHandling(PreviousValueHandling &previousValueHandling);
@@ -95,14 +95,14 @@ private:
     TagParser::KnownField m_field;
     TagParser::TagDataType m_dataType;
     QList<QWidget *> m_widgets;
-    Widgets::ClearLineEdit *m_lineEdit;
-    Widgets::ClearComboBox *m_comboBox;
-    QPair<Widgets::ClearSpinBox *, Widgets::ClearSpinBox *> m_spinBoxes;
+    QtUtilities::ClearLineEdit *m_lineEdit;
+    QtUtilities::ClearComboBox *m_comboBox;
+    QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> m_spinBoxes;
     PicturePreviewSelection *m_pictureSelection;
-    Widgets::ClearPlainTextEdit *m_plainTextEdit;
-    Widgets::ClearLineEdit *m_descriptionLineEdit;
-    Widgets::IconButton *m_restoreButton;
-    Widgets::IconButton *m_lockButton;
+    QtUtilities::ClearPlainTextEdit *m_plainTextEdit;
+    QtUtilities::ClearLineEdit *m_descriptionLineEdit;
+    QtUtilities::IconButton *m_restoreButton;
+    QtUtilities::IconButton *m_lockButton;
     bool m_isLocked;
     bool m_autoCorrectionApplied;
 };

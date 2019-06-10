@@ -48,7 +48,8 @@
 
 using namespace std;
 using namespace TagParser;
-using namespace ConversionUtilities;
+using namespace CppUtilities;
+using namespace QtUtilities;
 
 namespace QtGui {
 
@@ -233,7 +234,7 @@ void PicturePreviewSelection::updateSizeAndMimeType(size_t fileSize, const QSize
     QStringList info;
     info.reserve(3);
     if (fileSize) {
-        info << QString::fromStdString(ConversionUtilities::dataSizeToString(fileSize));
+        info << QString::fromStdString(dataSizeToString(fileSize));
     }
     if (!resolution.isEmpty()) {
         info << QString::number(resolution.width()) % QStringLiteral(" x ") % QString::number(resolution.height()) % QStringLiteral(" px");

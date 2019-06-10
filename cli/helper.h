@@ -16,7 +16,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace ApplicationUtilities {
+namespace CppUtilities {
 class Argument;
 }
 
@@ -252,20 +252,20 @@ constexpr bool isDigit(char c)
 std::string incremented(const std::string &str, unsigned int toIncrement = 1);
 
 void printDiagMessages(const TagParser::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false);
-void printProperty(const char *propName, const char *value, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4);
+void printProperty(const char *propName, const char *value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
 void printProperty(
-    const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4);
+    const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
 
 inline void printProperty(
-    const char *propName, const std::string &value, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4)
+    const char *propName, const std::string &value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4)
 {
     printProperty(propName, value.data(), suffix, indentation);
 }
 
-extern ChronoUtilities::TimeSpanOutputFormat timeSpanOutputFormat;
+extern CppUtilities::TimeSpanOutputFormat timeSpanOutputFormat;
 
 inline void printProperty(
-    const char *propName, ChronoUtilities::TimeSpan timeSpan, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4)
+    const char *propName, CppUtilities::TimeSpan timeSpan, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4)
 {
     if (!timeSpan.isNull()) {
         printProperty(propName, timeSpan.toString(timeSpanOutputFormat), suffix, indentation);
@@ -273,35 +273,35 @@ inline void printProperty(
 }
 
 inline void printProperty(
-    const char *propName, ChronoUtilities::DateTime dateTime, const char *suffix = nullptr, ApplicationUtilities::Indentation indentation = 4)
+    const char *propName, CppUtilities::DateTime dateTime, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4)
 {
     if (!dateTime.isNull()) {
         printProperty(propName, dateTime.toString(), suffix, indentation);
     }
 }
 
-template <typename NumberType, Traits::EnableIfAny<std::is_integral<NumberType>, std::is_floating_point<NumberType>> * = nullptr>
+template <typename NumberType, CppUtilities::Traits::EnableIfAny<std::is_integral<NumberType>, std::is_floating_point<NumberType>> * = nullptr>
 inline void printProperty(
-    const char *propName, const NumberType value, const char *suffix = nullptr, bool force = false, ApplicationUtilities::Indentation indentation = 4)
+    const char *propName, const NumberType value, const char *suffix = nullptr, bool force = false, CppUtilities::Indentation indentation = 4)
 {
     if (value != 0 || force) {
-        printProperty(propName, ConversionUtilities::numberToString<NumberType>(value), suffix, indentation);
+        printProperty(propName, CppUtilities::numberToString<NumberType>(value), suffix, indentation);
     }
 }
 
 void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool skipEmpty);
 void printNativeFields(const Tag *tag);
 
-ChronoUtilities::TimeSpanOutputFormat parseTimeSpanOutputFormat(
-    const ApplicationUtilities::Argument &usageArg, ChronoUtilities::TimeSpanOutputFormat defaultFormat);
-TagUsage parseUsageDenotation(const ApplicationUtilities::Argument &usageArg, TagUsage defaultUsage);
-TagTextEncoding parseEncodingDenotation(const ApplicationUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);
+CppUtilities::TimeSpanOutputFormat parseTimeSpanOutputFormat(
+    const CppUtilities::Argument &usageArg, CppUtilities::TimeSpanOutputFormat defaultFormat);
+TagUsage parseUsageDenotation(const CppUtilities::Argument &usageArg, TagUsage defaultUsage);
+TagTextEncoding parseEncodingDenotation(const CppUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);
 ElementPosition parsePositionDenotation(
-    const ApplicationUtilities::Argument &posArg, const ApplicationUtilities::Argument &valueArg, ElementPosition defaultPos);
-std::uint64_t parseUInt64(const ApplicationUtilities::Argument &arg, std::uint64_t defaultValue);
+    const CppUtilities::Argument &posArg, const CppUtilities::Argument &valueArg, ElementPosition defaultPos);
+std::uint64_t parseUInt64(const CppUtilities::Argument &arg, std::uint64_t defaultValue);
 TagTarget::IdContainerType parseIds(const std::string &concatenatedIds);
 bool applyTargetConfiguration(TagTarget &target, const std::string &configStr);
-FieldDenotations parseFieldDenotations(const ApplicationUtilities::Argument &fieldsArg, bool readOnly);
+FieldDenotations parseFieldDenotations(const CppUtilities::Argument &fieldsArg, bool readOnly);
 std::string tagName(const Tag *tag);
 bool stringToBool(const std::string &str);
 extern bool logLineFinalized;

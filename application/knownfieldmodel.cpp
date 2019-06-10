@@ -5,7 +5,7 @@
 using namespace TagParser;
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-using namespace Models;
+using namespace QtUtilities;
 #else
 #define QT_TR_NOOP(x) x
 #endif
@@ -133,7 +133,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
     // clang-format on
 }
 
-KnownFieldModel::KnownFieldModel(const QList<Models::ChecklistItem> &items, QObject *parent)
+KnownFieldModel::KnownFieldModel(const QList<ChecklistItem> &items, QObject *parent)
     : ChecklistModel(parent)
 {
     setItems(items);

@@ -12,6 +12,7 @@
 #include <QFile>
 #include <QSettings>
 
+using namespace QtUtilities;
 using namespace TagParser;
 
 namespace Settings {
@@ -28,7 +29,7 @@ Editor::Editor()
 }
 
 DbQuery::DbQuery()
-    : fields(QList<Models::ChecklistItem>() << KnownFieldModel::mkItem(KnownField::Title) << KnownFieldModel::mkItem(KnownField::TrackPosition)
+    : fields(QList<ChecklistItem>() << KnownFieldModel::mkItem(KnownField::Title) << KnownFieldModel::mkItem(KnownField::TrackPosition)
                                             << KnownFieldModel::mkItem(KnownField::DiskPosition) << KnownFieldModel::mkItem(KnownField::Album)
                                             << KnownFieldModel::mkItem(KnownField::Artist) << KnownFieldModel::mkItem(KnownField::Year)
                                             << KnownFieldModel::mkItem(KnownField::Genre) << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
@@ -63,7 +64,7 @@ void restore()
     default:
         v.editor.adoptFields = AdoptFields::Never;
         break;
-    };
+    }
     v.editor.saveAndShowNextOnEnter = settings.value(QStringLiteral("saveandshownextonenter"), false).toBool();
     v.editor.askBeforeDeleting = settings.value(QStringLiteral("askbeforedeleting"), true).toBool();
     switch (settings.value(QStringLiteral("multipletaghandling"), 0).toInt()) {
@@ -113,14 +114,14 @@ void restore()
         break;
     default:
         v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Utf8;
-    };
+    }
     switch (settings.value(QStringLiteral("unsupportedfieldhandling"), 0).toInt()) {
     case 1:
         v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Discard;
         break;
     default:
         v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
-    };
+    }
     v.tagPocessing.autoTagManagement = settings.value(QStringLiteral("autotagmanagement"), true).toBool();
     settings.beginGroup(QStringLiteral("id3v1"));
     switch (settings.value(QStringLiteral("usage"), 0).toInt()) {
@@ -133,7 +134,7 @@ void restore()
     default:
         v.tagPocessing.creationSettings.id3v1usage = TagUsage::Always;
         break;
-    };
+    }
     settings.endGroup();
     settings.beginGroup(QStringLiteral("id3v2"));
     switch (settings.value(QStringLiteral("usage"), 0).toInt()) {
@@ -145,7 +146,7 @@ void restore()
         break;
     default:
         v.tagPocessing.creationSettings.id3v2usage = TagUsage::Always;
-    };
+    }
     v.tagPocessing.creationSettings.id3v2MajorVersion = static_cast<std::uint8_t>(settings.value(QStringLiteral("versiontobeused")).toUInt());
     if (v.tagPocessing.creationSettings.id3v2MajorVersion < 1 || v.tagPocessing.creationSettings.id3v2MajorVersion > 4) {
         v.tagPocessing.creationSettings.id3v2MajorVersion = 3;

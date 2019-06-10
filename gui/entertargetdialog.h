@@ -7,7 +7,7 @@
 
 #include <memory>
 
-namespace Models {
+namespace QtUtilities {
 class ChecklistModel;
 }
 
@@ -38,10 +38,10 @@ private slots:
 
 private:
     std::unique_ptr<Ui::EnterTargetDialog> m_ui;
-    Models::ChecklistModel *m_tracksModel;
-    Models::ChecklistModel *m_chaptersModel;
-    Models::ChecklistModel *m_editionsModel;
-    Models::ChecklistModel *m_attachmentsModel;
+    QtUtilities::ChecklistModel *m_tracksModel;
+    QtUtilities::ChecklistModel *m_chaptersModel;
+    QtUtilities::ChecklistModel *m_editionsModel;
+    QtUtilities::ChecklistModel *m_attachmentsModel;
     TagParser::ContainerFormat m_currentContainerFormat;
 };
 

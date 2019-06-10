@@ -105,7 +105,7 @@ struct Settings {
     MainWindow mainWindow;
     DbQuery dbQuery;
     RenamingUtility renamingUtility;
-    Dialogs::QtSettings qt;
+    QtUtilities::QtSettings qt;
 };
 
 Settings &values();

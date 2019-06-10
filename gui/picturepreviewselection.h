@@ -19,12 +19,12 @@ QT_FORWARD_DECLARE_CLASS(QGraphicsRectItem)
 namespace TagParser {
 class Tag;
 class TagValue;
-DECLARE_ENUM_CLASS(KnownField, unsigned int);
+enum class KnownField : unsigned int;
 } // namespace TagParser
 
 namespace QtGui {
 
-DECLARE_ENUM_CLASS(PreviousValueHandling, int);
+enum class PreviousValueHandling : int;
 
 namespace Ui {
 class PicturePreviewSelection;

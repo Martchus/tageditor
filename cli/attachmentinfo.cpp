@@ -11,7 +11,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace ConversionUtilities;
+using namespace CppUtilities;
 using namespace TagParser;
 
 namespace Cli {

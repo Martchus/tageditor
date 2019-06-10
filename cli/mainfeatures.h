@@ -3,64 +3,64 @@
 
 #include <c++utilities/application/argumentparser.h>
 
-namespace ApplicationUtilities {
+namespace CppUtilities {
 class Argument;
 }
 
 namespace Cli {
 
 struct SetTagInfoArgs {
-    SetTagInfoArgs(ApplicationUtilities::Argument &filesArg, ApplicationUtilities::Argument &verboseArg);
-    ApplicationUtilities::Argument &filesArg;
-    ApplicationUtilities::Argument &verboseArg;
-    ApplicationUtilities::ConfigValueArgument docTitleArg;
-    ApplicationUtilities::ConfigValueArgument removeOtherFieldsArg;
-    ApplicationUtilities::ConfigValueArgument treatUnknownFilesAsMp3FilesArg;
-    ApplicationUtilities::ConfigValueArgument id3v1UsageArg;
-    ApplicationUtilities::ConfigValueArgument id3v2UsageArg;
-    ApplicationUtilities::ConfigValueArgument mergeMultipleSuccessiveTagsArg;
-    ApplicationUtilities::ConfigValueArgument id3v2VersionArg;
-    ApplicationUtilities::ConfigValueArgument id3InitOnCreateArg;
-    ApplicationUtilities::ConfigValueArgument id3TransferOnRemovalArg;
-    ApplicationUtilities::ConfigValueArgument encodingArg;
-    ApplicationUtilities::ConfigValueArgument removeTargetArg;
-    ApplicationUtilities::ConfigValueArgument addAttachmentArg;
-    ApplicationUtilities::ConfigValueArgument updateAttachmentArg;
-    ApplicationUtilities::ConfigValueArgument removeAttachmentArg;
-    ApplicationUtilities::ConfigValueArgument removeExistingAttachmentsArg;
-    ApplicationUtilities::ConfigValueArgument minPaddingArg;
-    ApplicationUtilities::ConfigValueArgument maxPaddingArg;
-    ApplicationUtilities::ConfigValueArgument prefPaddingArg;
-    ApplicationUtilities::ConfigValueArgument tagPosValueArg;
-    ApplicationUtilities::ConfigValueArgument forceTagPosArg;
-    ApplicationUtilities::ConfigValueArgument tagPosArg;
-    ApplicationUtilities::ConfigValueArgument indexPosValueArg;
-    ApplicationUtilities::ConfigValueArgument forceIndexPosArg;
-    ApplicationUtilities::ConfigValueArgument indexPosArg;
-    ApplicationUtilities::ConfigValueArgument forceRewriteArg;
-    ApplicationUtilities::ConfigValueArgument valuesArg;
-    ApplicationUtilities::ConfigValueArgument outputFilesArg;
-    ApplicationUtilities::ConfigValueArgument backupDirArg;
-    ApplicationUtilities::ConfigValueArgument layoutOnlyArg;
-    ApplicationUtilities::OperationArgument setTagInfoArg;
+    SetTagInfoArgs(CppUtilities::Argument &filesArg, CppUtilities::Argument &verboseArg);
+    CppUtilities::Argument &filesArg;
+    CppUtilities::Argument &verboseArg;
+    CppUtilities::ConfigValueArgument docTitleArg;
+    CppUtilities::ConfigValueArgument removeOtherFieldsArg;
+    CppUtilities::ConfigValueArgument treatUnknownFilesAsMp3FilesArg;
+    CppUtilities::ConfigValueArgument id3v1UsageArg;
+    CppUtilities::ConfigValueArgument id3v2UsageArg;
+    CppUtilities::ConfigValueArgument mergeMultipleSuccessiveTagsArg;
+    CppUtilities::ConfigValueArgument id3v2VersionArg;
+    CppUtilities::ConfigValueArgument id3InitOnCreateArg;
+    CppUtilities::ConfigValueArgument id3TransferOnRemovalArg;
+    CppUtilities::ConfigValueArgument encodingArg;
+    CppUtilities::ConfigValueArgument removeTargetArg;
+    CppUtilities::ConfigValueArgument addAttachmentArg;
+    CppUtilities::ConfigValueArgument updateAttachmentArg;
+    CppUtilities::ConfigValueArgument removeAttachmentArg;
+    CppUtilities::ConfigValueArgument removeExistingAttachmentsArg;
+    CppUtilities::ConfigValueArgument minPaddingArg;
+    CppUtilities::ConfigValueArgument maxPaddingArg;
+    CppUtilities::ConfigValueArgument prefPaddingArg;
+    CppUtilities::ConfigValueArgument tagPosValueArg;
+    CppUtilities::ConfigValueArgument forceTagPosArg;
+    CppUtilities::ConfigValueArgument tagPosArg;
+    CppUtilities::ConfigValueArgument indexPosValueArg;
+    CppUtilities::ConfigValueArgument forceIndexPosArg;
+    CppUtilities::ConfigValueArgument indexPosArg;
+    CppUtilities::ConfigValueArgument forceRewriteArg;
+    CppUtilities::ConfigValueArgument valuesArg;
+    CppUtilities::ConfigValueArgument outputFilesArg;
+    CppUtilities::ConfigValueArgument backupDirArg;
+    CppUtilities::ConfigValueArgument layoutOnlyArg;
+    CppUtilities::OperationArgument setTagInfoArg;
 };
 
 extern const char *const fieldNames;
 extern const char *const fieldNamesForSet;
-void applyGeneralConfig(const ApplicationUtilities::Argument &timeSapnFormatArg);
-void printFieldNames(const ApplicationUtilities::ArgumentOccurrence &occurrence);
-void displayFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg,
-    const ApplicationUtilities::Argument &verboseArg);
-void generateFileInfo(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &inputFileArg,
-    const ApplicationUtilities::Argument &outputFileArg, const ApplicationUtilities::Argument &validateArg);
-void displayTagInfo(const ApplicationUtilities::Argument &fieldsArg, const ApplicationUtilities::Argument &showUnsupportedArg,
-    const ApplicationUtilities::Argument &filesArg, const ApplicationUtilities::Argument &verboseArg);
+void applyGeneralConfig(const CppUtilities::Argument &timeSapnFormatArg);
+void printFieldNames(const CppUtilities::ArgumentOccurrence &occurrence);
+void displayFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &filesArg,
+    const CppUtilities::Argument &verboseArg);
+void generateFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &inputFileArg,
+    const CppUtilities::Argument &outputFileArg, const CppUtilities::Argument &validateArg);
+void displayTagInfo(const CppUtilities::Argument &fieldsArg, const CppUtilities::Argument &showUnsupportedArg,
+    const CppUtilities::Argument &filesArg, const CppUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
-void extractField(const ApplicationUtilities::Argument &fieldArg, const ApplicationUtilities::Argument &attachmentArg,
-    const ApplicationUtilities::Argument &inputFilesArg, const ApplicationUtilities::Argument &outputFileArg,
-    const ApplicationUtilities::Argument &verboseArg);
-void exportToJson(const ApplicationUtilities::ArgumentOccurrence &, const ApplicationUtilities::Argument &filesArg,
-    const ApplicationUtilities::Argument &prettyArg);
+void extractField(const CppUtilities::Argument &fieldArg, const CppUtilities::Argument &attachmentArg,
+    const CppUtilities::Argument &inputFilesArg, const CppUtilities::Argument &outputFileArg,
+    const CppUtilities::Argument &verboseArg);
+void exportToJson(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &filesArg,
+    const CppUtilities::Argument &prettyArg);
 
 } // namespace Cli
 

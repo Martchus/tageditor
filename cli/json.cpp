@@ -9,6 +9,7 @@
 #include <c++utilities/conversion/stringconversion.h>
 
 using namespace std;
+using namespace CppUtilities;
 using namespace TagParser;
 
 namespace ReflectiveRapidJSON {
@@ -74,22 +75,22 @@ TagValue::TagValue(const TagParser::TagValue &tagValue, RAPIDJSON_NAMESPACE::Doc
             break;
         case TagDataType::Picture:
             if (tagValue.dataSize() > (1024 * 1024)) {
-                throw ConversionUtilities::ConversionException("size is too big");
+                throw ConversionException("size is too big");
             }
-            ReflectiveRapidJSON::JsonReflector::push(ConversionUtilities::encodeBase64(reinterpret_cast<const std::uint8_t *>(tagValue.dataPointer()), static_cast<std::uint32_t>(tagValue.dataSize())), value, allocator);
+            ReflectiveRapidJSON::JsonReflector::push(encodeBase64(reinterpret_cast<const std::uint8_t *>(tagValue.dataPointer()), static_cast<std::uint32_t>(tagValue.dataSize())), value, allocator);
             kind = "picture";
             break;
         case TagDataType::Binary:
             if (tagValue.dataSize() > (1024 * 1024)) {
-                throw ConversionUtilities::ConversionException("size is too big");
+                throw ConversionException("size is too big");
             }
-            ReflectiveRapidJSON::JsonReflector::push(ConversionUtilities::encodeBase64(reinterpret_cast<const std::uint8_t *>(tagValue.dataPointer()), static_cast<std::uint32_t>(tagValue.dataSize())), value, allocator);
+            ReflectiveRapidJSON::JsonReflector::push(encodeBase64(reinterpret_cast<const std::uint8_t *>(tagValue.dataPointer()), static_cast<std::uint32_t>(tagValue.dataSize())), value, allocator);
             kind = "binary";
             break;
         default:
             value.SetNull();
         }
-    } catch (const ConversionUtilities::ConversionException &e) {
+    } catch (const ConversionException &e) {
         ReflectiveRapidJSON::JsonReflector::push(string(e.what()), value, allocator);
         kind = "error";
     }

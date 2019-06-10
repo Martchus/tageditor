@@ -42,10 +42,9 @@
 #include <iostream>
 
 using namespace std;
-using namespace Models;
-using namespace Widgets;
+using namespace CppUtilities;
+using namespace QtUtilities;
 using namespace TagParser;
-using namespace ConversionUtilities;
 
 namespace QtGui {
 
@@ -66,7 +65,7 @@ TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::Known
     , m_dataType(determineDataType())
     , m_lineEdit(nullptr)
     , m_comboBox(nullptr)
-    , m_spinBoxes(QPair<Widgets::ClearSpinBox *, Widgets::ClearSpinBox *>(nullptr, nullptr))
+    , m_spinBoxes(QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *>(nullptr, nullptr))
     , m_pictureSelection(nullptr)
     , m_plainTextEdit(nullptr)
     , m_descriptionLineEdit(nullptr)
@@ -416,7 +415,7 @@ ClearSpinBox *TagFieldEdit::setupSpinBox()
 /*!
  * \brief Internally called by setupUi() to setup a a pair of spin boxes.
  */
-QPair<Widgets::ClearSpinBox *, Widgets::ClearSpinBox *> &TagFieldEdit::setupPositionInSetSpinBoxes()
+QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> &TagFieldEdit::setupPositionInSetSpinBoxes()
 {
     auto *const subLayout = new QHBoxLayout;
 

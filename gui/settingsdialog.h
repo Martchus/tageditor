@@ -47,7 +47,7 @@ END_DECLARE_OPTION_PAGE
 
 DECLARE_UI_FILE_BASED_OPTION_PAGE_CUSTOM_SETUP(FileLayoutPage)
 
-class SettingsDialog : public Dialogs::SettingsDialog {
+class SettingsDialog : public QtUtilities::SettingsDialog {
     Q_OBJECT
 public:
     explicit SettingsDialog(QWidget *parent = nullptr);

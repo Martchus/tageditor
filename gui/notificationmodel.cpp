@@ -9,7 +9,7 @@
 #include <QStyle>
 
 using namespace std;
-using namespace ChronoUtilities;
+using namespace CppUtilities;
 using namespace TagParser;
 using namespace Utility;
 

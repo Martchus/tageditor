@@ -44,7 +44,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="Widgets::ClearLineEdit" name="levelNameLineEdit"/>
+       <widget class="QtUtilities::ClearLineEdit" name="levelNameLineEdit"/>
       </item>
       <item row="4" column="0">
        <widget class="QLabel" name="tracksLabel">
@@ -185,7 +185,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Widgets::ClearLineEdit</class>
+   <class>QtUtilities::ClearLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">qtutilities/widgets/clearlineedit.h</header>
   </customwidget>

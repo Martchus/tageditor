@@ -20,10 +20,11 @@
 
 #include <iostream>
 
-using namespace ConversionUtilities;
+using namespace std;
+using namespace CppUtilities;
+using namespace QtUtilities;
 using namespace Utility;
 using namespace TagParser;
-using namespace std;
 
 namespace RenamingUtility {
 

@@ -7,30 +7,30 @@
 #include <QList>
 
 namespace TagParser {
-DECLARE_ENUM_CLASS(TagTargetLevel, unsigned char);
+enum class TagTargetLevel : unsigned char;
 }
 
 namespace Settings {
 
-class TargetLevelModel : public Models::ChecklistModel {
+class TargetLevelModel : public QtUtilities::ChecklistModel {
     Q_OBJECT
 public:
     enum class DefaultSelection { None, MostUsefulTargets };
 
     static const char *fieldName(TagParser::TagTargetLevel targetLevel);
     static QString translatedFieldName(TagParser::TagTargetLevel targetLevel);
-    static Models::ChecklistItem mkItem(TagParser::TagTargetLevel targetLevel, Qt::CheckState checkState = Qt::Checked);
+    static QtUtilities::ChecklistItem mkItem(TagParser::TagTargetLevel targetLevel, Qt::CheckState checkState = Qt::Checked);
 
     explicit TargetLevelModel(QObject *parent = nullptr, DefaultSelection defaultSelection = DefaultSelection::None);
-    explicit TargetLevelModel(const QList<Models::ChecklistItem> &items, QObject *parent = nullptr);
+    explicit TargetLevelModel(const QList<QtUtilities::ChecklistItem> &items, QObject *parent = nullptr);
 
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     virtual QString labelForId(const QVariant &id) const;
 };
 
-inline Models::ChecklistItem TargetLevelModel::mkItem(TagParser::TagTargetLevel field, Qt::CheckState checkState)
+inline QtUtilities::ChecklistItem TargetLevelModel::mkItem(TagParser::TagTargetLevel field, Qt::CheckState checkState)
 {
-    return Models::ChecklistItem(static_cast<int>(field), translatedFieldName(field), checkState);
+    return QtUtilities::ChecklistItem(static_cast<int>(field), translatedFieldName(field), checkState);
 }
 
 } // namespace Settings

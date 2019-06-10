@@ -55,7 +55,7 @@ struct FileInfo : ReflectiveRapidJSON::JsonSerializable<FileInfo> {
     const char *mimeType;
     std::vector<TagInfo> tags;
     std::string formatSummary;
-    ChronoUtilities::TimeSpan duration;
+    CppUtilities::TimeSpan duration;
 };
 
 }

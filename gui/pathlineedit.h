@@ -11,7 +11,7 @@ QT_END_NAMESPACE
 
 namespace QtGui {
 
-class PathLineEdit : public Widgets::ClearLineEdit {
+class PathLineEdit : public QtUtilities::ClearLineEdit {
     Q_OBJECT
     Q_PROPERTY(QAbstractItemModel *completionModel READ completionModel WRITE setCompletionModel)
 

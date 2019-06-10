@@ -51,7 +51,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="Widgets::ClearLineEdit" name="descriptionLineEdit">
+       <widget class="QtUtilities::ClearLineEdit" name="descriptionLineEdit">
         <property name="placeholderText">
          <string>empty</string>
         </property>
@@ -199,7 +199,7 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Widgets::ClearLineEdit</class>
+   <class>QtUtilities::ClearLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">qtutilities/widgets/clearlineedit.h</header>
   </customwidget>

@@ -22,7 +22,7 @@
 #include <QStyle>
 #include <QTextStream>
 
-using namespace Dialogs;
+using namespace QtUtilities;
 using namespace RenamingUtility;
 
 namespace QtGui {
@@ -210,10 +210,10 @@ void RenameFilesDialog::showPreviewProgress(int itemsProcessed, int errorsOccure
 {
     m_itemsProcessed = itemsProcessed;
     m_errorsOccured = errorsOccured;
-    QString text = tr("%1 files/directories processed", 0, itemsProcessed).arg(itemsProcessed);
+    QString text = tr("%1 files/directories processed", nullptr, itemsProcessed).arg(itemsProcessed);
     if (m_errorsOccured > 0) {
         text.append(QChar('\n'));
-        text.append(tr("%1 error(s) occured", 0, errorsOccured).arg(errorsOccured));
+        text.append(tr("%1 error(s) occured", nullptr, errorsOccured).arg(errorsOccured));
     }
     m_ui->notificationLabel->setText(text);
 }
@@ -225,7 +225,7 @@ void RenameFilesDialog::showPreviewResults()
     m_ui->applyChangingsPushButton->setHidden(false);
     if (m_engine->rootItem()) {
         m_ui->notificationLabel->setText(tr("Preview has been generated."));
-        m_ui->notificationLabel->appendLine(tr("%1 files/directories have been processed.", 0, m_itemsProcessed).arg(m_itemsProcessed));
+        m_ui->notificationLabel->appendLine(tr("%1 files/directories have been processed.", nullptr, m_itemsProcessed).arg(m_itemsProcessed));
         m_ui->notificationLabel->setNotificationType(NotificationType::Information);
         m_ui->applyChangingsPushButton->setEnabled(true);
     } else {
@@ -238,7 +238,7 @@ void RenameFilesDialog::showPreviewResults()
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
     if (m_errorsOccured) {
-        m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", 0, m_errorsOccured).arg(m_errorsOccured));
+        m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", nullptr, m_errorsOccured).arg(m_errorsOccured));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
 }
@@ -249,14 +249,14 @@ void RenameFilesDialog::showChangsingsResults()
     m_ui->generatePreviewPushButton->setHidden(false);
     m_ui->applyChangingsPushButton->setHidden(false);
     m_ui->notificationLabel->setText(tr("Changins applied."));
-    m_ui->notificationLabel->appendLine(tr("%1 files/directories have been processed.", 0, m_itemsProcessed).arg(m_itemsProcessed));
+    m_ui->notificationLabel->appendLine(tr("%1 files/directories have been processed.", nullptr, m_itemsProcessed).arg(m_itemsProcessed));
     m_ui->notificationLabel->setNotificationType(NotificationType::Information);
     if (m_engine->isAborted()) {
         m_ui->notificationLabel->appendLine(tr("Applying has been aborted prematurely."));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
     if (m_errorsOccured) {
-        m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", 0, m_errorsOccured).arg(m_errorsOccured));
+        m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", nullptr, m_errorsOccured).arg(m_errorsOccured));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
 }

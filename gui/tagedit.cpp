@@ -15,7 +15,7 @@
 
 using namespace std;
 using namespace std::placeholders;
-using namespace ConversionUtilities;
+using namespace CppUtilities;
 using namespace TagParser;
 
 namespace QtGui {

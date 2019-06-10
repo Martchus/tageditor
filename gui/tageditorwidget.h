@@ -20,7 +20,7 @@ QT_FORWARD_DECLARE_CLASS(QFile)
 QT_FORWARD_DECLARE_CLASS(QTemporaryFile)
 
 namespace TagParser {
-DECLARE_ENUM_CLASS(TagType, unsigned int);
+enum class TagType : unsigned int;
 }
 
 namespace QtGui {

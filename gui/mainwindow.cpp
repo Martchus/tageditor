@@ -32,11 +32,8 @@
 
 using namespace std;
 using namespace Utility;
+using namespace QtUtilities;
 using namespace TagParser;
-using namespace Dialogs;
-using namespace Widgets;
-using namespace ThreadingUtils;
-using namespace ConversionUtilities;
 
 namespace QtGui {
 
@@ -306,7 +303,7 @@ void MainWindow::handleFileStatusChange(bool opened, bool hasTag)
     m_ui->actionReload->setEnabled(opened);
     m_ui->actionExternalPlayer->setEnabled(opened);
     // window title
-    setWindowTitle(Dialogs::generateWindowTitle(opened ? DocumentStatus::Saved : DocumentStatus::NoDocument, m_ui->tagEditorWidget->currentPath()));
+    setWindowTitle(generateWindowTitle(opened ? DocumentStatus::Saved : DocumentStatus::NoDocument, m_ui->tagEditorWidget->currentPath()));
 }
 
 /*!
@@ -335,7 +332,7 @@ void MainWindow::spawnExternalPlayer()
 {
     const QString &currentPath = m_ui->tagEditorWidget->currentPath();
     if (!currentPath.isEmpty()) {
-        DesktopUtils::openLocalFileOrDir(currentPath);
+        openLocalFileOrDir(currentPath);
     } else {
         m_ui->statusBar->showMessage(tr("No file opened."));
     }
@@ -368,7 +365,7 @@ void MainWindow::toggleDbQueryWidget()
 void MainWindow::showAboutDlg()
 {
     if (!m_aboutDlg) {
-        m_aboutDlg = new Dialogs::AboutDialog(this, tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."),
+        m_aboutDlg = new AboutDialog(this, tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."),
             QImage(QStringLiteral(":/tageditor/icons/hicolor/128x128/apps/tageditor.png")));
     }
     if (m_aboutDlg->isHidden()) {

@@ -2,7 +2,7 @@
 
 #include <tagparser/tagtarget.h>
 
-using namespace Models;
+using namespace QtUtilities;
 using namespace TagParser;
 
 namespace Settings {
@@ -63,7 +63,7 @@ TargetLevelModel::TargetLevelModel(QObject *parent, DefaultSelection defaultSele
     setItems(items);
 }
 
-TargetLevelModel::TargetLevelModel(const QList<Models::ChecklistItem> &items, QObject *parent)
+TargetLevelModel::TargetLevelModel(const QList<ChecklistItem> &items, QObject *parent)
     : ChecklistModel(parent)
 {
     setItems(items);

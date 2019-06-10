@@ -14,10 +14,10 @@ QT_FORWARD_DECLARE_CLASS(QFileSystemModel)
 QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
 
 namespace TagParser {
-DECLARE_ENUM_CLASS(TagType, unsigned int);
+enum class TagType : unsigned int;
 }
 
-namespace Dialogs {
+namespace QtUtilities {
 class AboutDialog;
 class SettingsDialog;
 } // namespace Dialogs
@@ -88,8 +88,8 @@ private:
     FileFilterProxyModel *m_fileFilterModel;
     bool m_internalFileSelection;
     // dialogs
-    Dialogs::AboutDialog *m_aboutDlg;
-    Dialogs::SettingsDialog *m_settingsDlg;
+    QtUtilities::AboutDialog *m_aboutDlg;
+    QtUtilities::SettingsDialog *m_settingsDlg;
     std::unique_ptr<RenameFilesDialog> m_renameFilesDlg;
     DbQueryWidget *m_dbQueryWidget;
 };

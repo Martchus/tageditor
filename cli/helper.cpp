@@ -21,16 +21,14 @@
 
 using namespace std;
 using namespace std::placeholders;
-using namespace ApplicationUtilities;
-using namespace ConversionUtilities;
-using namespace ChronoUtilities;
+using namespace CppUtilities;
+using namespace CppUtilities::EscapeCodes;
 using namespace TagParser;
 using namespace Settings;
-using namespace EscapeCodes;
 
 namespace Cli {
 
-ChronoUtilities::TimeSpanOutputFormat timeSpanOutputFormat = TimeSpanOutputFormat::WithMeasures;
+CppUtilities::TimeSpanOutputFormat timeSpanOutputFormat = TimeSpanOutputFormat::WithMeasures;
 
 /*!
  * \class InterruptHandler

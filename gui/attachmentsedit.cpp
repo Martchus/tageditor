@@ -19,8 +19,8 @@
 #include <fstream>
 
 using namespace std;
-using namespace IoUtilities;
-using namespace ConversionUtilities;
+using namespace CppUtilities;
+using namespace QtUtilities;
 using namespace TagParser;
 
 namespace QtGui {

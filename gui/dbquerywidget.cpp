@@ -31,9 +31,8 @@
 
 using namespace std;
 using namespace std::placeholders;
-using namespace ConversionUtilities;
-using namespace Dialogs;
-using namespace Models;
+using namespace CppUtilities;
+using namespace QtUtilities;
 using namespace Settings;
 using namespace Utility;
 using namespace TagParser;

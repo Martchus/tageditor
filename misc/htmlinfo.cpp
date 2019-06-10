@@ -53,8 +53,8 @@
 #endif
 
 using namespace std;
-using namespace ConversionUtilities;
-using namespace ChronoUtilities;
+using namespace CppUtilities;
+using namespace QtUtilities;
 using namespace TagParser;
 using namespace Utility;
 

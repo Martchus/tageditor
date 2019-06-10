@@ -8,7 +8,7 @@
 #include <tagparser/diagnostics.h>
 #include <tagparser/mediafileinfo.h>
 
-namespace TestUtilities {
+namespace CppUtilities {
 
 /*!
  * \brief Prints a DiagMessage to enable using it in CPPUNIT_ASSERT_EQUAL.
@@ -20,7 +20,7 @@ inline std::ostream &operator<<(std::ostream &os, const TagParser::DiagMessage &
 
 } // namespace TestUtilities
 
-using namespace TestUtilities;
+using namespace CppUtilities;
 
 #include <c++utilities/tests/testutils.h>
 
@@ -31,11 +31,8 @@ using namespace TestUtilities;
 #include <iostream>
 
 using namespace std;
-using namespace TestUtilities;
-using namespace TestUtilities::Literals;
-using namespace ConversionUtilities;
+using namespace CppUtilities::Literals;
 using namespace TagParser;
-
 using namespace CPPUNIT_NS;
 
 enum class TagStatus { Original, TestMetaDataPresent, Removed };
@@ -1005,7 +1002,7 @@ void CliTests::testJsonExport()
     string stdout, stderr;
 
     const auto file(testFilePath("matroska_wave1/test3.mkv"));
-    const auto expectedJson(IoUtilities::readFile(testFilePath("matroska_wave1-test3.json"), 2048));
+    const auto expectedJson(readFile(testFilePath("matroska_wave1-test3.json"), 2048));
     const char *const args[] = { "tageditor", "export", "--pretty", "-f", file.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args);
     CPPUNIT_ASSERT_EQUAL(expectedJson, stdout);

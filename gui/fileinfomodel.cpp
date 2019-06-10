@@ -28,8 +28,8 @@
 #include <QStringBuilder>
 
 using namespace std;
-using namespace ChronoUtilities;
-using namespace ConversionUtilities;
+using namespace CppUtilities;
+using namespace QtUtilities;
 using namespace TagParser;
 using namespace Utility;
 

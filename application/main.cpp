@@ -13,7 +13,7 @@
 #include <c++utilities/application/fakeqtconfigarguments.h>
 #endif
 #include <c++utilities/application/commandlineutils.h>
-#include <c++utilities/application/failure.h>
+#include <c++utilities/misc/parseerror.h>
 
 #include <functional>
 #include <iostream>
@@ -21,7 +21,8 @@
 
 using namespace std;
 using namespace std::placeholders;
-using namespace ApplicationUtilities;
+using namespace CppUtilities;
+using namespace QtUtilities;
 
 namespace Cli {
 
@@ -203,13 +204,13 @@ int main(int argc, char *argv[])
     parser.setMainArguments({ &qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg,
         &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &exportArg, &genInfoArg, &timeSpanFormatArg, &noColorArg, &helpArg });
     // parse given arguments
-    parser.parseArgsExt(argc, argv, ParseArgumentBehavior::CheckConstraints | ParseArgumentBehavior::ExitOnFailure);
+    parser.parseArgs(argc, argv, ParseArgumentBehavior::CheckConstraints | ParseArgumentBehavior::ExitOnFailure);
 
     // start GUI/CLI
     if (qtConfigArgs.areQtGuiArgsPresent()) {
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
         return QtGui::runWidgetsGui(argc, argv, qtConfigArgs,
-            defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? ConversionUtilities::fromNativeFileName(defaultFileArg.values().front())
+            defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? fromNativeFileName(defaultFileArg.values().front())
                                                                            : QString(),
             renamingUtilityArg.isPresent());
 #else

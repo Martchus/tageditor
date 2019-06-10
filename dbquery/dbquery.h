@@ -14,7 +14,7 @@ QT_FORWARD_DECLARE_CLASS(QNetworkReply)
 
 namespace TagParser {
 class TagValue;
-DECLARE_ENUM_CLASS(KnownField, unsigned int);
+enum class KnownField : unsigned int;
 } // namespace TagParser
 
 namespace QtGui {

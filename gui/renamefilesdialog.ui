@@ -42,7 +42,7 @@
          </widget>
         </item>
         <item>
-         <widget class="Widgets::PathSelection" name="directoryWidget" native="true"/>
+         <widget class="QtUtilities::PathSelection" name="directoryWidget" native="true"/>
         </item>
        </layout>
       </item>
@@ -745,7 +745,7 @@
    <header>gui/codeedit.h</header>
   </customwidget>
   <customwidget>
-   <class>Widgets::PathSelection</class>
+   <class>QtUtilities::PathSelection</class>
    <extends>QWidget</extends>
    <header location="global">qtutilities/widgets/pathselection.h</header>
    <container>1</container>

@@ -28,7 +28,7 @@
 #endif
 
 #include <c++utilities/application/commandlineutils.h>
-#include <c++utilities/application/failure.h>
+#include <c++utilities/misc/parseerror.h>
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
@@ -53,15 +53,12 @@
 #include <memory>
 
 using namespace std;
-using namespace ApplicationUtilities;
-using namespace ConversionUtilities;
-using namespace ChronoUtilities;
-using namespace IoUtilities;
-using namespace EscapeCodes;
+using namespace CppUtilities;
+using namespace CppUtilities::EscapeCodes;
 using namespace Settings;
 using namespace TagParser;
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
-using namespace Utility;
+using namespace QtUtilities;
 #endif
 
 namespace Cli {

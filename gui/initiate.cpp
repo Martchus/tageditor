@@ -15,7 +15,7 @@
 
 ENABLE_QT_RESOURCES_OF_STATIC_DEPENDENCIES
 
-using namespace ApplicationUtilities;
+using namespace CppUtilities;
 
 namespace QtGui {
 

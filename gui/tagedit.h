@@ -17,7 +17,7 @@ QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
 namespace TagParser {
 class Tag;
 class TagValue;
-DECLARE_ENUM_CLASS(KnownField, unsigned int);
+enum class KnownField : unsigned int;
 } // namespace TagParser
 
 namespace QtGui {

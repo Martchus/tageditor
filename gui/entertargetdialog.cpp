@@ -15,8 +15,8 @@
 #include <QMessageBox>
 
 using namespace std;
-using namespace Models;
-using namespace Dialogs;
+using namespace CppUtilities;
+using namespace QtUtilities;
 using namespace TagParser;
 
 namespace QtGui {

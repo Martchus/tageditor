@@ -57,20 +57,15 @@
 
 using namespace std;
 using namespace std::placeholders;
-using namespace EscapeCodes;
-using namespace Utility;
-using namespace Dialogs;
-using namespace Widgets;
+using namespace CppUtilities;
+using namespace CppUtilities::EscapeCodes;
+using namespace QtUtilities;
 using namespace TagParser;
-using namespace Models;
-using namespace ConversionUtilities;
+using namespace Utility;
 
 namespace QtGui {
 
-/*!
- * \brief The LoadingResult enum specifies whether the file could be parsed.
- */
-DECLARE_ENUM(LoadingResult, char){ ParsingSuccessful, FatalParsingError, IoError };
+enum LoadingResult : char { ParsingSuccessful, FatalParsingError, IoError };
 
 /*!
  * \class QtGui::TagEditorWidget
@@ -298,7 +293,7 @@ void TagEditorWidget::updateDocumentTitleEdits()
 
     // add missing line edits
     while (i < segmentCount) {
-        auto *lineEdit = new Widgets::ClearLineEdit;
+        auto *const lineEdit = new ClearLineEdit;
         if (static_cast<size_t>(i) < titles.size()) {
             lineEdit->setText(QString::fromUtf8(titles[i].data()));
         }

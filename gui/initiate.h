@@ -5,14 +5,14 @@
 
 QT_FORWARD_DECLARE_CLASS(QString)
 
-namespace ApplicationUtilities {
+namespace CppUtilities {
 class QtConfigArguments;
 }
 
 namespace QtGui {
 
 int runWidgetsGui(
-    int argc, char *argv[], const ApplicationUtilities::QtConfigArguments &qtConfigArgs, const QString &path, bool launchRenamingUtility = false);
+    int argc, char *argv[], const CppUtilities::QtConfigArguments &qtConfigArgs, const QString &path, bool launchRenamingUtility = false);
 }
 
 #endif // INITIATE_H

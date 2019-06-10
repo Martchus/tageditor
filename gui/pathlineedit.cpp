@@ -14,7 +14,7 @@
 #include <memory>
 
 using namespace std;
-using namespace Widgets;
+using namespace QtUtilities;
 
 namespace QtGui {
 
@@ -63,10 +63,10 @@ void PathLineEdit::contextMenuEvent(QContextMenuEvent *event)
     if (fileInfo.exists()) {
         if (fileInfo.isFile()) {
             connect(menu->addAction(QIcon::fromTheme(QStringLiteral("system-run")), tr("Open")), &QAction::triggered,
-                bind(&DesktopUtils::openLocalFileOrDir, text()));
+                bind(&openLocalFileOrDir, text()));
         } else if (fileInfo.isDir()) {
             connect(menu->addAction(QIcon::fromTheme(QStringLiteral("system-file-manager")), tr("Explore")), &QAction::triggered,
-                bind(&DesktopUtils::openLocalFileOrDir, text()));
+                bind(&openLocalFileOrDir, text()));
         }
     }
     menu->exec(event->globalPos());

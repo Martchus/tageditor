@@ -88,7 +88,7 @@
             <number>2</number>
            </property>
            <item>
-            <widget class="Widgets::ClearSpinBox" name="trackSpinBox">
+            <widget class="QtUtilities::ClearSpinBox" name="trackSpinBox">
              <property name="minimumSize">
               <size>
                <width>60</width>
@@ -101,7 +101,7 @@
             </widget>
            </item>
            <item>
-            <widget class="Widgets::ClearLineEdit" name="titleLineEdit">
+            <widget class="QtUtilities::ClearLineEdit" name="titleLineEdit">
              <property name="placeholderText">
               <string>?</string>
              </property>
@@ -117,7 +117,7 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="Widgets::ClearLineEdit" name="albumLineEdit">
+          <widget class="QtUtilities::ClearLineEdit" name="albumLineEdit">
            <property name="placeholderText">
             <string>?</string>
            </property>
@@ -131,7 +131,7 @@
           </widget>
          </item>
          <item row="4" column="1">
-          <widget class="Widgets::ClearLineEdit" name="artistLineEdit">
+          <widget class="QtUtilities::ClearLineEdit" name="artistLineEdit">
            <property name="placeholderText">
             <string>?</string>
            </property>
@@ -411,7 +411,7 @@ row</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Widgets::ClearLineEdit</class>
+   <class>QtUtilities::ClearLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">qtutilities/widgets/clearlineedit.h</header>
   </customwidget>
@@ -422,7 +422,7 @@ row</string>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>Widgets::ClearSpinBox</class>
+   <class>QtUtilities::ClearSpinBox</class>
    <extends>QSpinBox</extends>
    <header location="global">qtutilities/widgets/clearspinbox.h</header>
   </customwidget>

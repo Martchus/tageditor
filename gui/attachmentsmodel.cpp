@@ -6,8 +6,8 @@
 
 #include <QApplication>
 
+using namespace CppUtilities;
 using namespace TagParser;
-using namespace ConversionUtilities;
 
 namespace QtGui {
 
