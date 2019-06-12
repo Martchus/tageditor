@@ -30,10 +30,10 @@ Editor::Editor()
 
 DbQuery::DbQuery()
     : fields(QList<ChecklistItem>() << KnownFieldModel::mkItem(KnownField::Title) << KnownFieldModel::mkItem(KnownField::TrackPosition)
-                                            << KnownFieldModel::mkItem(KnownField::DiskPosition) << KnownFieldModel::mkItem(KnownField::Album)
-                                            << KnownFieldModel::mkItem(KnownField::Artist) << KnownFieldModel::mkItem(KnownField::Year)
-                                            << KnownFieldModel::mkItem(KnownField::Genre) << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
-                                            << KnownFieldModel::mkItem(KnownField::Lyrics, Qt::Unchecked))
+                                    << KnownFieldModel::mkItem(KnownField::DiskPosition) << KnownFieldModel::mkItem(KnownField::Album)
+                                    << KnownFieldModel::mkItem(KnownField::Artist) << KnownFieldModel::mkItem(KnownField::Year)
+                                    << KnownFieldModel::mkItem(KnownField::Genre) << KnownFieldModel::mkItem(KnownField::Cover, Qt::Unchecked)
+                                    << KnownFieldModel::mkItem(KnownField::Lyrics, Qt::Unchecked))
 {
 }
 

@@ -20,7 +20,7 @@ enum class TagType : unsigned int;
 namespace QtUtilities {
 class AboutDialog;
 class SettingsDialog;
-} // namespace Dialogs
+} // namespace QtUtilities
 
 namespace QtGui {
 

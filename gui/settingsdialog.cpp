@@ -648,7 +648,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     category = new OptionCategory(this);
     category->setDisplayName(tr("Tag processing"));
     category->assignPages(QList<OptionPage *>() << new TagProcessingGeneralOptionPage << new Id3v1OptionPage << new Id3v2OptionPage
-                                                         << new TagProcessingTargetsOptionPage << new FileLayoutPage);
+                                                << new TagProcessingTargetsOptionPage << new FileLayoutPage);
     category->setIcon(QIcon::fromTheme(QStringLiteral("tag"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png"))));
     categories << category;
 
@@ -656,9 +656,8 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     category->setDisplayName(tr("Editor"));
     category->setIcon(
         QIcon::fromTheme(QStringLiteral("document-edit"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/key-enter.png"))));
-    category->assignPages(QList<OptionPage *>()
-        << new EditorGeneralOptionPage << new EditorTempOptionPage(this) << new EditorFieldsOptionPage << new InfoOptionPage
-        << new EditorAutoCorrectionOptionPage << new EditorDbQueryOptionsPage);
+    category->assignPages(QList<OptionPage *>() << new EditorGeneralOptionPage << new EditorTempOptionPage(this) << new EditorFieldsOptionPage
+                                                << new InfoOptionPage << new EditorAutoCorrectionOptionPage << new EditorDbQueryOptionsPage);
     categories << category;
 
     category = new OptionCategory(this);

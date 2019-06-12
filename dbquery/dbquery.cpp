@@ -310,7 +310,7 @@ QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByt
         if ((data = reply->readAll()).isEmpty()) {
             m_errorList << tr("Server replied no data.");
         }
-#ifdef DEBUG_BUILD
+#ifdef CPP_UTILITIES_DEBUG_BUILD
         cerr << "Results from HTTP query:" << endl;
         cerr << data.data() << endl;
 #endif

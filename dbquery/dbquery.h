@@ -6,7 +6,7 @@
 #include <QAbstractTableModel>
 #include <QNetworkReply>
 
-#ifdef DEBUG_BUILD
+#ifdef CPP_UTILITIES_DEBUG_BUILD
 #include <iostream>
 #endif
 
@@ -136,7 +136,7 @@ protected:
 template <class Object, class Function> inline void HttpResultsModel::addReply(QNetworkReply *reply, Object object, Function handler)
 {
     (m_replies << reply), connect(reply, &QNetworkReply::finished, object, handler);
-#ifdef DEBUG_BUILD
+#ifdef CPP_UTILITIES_DEBUG_BUILD
     std::cerr << "HTTP query: " << reply->url().toString().toUtf8().data() << std::endl;
 #endif
 }
@@ -148,7 +148,7 @@ template <class Object, class Function> inline void HttpResultsModel::addReply(Q
 template <class Function> inline void HttpResultsModel::addReply(QNetworkReply *reply, Function handler)
 {
     (m_replies << reply), connect(reply, &QNetworkReply::finished, handler);
-#ifdef DEBUG_BUILD
+#ifdef CPP_UTILITIES_DEBUG_BUILD
     std::cerr << "HTTP query: " << reply->url().toString().toUtf8().data() << std::endl;
 #endif
 }

@@ -210,8 +210,7 @@ int main(int argc, char *argv[])
     if (qtConfigArgs.areQtGuiArgsPresent()) {
 #if defined(TAGEDITOR_GUI_QTWIDGETS)
         return QtGui::runWidgetsGui(argc, argv, qtConfigArgs,
-            defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? fromNativeFileName(defaultFileArg.values().front())
-                                                                           : QString(),
+            defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? fromNativeFileName(defaultFileArg.values().front()) : QString(),
             renamingUtilityArg.isPresent());
 #else
         CMD_UTILS_START_CONSOLE;

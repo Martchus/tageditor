@@ -253,11 +253,9 @@ std::string incremented(const std::string &str, unsigned int toIncrement = 1);
 
 void printDiagMessages(const TagParser::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false);
 void printProperty(const char *propName, const char *value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
-void printProperty(
-    const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
+void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
 
-inline void printProperty(
-    const char *propName, const std::string &value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4)
+inline void printProperty(const char *propName, const std::string &value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4)
 {
     printProperty(propName, value.data(), suffix, indentation);
 }
@@ -296,8 +294,7 @@ CppUtilities::TimeSpanOutputFormat parseTimeSpanOutputFormat(
     const CppUtilities::Argument &usageArg, CppUtilities::TimeSpanOutputFormat defaultFormat);
 TagUsage parseUsageDenotation(const CppUtilities::Argument &usageArg, TagUsage defaultUsage);
 TagTextEncoding parseEncodingDenotation(const CppUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);
-ElementPosition parsePositionDenotation(
-    const CppUtilities::Argument &posArg, const CppUtilities::Argument &valueArg, ElementPosition defaultPos);
+ElementPosition parsePositionDenotation(const CppUtilities::Argument &posArg, const CppUtilities::Argument &valueArg, ElementPosition defaultPos);
 std::uint64_t parseUInt64(const CppUtilities::Argument &arg, std::uint64_t defaultValue);
 TagTarget::IdContainerType parseIds(const std::string &concatenatedIds);
 bool applyTargetConfiguration(TagTarget &target, const std::string &configStr);

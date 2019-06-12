@@ -62,8 +62,8 @@ void PathLineEdit::contextMenuEvent(QContextMenuEvent *event)
     QFileInfo fileInfo(text());
     if (fileInfo.exists()) {
         if (fileInfo.isFile()) {
-            connect(menu->addAction(QIcon::fromTheme(QStringLiteral("system-run")), tr("Open")), &QAction::triggered,
-                bind(&openLocalFileOrDir, text()));
+            connect(
+                menu->addAction(QIcon::fromTheme(QStringLiteral("system-run")), tr("Open")), &QAction::triggered, bind(&openLocalFileOrDir, text()));
         } else if (fileInfo.isDir()) {
             connect(menu->addAction(QIcon::fromTheme(QStringLiteral("system-file-manager")), tr("Explore")), &QAction::triggered,
                 bind(&openLocalFileOrDir, text()));

@@ -28,12 +28,12 @@
 #endif
 
 #include <c++utilities/application/commandlineutils.h>
-#include <c++utilities/misc/parseerror.h>
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/ansiescapecodes.h>
 #include <c++utilities/io/nativefilestream.h>
+#include <c++utilities/misc/parseerror.h>
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 #include <QDir>
@@ -127,9 +127,9 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         cerr << Phrases::Error << "An IO failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
     }
 #else
-    VAR_UNUSED(inputFileArg);
-    VAR_UNUSED(outputFileArg);
-    VAR_UNUSED(validateArg);
+    CPP_UTILITIES_UNUSED(inputFileArg);
+    CPP_UTILITIES_UNUSED(outputFileArg);
+    CPP_UTILITIES_UNUSED(validateArg);
     cerr << Phrases::Error << "Generating HTML info is only available if built with Qt support." << Phrases::EndFlush;
 #endif
 }
@@ -969,8 +969,8 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
     cout << endl;
 
 #else
-    VAR_UNUSED(filesArg);
-    VAR_UNUSED(prettyArg);
+    CPP_UTILITIES_UNUSED(filesArg);
+    CPP_UTILITIES_UNUSED(prettyArg);
     cerr << Phrases::Error << "JSON export has not been enabled when building the tag editor." << Phrases::EndFlush;
 #endif
 }

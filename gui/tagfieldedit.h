@@ -26,7 +26,7 @@ class ClearComboBox;
 class ClearSpinBox;
 class ClearPlainTextEdit;
 class IconButton;
-} // namespace Widgets
+} // namespace QtUtilities
 
 namespace QtGui {
 

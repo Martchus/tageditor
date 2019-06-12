@@ -108,7 +108,7 @@ TargetInfo::TargetInfo(const TagTarget &tagTarget, RAPIDJSON_NAMESPACE::Document
     , editions(tagTarget.editions())
     , attachments(tagTarget.attachments())
 {
-    VAR_UNUSED(allocator)
+    CPP_UTILITIES_UNUSED(allocator)
 }
 
 /*!
