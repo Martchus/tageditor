@@ -86,7 +86,8 @@ protected:
     QStringList m_errorList;
     bool m_resultsAvailable;
     bool m_fetchingCover;
-    static std::map<QString, QByteArray> m_coverData;
+    static std::list<QString> s_coverNames;
+    static std::map<QString, QByteArray> s_coverData;
 };
 
 inline const QList<SongDescription> &QueryResultsModel::results() const

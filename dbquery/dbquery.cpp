@@ -24,7 +24,8 @@ SongDescription::SongDescription(const QString &songId)
 {
 }
 
-map<QString, QByteArray> QueryResultsModel::m_coverData = map<QString, QByteArray>();
+std::list<QString> QueryResultsModel::s_coverNames = std::list<QString>();
+map<QString, QByteArray> QueryResultsModel::s_coverData = map<QString, QByteArray>();
 
 QueryResultsModel::QueryResultsModel(QObject *parent)
     : QAbstractTableModel(parent)
@@ -369,7 +370,23 @@ void HttpResultsModel::parseCoverResults(const QString &albumId, int row, const 
         return;
     }
     if (!data.isEmpty()) {
-        m_coverData[albumId] = data;
+        // cache the fetched cover
+        const auto currentCachedCoverCount = s_coverData.size();
+        s_coverData[albumId] = data;
+        if (s_coverData.size() > currentCachedCoverCount) {
+            s_coverNames.emplace_back(albumId);
+
+            // keep only the last 20 cover images around
+            while (s_coverNames.size() > 20) {
+                s_coverData.erase(s_coverNames.front());
+                s_coverNames.pop_front();
+            }
+        } else if (s_coverNames.back() != albumId) {
+            s_coverNames.remove(albumId);
+            s_coverNames.emplace_back(albumId);
+        }
+
+        // add the cover to the results
         m_results[row].cover = data;
         emit coverAvailable(index(row, 0));
     }

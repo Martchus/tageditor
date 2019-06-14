@@ -59,8 +59,8 @@ bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
     }
 
     // skip if the item belongs to an album which cover has already been fetched
-    const auto coverData = m_coverData.find(desc.albumId);
-    if (coverData != m_coverData.end()) {
+    const auto coverData = s_coverData.find(desc.albumId);
+    if (coverData != s_coverData.end()) {
         desc.cover = coverData->second;
         return true;
     }
