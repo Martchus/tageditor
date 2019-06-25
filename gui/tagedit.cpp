@@ -31,11 +31,11 @@ namespace QtGui {
 TagEdit::TagEdit(QWidget *parent)
     : QWidget(parent)
 {
-    QVBoxLayout *const mainLayout = new QVBoxLayout(this);
-    mainLayout->setMargin(0);
+    auto *const mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
     QSplitter *const splitter = new QSplitter(this);
     splitter->setOrientation(Qt::Horizontal);
-    QWidget *widget = new QWidget(this);
+    auto *widget = new QWidget(this);
     m_layoutLeft = new QFormLayout(widget);
     m_layoutLeft->setContentsMargins(QMargins());
     m_layoutLeft->setSpacing(2);

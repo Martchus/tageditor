@@ -347,7 +347,7 @@ public:
         APPEND_GUI_RULE(QStringLiteral("color: %1;")
                             .arg(palette.link()
                                      .color()
-                                     .darker(palette.color(QPalette::Background).lightness() > palette.color(QPalette::Link).lightness() ? 150 : 50)
+                                     .darker(palette.color(QPalette::Window).lightness() > palette.color(QPalette::Link).lightness() ? 150 : 50)
                                      .name()),
             QStringLiteral("color: #23527c;"))
         res.append(QStringLiteral("text-decoration: underline;"

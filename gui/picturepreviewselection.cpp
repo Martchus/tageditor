@@ -530,7 +530,7 @@ void PicturePreviewSelection::displaySelected()
                                                  : tr("Cover - %1").arg(QCoreApplication::applicationName());
     dlg.setWindowTitle(title);
     QBoxLayout layout(QBoxLayout::Up);
-    layout.setMargin(0);
+    layout.setContentsMargins(0, 0, 0, 0);
     QGraphicsView view(&dlg);
     QGraphicsScene scene;
     layout.addWidget(&view);

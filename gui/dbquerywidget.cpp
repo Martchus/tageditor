@@ -588,7 +588,7 @@ void DbQueryWidget::showCover(const QByteArray &data)
     dlg.setWindowFlags(Qt::Tool);
     dlg.setWindowTitle(tr("Cover - %1").arg(QApplication::applicationName()));
     QBoxLayout layout(QBoxLayout::Up);
-    layout.setMargin(0);
+    layout.setContentsMargins(0, 0, 0, 0);
     QGraphicsView view(&dlg);
     QGraphicsScene scene;
     layout.addWidget(&view);
@@ -613,7 +613,7 @@ void DbQueryWidget::showLyrics(const QString &data)
     dlg.setWindowFlags(Qt::Tool);
     dlg.setWindowTitle(tr("Lyrics - %1").arg(QApplication::applicationName()));
     QBoxLayout layout(QBoxLayout::Up);
-    layout.setMargin(0);
+    layout.setContentsMargins(0, 0, 0, 0);
     QTextBrowser textBrowser;
     layout.addWidget(&textBrowser);
     textBrowser.setText(data);

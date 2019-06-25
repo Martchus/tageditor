@@ -56,12 +56,12 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
         switch (m_type) {
         case NotificationType::Progress:
             if (m_subject == NotificationSubject::None) {
-                drawProgressIndicator(painter, pixmapRect, option.palette.color(QPalette::Foreground), m_animationStep);
+                drawProgressIndicator(painter, pixmapRect, option.palette.color(QPalette::WindowText), m_animationStep);
             } else {
                 style->drawItemPixmap(&painter, pixmapRect, Qt::AlignTop | Qt::AlignLeft, m_mainPixmap);
                 QSize size = pixmapRect.size() * 0.3;
                 pixmapRect.adjust(size.width(), size.height(), 0, 0);
-                drawProgressIndicator(painter, pixmapRect, option.palette.color(QPalette::Foreground), m_animationStep);
+                drawProgressIndicator(painter, pixmapRect, option.palette.color(QPalette::WindowText), m_animationStep);
             }
             break;
         default:
