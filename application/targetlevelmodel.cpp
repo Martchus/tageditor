@@ -7,11 +7,6 @@ using namespace TagParser;
 
 namespace Settings {
 
-/*
-    TRANSLATOR Settings::TargetLevelModel
-    Necessary for lupdate.
-*/
-
 const char *TargetLevelModel::fieldName(TagTargetLevel targetLevel)
 {
     switch (targetLevel) {

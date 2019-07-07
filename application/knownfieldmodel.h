@@ -10,9 +10,11 @@
 #define Q_OBJECT
 #endif
 
+#define TAGEDITOR_ENUM_CLASS enum class
 namespace TagParser {
-enum class KnownField : unsigned int;
+TAGEDITOR_ENUM_CLASS KnownField : unsigned int;
 }
+#undef TAGEDITOR_ENUM_CLASS
 
 namespace Settings {
 

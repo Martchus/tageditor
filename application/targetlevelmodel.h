@@ -6,9 +6,11 @@
 #include <QAbstractListModel>
 #include <QList>
 
+#define TAGEDITOR_ENUM_CLASS enum class
 namespace TagParser {
-enum class TagTargetLevel : unsigned char;
+TAGEDITOR_ENUM_CLASS TagTargetLevel : unsigned char;
 }
+#undef TAGEDITOR_ENUM_CLASS
 
 namespace Settings {
 

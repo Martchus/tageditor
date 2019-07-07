@@ -12,11 +12,6 @@ using namespace QtUtilities;
 
 namespace Settings {
 
-/*
-    TRANSLATOR Settings::KnownFieldModel
-    Necessary for lupdate.
-*/
-
 const char *KnownFieldModel::fieldName(KnownField field)
 {
     switch (field) {

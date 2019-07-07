@@ -19,9 +19,11 @@ QT_FORWARD_DECLARE_CLASS(QTreeView)
 QT_FORWARD_DECLARE_CLASS(QFile)
 QT_FORWARD_DECLARE_CLASS(QTemporaryFile)
 
+#define TAGEDITOR_ENUM_CLASS enum class
 namespace TagParser {
-enum class TagType : unsigned int;
+TAGEDITOR_ENUM_CLASS TagType : unsigned int;
 }
+#undef TAGEDITOR_ENUM_CLASS
 
 namespace QtGui {
 

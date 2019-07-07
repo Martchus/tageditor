@@ -14,11 +14,13 @@
 QT_FORWARD_DECLARE_CLASS(QFormLayout)
 QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
 
+#define TAGEDITOR_ENUM_CLASS enum class
 namespace TagParser {
 class Tag;
 class TagValue;
-enum class KnownField : unsigned int;
+TAGEDITOR_ENUM_CLASS KnownField : unsigned int;
 } // namespace TagParser
+#undef TAGEDITOR_ENUM_CLASS
 
 namespace QtGui {
 

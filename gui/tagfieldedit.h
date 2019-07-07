@@ -11,13 +11,15 @@
 QT_FORWARD_DECLARE_CLASS(QVBoxLayout)
 QT_FORWARD_DECLARE_CLASS(QLabel)
 
+#define TAGEDITOR_ENUM_CLASS enum class
 namespace TagParser {
 class TagValue;
 class Tag;
-enum class KnownField : unsigned int;
-enum class TagDataType : unsigned int;
-enum class TagTextEncoding : unsigned int;
+TAGEDITOR_ENUM_CLASS KnownField : unsigned int;
+TAGEDITOR_ENUM_CLASS TagDataType : unsigned int;
+TAGEDITOR_ENUM_CLASS TagTextEncoding : unsigned int;
 } // namespace TagParser
+#undef TAGEDITOR_ENUM_CLASS
 
 namespace QtUtilities {
 class ButtonOverlay;

@@ -16,15 +16,17 @@ QT_FORWARD_DECLARE_CLASS(QGraphicsTextItem)
 QT_FORWARD_DECLARE_CLASS(QGraphicsPixmapItem)
 QT_FORWARD_DECLARE_CLASS(QGraphicsRectItem)
 
+#define TAGEDITOR_ENUM_CLASS enum class
 namespace TagParser {
 class Tag;
 class TagValue;
-enum class KnownField : unsigned int;
+TAGEDITOR_ENUM_CLASS KnownField : unsigned int;
 } // namespace TagParser
 
 namespace QtGui {
 
-enum class PreviousValueHandling : int;
+TAGEDITOR_ENUM_CLASS PreviousValueHandling : int;
+#undef TAGEDITOR_ENUM_CLASS
 
 namespace Ui {
 class PicturePreviewSelection;

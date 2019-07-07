@@ -633,11 +633,6 @@ QWidget *FileLayoutPage::setupWidget()
     return widget;
 }
 
-/*
-    TRANSLATOR QtGui::SettingsDialog
-    Necessary for lupdate.
-*/
-
 SettingsDialog::SettingsDialog(QWidget *parent)
     : QtUtilities::SettingsDialog(parent)
 {

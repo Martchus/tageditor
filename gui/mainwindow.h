@@ -13,9 +13,11 @@
 QT_FORWARD_DECLARE_CLASS(QFileSystemModel)
 QT_FORWARD_DECLARE_CLASS(QItemSelectionModel)
 
+#define TAGEDITOR_ENUM_CLASS enum class
 namespace TagParser {
-enum class TagType : unsigned int;
-}
+TAGEDITOR_ENUM_CLASS TagType : unsigned int;
+} // namespace TagParser
+#undef TAGEDITOR_ENUM_CLASS
 
 namespace QtUtilities {
 class AboutDialog;
