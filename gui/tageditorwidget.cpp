@@ -718,7 +718,7 @@ void TagEditorWidget::updateInfoView()
     }
 }
 
-void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &)
+void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &position)
 {
     QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoTreeView->selectionModel()->selectedIndexes().isEmpty());
@@ -743,14 +743,14 @@ void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &)
     menu.addSeparator();
     menu.addAction(&expandAllAction);
     menu.addAction(&collapseAllAction);
-    menu.exec(QCursor::pos());
+    menu.exec(m_infoTreeView->viewport()->mapToGlobal(position));
 }
 
 #ifndef TAGEDITOR_NO_WEBVIEW
 /*!
  * \brief Shows the context menu for the info web view.
  */
-void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &)
+void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &position)
 {
     QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoWebView->selectedText().isEmpty());
@@ -765,7 +765,7 @@ void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &)
     menu.addAction(&copyAction);
     menu.addAction(&saveAction);
     menu.addAction(&openAction);
-    menu.exec(QCursor::pos());
+    menu.exec(m_infoWebView->mapToGlobal(position));
 }
 #endif
 

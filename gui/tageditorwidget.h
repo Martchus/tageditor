@@ -114,9 +114,9 @@ private slots:
     // info (web) view
     void initInfoView();
     void updateInfoView();
-    void showInfoTreeViewContextMenu(const QPoint &);
+    void showInfoTreeViewContextMenu(const QPoint &position);
 #ifndef TAGEDITOR_NO_WEBVIEW
-    void showInfoWebViewContextMenu(const QPoint &);
+    void showInfoWebViewContextMenu(const QPoint &position);
 #endif
     bool handleFileInfoUnavailable();
     bool writeFileInfoToFile(QFile &file);

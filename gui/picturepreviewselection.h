@@ -76,7 +76,7 @@ private slots:
     void updateDescription(int newIndex);
     void updateDescription(int lastIndex, int newIndex);
     void updatePreview(int index);
-    void showContextMenu();
+    void showContextMenu(const QPoint &position);
 
 private:
     bool setup(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);

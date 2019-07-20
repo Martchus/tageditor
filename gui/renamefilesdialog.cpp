@@ -359,13 +359,13 @@ void RenameFilesDialog::pasteDefaultExampleScript()
     pasteScriptFromFile(QStringLiteral(":/scripts/renamefiles/example1"));
 }
 
-void RenameFilesDialog::showTreeViewContextMenu()
+void RenameFilesDialog::showTreeViewContextMenu(const QPoint &position)
 {
     if (const QTreeView *sender = qobject_cast<const QTreeView *>(QObject::sender())) {
         QMenu menu;
         menu.addAction(tr("Expand all"), sender, &QTreeView::expandAll);
         menu.addAction(tr("Collapse all"), sender, &QTreeView::collapseAll);
-        menu.exec(QCursor::pos());
+        menu.exec(sender->viewport()->mapToGlobal(position));
     }
 }
 

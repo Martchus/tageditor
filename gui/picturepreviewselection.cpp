@@ -739,7 +739,7 @@ void PicturePreviewSelection::updatePreview(int index)
     m_rectItem->setRect(0, 0, m_ui->previewGraphicsView->width(), m_ui->previewGraphicsView->height());
 }
 
-void PicturePreviewSelection::showContextMenu()
+void PicturePreviewSelection::showContextMenu(const QPoint &position)
 {
     QMenu menu;
     auto *const addAction = menu.addAction(m_ui->addButton->text());
@@ -786,7 +786,7 @@ void PicturePreviewSelection::showContextMenu()
         displayAction->setIcon(QIcon::fromTheme(QStringLiteral("image-x-generic")));
         connect(displayAction, &QAction::triggered, this, &PicturePreviewSelection::displaySelected);
     }
-    menu.exec(QCursor::pos());
+    menu.exec(m_ui->previewGraphicsView->viewport()->mapToGlobal(position));
 }
 
 } // namespace QtGui

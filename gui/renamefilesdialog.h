@@ -46,7 +46,7 @@ private slots:
     void pasteScriptFromFile(const QString &fileName);
     void pasteScriptFromClipboard();
     void pasteDefaultExampleScript();
-    void showTreeViewContextMenu();
+    void showTreeViewContextMenu(const QPoint &position);
     void showSelectScriptFileDlg();
     void abortClose();
     void toggleScriptSource();
