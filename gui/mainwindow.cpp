@@ -10,6 +10,8 @@
 
 #include "ui_mainwindow.h"
 
+#include "resources/config.h"
+
 #include <tagparser/mediafileinfo.h>
 
 #include <qtutilities/aboutdialog/aboutdialog.h>
@@ -365,7 +367,8 @@ void MainWindow::toggleDbQueryWidget()
 void MainWindow::showAboutDlg()
 {
     if (!m_aboutDlg) {
-        m_aboutDlg = new AboutDialog(this, tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."),
+        m_aboutDlg = new AboutDialog(this, QStringLiteral(APP_URL),
+            tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."),
             QImage(QStringLiteral(":/tageditor/icons/hicolor/128x128/apps/tageditor.png")));
     }
     if (m_aboutDlg->isHidden()) {
