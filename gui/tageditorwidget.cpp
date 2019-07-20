@@ -270,8 +270,16 @@ bool TagEditorWidget::event(QEvent *event)
 void TagEditorWidget::updateDocumentTitleEdits()
 {
     // get container, segment count and present titles
-    AbstractContainer *container = m_fileInfo.container();
-    const int segmentCount = container ? static_cast<int>(container->segmentCount()) : 0;
+    const auto *const container = m_fileInfo.container();
+    const auto segmentCount = [&] {
+        constexpr auto segmentLimit = 10;
+        const auto count = container ? container->segmentCount() : static_cast<size_t>(0);
+        if (count <= segmentLimit) {
+            return static_cast<int>(count);
+        }
+        m_ui->parsingNotificationWidget->appendLine(tr("The file contains more segments than the GUI can handle."));
+        return segmentLimit;
+    }();
     const vector<string> &titles = container ? container->titles() : vector<string>();
 
     // get layout
@@ -284,7 +292,7 @@ void TagEditorWidget::updateDocumentTitleEdits()
         if (i < segmentCount) {
             // update existing line edit
             static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i + 1)->widget())
-                ->setText(static_cast<size_t>(i) < titles.size() ? QString::fromUtf8(titles[i].data()) : QString());
+                ->setText(static_cast<size_t>(i) < titles.size() ? QString::fromUtf8(titles[static_cast<size_t>(i)].data()) : QString());
         } else {
             // remove unneeded line edit
             docTitleLayout->removeItem(docTitleLayout->itemAt(i + 1));
@@ -295,7 +303,7 @@ void TagEditorWidget::updateDocumentTitleEdits()
     while (i < segmentCount) {
         auto *const lineEdit = new ClearLineEdit;
         if (static_cast<size_t>(i) < titles.size()) {
-            lineEdit->setText(QString::fromUtf8(titles[i].data()));
+            lineEdit->setText(QString::fromUtf8(titles[static_cast<size_t>(i)].data()));
         }
         lineEdit->setPlaceholderText(tr("Segment %1").arg(++i));
         docTitleLayout->addWidget(lineEdit);
