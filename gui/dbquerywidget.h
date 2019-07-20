@@ -50,7 +50,7 @@ private slots:
     void showResults();
     void setStatus(bool aborted);
     void fileStatusChanged(bool opened, bool hasTags);
-    void showResultsContextMenu();
+    void showResultsContextMenu(const QPoint &pos);
 #ifndef QT_NO_CLIPBOARD
     void copySelectedResult();
 #endif

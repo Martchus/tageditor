@@ -453,7 +453,7 @@ void DbQueryWidget::insertSearchTermsFromActiveTagEdit()
     insertSearchTermsFromTagEdit(m_tagEditorWidget->activeTagEdit());
 }
 
-void DbQueryWidget::showResultsContextMenu()
+void DbQueryWidget::showResultsContextMenu(const QPoint &pos)
 {
     const auto *const selectionModel = m_ui->resultsTreeView->selectionModel();
     if (!selectionModel) {
@@ -482,7 +482,7 @@ void DbQueryWidget::showResultsContextMenu()
         contextMenu.addAction(
             QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
     }
-    m_contextMenuPos = QCursor::pos();
+    m_contextMenuPos = m_ui->resultsTreeView->viewport()->mapToGlobal(pos);
     contextMenu.exec(m_contextMenuPos);
 }
 
