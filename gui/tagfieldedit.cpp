@@ -308,7 +308,6 @@ void TagFieldEdit::setupUi()
         break;
     default:
         setupTypeNotSupportedLabel();
-        ;
     }
     if (m_dataType != TagDataType::Picture && hasDescription()) { // setup description line edit
         setupDescriptionLineEdit();
