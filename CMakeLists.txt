@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.1.0 FATAL_ERROR)
 
 # meta data
-set(META_PROJECT_NAME tageditor)
+project(tageditor)
+set(META_PROJECT_NAME ${PROJECT_NAME})
 set(META_PROJECT_TYPE application)
 set(META_APP_NAME "Tag Editor")
 set(META_APP_CATEGORIES "AudioVideo;Database;")
