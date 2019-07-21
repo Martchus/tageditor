@@ -30,7 +30,8 @@ TAGEDITOR_ENUM_CLASS PreviousValueHandling : int;
 
 namespace Ui {
 class PicturePreviewSelection;
-}
+class ImageConversionDialog;
+} // namespace Ui
 
 class PicturePreviewSelection : public QWidget {
     Q_OBJECT
@@ -60,6 +61,7 @@ public slots:
     void extractSelected();
     void displaySelected();
     void changeMimeTypeOfSelected();
+    void convertSelected();
     void setCoverButtonsHidden(bool hideCoverButtons);
 
 signals:
@@ -81,8 +83,12 @@ private slots:
 private:
     bool setup(PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     void updateSizeAndMimeType(std::size_t fileSize, const QSize &resolution, const QString &mimeType);
+    QImage convertTagValueToImage(const TagParser::TagValue &value);
+    void assignImageToTagValue(const QImage &image, TagParser::TagValue &tagValue, const char *format);
 
     std::unique_ptr<Ui::PicturePreviewSelection> m_ui;
+    std::unique_ptr<Ui::ImageConversionDialog> m_imageConversionUI;
+    QDialog *m_imageConversionDialog;
     QGraphicsScene *m_scene;
     QGraphicsTextItem *m_textItem;
     QPixmap m_pixmap;

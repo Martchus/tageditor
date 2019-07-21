@@ -125,7 +125,8 @@ set(WIDGETS_UI_FILES
     gui/editortempoptionpage.ui
     gui/filelayout.ui
     gui/tageditorwidget.ui
-    gui/dbquerywidget.ui)
+    gui/dbquerywidget.ui
+    gui/imageconversiondialog.ui)
 
 set(TEST_HEADER_FILES)
 set(TEST_SRC_FILES tests/cli.cpp)
@@ -187,7 +188,8 @@ set(REQUIRED_ICONS
     tag-delete
     system-file-manager
     document-save
-    view-media-lyrics)
+    view-media-lyrics
+    image-resize-symbolic)
 
 # find c++utilities
 set(CONFIGURATION_PACKAGE_SUFFIX

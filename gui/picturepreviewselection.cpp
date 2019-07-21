@@ -3,6 +3,7 @@
 #include "../application/settings.h"
 #include "../misc/utility.h"
 
+#include "ui_imageconversiondialog.h"
 #include "ui_picturepreviewselection.h"
 
 #include <tagparser/diagnostics.h>
@@ -14,6 +15,7 @@
 #include <tagparser/vorbis/vorbiscommentfield.h>
 
 #include <qtutilities/misc/conversion.h>
+#include <qtutilities/misc/dialogutils.h>
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/misc/traits.h>
@@ -59,6 +61,7 @@ namespace QtGui {
 PicturePreviewSelection::PicturePreviewSelection(Tag *tag, KnownField field, QWidget *parent)
     : QWidget(parent)
     , m_ui(new Ui::PicturePreviewSelection)
+    , m_imageConversionDialog(nullptr)
     , m_scene(nullptr)
     , m_textItem(nullptr)
     , m_pixmapItem(nullptr)
@@ -250,6 +253,71 @@ void PicturePreviewSelection::updateSizeAndMimeType(size_t fileSize, const QSize
 }
 
 /*!
+ * \brief Assigns the specified \a image to the specified \a tagValue using the specified \a format.
+ * \remarks Shows a message box if an error occurs and returns a "null" QImage.
+ */
+QImage PicturePreviewSelection::convertTagValueToImage(const TagValue &value)
+{
+    QImage img;
+    if (value.mimeType() == "-->") {
+        const auto fileName(Utility::stringToQString(value.toString(), value.dataEncoding()));
+        QFile file(fileName);
+        if (file.open(QFile::ReadOnly)) {
+            img = QImage::fromData(file.readAll());
+        } else {
+            QMessageBox::warning(this, QCoreApplication::applicationName(),
+                tr("The attached image can't be found. It is supposed to be stored as external file \"%1\".").arg(fileName));
+            return img;
+        }
+    } else if (value.dataSize() < numeric_limits<int>::max()) {
+        img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), static_cast<int>(value.dataSize()));
+    }
+    if (img.isNull()) {
+        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image format is not supported."));
+    }
+    return img;
+}
+
+/*!
+ * \brief Assigns the specified \a image to the specified \a tagValue using the specified \a format.
+ * \remarks Shows a message box if an error occurs.
+ */
+void PicturePreviewSelection::assignImageToTagValue(const QImage &image, TagValue &tagValue, const char *format)
+{
+    // set default MIME type
+    QString mimeType;
+    if (strcmp(format, "JPEG") == 0) {
+        mimeType = QStringLiteral("image/jpeg");
+    } else if (strcmp(format, "PNG") == 0) {
+        mimeType = QStringLiteral("image/png");
+    }
+
+    // save image to buffer
+    QByteArray imageData;
+    QBuffer buffer(&imageData);
+    buffer.open(QIODevice::WriteOnly);
+    if (!image.save(&buffer, format)) {
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to save image from clipboard."));
+        return;
+    }
+
+    // ask for MIME type
+    if (mimeType.isEmpty()) {
+        bool ok;
+        mimeType
+            = QInputDialog::getText(this, tr("Enter MIME type"), tr("Enter the MIME type for the pasted image."), QLineEdit::Normal, mimeType, &ok);
+        if (!ok) {
+            return;
+        }
+    }
+
+    // assign image
+    const auto mimeTypeUtf8(mimeType.toUtf8());
+    tagValue.assignData(imageData.data(), static_cast<size_t>(imageData.size()), TagDataType::Picture);
+    tagValue.setMimeType(mimeTypeUtf8.constData());
+}
+
+/*!
  * \brief Pushes the ID3v2 cover values to the specified \a tag.
  * \param tag Specifies a tag to push the values to.
  * \param field Specifies the field.
@@ -405,39 +473,9 @@ void PicturePreviewSelection::pasteOfSelectedType(const char *format)
         return;
     }
 
-    // set default MIME type
-    QString mimeType;
-    if (strcmp(format, "JPEG") == 0) {
-        mimeType = QStringLiteral("image/jpeg");
-    } else if (strcmp(format, "PNG") == 0) {
-        mimeType = QStringLiteral("image/png");
-    }
-
-    // save image to buffer
-    QByteArray imageData;
-    QBuffer buffer(&imageData);
-    buffer.open(QIODevice::WriteOnly);
-    if (!image.save(&buffer, format)) {
-        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to save image from clipboard."));
-        return;
-    }
-
-    // ask for MIME type
-    if (mimeType.isEmpty()) {
-        bool ok;
-        mimeType
-            = QInputDialog::getText(this, tr("Enter MIME type"), tr("Enter the MIME type for the pasted image."), QLineEdit::Normal, mimeType, &ok);
-        if (!ok) {
-            return;
-        }
-    }
-
     // assign image
     assert(m_currentTypeIndex < m_values.size());
-    TagValue &selectedCover = m_values[m_currentTypeIndex];
-    const auto mimeTypeUtf8(mimeType.toUtf8());
-    selectedCover.assignData(imageData.data(), static_cast<size_t>(imageData.size()), TagDataType::Picture);
-    selectedCover.setMimeType(mimeTypeUtf8.constData());
+    assignImageToTagValue(image, m_values[m_currentTypeIndex], format);
 
     updatePreview(m_currentTypeIndex);
 }
@@ -503,22 +541,8 @@ void PicturePreviewSelection::displaySelected()
     }
 
     // load image
-    QImage img;
-    if (value.mimeType() == "-->") {
-        const auto fileName(Utility::stringToQString(value.toString(), value.dataEncoding()));
-        QFile file(fileName);
-        if (file.open(QFile::ReadOnly)) {
-            img = QImage::fromData(file.readAll());
-        } else {
-            QMessageBox::warning(this, QCoreApplication::applicationName(),
-                tr("The attached image can't be found. It is supposed to be stored as external file \"%1\".").arg(fileName));
-            return;
-        }
-    } else if (value.dataSize() < numeric_limits<int>::max()) {
-        img = QImage::fromData(reinterpret_cast<const uchar *>(value.dataPointer()), static_cast<int>(value.dataSize()));
-    }
+    const auto img = convertTagValueToImage(value);
     if (img.isNull()) {
-        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("The attached image can't be displayed."));
         return;
     }
 
@@ -550,13 +574,60 @@ void PicturePreviewSelection::changeMimeTypeOfSelected()
     auto &selectedCover = m_values[m_currentTypeIndex];
     auto mimeType = QString::fromUtf8(selectedCover.mimeType().data());
     bool ok;
-    mimeType = QInputDialog::getText(
-        this, tr("Enter/confirm mime type"), tr("Confirm or enter the mime type of the selected file."), QLineEdit::Normal, mimeType, &ok);
+    mimeType = QInputDialog::getText(this, tr("Enter/confirm MIME type"),
+        tr("Confirm or enter the MIME type of the selected file. This merely changes the <i>assumed</i> format. <i>No</i> image format conversion "
+           "done."),
+        QLineEdit::Normal, mimeType, &ok);
     if (!ok) {
         return;
     }
     selectedCover.setMimeType(mimeType.toUtf8().data());
     updateSizeAndMimeType(m_currentFileSize, m_currentResolution, mimeType);
+}
+
+void PicturePreviewSelection::convertSelected()
+{
+    assert(m_currentTypeIndex < m_values.size());
+    auto &selectedCover = m_values[m_currentTypeIndex];
+
+    // load image
+    const auto img = convertTagValueToImage(selectedCover);
+    if (img.isNull()) {
+        return;
+    }
+
+    // show image conversion dialog
+    if (!m_imageConversionDialog) {
+        m_imageConversionDialog = new QDialog(this);
+        m_imageConversionUI = make_unique<Ui::ImageConversionDialog>();
+        m_imageConversionUI->setupUi(m_imageConversionDialog);
+#ifdef Q_OS_WIN32
+        m_imageConversionDialog->setStyleSheet(dialogStyle());
+#endif
+        m_imageConversionUI->formatComboBox->addItems({ tr("JPEG"), tr("PNG") });
+        m_imageConversionUI->aspectRatioComboBox->addItems({ tr("Ignore"), tr("Keep"), tr("Keep by expanding") });
+        m_imageConversionUI->aspectRatioComboBox->setCurrentIndex(1);
+        connect(m_imageConversionUI->confirmPushButton, &QPushButton::clicked, m_imageConversionDialog, &QDialog::accept);
+        connect(m_imageConversionUI->abortPushButton, &QPushButton::clicked, m_imageConversionDialog, &QDialog::reject);
+    }
+    m_imageConversionUI->widthSpinBox->setValue(img.width());
+    m_imageConversionUI->heightSpinBox->setValue(img.height());
+    if (m_imageConversionDialog->exec() != QDialog::Accepted) {
+        return;
+    }
+
+    // scale image
+    const auto scaledImg = img.scaled(m_imageConversionUI->widthSpinBox->value(), m_imageConversionUI->heightSpinBox->value(),
+        static_cast<Qt::AspectRatioMode>(m_imageConversionUI->aspectRatioComboBox->currentIndex()), Qt::SmoothTransformation);
+    if (scaledImg.isNull()) {
+        QMessageBox::warning(this, QCoreApplication::applicationName(), tr("Unable to scale image."));
+        return;
+    }
+
+    // assign image
+    assignImageToTagValue(scaledImg, selectedCover, m_imageConversionUI->formatComboBox->currentIndex() == 0 ? "JPEG" : "PNG");
+
+    updatePreview(m_currentTypeIndex);
 }
 
 /*!
@@ -760,9 +831,12 @@ void PicturePreviewSelection::showContextMenu(const QPoint &position)
     }
 #endif
     if (m_ui->extractButton->isEnabled()) {
-        QAction *mimeAction = menu.addAction(tr("Change MIME-type"));
+        auto *const mimeAction = menu.addAction(tr("Change MIME-type"));
         mimeAction->setIcon(QIcon::fromTheme(QStringLiteral("document-properties")));
         connect(mimeAction, &QAction::triggered, this, &PicturePreviewSelection::changeMimeTypeOfSelected);
+        auto *const convertAction = menu.addAction(tr("Resize/convert assigned image"));
+        convertAction->setIcon(QIcon::fromTheme(QStringLiteral("image-resize-symbolic")));
+        connect(convertAction, &QAction::triggered, this, &PicturePreviewSelection::convertSelected);
     }
     menu.addSeparator();
     if (m_ui->removeButton->isEnabled()) {
