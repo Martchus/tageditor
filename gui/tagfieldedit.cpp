@@ -694,8 +694,7 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         return updated;
     }
     const auto pixmap(
-        QIcon::fromTheme(QStringLiteral("emblem-error"), QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-error.png")))
-            .pixmap(16));
+        QIcon::fromTheme(QStringLiteral("emblem-error")).pixmap(16));
     const auto text([&] {
         QString text;
         if (conversionError) {
@@ -726,8 +725,7 @@ IconButton *TagFieldEdit::setupRestoreButton()
         return m_restoreButton;
     }
     m_restoreButton = new IconButton(this);
-    m_restoreButton->setPixmap(
-        QIcon::fromTheme(QStringLiteral("edit-undo"), QIcon(QStringLiteral(":/qtutilities/icons/hicolor/48x48/actions/edit-menu.png"))).pixmap(16));
+    m_restoreButton->setPixmap(QIcon::fromTheme(QStringLiteral("edit-undo")).pixmap(16));
     m_restoreButton->setToolTip(tr("Restore value as it is currently present in the file"));
     connect(m_restoreButton, &IconButton::clicked, this, &TagFieldEdit::handleRestoreButtonClicked);
     // ownership might be transfered to a child widget/layout
