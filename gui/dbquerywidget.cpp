@@ -321,14 +321,15 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
         // skip row if title, track, album or artist do not match
         // -> ignore fields which aren't specified, though
         // -> ignore track and disk mismatch if the title matches (likely the track/disk number has been taken over incorrectly)
+        constexpr auto options = TagValueComparisionFlags::IgnoreMetaData | TagValueComparisionFlags::CaseInsensitive;
         const auto rowTitle = m_model->fieldValue(row, KnownField::Title);
         const auto rowAlbum = m_model->fieldValue(row, KnownField::Album);
         const auto rowArtist = m_model->fieldValue(row, KnownField::Artist);
         const auto rowTrack = m_model->fieldValue(row, KnownField::PartNumber).toInteger();
         const auto rowDisk = m_model->fieldValue(row, KnownField::DiskPosition).toInteger();
-        const auto titleMismatch = givenTitle != rowTitle;
-        if ((!givenTitle.isEmpty() && titleMismatch) || (!givenAlbum.isEmpty() && givenAlbum != rowAlbum)
-            || (!givenArtist.isEmpty() && givenArtist != rowArtist)
+        const auto titleMismatch = !givenTitle.compareTo(rowTitle, options);
+        if ((!givenTitle.isEmpty() && titleMismatch) || (!givenAlbum.isEmpty() && !givenAlbum.compareTo(rowAlbum, options))
+            || (!givenArtist.isEmpty() && !givenArtist.compareTo(rowArtist, options))
             || (givenTrack && (givenTitle.isEmpty() || titleMismatch) && givenTrack != rowTrack)
             || (givenDisk && rowDisk && (givenTitle.isEmpty() || titleMismatch) && givenDisk != rowDisk)) {
             continue;
