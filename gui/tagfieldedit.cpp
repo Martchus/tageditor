@@ -693,8 +693,7 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         }
         return updated;
     }
-    const auto pixmap(
-        QIcon::fromTheme(QStringLiteral("emblem-error")).pixmap(16));
+    const auto pixmap(QIcon::fromTheme(QStringLiteral("emblem-error")).pixmap(16));
     const auto text([&] {
         QString text;
         if (conversionError) {
