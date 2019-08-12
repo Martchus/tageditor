@@ -91,7 +91,8 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
     connect(m_ui->searchMusicBrainzPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchMusicBrainz);
     connect(m_ui->searchLyricsWikiaPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchLyricsWikia);
-    connect(m_ui->applyPushButton, &QPushButton::clicked, this, static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
+    connect(m_ui->resultsTreeView, &QTreeView::doubleClicked, this, &DbQueryWidget::applySpecifiedResults);
+    connect(m_ui->applyPushButton, &QPushButton::clicked, this, &DbQueryWidget::applySelectedResults);
     connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &DbQueryWidget::fileStatusChanged);
     connect(m_ui->resultsTreeView, &QTreeView::customContextMenuRequested, this, &DbQueryWidget::showResultsContextMenu);
 }
@@ -269,15 +270,26 @@ void DbQueryWidget::fileStatusChanged(bool, bool hasTags)
  */
 void DbQueryWidget::applySelectedResults()
 {
-    // check whether model, tag edit and current selection exist
-    if (auto *const tagEdit = m_tagEditorWidget->activeTagEdit()) {
-        if (const auto *const selectionModel = m_ui->resultsTreeView->selectionModel()) {
-            const auto selection = selectionModel->selection().indexes();
-            if (!selection.isEmpty()) {
-                applyResults(tagEdit, selection.front());
-            }
-        }
+    const auto *const selectionModel = m_ui->resultsTreeView->selectionModel();
+    if (!selectionModel) {
+        return;
     }
+    const auto selection = selectionModel->selection().indexes();
+    if (!selection.isEmpty()) {
+        applySpecifiedResults(selection.front());
+    }
+}
+
+/*!
+ * \brief Applies the results for the specified \a modelIndex.
+ */
+void DbQueryWidget::applySpecifiedResults(const QModelIndex &modelIndex)
+{
+    auto *const tagEdit = m_tagEditorWidget->activeTagEdit();
+    if (!tagEdit) {
+        return;
+    }
+    applyResults(tagEdit, modelIndex);
 }
 
 /*!

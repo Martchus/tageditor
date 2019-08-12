@@ -40,6 +40,7 @@ public slots:
     void searchLyricsWikia();
     void abortSearch();
     void applySelectedResults();
+    void applySpecifiedResults(const QModelIndex &modelIndex);
     void applyMatchingResults();
     void applyMatchingResults(TagEdit *tagEdit);
     void autoInsertMatchingResults();
