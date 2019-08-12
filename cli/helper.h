@@ -9,6 +9,7 @@
 #include <c++utilities/chrono/datetime.h>
 #include <c++utilities/chrono/timespan.h>
 #include <c++utilities/conversion/stringconversion.h>
+#include <c++utilities/misc/flagenumclass.h>
 #include <c++utilities/misc/traits.h>
 
 #include <functional>
@@ -36,20 +37,12 @@ namespace Cli {
 
 enum class DenotationType { Normal, Increment, File };
 
-constexpr TagType operator|(TagType lhs, TagType rhs)
-{
-    return static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
-}
+} // namespace Cli
 
-constexpr TagType operator&(TagType lhs, TagType rhs)
-{
-    return static_cast<TagType>(static_cast<unsigned int>(lhs) & static_cast<unsigned int>(rhs));
-}
+CPP_UTILITIES_MARK_FLAG_ENUM_CLASS(Cli, Cli::DenotationType)
+CPP_UTILITIES_MARK_FLAG_ENUM_CLASS(TagParser, TagParser::TagType)
 
-constexpr TagType &operator|=(TagType &lhs, TagType rhs)
-{
-    return lhs = static_cast<TagType>(static_cast<unsigned int>(lhs) | static_cast<unsigned int>(rhs));
-}
+namespace Cli {
 
 class FieldId {
     friend struct std::hash<FieldId>;

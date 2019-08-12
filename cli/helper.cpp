@@ -615,7 +615,7 @@ template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
 std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(const char *idString, std::size_t idStringSize, const Tag *tag, TagType tagType)
 {
     auto res = make_pair<std::vector<const TagValue *>, bool>({}, false);
-    if ((tagType & tagTypeMask) == TagType::Unspecified) {
+    if (!(tagType & tagTypeMask)) {
         return res;
     }
     res.first = static_cast<const ConcreteTag *>(tag)->values(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize));
@@ -626,7 +626,7 @@ std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(const char *
 template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
 bool setValuesForNativeField(const char *idString, std::size_t idStringSize, Tag *tag, TagType tagType, const std::vector<TagValue> &values)
 {
-    if ((tagType & tagTypeMask) == TagType::Unspecified) {
+    if (!(tagType & tagTypeMask)) {
         return false;
     }
     return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize), values);

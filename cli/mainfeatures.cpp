@@ -593,7 +593,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         const FieldScope &denotedScope = fieldDenotation.first;
                         // skip values which scope does not match the current tag
                         if (denotedScope.isTrack()
-                            || !(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType & tagType) != TagType::Unspecified)
+                            || !(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType & tagType))
                             || !(!targetSupported || denotedScope.tagTarget == tagTarget)) {
                             continue;
                         }
