@@ -18,6 +18,7 @@
 #include <tagparser/abstracttrack.h>
 #include <tagparser/backuphelper.h>
 #include <tagparser/diagnostics.h>
+#include <tagparser/language.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/progressfeedback.h>
 #include <tagparser/tag.h>
@@ -198,8 +199,8 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     printProperty("ID", track->id(), nullptr, true);
                     printProperty("Name", track->name());
                     printProperty("Type", track->mediaTypeName());
-                    if (track->language() != "und") {
-                        printProperty("Language", track->language());
+                    if (isLanguageDefined(track->language())) {
+                        printProperty("Language", languageNameFromIsoWithFallback(track->language()));
                     }
                     const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
                     printProperty("Format", fmtName);

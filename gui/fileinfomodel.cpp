@@ -7,6 +7,7 @@
 #include <tagparser/abstractcontainer.h>
 #include <tagparser/abstracttrack.h>
 #include <tagparser/diagnostics.h>
+#include <tagparser/language.h>
 #include <tagparser/matroska/matroskacontainer.h>
 #include <tagparser/matroska/matroskaeditionentry.h>
 #include <tagparser/mediafileinfo.h>
@@ -415,7 +416,7 @@ void FileInfoModel::updateCache()
                     }
                     trackHelper.appendRow(tr("Creation time"), track->creationTime());
                     trackHelper.appendRow(tr("Modification time"), track->modificationTime());
-                    trackHelper.appendRow(tr("Language"), track->language());
+                    trackHelper.appendRow(tr("Language"), languageNameFromIsoWithFallback(track->language()));
                     trackHelper.appendRow(tr("Compressor name"), track->compressorName());
                     if (track->samplingFrequency()) {
                         trackHelper.appendRow(tr("Sampling frequency"),

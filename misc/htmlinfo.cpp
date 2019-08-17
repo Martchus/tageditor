@@ -6,6 +6,7 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractcontainer.h>
 #include <tagparser/abstracttrack.h>
+#include <tagparser/language.h>
 #include <tagparser/matroska/matroskacontainer.h>
 #include <tagparser/matroska/matroskaeditionentry.h>
 #include <tagparser/mediafileinfo.h>
@@ -587,7 +588,7 @@ public:
                 qstr(track->modificationTime().toString(DateTimeOutputFormat::DateAndTime, true)));
         }
         if (!track->language().empty()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Language"), qstr(track->language()));
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Language"), qstr(languageNameFromIsoWithFallback(track->language())));
         }
         if (!track->compressorName().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Compressor name"), qstr(track->compressorName()));
