@@ -38,6 +38,7 @@ public:
 public slots:
     void searchMusicBrainz();
     void searchLyricsWikia();
+    void searchMakeItPersonal();
     void abortSearch();
     void applySelectedResults();
     void applySpecifiedResults(const QModelIndex &modelIndex);
@@ -78,6 +79,7 @@ private:
     QAction *m_insertPresentDataAction;
     QAction *m_searchMusicBrainzAction;
     QAction *m_searchLyricsWikiaAction;
+    QAction *m_searchMakeItPersonalAction;
     QAction *m_lastSearchAction;
     QPoint m_contextMenuPos;
 };

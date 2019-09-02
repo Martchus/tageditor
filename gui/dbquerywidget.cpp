@@ -84,6 +84,10 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     m_searchLyricsWikiaAction->setIcon(searchIcon);
     m_searchLyricsWikiaAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
     connect(m_searchLyricsWikiaAction, &QAction::triggered, this, &DbQueryWidget::searchLyricsWikia);
+    m_searchMakeItPersonalAction = m_menu->addAction(tr("Query makeitpersonal"));
+    m_searchMakeItPersonalAction->setIcon(searchIcon);
+    m_searchMakeItPersonalAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_K));
+    connect(m_searchMakeItPersonalAction, &QAction::triggered, this, &DbQueryWidget::searchMakeItPersonal);
     m_menu->addSeparator();
     m_insertPresentDataAction = m_menu->addAction(tr("Use present data as search criteria"));
     m_insertPresentDataAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-copy")));
@@ -117,7 +121,11 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpec
     }
 
     // set album and artist
-    m_ui->albumLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Album)));
+    if (m_lastSearchAction == m_searchMakeItPersonalAction) {
+        m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
+    } else {
+        m_ui->albumLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Album)));
+    }
     m_ui->artistLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Artist)));
 
     if (!songSpecific) {
@@ -185,6 +193,30 @@ void DbQueryWidget::searchLyricsWikia()
 
     // do actual query
     useQueryResults(queryLyricsWikia(currentSongDescription()));
+}
+
+void DbQueryWidget::searchMakeItPersonal()
+{
+    m_lastSearchAction = m_searchMakeItPersonalAction;
+
+    // check whether enough search terms are supplied
+    if (m_ui->artistLineEdit->text().isEmpty() || m_ui->titleLineEdit->text().isEmpty()) {
+        m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
+        m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied - artist and title are mandatory"));
+        return;
+    }
+
+    // delete current model
+    m_ui->resultsTreeView->setModel(nullptr);
+    delete m_model;
+
+    // show status
+    m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+    m_ui->notificationLabel->setText(tr("Retrieving lyrics from makeitpersonal ..."));
+    setStatus(false);
+
+    // do actual query
+    useQueryResults(queryMakeItPersonal(currentSongDescription()));
 }
 
 void DbQueryWidget::abortSearch()

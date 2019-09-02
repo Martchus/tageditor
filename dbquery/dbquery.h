@@ -159,6 +159,7 @@ template <class Function> inline void HttpResultsModel::addReply(QNetworkReply *
 QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription);
 QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription);
 QNetworkReply *queryCoverArtArchive(const QString &albumId);
+QueryResultsModel *queryMakeItPersonal(SongDescription &&songDescription);
 
 } // namespace QtGui
 
