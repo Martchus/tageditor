@@ -151,6 +151,7 @@ set(REQUIRED_ICONS
     object-locked
     object-unlocked
     preferences-other
+    view-refresh
     view-preview
     document-open-recent
     tag-add
@@ -180,6 +181,7 @@ set(REQUIRED_ICONS
     view-list-tree
     document-edit
     edit-delete
+    search
     system-search
     document-revert
     dialog-ok

@@ -76,6 +76,8 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
 
     // setup menu
     const auto searchIcon = QIcon::fromTheme(QStringLiteral("search"));
+    m_menu->setTitle(tr("New search"));
+    m_menu->setIcon(searchIcon);
     m_searchMusicBrainzAction = m_lastSearchAction = m_menu->addAction(tr("Query MusicBrainz"));
     m_searchMusicBrainzAction->setIcon(searchIcon);
     m_searchMusicBrainzAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
@@ -513,25 +515,21 @@ void DbQueryWidget::insertSearchTermsFromActiveTagEdit()
 void DbQueryWidget::showResultsContextMenu(const QPoint &pos)
 {
     const auto *const selectionModel = m_ui->resultsTreeView->selectionModel();
-    if (!selectionModel) {
-        return;
-    }
-    const auto selection = selectionModel->selection().indexes();
-    if (selection.isEmpty()) {
-        return;
-    }
+    const auto hasSelection = selectionModel && !selectionModel->selection().isEmpty();
+
     QMenu contextMenu;
-    if (m_ui->applyPushButton->isEnabled()) {
+    if (hasSelection && m_ui->applyPushButton->isEnabled()) {
         contextMenu.addAction(m_ui->applyPushButton->icon(), tr("Use selected row"), this,
             static_cast<void (DbQueryWidget::*)(void)>(&DbQueryWidget::applySelectedResults));
     }
-    if (m_model && m_model->areResultsAvailable()) {
 #ifndef QT_NO_CLIPBOARD
+    if (hasSelection) {
         contextMenu.addAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy value"), this, &DbQueryWidget::copySelectedResult);
+    }
 #endif
-        if (!contextMenu.isEmpty()) {
-            contextMenu.addSeparator();
-        }
+    contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-refresh")), tr("Refresh results"), m_lastSearchAction, &QAction::trigger);
+    if (hasSelection) {
+        contextMenu.addSeparator();
         contextMenu.addAction(
             QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
         contextMenu.addAction(
@@ -539,6 +537,10 @@ void DbQueryWidget::showResultsContextMenu(const QPoint &pos)
         contextMenu.addAction(
             QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
     }
+    if (!contextMenu.isEmpty()) {
+        contextMenu.addSeparator();
+    }
+    contextMenu.addMenu(m_menu);
     m_contextMenuPos = m_ui->resultsTreeView->viewport()->mapToGlobal(pos);
     contextMenu.exec(m_contextMenuPos);
 }
@@ -631,7 +633,7 @@ void DbQueryWidget::openSelectionInBrowser()
     }
     const auto url = m_model->webUrl(selectedIndex);
     if (url.isEmpty()) {
-        m_ui->notificationLabel->appendLine(tr("No web URL available."));
+        m_ui->notificationLabel->appendLine(tr("No web URL available"));
         return;
     }
     if (!QDesktopServices::openUrl(url)) {
