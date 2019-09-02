@@ -75,22 +75,30 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     m_ui->overrideCheckBox->setChecked(values().dbQuery.override);
 
     // setup menu
-    m_insertPresentDataAction = m_menu->addAction(tr("Insert present data"));
+    const auto searchIcon = QIcon::fromTheme(QStringLiteral("search"));
+    m_searchMusicBrainzAction = m_lastSearchAction = m_menu->addAction(tr("Query MusicBrainz"));
+    m_searchMusicBrainzAction->setIcon(searchIcon);
+    m_searchMusicBrainzAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+    connect(m_searchMusicBrainzAction, &QAction::triggered, this, &DbQueryWidget::searchMusicBrainz);
+    m_searchLyricsWikiaAction = m_menu->addAction(tr("Query LyricsWikia"));
+    m_searchLyricsWikiaAction->setIcon(searchIcon);
+    m_searchLyricsWikiaAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
+    connect(m_searchLyricsWikiaAction, &QAction::triggered, this, &DbQueryWidget::searchLyricsWikia);
+    m_menu->addSeparator();
+    m_insertPresentDataAction = m_menu->addAction(tr("Use present data as search criteria"));
     m_insertPresentDataAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-copy")));
     m_insertPresentDataAction->setEnabled(m_tagEditorWidget->activeTagEdit());
     connect(m_insertPresentDataAction, &QAction::triggered, this, &DbQueryWidget::insertSearchTermsFromActiveTagEdit);
-    QAction *clearSearchCriteria = m_menu->addAction(tr("Clear search criteria"));
+    auto *const clearSearchCriteria = m_menu->addAction(tr("Clear search criteria"));
     clearSearchCriteria->setIcon(QIcon::fromTheme(QStringLiteral("edit-clear")));
     connect(clearSearchCriteria, &QAction::triggered, this, &DbQueryWidget::clearSearchCriteria);
-    m_ui->menuPushButton->setMenu(m_menu);
+    m_ui->searchPushButton->setMenu(m_menu);
 
     // ensure fieldsGroupBox takes only minimal space (initially)
-    m_ui->splitter->setSizes({ 1000, 1 });
+    m_ui->splitter->setSizes({ 1, 1000 });
 
     // connect signals and slots
     connect(m_ui->abortPushButton, &QPushButton::clicked, this, &DbQueryWidget::abortSearch);
-    connect(m_ui->searchMusicBrainzPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchMusicBrainz);
-    connect(m_ui->searchLyricsWikiaPushButton, &QPushButton::clicked, this, &DbQueryWidget::searchLyricsWikia);
     connect(m_ui->resultsTreeView, &QTreeView::doubleClicked, this, &DbQueryWidget::applySpecifiedResults);
     connect(m_ui->applyPushButton, &QPushButton::clicked, this, &DbQueryWidget::applySelectedResults);
     connect(m_tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &DbQueryWidget::fileStatusChanged);
@@ -133,6 +141,8 @@ SongDescription DbQueryWidget::currentSongDescription() const
 
 void DbQueryWidget::searchMusicBrainz()
 {
+    m_lastSearchAction = m_searchMusicBrainzAction;
+
     // check whether enough search terms are supplied
     if (m_ui->titleLineEdit->text().isEmpty() && m_ui->albumLineEdit->text().isEmpty() && m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
@@ -155,6 +165,8 @@ void DbQueryWidget::searchMusicBrainz()
 
 void DbQueryWidget::searchLyricsWikia()
 {
+    m_lastSearchAction = m_searchLyricsWikiaAction;
+
     // check whether enough search terms are supplied
     if (m_ui->artistLineEdit->text().isEmpty()) {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
@@ -252,8 +264,8 @@ void DbQueryWidget::showResults()
 void DbQueryWidget::setStatus(bool aborted)
 {
     m_ui->abortPushButton->setVisible(!aborted);
-    m_ui->searchMusicBrainzPushButton->setVisible(aborted);
-    m_ui->searchLyricsWikiaPushButton->setVisible(aborted);
+    m_searchMusicBrainzAction->setEnabled(aborted);
+    m_searchLyricsWikiaAction->setEnabled(aborted);
     m_ui->applyPushButton->setVisible(aborted);
 }
 
@@ -658,7 +670,7 @@ bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)
         case QEvent::KeyRelease:
             switch (static_cast<QKeyEvent *>(event)->key()) {
             case Qt::Key_Return:
-                searchMusicBrainz();
+                m_lastSearchAction->trigger();
                 break;
             default:;
             }

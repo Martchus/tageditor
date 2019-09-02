@@ -76,6 +76,9 @@ private:
     int m_coverIndex, m_lyricsIndex;
     QMenu *m_menu;
     QAction *m_insertPresentDataAction;
+    QAction *m_searchMusicBrainzAction;
+    QAction *m_searchLyricsWikiaAction;
+    QAction *m_lastSearchAction;
     QPoint m_contextMenuPos;
 };
 
