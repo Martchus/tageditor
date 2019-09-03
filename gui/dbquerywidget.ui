@@ -331,7 +331,7 @@
              <item>
               <widget class="QCheckBox" name="autoInsertCheckBox">
                <property name="toolTip">
-                <string>Whether values for selected &quot;Fields to be used&quot; should be inserted automatically when opening a file. The row to insert the values from is determined from the existing title and/or track number fields of the file and disambiguated by taking the album and artist into account as well. It still makes sense to check that the correct row has been inserted before saving.</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Whether values for selected &amp;quot;Fields to be used&amp;quot; should be inserted automatically when opening a file or a query has been completed.&lt;/p&gt;&lt;p&gt;The row to insert the values from is determined from the existing title and/or track number fields of the file and disambiguated by taking the album and artist into account as well. It makes sense to check that the correct row has been inserted before saving.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Insert automatically</string>

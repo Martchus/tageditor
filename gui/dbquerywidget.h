@@ -81,6 +81,7 @@ private:
     QAction *m_searchLyricsWikiaAction;
     QAction *m_searchMakeItPersonalAction;
     QAction *m_lastSearchAction;
+    QAction *m_refreshAutomaticallyAction;
     QPoint m_contextMenuPos;
 };
 

@@ -95,6 +95,9 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     m_insertPresentDataAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-copy")));
     m_insertPresentDataAction->setEnabled(m_tagEditorWidget->activeTagEdit());
     connect(m_insertPresentDataAction, &QAction::triggered, this, &DbQueryWidget::insertSearchTermsFromActiveTagEdit);
+    m_refreshAutomaticallyAction = m_menu->addAction(tr("Start new query automatically when inserting search criteria"));
+    m_refreshAutomaticallyAction->setIcon(QIcon::fromTheme(QStringLiteral("view-refresh")));
+    m_refreshAutomaticallyAction->setCheckable(true);
     auto *const clearSearchCriteria = m_menu->addAction(tr("Clear search criteria"));
     clearSearchCriteria->setIcon(QIcon::fromTheme(QStringLiteral("edit-clear")));
     connect(clearSearchCriteria, &QAction::triggered, this, &DbQueryWidget::clearSearchCriteria);
@@ -122,21 +125,47 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpec
         return;
     }
 
+    bool somethingChanged = false;
+
+    // be always song-specific when querying makeitpersonal
+    songSpecific = m_lastSearchAction == m_searchMakeItPersonalAction;
+
     // set album and artist
-    if (m_lastSearchAction == m_searchMakeItPersonalAction) {
-        m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
-    } else {
-        m_ui->albumLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Album)));
+    if (m_lastSearchAction != m_searchMakeItPersonalAction) {
+        const auto newAlbum = tagValueToQString(tagEdit->value(KnownField::Album));
+        if (m_ui->albumLineEdit->text() != newAlbum) {
+            m_ui->albumLineEdit->setText(newAlbum);
+            somethingChanged = true;
+        }
     }
-    m_ui->artistLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Artist)));
+    const auto newArtist = tagValueToQString(tagEdit->value(KnownField::Artist));
+    if (m_ui->artistLineEdit->text() != newArtist) {
+        m_ui->artistLineEdit->setText(newArtist);
+        somethingChanged = true;
+    }
 
     if (!songSpecific) {
         return;
     }
 
     // set title and track number
-    m_ui->titleLineEdit->setText(tagValueToQString(tagEdit->value(KnownField::Title)));
-    m_ui->trackSpinBox->setValue(tagEdit->trackNumber());
+    const auto newTitle = tagValueToQString(tagEdit->value(KnownField::Title));
+    if (m_ui->titleLineEdit->text() != newTitle) {
+        m_ui->titleLineEdit->setText(newTitle);
+        somethingChanged = true;
+    }
+    if (m_lastSearchAction != m_searchMakeItPersonalAction) {
+        const auto newTrackNumber = tagEdit->trackNumber();
+        if (m_ui->trackSpinBox->value() != newTrackNumber) {
+            m_ui->trackSpinBox->setValue(newTrackNumber);
+            somethingChanged = true;
+        }
+    }
+
+    // refresh automatically if enabled and something has changed
+    if (somethingChanged && m_refreshAutomaticallyAction->isChecked()) {
+        m_lastSearchAction->trigger();
+    }
 }
 
 SongDescription DbQueryWidget::currentSongDescription() const
@@ -721,6 +750,7 @@ void DbQueryWidget::useQueryResults(QueryResultsModel *queryResults)
     connect(queryResults, &QueryResultsModel::resultsAvailable, this, &DbQueryWidget::showResults);
     connect(queryResults, &QueryResultsModel::lyricsAvailable, this, &DbQueryWidget::showLyricsFromIndex);
     connect(queryResults, &QueryResultsModel::coverAvailable, this, &DbQueryWidget::showCoverFromIndex);
+    connect(queryResults, &QAbstractItemModel::modelReset, this, &DbQueryWidget::autoInsertMatchingResults);
 }
 
 QModelIndex DbQueryWidget::selectedIndex() const
