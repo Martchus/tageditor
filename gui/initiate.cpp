@@ -23,27 +23,29 @@ namespace QtGui {
 int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs, const QString &path, bool launchRenamingUtility)
 {
     SET_QT_APPLICATION_INFO;
-    QApplication a(argc, argv);
+    QApplication application(argc, argv);
     Settings::restore();
+
     // apply settings specified via command line args after the settings chosen in the GUI to give the CLI options precedence
     Settings::values().qt.apply();
     qtConfigArgs.applySettings(Settings::values().qt.hasCustomFont());
+
     LOAD_QT_TRANSLATIONS;
-    int res;
+
+    QObject::connect(&application, &QCoreApplication::aboutToQuit, &Settings::save);
+
     if (launchRenamingUtility) {
-        RenameFilesDialog w;
-        w.show();
-        res = a.exec();
-    } else {
-        MainWindow w;
-        w.show();
-        if (!path.isEmpty()) {
-            w.startParsing(path);
-        }
-        res = a.exec();
+        RenameFilesDialog window;
+        window.show();
+        return application.exec();
     }
-    Settings::save();
-    return res;
+
+    MainWindow window;
+    window.show();
+    if (!path.isEmpty()) {
+        window.startParsing(path);
+    }
+    return application.exec();
 }
 
 } // namespace QtGui
