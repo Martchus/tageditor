@@ -20,7 +20,7 @@ namespace QtGui {
 
 static const QString defaultLyricsWikiaUrl(QStringLiteral("https://lyrics.fandom.com"));
 
-QUrl lyricsWikiaApiUrl()
+static QUrl lyricsWikiaApiUrl()
 {
     const auto &lyricsWikiaUrl = Settings::values().dbQuery.lyricsWikiaUrl;
     return QUrl((lyricsWikiaUrl.isEmpty() ? defaultLyricsWikiaUrl : lyricsWikiaUrl) + QStringLiteral("/api.php"));

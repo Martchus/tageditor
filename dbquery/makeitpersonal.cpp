@@ -18,7 +18,7 @@ namespace QtGui {
 
 static const QString defaultMakeItPersonalUrl(QStringLiteral("https://makeitpersonal.co"));
 
-QUrl makeItPersonalApiUrl()
+static QUrl makeItPersonalApiUrl()
 {
     const auto &makeItPersonalUrl = Settings::values().dbQuery.makeItPersonalUrl;
     return QUrl((makeItPersonalUrl.isEmpty() ? defaultMakeItPersonalUrl : makeItPersonalUrl) + QStringLiteral("/lyrics"));
