@@ -26,6 +26,15 @@ QUrl lyricsWikiaApiUrl()
     return QUrl((lyricsWikiaUrl.isEmpty() ? defaultLyricsWikiaUrl : lyricsWikiaUrl) + QStringLiteral("/api.php"));
 }
 
+static void lazyInitializeLyricsWikiaSongId(SongDescription &desc)
+{
+    if (!desc.songId.isEmpty()) {
+        return;
+    }
+    desc.songId = desc.artist % QChar(':') % desc.title;
+    desc.songId.replace(QChar(' '), QChar('_'));
+}
+
 LyricsWikiaResultsModel::LyricsWikiaResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply)
     : HttpResultsModel(move(initialSongDescription), reply)
 {
@@ -230,7 +239,7 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
         setResultsAvailable(true);
         return;
     }
-    const SongDescription &assocDesc = m_results.at(row);
+    SongDescription &assocDesc = m_results[row];
 
     QUrl parsedUrl;
 
@@ -277,16 +286,20 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
         }
     }
 
-    // requets lyrics (seem to be incomplete in XML response, so just get the regular Wiki page)
+    // requets lyrics (lyrics are trunacted in XML response so just get them via the regular Wiki page)
+    // -> fall back to self-crafted URL if it was not possible to parse it from XML
     if (parsedUrl.isEmpty()) {
-        m_errorList << tr("Song details requested for %1/%2 do not contain URL for Wiki page").arg(assocDesc.artist, assocDesc.title);
-        setResultsAvailable(true);
-        return;
+        lazyInitializeLyricsWikiaSongId(assocDesc);
+        parsedUrl.setPath(QStringLiteral("/wiki/") + assocDesc.songId);
+        m_errorList << tr(
+            "Song details requested for %1/%2 do not contain URL for Wiki page or do not match requested song; using self-crafted link instead")
+                           .arg(assocDesc.artist, assocDesc.title);
     }
-    // do not use parsed URL directly to avoid unintended requests
+    // -> do not use parsed URL "as-is" in any case to avoid unintended requests
     QUrl requestUrl(lyricsWikiaApiUrl());
     requestUrl.setPath(parsedUrl.path());
-    auto *reply = Utility::networkAccessManager().get(QNetworkRequest(parsedUrl));
+    // -> initialize the actual request
+    auto *const reply = Utility::networkAccessManager().get(QNetworkRequest(requestUrl));
     addReply(reply, bind(&LyricsWikiaResultsModel::handleLyricsReplyFinished, this, reply, row));
 }
 
@@ -394,12 +407,8 @@ QUrl LyricsWikiaResultsModel::webUrl(const QModelIndex &index)
     }
 
     SongDescription &desc = m_results[index.row()];
+    lazyInitializeLyricsWikiaSongId(desc);
 
-    // lazy initialize song ID
-    if (desc.songId.isEmpty()) {
-        desc.songId = desc.artist % QChar(':') % desc.title;
-        desc.songId.replace(QChar(' '), QChar('_'));
-    }
     // return URL
     QUrl url(lyricsWikiaApiUrl());
     url.setPath(QStringLiteral("/wiki/") + desc.songId);
