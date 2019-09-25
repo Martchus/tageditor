@@ -313,7 +313,9 @@ void LyricsWikiaResultsModel::handleLyricsReplyFinished(QNetworkReply *reply, in
     if (!data.isEmpty()) {
         parseLyricsResults(row, data);
     }
-    setResultsAvailable(true);
+    if (!m_resultsAvailable) {
+        setResultsAvailable(true);
+    }
 }
 
 void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data)
@@ -341,6 +343,7 @@ void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data
     textDoc.setHtml(html.mid(lyricsStart, (lyricsEnd > lyricsStart) ? (lyricsEnd - lyricsStart) : -1));
     assocDesc.lyrics = textDoc.toPlainText();
 
+    setResultsAvailable(true);
     emit lyricsAvailable(index(row, 0));
 }
 

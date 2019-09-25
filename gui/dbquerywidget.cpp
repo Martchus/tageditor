@@ -603,13 +603,8 @@ void DbQueryWidget::fetchAndShowCoverForSelection()
         return;
     }
 
-    if (const QByteArray *const cover = m_model->cover(selectedIndex)) {
-        showCover(*cover);
-        return;
-    }
-
     if (m_model->fetchCover(selectedIndex)) {
-        if (const QByteArray *const cover = m_model->cover(selectedIndex)) {
+        if (const auto *const cover = m_model->cover(selectedIndex)) {
             showCover(*cover);
         } else {
             // cover couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
@@ -632,14 +627,9 @@ void DbQueryWidget::fetchAndShowLyricsForSelection()
         return;
     }
 
-    if (const QString *const lyrics = m_model->lyrics(selectedIndex)) {
-        showLyrics(*lyrics);
-        return;
-    }
-
     if (m_model->fetchLyrics(selectedIndex)) {
-        if (const QByteArray *cover = m_model->cover(selectedIndex)) {
-            showLyrics(*cover);
+        if (const auto *const lyrics = m_model->lyrics(selectedIndex)) {
+            showLyrics(*lyrics);
         } else {
             // lyrics couldn't be fetched, error tracked via resultsAvailable() signal so nothing to do
         }

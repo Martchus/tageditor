@@ -358,39 +358,46 @@ void HttpResultsModel::handleCoverReplyFinished(QNetworkReply *reply, const QStr
     if (!data.isEmpty()) {
         parseCoverResults(albumId, row, data);
     }
-    setResultsAvailable(true);
+    if (!m_resultsAvailable) {
+        setResultsAvailable(true);
+    }
 }
 
 void HttpResultsModel::parseCoverResults(const QString &albumId, int row, const QByteArray &data)
 {
+    setFetchingCover(false);
+
     // add cover -> determine album ID and row
     if (albumId.isEmpty() || row >= m_results.size()) {
         m_errorList << tr("Internal error: context for cover reply invalid");
         setResultsAvailable(true);
         return;
     }
-    if (!data.isEmpty()) {
-        // cache the fetched cover
-        const auto currentCachedCoverCount = s_coverData.size();
-        s_coverData[albumId] = data;
-        if (s_coverData.size() > currentCachedCoverCount) {
-            s_coverNames.emplace_back(albumId);
 
-            // keep only the last 20 cover images around
-            while (s_coverNames.size() > 20) {
-                s_coverData.erase(s_coverNames.front());
-                s_coverNames.pop_front();
-            }
-        } else if (s_coverNames.back() != albumId) {
-            s_coverNames.remove(albumId);
-            s_coverNames.emplace_back(albumId);
-        }
-
-        // add the cover to the results
-        m_results[row].cover = data;
-        emit coverAvailable(index(row, 0));
+    if (data.isEmpty()) {
+        return;
     }
-    setFetchingCover(false);
+
+    // cache the fetched cover
+    const auto currentCachedCoverCount = s_coverData.size();
+    s_coverData[albumId] = data;
+    if (s_coverData.size() > currentCachedCoverCount) {
+        s_coverNames.emplace_back(albumId);
+
+        // keep only the last 20 cover images around
+        while (s_coverNames.size() > 20) {
+            s_coverData.erase(s_coverNames.front());
+            s_coverNames.pop_front();
+        }
+    } else if (s_coverNames.back() != albumId) {
+        s_coverNames.remove(albumId);
+        s_coverNames.emplace_back(albumId);
+    }
+
+    // add the cover to the results
+    m_results[row].cover = data;
+    setResultsAvailable(true);
+    emit coverAvailable(index(row, 0));
 }
 
 } // namespace QtGui
