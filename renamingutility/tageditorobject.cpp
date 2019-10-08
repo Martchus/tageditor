@@ -168,7 +168,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
         ioErrorOccured = true;
     }
 
-    // gather notifications
+    // add diag messages
     auto diagObj = m_engine->newArray(static_cast<uint>(diag.size()));
     diagObj << diag;
     criticalParseingErrorOccured |= diag.level() >= DiagLevel::Critical;
@@ -183,25 +183,22 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     fileInfoObject.setProperty(QStringLiteral("hasAudioTracks"), fileInfo.hasTracksOfType(MediaType::Audio) TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("hasVideoTracks"), fileInfo.hasTracksOfType(MediaType::Video) TAGEDITOR_JS_READONLY);
 
-    // gather tag information
+    // add tag information
     const vector<Tag *> tags = fileInfo.tags();
     auto combinedTagObject = m_engine->newObject();
-    auto combinedTagNotifications = m_engine->newArray();
     auto tagsObject = m_engine->newArray(static_cast<uint>(tags.size()));
     std::uint32_t tagIndex = 0;
     for (auto tagIterator = tags.cbegin(), end = tags.cend(); tagIterator != end; ++tagIterator, ++tagIndex) {
         const Tag &tag = **tagIterator;
         auto tagObject = m_engine->newObject();
         combinedTagObject << tag;
-        combinedTagNotifications << tag;
         tagObject << tag;
         tagsObject.setProperty(tagIndex, tagObject TAGEDITOR_JS_READONLY);
     }
-    combinedTagObject.setProperty(QStringLiteral("notifications"), combinedTagNotifications TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("tag"), combinedTagObject TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("tags"), tagsObject TAGEDITOR_JS_READONLY);
 
-    // gather track information
+    // add track information
     const vector<AbstractTrack *> tracks = fileInfo.tracks();
     auto tracksObject = m_engine->newArray(static_cast<uint>(tracks.size()));
     std::uint32_t trackIndex = 0;
