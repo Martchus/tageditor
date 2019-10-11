@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QList>
 #include <QObject>
+#include <QThread>
 
 #include <memory>
 
@@ -19,9 +20,38 @@ namespace RenamingUtility {
 class FileSystemItemModel;
 class FilteredFileSystemItemModel;
 class TagEditorObject;
+class RenamingEngine;
+
+class PreviewGenerator final : public QThread {
+    Q_OBJECT
+public:
+    explicit PreviewGenerator(RenamingEngine *engine);
+    ~PreviewGenerator() override;
+
+protected:
+    void run() final;
+
+private:
+    RenamingEngine *m_engine;
+};
+
+class RenamingThing final : public QThread {
+    Q_OBJECT
+public:
+    explicit RenamingThing(RenamingEngine *engine);
+
+protected:
+    void run() final;
+
+private:
+    RenamingEngine *m_engine;
+};
 
 class RenamingEngine : public QObject {
     Q_OBJECT
+
+    friend class PreviewGenerator;
+    friend class RenamingThing;
 
 public:
     explicit RenamingEngine(QObject *parent = nullptr);
@@ -58,6 +88,8 @@ private slots:
     void processChangingsApplied();
 
 private:
+    void resetStatus();
+    void finalizeTaskCompletion();
     void setRootItem(std::unique_ptr<FileSystemItem> &&rootItem = std::unique_ptr<FileSystemItem>());
     void updateModel(FileSystemItem *rootItem);
 #ifndef TAGEDITOR_NO_JSENGINE

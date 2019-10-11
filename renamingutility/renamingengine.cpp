@@ -5,7 +5,6 @@
 
 #include <QDir>
 #include <QStringBuilder>
-#include <QtConcurrent>
 
 #include <memory>
 
@@ -77,13 +76,8 @@ bool RenamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubd
     setRootItem();
     m_includeSubdirs = includeSubdirs;
     m_dir = rootDirectory;
-    QtConcurrent::run([this]() {
-        m_aborted.store(false);
-        m_itemsProcessed = 0;
-        m_errorsOccured = 0;
-        m_newlyGeneratedRootItem = generatePreview(m_dir);
-        emit previewGenerated();
-    });
+
+    (new PreviewGenerator(this))->start();
     return m_isBusy = true;
 #else
     return false;
@@ -95,13 +89,7 @@ bool RenamingEngine::applyChangings()
     if (!m_rootItem || m_isBusy) {
         return false;
     }
-    QtConcurrent::run([this]() {
-        m_aborted.store(false);
-        m_itemsProcessed = 0;
-        m_errorsOccured = 0;
-        applyChangings(m_rootItem.get());
-        emit changingsApplied();
-    });
+    (new RenamingThing(this))->start();
     return m_isBusy = true;
 }
 
@@ -144,15 +132,28 @@ FilteredFileSystemItemModel *RenamingEngine::previewModel()
 
 void RenamingEngine::processPreviewGenerated()
 {
-    m_isBusy = false;
+    finalizeTaskCompletion();
     setRootItem(move(m_newlyGeneratedRootItem));
 }
 
 void RenamingEngine::processChangingsApplied()
 {
-    m_isBusy = false;
+    finalizeTaskCompletion();
     updateModel(nullptr);
     updateModel(m_rootItem.get());
+}
+
+void RenamingEngine::resetStatus()
+{
+    m_aborted.store(false);
+    m_itemsProcessed = 0;
+    m_errorsOccured = 0;
+}
+
+void RenamingEngine::finalizeTaskCompletion()
+{
+    m_engine.moveToThread(thread());
+    m_isBusy = false;
 }
 
 inline void RenamingEngine::setRootItem(unique_ptr<FileSystemItem> &&rootItem)
@@ -288,6 +289,7 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
 {
     // make file info for the specified item available in the script
     m_tagEditorQObj->setFileInfo(fileInfo, item);
+
     // execute script
     const auto scriptResult(m_program.call());
     if (scriptResult.isError()) {
@@ -347,6 +349,42 @@ void RenamingEngine::executeScriptForItem(const QFileInfo &fileInfo, FileSystemI
         item->setNote(m_tagEditorQObj->note().isEmpty() ? tr("skipped") : m_tagEditorQObj->note());
     }
 }
+
+PreviewGenerator::PreviewGenerator(RenamingEngine *engine)
+    : QThread(engine)
+    , m_engine(engine)
+{
+    m_engine->m_engine.moveToThread(this);
+    connect(this, &PreviewGenerator::finished, m_engine, &RenamingEngine::previewGenerated, Qt::QueuedConnection);
+    connect(this, &PreviewGenerator::finished, this, &PreviewGenerator::deleteLater);
+}
+
+PreviewGenerator::~PreviewGenerator()
+{
+    printf("preview gone\n");
+}
+
+void PreviewGenerator::run()
+{
+    m_engine->resetStatus();
+    m_engine->m_newlyGeneratedRootItem = m_engine->generatePreview(m_engine->m_dir);
+}
+
+RenamingThing::RenamingThing(RenamingEngine *engine)
+    : QThread(engine)
+    , m_engine(engine)
+{
+    m_engine->m_engine.moveToThread(this);
+    connect(this, &RenamingThing::finished, m_engine, &RenamingEngine::changingsApplied, Qt::QueuedConnection);
+    connect(this, &RenamingThing::finished, this, &RenamingThing::deleteLater);
+}
+
+void RenamingThing::run()
+{
+    m_engine->resetStatus();
+    m_engine->applyChangings(m_engine->m_rootItem.get());
+}
+
 #endif
 
 } // namespace RenamingUtility
