@@ -26,7 +26,6 @@ class PreviewGenerator final : public QThread {
     Q_OBJECT
 public:
     explicit PreviewGenerator(RenamingEngine *engine);
-    ~PreviewGenerator() override;
 
 protected:
     void run() final;

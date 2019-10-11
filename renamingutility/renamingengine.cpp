@@ -359,11 +359,6 @@ PreviewGenerator::PreviewGenerator(RenamingEngine *engine)
     connect(this, &PreviewGenerator::finished, this, &PreviewGenerator::deleteLater);
 }
 
-PreviewGenerator::~PreviewGenerator()
-{
-    printf("preview gone\n");
-}
-
 void PreviewGenerator::run()
 {
     m_engine->resetStatus();
