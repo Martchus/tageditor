@@ -75,20 +75,17 @@ See the release section on GitHub.
 * Tumbleweed, Leap, Fedora
     * for RPM \*.spec files and binary repository checkout
       [openSUSE Build Servide](https://build.opensuse.org/project/show/home:mkittler)
-    * there's also a [repo with builds of Git master](https://build.opensuse.org/project/show/home:mkittler:vcs)
+    * there is also a [repo with builds of Git master](https://build.opensuse.org/project/show/home:mkittler:vcs)
 * Exherbo
     * there is a [package in the platypus repository](https://git.exherbo.org/summer/packages/media-sound/tageditor)
 * Gentoo
-    * packages are provided by perfect7gentleman; checkout his
-      [repository](https://github.com/perfect7gentleman/pg_overlay)
+    * there is a [package in perfect7gentleman's repository](https://github.com/perfect7gentleman/pg_overlay)
 * Other GNU/Linux systems
     * [AppImage repository for releases on the openSUSE Build Service](https://download.opensuse.org/repositories/home:/mkittler:/appimage/AppImage)
     * [AppImage repository for builds from Git master the openSUSE Build Service](https://download.opensuse.org/repositories/home:/mkittler:/appimage:/vcs/AppImage/)
 * Windows
     * for mingw-w64 PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs)
     * for statically linked binaries checkout the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
-    * [my website](http://martchus.no-ip.biz/website/page.php?name=programming) also contains an occasionally
-      updated archive with a dynamically linked executable
 
 ## Usage
 The Tag Editor has a GUI (Qt 5) and a command line interface. For a C++ library
@@ -140,11 +137,15 @@ The tag editor also features a MusicBrainz, Cover Art Archive and LyricaWiki sea
 2. If album and artist are already present those are automatically inserted as search terms. Otherwise you need to
    enter the album and artist to search for manually. It makes most sense to search for an entire album and therefore
    leave the fields for track number and title blank.
-3. Click on eg. "Search LyricWikia".
-4. Select the row and fields to be used and click on "Use selected row".
+3. Click on "Search" and select on of the query options.
+4. Select the row and fields to be used and click on "Use row". You can also double click the row you want to use.
 5. Use the "Insert automatically" option to insert search results for the next files automatically when you open them.
    To find the matching row for the song in the search results the title or track number needs to be present. If artist
    and album are present as well these are also tried to match for further disambiguation.
+
+##### Notes
+* The context menu on the list of results provides further options, e.g. to open the result in a web browser.
+* There are shortcuts to trigger the different queries.
 
 ### CLI
 #### Usage
