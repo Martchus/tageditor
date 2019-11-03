@@ -26,6 +26,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsTextItem>
 #include <QGraphicsView>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QImage>
 #include <QKeyEvent>
@@ -340,6 +341,8 @@ ClearPlainTextEdit *TagFieldEdit::setupPlainTextEdit()
     m_plainTextEdit->setClearButtonEnabled(true);
     m_plainTextEdit->insertCustomButton(0, setupLockButton());
     m_plainTextEdit->insertCustomButton(1, setupRestoreButton());
+    m_plainTextEdit->setStyleSheet(
+        QStringLiteral("color: ") + QGuiApplication::palette().text().color().name(QColor::HexArgb)); // not sure why this is otherwise gray
     connect(m_plainTextEdit->document(), &QTextDocument::contentsChanged, this, &TagFieldEdit::showRestoreButton);
     m_layout->addWidget(m_plainTextEdit);
     m_widgets << m_plainTextEdit;
