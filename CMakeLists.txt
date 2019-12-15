@@ -18,32 +18,14 @@ set(META_VERSION_PATCH 3)
 set(META_ADD_DEFAULT_CPP_UNIT_TEST_APPLICATION ON)
 
 # add project files
-set(HEADER_FILES
-    cli/attachmentinfo.h
-    cli/fieldmapping.h
-    cli/helper.h
-    cli/mainfeatures.h
-    application/knownfieldmodel.h)
-set(SRC_FILES
-    application/main.cpp
-    cli/attachmentinfo.cpp
-    cli/fieldmapping.cpp
-    cli/helper.cpp
-    cli/mainfeatures.cpp
-    application/knownfieldmodel.cpp)
+set(HEADER_FILES cli/attachmentinfo.h cli/fieldmapping.h cli/helper.h cli/mainfeatures.h application/knownfieldmodel.h)
+set(SRC_FILES application/main.cpp cli/attachmentinfo.cpp cli/fieldmapping.cpp cli/helper.cpp cli/mainfeatures.cpp
+              application/knownfieldmodel.cpp)
 
-set(GUI_HEADER_FILES
-    application/targetlevelmodel.h
-    application/settings.h
-    gui/fileinfomodel.h
-    misc/htmlinfo.h
-    misc/utility.h)
-set(GUI_SRC_FILES
-    application/targetlevelmodel.cpp
-    application/settings.cpp
-    gui/fileinfomodel.cpp
-    misc/htmlinfo.cpp
-    misc/utility.cpp)
+set(GUI_HEADER_FILES application/targetlevelmodel.h application/settings.h gui/fileinfomodel.h misc/htmlinfo.h
+                     misc/utility.h)
+set(GUI_SRC_FILES application/targetlevelmodel.cpp application/settings.cpp gui/fileinfomodel.cpp misc/htmlinfo.cpp
+                  misc/utility.cpp)
 
 set(WIDGETS_HEADER_FILES
     gui/entertargetdialog.h
@@ -226,14 +208,15 @@ if (ENABLE_JSON_EXPORT)
 
     # add generator invocation
     include(ReflectionGenerator)
-    add_reflection_generator_invocation(INPUT_FILES
-                                        cli/json.h
-                                        GENERATORS
-                                        json
-                                        OUTPUT_LISTS
-                                        HEADER_FILES
-                                        CLANG_OPTIONS_FROM_TARGETS
-                                        ${META_TARGET_NAME})
+    add_reflection_generator_invocation(
+        INPUT_FILES
+        cli/json.h
+        GENERATORS
+        json
+        OUTPUT_LISTS
+        HEADER_FILES
+        CLANG_OPTIONS_FROM_TARGETS
+        ${META_TARGET_NAME})
 
     # add compile definitions
     list(APPEND META_PRIVATE_COMPILE_DEFINITIONS ${META_PROJECT_VARNAME_UPPER}_JSON_EXPORT)
@@ -259,17 +242,18 @@ include(ConfigHeader)
 add_desktop_file()
 
 # create custom desktop file for launching the renaming utility separately
-add_custom_desktop_file(FILE_NAME
-                        "${META_ID}-renamingutility"
-                        DESKTOP_FILE_APP_NAME
-                        "Renaming utility (${META_APP_NAME})"
-                        DESKTOP_FILE_GENERIC_NAME
-                        "Renaming utility (${META_APP_NAME})"
-                        DESKTOP_FILE_DESCRIPTION
-                        "Tool to rename files using its tag information"
-                        DESKTOP_FILE_CATEGORIES
-                        "${META_APP_CATEGORIES}"
-                        DESKTOP_FILE_CMD
-                        "${META_TARGET_NAME} qt-gui --renaming-utility"
-                        DESKTOP_FILE_ICON
-                        "${META_PROJECT_NAME}")
+add_custom_desktop_file(
+    FILE_NAME
+    "${META_ID}-renamingutility"
+    DESKTOP_FILE_APP_NAME
+    "Renaming utility (${META_APP_NAME})"
+    DESKTOP_FILE_GENERIC_NAME
+    "Renaming utility (${META_APP_NAME})"
+    DESKTOP_FILE_DESCRIPTION
+    "Tool to rename files using its tag information"
+    DESKTOP_FILE_CATEGORIES
+    "${META_APP_CATEGORIES}"
+    DESKTOP_FILE_CMD
+    "${META_TARGET_NAME} qt-gui --renaming-utility"
+    DESKTOP_FILE_ICON
+    "${META_PROJECT_NAME}")
