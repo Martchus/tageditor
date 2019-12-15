@@ -162,12 +162,20 @@ inline bool RenamingEngine::isBusy()
 
 inline void RenamingEngine::abort()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    m_aborted.storeRelaxed(1);
+#else
     m_aborted.store(1);
+#endif
 }
 
 inline bool RenamingEngine::isAborted()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    return m_aborted.loadRelaxed();
+#else
     return m_aborted.load();
+#endif
 }
 
 } // namespace RenamingUtility

@@ -145,7 +145,11 @@ void RenamingEngine::processChangingsApplied()
 
 void RenamingEngine::resetStatus()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 14, 0))
+    m_aborted.storeRelaxed(false);
+#else
     m_aborted.store(false);
+#endif
     m_itemsProcessed = 0;
     m_errorsOccured = 0;
 }
