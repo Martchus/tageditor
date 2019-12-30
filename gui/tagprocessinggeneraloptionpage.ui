@@ -2,14 +2,6 @@
 <ui version="4.0">
  <class>QtGui::TagProcessingGeneralOptionPage</class>
  <widget class="QWidget" name="QtGui::TagProcessingGeneralOptionPage">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>647</width>
-    <height>330</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>General</string>
   </property>
@@ -26,7 +18,7 @@
       <item>
        <widget class="QRadioButton" name="autoRadioButton">
         <property name="text">
-         <string>&amp;no preference (most appropriate encoding will be used)</string>
+         <string>&amp;No preference (most appropriate encoding will be used)</string>
         </property>
         <attribute name="buttonGroup">
          <string notr="true">preferredTextEncodingButtonGroup</string>
@@ -119,7 +111,7 @@
    <item>
     <widget class="QCheckBox" name="autoTagManagementCheckBox">
      <property name="text">
-      <string>enable automatic tag management (default)</string>
+      <string>Enable automatic tag management (default)</string>
      </property>
     </widget>
    </item>
@@ -141,7 +133,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="unsupportedButtonGroup"/>
   <buttongroup name="preferredTextEncodingButtonGroup"/>
+  <buttongroup name="unsupportedButtonGroup"/>
  </buttongroups>
 </ui>

@@ -18,7 +18,7 @@
    <item>
     <widget class="QCheckBox" name="forceRewriteCheckBox">
      <property name="text">
-      <string>force rewrite when applying changes
+      <string>Force rewrite when applying changes
 • enforces creation of a temporary/backup file
 • enforces use of preferred padding
 • causes longer saving-times</string>
@@ -51,7 +51,7 @@
            <item row="0" column="0">
             <widget class="QLabel" name="minPaddingLabel">
              <property name="text">
-              <string>minimum padding</string>
+              <string>Minimum padding</string>
              </property>
             </widget>
            </item>
@@ -74,7 +74,7 @@
            <item row="1" column="0">
             <widget class="QLabel" name="maxPaddingLabel">
              <property name="text">
-              <string>maximum padding</string>
+              <string>Maximum padding</string>
              </property>
             </widget>
            </item>
@@ -103,7 +103,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="preferredPaddingLabel">
              <property name="text">
-              <string>preferred padding</string>
+              <string>Preferred padding</string>
              </property>
             </widget>
            </item>
@@ -143,21 +143,21 @@
          <item>
           <widget class="QRadioButton" name="tagPosBeforeDataRadioButton">
            <property name="text">
-            <string>befo&amp;re (media) data / at the beginning of the file</string>
+            <string>Befo&amp;re (media) data / at the beginning of the file</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QRadioButton" name="tagPosAfterDataRadioButton">
            <property name="text">
-            <string>after (&amp;media) data / at the end of the file</string>
+            <string>After (&amp;media) data / at the end of the file</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QRadioButton" name="tagPosKeepRadioButton">
            <property name="text">
-            <string>keep &amp;previous position</string>
+            <string>Keep &amp;previous position</string>
            </property>
           </widget>
          </item>
@@ -184,21 +184,21 @@ another position would prevent rewriting the entire file</string>
       <item>
        <widget class="QRadioButton" name="indexPosBeforeDataRadioButton">
         <property name="text">
-         <string>before (media) data / at the be&amp;ginning of the file</string>
+         <string>Before (media) data / at the be&amp;ginning of the file</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="indexPosAfterDataRadioButton">
         <property name="text">
-         <string>after (media) data / at the end of the fi&amp;le</string>
+         <string>After (media) data / at the end of the fi&amp;le</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="indexPosKeepRadioButton">
         <property name="text">
-         <string>keep &amp;previous position</string>
+         <string>Keep &amp;previous position</string>
         </property>
        </widget>
       </item>
