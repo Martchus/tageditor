@@ -109,7 +109,7 @@ private slots:
     void changeTarget(TagParser::Tag *tag);
 
     // saving
-    void showSavingResult(bool processingError, bool ioError);
+    void showSavingResult(bool processingError, bool ioError, bool canceled);
 
     // info (web) view
     void initInfoView();

@@ -149,6 +149,7 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     //  misc
     connect(m_ui->abortButton, &QPushButton::clicked, [this] {
         m_abortClicked = true;
+        m_ui->makingNotificationWidget->setText(tr("Cancelling ..."));
         m_ui->abortButton->setEnabled(false);
     });
     connect(m_ui->tagSelectionComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::activated), m_ui->stackedWidget,
@@ -1156,25 +1157,29 @@ bool TagEditorWidget::startSaving()
     m_fileInfo.setBackupDirectory(settings.editor.backupDirectory);
     const auto startThread = [this] {
         // define functions to show the saving progress and to actually applying the changes
-        const auto showPercentage([this](const AbortableProgressFeedback &progress) {
-            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, progress.stepPercentage()));
-        });
-        const auto showStep([this](AbortableProgressFeedback &progress) {
-            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, progress.stepPercentage()));
+        auto showPercentage([this](AbortableProgressFeedback &progress) {
             if (m_abortClicked) {
                 progress.tryToAbort();
-                QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, tr("Cancelling ...")));
+            }
+            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, progress.stepPercentage()));
+        });
+        auto showStep([this](AbortableProgressFeedback &progress) {
+            if (m_abortClicked) {
+                progress.tryToAbort();
             } else {
                 QMetaObject::invokeMethod(
                     m_ui->makingNotificationWidget, "setText", Qt::QueuedConnection, Q_ARG(QString, QString::fromStdString(progress.step())));
             }
+            QMetaObject::invokeMethod(m_ui->makingNotificationWidget, "setPercentage", Qt::QueuedConnection, Q_ARG(int, progress.stepPercentage()));
         });
         AbortableProgressFeedback progress(std::move(showStep), std::move(showPercentage));
 
-        bool processingError = false, ioError = false;
+        bool processingError = false, ioError = false, canceled = false;
         try {
             try {
                 m_fileInfo.applyChanges(m_diag, progress);
+            } catch (const OperationAbortedException &) {
+                canceled = true;
             } catch (const Failure &) {
                 processingError = true;
             } catch (const std::ios_base::failure &) {
@@ -1187,7 +1192,8 @@ bool TagEditorWidget::startSaving()
             m_diag.emplace_back(TagParser::DiagLevel::Critical, "Something completely unexpected happened", "making");
             processingError = true;
         }
-        QMetaObject::invokeMethod(this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError));
+        QMetaObject::invokeMethod(
+            this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError), Q_ARG(bool, canceled));
     };
     // use another thread to perform the operation
     m_ongoingFileOperation = QtConcurrent::run(startThread);
@@ -1202,7 +1208,7 @@ bool TagEditorWidget::startSaving()
  *
  * \param sucess Specifies whether the file could be saved sucessfully.
  */
-void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
+void TagEditorWidget::showSavingResult(bool processingError, bool ioError, bool canceled)
 {
     m_ui->abortButton->setHidden(true);
     m_ui->makingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
@@ -1226,7 +1232,18 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
             default:;
             }
         }
-        if (warnings || critical) {
+        if (canceled) {
+            if (critical) {
+                statusMsg = tr("Saving has been canceled and there is/are %1 warning(s) ", nullptr, trQuandity(warnings)).arg(warnings);
+                statusMsg.append(tr("and %1 error(s).", nullptr, trQuandity(critical)).arg(critical));
+            } else if (warnings) {
+                statusMsg = tr("Saving has been canceled and there is/are %1 warning(s).", nullptr, trQuandity(warnings)).arg(warnings);
+            } else {
+                statusMsg = tr("Saving tags has been canceled.");
+            }
+            m_ui->makingNotificationWidget->setNotificationType(critical ? NotificationType::Critical : NotificationType::Warning);
+
+        } else if (warnings || critical) {
             if (critical) {
                 statusMsg = tr("The tags have been saved, but there is/are %1 warning(s) ", nullptr, trQuandity(warnings)).arg(warnings);
                 statusMsg.append(tr("and %1 error(s).", nullptr, trQuandity(critical)).arg(critical));
@@ -1255,8 +1272,8 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError)
         // fatal errors occured
 
         // -> show status
-        static const QString processingErrorMsg(tr("The tags couldn't be saved. See the info box for detail."));
-        static const QString ioErrorMsg(tr("The tags couldn't be saved because an IO error occured."));
+        static const QString processingErrorMsg(tr("The tags could not be saved. See the info box for detail."));
+        static const QString ioErrorMsg(tr("The tags could not be saved because an IO error occured."));
         const auto &errorMsg = ioError ? ioErrorMsg : processingErrorMsg;
         QMessageBox::critical(this, QCoreApplication::applicationName(), errorMsg);
         emit statusMessage(errorMsg);
