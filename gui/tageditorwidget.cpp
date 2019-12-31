@@ -925,11 +925,11 @@ void TagEditorWidget::showFile(char result)
         // create appropriate tags according to file type and user preferences when automatic tag management is enabled
         auto &settings = Settings::values().tagPocessing;
         if (settings.autoTagManagement) {
-            vector<TagTarget> requiredTargets;
-            requiredTargets.reserve(2);
+            settings.creationSettings.requiredTargets.clear();
+            settings.creationSettings.requiredTargets.reserve(2);
             for (const ChecklistItem &targetItem : Settings::values().editor.defaultTargets.items()) {
                 if (targetItem.isChecked()) {
-                    requiredTargets.emplace_back(
+                    settings.creationSettings.requiredTargets.emplace_back(
                         containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
                 }
             }
