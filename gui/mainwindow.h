@@ -47,7 +47,7 @@ public:
     QString currentDirectory() const;
     bool isLayoutLocked() const;
 
-public slots:
+public Q_SLOTS:
     void setCurrentDirectory(const QString &path);
     void setLayoutLocked(bool locked);
     void toggleLayoutLocked();
@@ -56,7 +56,7 @@ public slots:
 protected:
     bool event(QEvent *event) override;
 
-private slots:
+private Q_SLOTS:
     // file selection
     void pathEntered();
     void fileSelected();

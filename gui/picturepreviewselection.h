@@ -44,7 +44,7 @@ public:
     TagParser::Tag *tag() const;
     TagParser::KnownField field() const;
 
-public slots:
+public Q_SLOTS:
     bool setTagField(TagParser::Tag *tag, TagParser::KnownField field, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool setValue(const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
 
@@ -73,7 +73,7 @@ protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
 
-private slots:
+private Q_SLOTS:
     void typeSwitched(int index);
     void updateDescription(int newIndex);
     void updateDescription(int lastIndex, int newIndex);

@@ -41,7 +41,7 @@ public:
     const QString &newRelativeDirectory() const;
     const QString &note() const;
 
-public slots:
+public Q_SLOTS:
     TAGEDITOR_JS_VALUE parseFileInfo(const QString &fileName);
     TAGEDITOR_JS_VALUE parseFileName(const QString &fileName);
     TAGEDITOR_JS_VALUE allFiles(const QString &dirName);

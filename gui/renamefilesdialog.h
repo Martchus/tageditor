@@ -34,7 +34,7 @@ public:
 protected:
     bool event(QEvent *event) override;
 
-private slots:
+private Q_SLOTS:
     void showScriptFileSelectionDlg();
     void startGeneratingPreview();
     void startApplyChangings();

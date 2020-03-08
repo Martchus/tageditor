@@ -53,7 +53,7 @@ public:
     void toggleLocked();
     bool hasAutoCorrectionBeenApplied() const;
 
-public slots:
+public Q_SLOTS:
     void clear();
     void apply();
     void restore();
@@ -65,7 +65,7 @@ signals:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
 
-private slots:
+private Q_SLOTS:
     void handleRestoreButtonClicked();
     void handleRestoreButtonDestroyed(QObject *obj = nullptr);
     void handleLockButtonDestroyed(QObject *obj = nullptr);

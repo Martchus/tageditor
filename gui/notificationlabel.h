@@ -41,7 +41,7 @@ public:
     QSize sizeHint() const override;
     QSize minimumSizeHint() const override;
 
-public slots:
+public Q_SLOTS:
     void setText(const QString &text);
     void setContext(const QString &context);
     void clearText();
@@ -57,7 +57,7 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void mouseDoubleClickEvent(QMouseEvent *event) override;
 
-private slots:
+private Q_SLOTS:
     void updateAnimation();
     void showMessageBox() const;
 

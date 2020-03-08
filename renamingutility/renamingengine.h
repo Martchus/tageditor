@@ -72,7 +72,7 @@ public:
     const QString &errorMessage() const;
     int errorLineNumber() const;
 
-public slots:
+public Q_SLOTS:
     bool generatePreview(const QDir &rootDirectory, bool includeSubdirs);
     bool applyChangings();
     void abort();
@@ -82,7 +82,7 @@ signals:
     void changingsApplied();
     void progress(int itemsProcessed, int errorsOccured);
 
-private slots:
+private Q_SLOTS:
     void processPreviewGenerated();
     void processChangingsApplied();
 

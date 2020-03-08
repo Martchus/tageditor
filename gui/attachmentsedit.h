@@ -29,7 +29,7 @@ public:
     void setFileInfo(TagParser::MediaFileInfo *fileInfo, bool updateUi = true);
     const QList<TagParser::AbstractAttachment *> &currentAttachments() const;
 
-public slots:
+public Q_SLOTS:
     void clear();
     void restore();
     void apply();
@@ -39,7 +39,7 @@ public slots:
     void showFileSelection();
     void extractSelected();
 
-private slots:
+private Q_SLOTS:
     void selectionChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:

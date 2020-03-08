@@ -64,7 +64,7 @@ public:
     void foreachTagEdit(const std::function<void(TagEdit *)> &function);
     TagEdit *activeTagEdit();
 
-public slots:
+public Q_SLOTS:
     // operations with the currently opened file: load, save, delete, close
     bool startParsing(const QString &path, bool forceRefresh = false);
     bool startSaving();
@@ -98,7 +98,7 @@ signals:
 protected:
     bool event(QEvent *event) override;
 
-private slots:
+private Q_SLOTS:
     // editor
     void fileChangedOnDisk(const QString &path);
     void showFile(char result);

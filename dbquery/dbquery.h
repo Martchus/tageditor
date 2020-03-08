@@ -128,7 +128,7 @@ protected:
     void handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row);
     void parseCoverResults(const QString &albumId, int row, const QByteArray &data);
 
-private slots:
+private Q_SLOTS:
     void handleInitialReplyFinished();
 
 protected:

@@ -35,7 +35,7 @@ public:
     SongDescription currentSongDescription() const;
     void applyResults(TagEdit *tagEdit, const QModelIndex &resultIndex);
 
-public slots:
+public Q_SLOTS:
     void searchMusicBrainz();
     void searchLyricsWikia();
     void searchMakeItPersonal();
@@ -48,7 +48,7 @@ public slots:
     void insertSearchTermsFromActiveTagEdit();
     void clearSearchCriteria();
 
-private slots:
+private Q_SLOTS:
     void showResults();
     void setStatus(bool aborted);
     void fileStatusChanged(bool opened, bool hasTags);

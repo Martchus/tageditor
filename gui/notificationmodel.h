@@ -28,7 +28,7 @@ public:
 
 signals:
 
-public slots:
+public Q_SLOTS:
 
 private:
     TagParser::Diagnostics m_diag;

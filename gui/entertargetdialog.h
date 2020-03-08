@@ -33,7 +33,7 @@ public:
     TagParser::TagTarget target() const;
     void setTarget(const TagParser::TagTarget &target, const TagParser::MediaFileInfo *file = nullptr);
 
-private slots:
+private Q_SLOTS:
     void updateLevelNamePlaceholderText(int i);
 
 private:

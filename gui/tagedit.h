@@ -48,7 +48,7 @@ public:
     QString generateLabel() const;
     bool hasAutoCorrectionBeenApplied() const;
 
-public slots:
+public Q_SLOTS:
     void clear();
     void restore();
     void apply();
