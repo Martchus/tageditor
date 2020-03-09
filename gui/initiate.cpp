@@ -36,6 +36,7 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
 
     if (launchRenamingUtility) {
         RenameFilesDialog window;
+        window.setAttribute(Qt::WA_QuitOnClose);
         window.show();
         return application.exec();
     }
