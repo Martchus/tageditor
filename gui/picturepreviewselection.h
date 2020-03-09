@@ -64,7 +64,7 @@ public Q_SLOTS:
     void convertSelected();
     void setCoverButtonsHidden(bool hideCoverButtons);
 
-signals:
+Q_SIGNALS:
     void pictureChanged();
 
 protected:

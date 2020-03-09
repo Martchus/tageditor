@@ -77,7 +77,7 @@ public Q_SLOTS:
     bool applyChangings();
     void abort();
 
-signals:
+Q_SIGNALS:
     void previewGenerated();
     void changingsApplied();
     void progress(int itemsProcessed, int errorsOccured);

@@ -26,7 +26,7 @@ public:
     static const QIcon &errorIcon();
     static const QIcon &debugIcon();
 
-signals:
+Q_SIGNALS:
 
 public Q_SLOTS:
 

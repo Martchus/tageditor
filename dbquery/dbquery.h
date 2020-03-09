@@ -74,7 +74,7 @@ public:
     virtual void abort();
     virtual QUrl webUrl(const QModelIndex &index);
 
-signals:
+Q_SIGNALS:
     void resultsAvailable();
     void coverAvailable(const QModelIndex &index);
     void lyricsAvailable(const QModelIndex &index);

@@ -55,7 +55,7 @@ public Q_SLOTS:
     void invalidate();
     void setCoverButtonsHidden(bool hideCoverButtons);
 
-signals:
+Q_SIGNALS:
     void returnPressed();
 
 private:

@@ -79,7 +79,7 @@ public Q_SLOTS:
     void applySettingsFromDialog();
     void addParsingNotificationLine(const QString &line);
 
-signals:
+Q_SIGNALS:
     /// \brief Emitted when loading the next file has been triggered.
     void nextFileSelected();
     /// \brief Emitted to show a status message.

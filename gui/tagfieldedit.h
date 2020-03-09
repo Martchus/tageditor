@@ -59,7 +59,7 @@ public Q_SLOTS:
     void restore();
     void setCoverButtonsHidden(bool hideCoverButtons);
 
-signals:
+Q_SIGNALS:
     void returnPressed();
 
 protected:
