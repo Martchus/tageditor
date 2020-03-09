@@ -427,7 +427,7 @@ QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> &TagFieldEdit::s
     m_spinBoxes.first->setClearButtonEnabled(true);
     m_spinBoxes.first->installEventFilter(this);
     m_spinBoxes.first->setMaximum(32766);
-    m_spinBoxes.first->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_spinBoxes.first->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     connect(m_spinBoxes.first, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreButton);
     subLayout->addWidget(m_spinBoxes.first);
     m_widgets << m_spinBoxes.first;
@@ -444,7 +444,7 @@ QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> &TagFieldEdit::s
     m_spinBoxes.second->setMaximum(32766);
     m_spinBoxes.second->insertCustomButton(0, setupLockButton());
     m_spinBoxes.second->insertCustomButton(1, setupRestoreButton());
-    m_spinBoxes.second->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    m_spinBoxes.second->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     connect(m_spinBoxes.second, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreButton);
     subLayout->addWidget(m_spinBoxes.second);
     m_widgets << m_spinBoxes.second;

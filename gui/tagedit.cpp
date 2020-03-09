@@ -292,7 +292,7 @@ void TagEdit::setupUi()
     setUpdatesEnabled(false);
     if (m_tags.empty()) {
         // there are no tags assigned -> remove all editing controls
-        for (QWidget *edit : m_widgets) {
+        for (QWidget *const edit : m_widgets) {
             removeEdit(edit);
             edit->deleteLater();
         }
@@ -372,7 +372,7 @@ void TagEdit::setupUi()
             m_widgets.insert(field, edit);
         }
         // update the current position
-        // the position is required to keep the order of Settings::fieldModel().fields()
+        // note: The position is required to keep the order of Settings::fieldModel().fields().
         ++rowOverall;
         switch (field) {
         case KnownField::Cover:
