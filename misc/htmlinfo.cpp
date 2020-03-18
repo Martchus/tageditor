@@ -834,7 +834,9 @@ public:
 
     template <class ContainerType> void mkElementTree(ContainerType *container)
     {
-        mkElementNode(container->firstElement());
+        if (container->firstElement()) {
+            mkElementNode(container->firstElement());
+        }
         for (auto &element : container->additionalElements()) {
             mkElementNode<typename ContainerType::ContainerElementType, true>(element.get());
         }
