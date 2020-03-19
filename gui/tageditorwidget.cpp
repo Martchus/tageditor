@@ -284,15 +284,15 @@ void TagEditorWidget::updateDocumentTitleEdits()
     const vector<string> &titles = container ? container->titles() : vector<string>();
 
     // get layout
-    QLayout *docTitleLayout = m_ui->docTitleWidget->layout();
-    int lineEditCount = docTitleLayout->count() - 1;
+    QLayout *const docTitleLayout = m_ui->docTitleWidget->layout();
+    int lineEditCount = docTitleLayout->count();
 
     // update existing line edits, remove unneeded line edits
     int i = 0;
     for (; i < lineEditCount; ++i) {
         if (i < segmentCount) {
             // update existing line edit
-            static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i + 1)->widget())
+            static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i)->widget())
                 ->setText(static_cast<size_t>(i) < titles.size() ? QString::fromUtf8(titles[static_cast<size_t>(i)].data()) : QString());
         } else {
             // remove unneeded line edit
@@ -475,13 +475,15 @@ void TagEditorWidget::updateTagSelectionComboBox()
  */
 void TagEditorWidget::updateFileStatusStatus()
 {
-    bool opened = m_fileInfo.isOpen();
-    bool hasTag = opened && m_tags.size();
+    const bool opened = m_fileInfo.isOpen();
+    const bool hasTag = opened && m_tags.size();
     // notification widgets
     m_ui->parsingNotificationWidget->setVisible(opened);
     m_ui->makingNotificationWidget->setVisible(opened && (m_makingResultsAvailable));
     // document title widget
-    m_ui->docTitleWidget->setVisible(opened && m_fileInfo.container() && m_fileInfo.container()->supportsTitle());
+    const bool showDocumentTitle = opened && m_fileInfo.container() && m_fileInfo.container()->supportsTitle();
+    m_ui->docTitleLabel->setVisible(showDocumentTitle);
+    m_ui->docTitleWidget->setVisible(showDocumentTitle);
     // buttons and actions to save, delete, close
     m_ui->saveButton->setEnabled(opened);
     m_ui->nextButton->setEnabled(opened);
@@ -1037,12 +1039,11 @@ bool TagEditorWidget::applyEntriesAndSaveChangings()
     m_makingResultsAvailable = true;
 
     // apply titles
-    if (AbstractContainer *container = m_fileInfo.container()) {
-        if (container->supportsTitle()) {
-            QLayout *docTitleLayout = m_ui->docTitleWidget->layout();
-            for (int i = 0, count = min<int>(docTitleLayout->count() - 1, container->segmentCount()); i < count; ++i) {
-                container->setTitle(static_cast<ClearLineEdit *>(docTitleLayout->itemAt(i + 1)->widget())->text().toUtf8().data(), i);
-            }
+    AbstractContainer *const container = m_fileInfo.container();
+    if (container && container->supportsTitle()) {
+        QLayout *const docTitleLayout = m_ui->docTitleWidget->layout();
+        for (std::size_t i = 0, count = min<std::size_t>(static_cast<std::size_t>(docTitleLayout->count()), container->segmentCount()); i < count; ++i) {
+            container->setTitle(static_cast<ClearLineEdit *>(docTitleLayout->itemAt(static_cast<int>(i))->widget())->text().toUtf8().data(), i);
         }
     }
     // apply all tags

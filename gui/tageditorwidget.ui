@@ -55,6 +55,13 @@
         <number>2</number>
        </property>
        <item>
+        <widget class="QLabel" name="docTitleLabel">
+         <property name="text">
+          <string>Document title</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QWidget" name="docTitleWidget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
@@ -75,18 +82,11 @@
           <property name="bottomMargin">
            <number>0</number>
           </property>
-          <item>
-           <widget class="QLabel" name="docTitleLabel">
-            <property name="text">
-             <string>Document title</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="" native="true">
+        <widget class="QWidget" name="widget" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
            <horstretch>0</horstretch>
@@ -94,6 +94,15 @@
           </sizepolicy>
          </property>
          <layout class="QHBoxLayout" name="tagSelectionHorizontalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
           <item>
            <widget class="QComboBox" name="tagSelectionComboBox">
             <property name="sizePolicy">
@@ -231,6 +240,14 @@ currently shown tag.</string>
           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
          </property>
          <widget class="QStackedWidget" name="stackedWidget">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>678</width>
+            <height>0</height>
+           </rect>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
             <horstretch>0</horstretch>
