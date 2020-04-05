@@ -22,7 +22,9 @@
 using namespace std;
 using namespace std::placeholders;
 using namespace CppUtilities;
+#if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 using namespace QtUtilities;
+#endif
 
 namespace Cli {
 
