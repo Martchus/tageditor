@@ -185,6 +185,7 @@ int main(int argc, char *argv[])
         "saves the value of the specified field (eg. cover or other binary field) or attachment to the specified file or writes it to stdout if no "
         "output file has been specified");
     extractFieldArg.setSubArguments({ &fieldArg, &attachmentArg, &fileArg, &outputFileArg, &verboseArg });
+    extractFieldArg.setExample(PROJECT_NAME " extract cover --output-file the-cover.jpg --file some-file.opus");
     extractFieldArg.setCallback(std::bind(
         Cli::extractField, std::cref(fieldArg), std::cref(attachmentArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
     // export to JSON
