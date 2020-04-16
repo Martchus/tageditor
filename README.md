@@ -224,7 +224,7 @@ Here are some Bash examples which illustrate getting and setting tag information
         - `mp4`: iTune-style MP4/M4A ID (must be exactly 4 characters)
         - `mkv`: Matroska ID
         - `id3`: ID3v2 ID (must be exactly 3 or 4 characters depending on the tag version)
-        - `vorbis`: Vorbis comment ID
+        - `vorbis`: Vorbis comment ID, also works for Opus (which uses Vorbis comments as well)
 
 * Removes the "forced" flag from all tracks, flags the track with the ID 2 as "default" and sets its language to "ger":  
   ```
