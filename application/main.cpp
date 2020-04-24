@@ -218,7 +218,8 @@ int main(int argc, char *argv[])
             renamingUtilityArg.isPresent());
 #else
         CMD_UTILS_START_CONSOLE;
-        cerr << EscapeCodes::Phrases::Error << "The tag editor has not been built with Qt widgets GUI support. Use --help to show the options of the CLI." << endl;
+        cerr << EscapeCodes::Phrases::Error
+             << "The tag editor has not been built with Qt widgets GUI support. Use --help to show the options of the CLI." << endl;
 #endif
     } else {
         // apply general CLI config (concerns currently only the default time span output format)
