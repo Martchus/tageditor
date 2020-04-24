@@ -175,7 +175,8 @@ Here are some Bash examples which illustrate getting and setting tag information
   ```
 
     - No conversion is done by the tag editor. This command assumes that the cover is a JPEG image.
-    - The extraction works for other fields as well. For Matroska attachments one needs to use `--attachment`.
+    - The extraction works for other fields like lyrics as well.
+    - For Matroska attachments one needs to use `--attachment`.
 
 * Displays technical information about all \*.m4a files in the specified directory:  
   ```
