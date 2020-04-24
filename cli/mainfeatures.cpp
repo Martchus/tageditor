@@ -65,8 +65,8 @@ using namespace QtUtilities;
 namespace Cli {
 
 #define FIELD_NAMES                                                                                                                                  \
-    "title album artist genre year comment bpm bps lyricist track disk part totalparts encoder\n"                                                    \
-    "      recorddate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"                                             \
+    "title album artist genre recorddate comment bpm bps lyricist track disk part totalparts encoder\n"                                              \
+    "      releasedate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"                                            \
     "      recordlabel cover composer rating description vendor albumartist"
 
 #define TRACK_ATTRIBUTE_NAMES "name tracknumber enabled=yes enabled=no forced=yes forced=no default=yes default=no"

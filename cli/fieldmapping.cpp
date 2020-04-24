@@ -26,6 +26,7 @@ static constexpr struct {
     { "totalparts", KnownField::TotalParts },
     { "encoder", KnownField::Encoder },
     { "recorddate", KnownField::RecordDate },
+    { "releasedate", KnownField::ReleaseDate },
     { "performers", KnownField::Performers },
     { "duration", KnownField::Length },
     { "language", KnownField::Language },

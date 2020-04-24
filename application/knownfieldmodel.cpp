@@ -73,6 +73,8 @@ const char *KnownFieldModel::fieldName(KnownField field)
         return QT_TR_NOOP("Vendor");
     case KnownField::AlbumArtist:
         return QT_TR_NOOP("Album artist");
+    case KnownField::ReleaseDate:
+        return QT_TR_NOOP("Release date");
     default:
         return "";
     }
@@ -99,7 +101,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
          mkItem(KnownField::Album, defaultSelected),
          mkItem(KnownField::Artist, defaultSelected),
          mkItem(KnownField::Genre, defaultSelected),
-         mkItem(KnownField::Year, defaultSelected),
+         mkItem(KnownField::RecordDate, defaultSelected),
          mkItem(KnownField::Comment, defaultSelected),
          mkItem(KnownField::AlbumArtist, defaultSelected),
          mkItem(KnownField::Bpm, Qt::Unchecked),
@@ -110,7 +112,6 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
          mkItem(KnownField::PartNumber, defaultSelected),
          mkItem(KnownField::TotalParts, defaultSelected),
          mkItem(KnownField::Encoder, defaultSelected),
-         mkItem(KnownField::RecordDate, defaultSelected),
          mkItem(KnownField::Performers, defaultSelected),
          mkItem(KnownField::Length, Qt::Unchecked),
          mkItem(KnownField::Language, Qt::Unchecked),
@@ -124,6 +125,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
          mkItem(KnownField::Rating, Qt::Unchecked),
          mkItem(KnownField::Description, Qt::Unchecked),
          mkItem(KnownField::Vendor, Qt::Unchecked),
+         mkItem(KnownField::ReleaseDate, Qt::Unchecked),
     });
     // clang-format on
 }
