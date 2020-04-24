@@ -937,6 +937,7 @@ void TagEditorWidget::showFile(char result)
             }
             // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
             // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
+            // TODO: still show the version as on disk in the info view
             settings.creationSettings.flags -= TagCreationFlags::KeepExistingId3v2Version;
             if (!m_fileInfo.createAppropriateTags(settings.creationSettings)) {
                 if (confirmCreationOfId3TagForUnsupportedFile()) {
