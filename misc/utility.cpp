@@ -57,6 +57,7 @@ QString tagValueToQString(const TagValue &value)
         return QString::number(value.toInteger());
     case TagDataType::StandardGenreIndex:
     case TagDataType::TimeSpan:
+    case TagDataType::DateTime:
     case TagDataType::PositionInSet:
         return QString::fromStdString(value.toString());
     default:;
