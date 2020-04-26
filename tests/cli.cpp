@@ -154,7 +154,7 @@ void CliTests::testBasicReading()
     CPPUNIT_ASSERT(stderr.empty());
     // context of the following fields is the album (so "Title" means the title of the album)
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "album", "Title             Elephant Dream - test 2" }));
-    CPPUNIT_ASSERT(stdout.find("Year              2010") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Release date      2010") == string::npos);
 
     // get all fields
     const char *const args2[] = { "tageditor", "get", "-f", mkvFile.data(), nullptr };
@@ -164,8 +164,8 @@ void CliTests::testBasicReading()
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { "Matroska tag",
           "Title             Elephant Dream - test 2",
-          "Year              2010",
-          "Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC"
+          "Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC",
+          "Release date      2010",
         }));
     // clang-format on
 
@@ -180,10 +180,10 @@ void CliTests::testBasicReading()
           "Album             Don't Go Away (Apple Lossless)",
           "Artist            Oasis",
           "Genre             Alternative & Punk",
-          "Year              1998",
           "Track             3/4",
           "Disk              1/1",
           "Encoder           Lavf",
+          "Record date       1998",
           "Composer          Noel Gallagher"
         }));
     // clang-format on
@@ -205,8 +205,12 @@ void CliTests::testBasicWriting()
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { "Title             A new title", "Genre             Testfile", "Year              2010",
-            "Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC" }));
+        {
+            "Title             A new title",
+            "Genre             Testfile",
+            "Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC",
+            "Release date      2010",
+        }));
     // clear backup file
     remove(mkvFileBackup.data());
 
@@ -216,7 +220,7 @@ void CliTests::testBasicWriting()
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Title             Foo", "Artist            Bar" }));
-    CPPUNIT_ASSERT(stdout.find("Year") == string::npos);
+    CPPUNIT_ASSERT(stdout.find("Release date") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Comment") == string::npos);
     CPPUNIT_ASSERT(stdout.find("Genre") == string::npos);
 
@@ -250,32 +254,34 @@ void CliTests::testSpecifyingNativeFieldIds()
         stdout, { "making MP4 tag field ©foo: It was not possible to find an appropriate raw data type id. UTF-8 will be assumed." }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Unable to parse denoted field ID \"invalid\": MP4 ID must be exactly 4 chars" }));
 
-    const char *const args2[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "-f", mkvFile.data(), nullptr };
+    const char *const args2[]
+        = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "generic:releasedate", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              2010" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              none" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Release date      2010" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "FOO               bar" }));
 
     const char *const args3[]
-        = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "mp4:invalid", "generic:year", "-f", mp4File.data(), nullptr };
+        = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "mp4:invalid", "generic:recorddate", "-f", mp4File.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(stderr.empty());
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "test" }));
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              none" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Record date       none" }));
     // FIXME: number of whitespaces currently not correct because UTF-8 ©-sign counts as two characters
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "©foo             bar" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "invalid           unable to parse - MP4 ID must be exactly 4 chars" }));
 
-    const char *const args4[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "-f", vorbisFile.data(), nullptr };
+    const char *const args4[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:recorddate", "-f", vorbisFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args4);
     CPPUNIT_ASSERT(stderr.empty());
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              none" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Record date       none" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "BAR               foo" }));
 
-    const char *const args5[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "-f", opusFile.data(), nullptr };
+    const char *const args5[] = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:recorddate", "-f", opusFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args5);
     CPPUNIT_ASSERT(stderr.empty());
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              none" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Record date       none" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "BAR               foo" }));
 
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
@@ -343,17 +349,17 @@ void CliTests::testId3SpecificOptions()
           "    Album             Double Nickels On The Dime\n"
           "    Artist            Minutemen\n"
           "    Genre             Punk Rock\n"
-          "    Year              1984\n"
           "    Comment           ExactAudioCopy v0.95b4\n"
-          "    Track             4\n",
+          "    Track             4\n"
+          "    Record date       1984\n",
             " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n"
             "    Title             Cohesion\n"
             "    Album             Double Nickels On The Dime\n"
             "    Artist            Minutemen\n"
             "    Genre             Punk Rock\n"
-            "    Year              1984\n"
             "    Comment           ExactAudioCopy v0.95b4\n"
             "    Track             4/43\n"
+            "    Record date       1984\n"
             "    Duration          00:00:00\n"
             "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)" }));
 
@@ -367,9 +373,9 @@ void CliTests::testId3SpecificOptions()
           "    Album             Double Nickels On The Dime\n"
           "    Artist            Minutemen\n"
           "    Genre             Punk Rock\n"
-          "    Year              1984\n"
           "    Comment           ExactAudioCopy v0.95b4\n"
           "    Track             4/43\n"
+          "    Record date       1984\n"
           "    Duration          00:00:00\n"
           "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)" }));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
@@ -385,18 +391,18 @@ void CliTests::testId3SpecificOptions()
           "    Album             Dóuble Nickels On The Dime\n"
           "    Artist            Minutemen\n"
           "    Genre             Punk Rock\n"
-          "    Year              1984\n"
           "    Comment           ExactAudioCopy v0.95b4\n"
-          "    Track             5\n",
+          "    Track             5\n"
+          "    Record date       1984\n",
             " - \e[1mID3v2 tag (version 2.2.0)\e[0m\n"
             "    Title             Cohesion\n"
             "    Album             Dóuble Nickels On The Dime\n"
             "    Artist            Minutemen\n"
             "    Genre             Punk Rock\n"
-            "    Year              1984\n"
             "    Comment           ExactAudioCopy v0.95b4\n"
             "    Track             5/10\n"
             "    Disk              2/3\n"
+            "    Record date       1984\n"
             "    Duration          01:45:15\n"
             "    Encoder settings  LAME 64bits version 3.99 (http://lame.sf.net)" }));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1.data()));
@@ -490,25 +496,25 @@ void CliTests::testMultipleFiles()
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
           "    Title             MKV testfiles\n"
-          "    Year              2010\n"
           "    Comment           Matroska Validation File1, basic MPEG4.2 and MP3 with only SimpleBlock\n"
           "    Total parts       3\n"
+          "    Release date      2010\n"
           " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
           "    Title             test1\n"
           "    Part              1",
             " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
             "    Title             MKV testfiles\n"
-            "    Year              2010\n"
             "    Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC\n"
             "    Total parts       3\n"
+            "    Release date      2010\n"
             " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
             "    Title             test2\n"
             "    Part              2",
             " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
             "    Title             MKV testfiles\n"
-            "    Year              2010\n"
             "    Comment           Matroska Validation File 3, header stripping on the video track and no SimpleBlock\n"
-            "    Total parts       3",
+            "    Total parts       3\n"
+            "    Release date      2010",
             " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
             "    Title             test3\n"
             "    Part              3" }));
@@ -840,8 +846,8 @@ void CliTests::testSettingTrackMetaData()
         { " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
           "    Title             title of tag\n"
           "    Artist            setting tag value again\n"
-          "    Year              2010\n"
-          "    Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC" }));
+          "    Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC\n"
+          "    Release date      2010" }));
 
     const char *const args4[] = { "tageditor", "info", "-f", mp4File.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args4);
@@ -973,9 +979,9 @@ void CliTests::testFileLayoutOptions()
                                "    Album             Who Made Who\n"
                                "    Artist            ACDC\n"
                                "    Genre             Rock\n"
-                               "    Year              1986\n"
                                "    Track             2/9\n"
                                "    Encoder           Nero AAC codec / 1.5.3.0, remuxed with Lavf57.56.100\n"
+                               "    Record date       1986\n"
                                "    Encoder settings  ndaudio 1.5.3.0 / -q 0.34")
         != string::npos);
     remove((mp4File2 + ".bak").data());

@@ -15,11 +15,11 @@
                     "attachments": []
                 },
                 "fields": {
-                    "comment": [
+                    "releasedate": [
                         {
                             "kind": "text",
                             "mimeType": "",
-                            "value": "Matroska Validation File 3, header stripping on the video track and no SimpleBlock"
+                            "value": "2010"
                         }
                     ],
                     "title": [
@@ -29,11 +29,11 @@
                             "value": "Elephant Dream - test 3"
                         }
                     ],
-                    "year": [
+                    "comment": [
                         {
                             "kind": "text",
                             "mimeType": "",
-                            "value": "2010"
+                            "value": "Matroska Validation File 3, header stripping on the video track and no SimpleBlock"
                         }
                     ]
                 }
