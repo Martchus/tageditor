@@ -503,11 +503,11 @@ void TagEditorWidget::updateFileStatusStatus()
     // webview
 #ifndef TAGEDITOR_NO_WEBVIEW
     if (m_infoWebView) {
-        m_infoWebView->setEnabled(opened);
+        m_infoWebView->setVisible(opened);
     }
 #endif
     if (m_infoTreeView) {
-        m_infoTreeView->setEnabled(opened);
+        m_infoTreeView->setVisible(opened);
     }
     // inform the main window about the file status change as well
     emit fileStatusChanged(opened, hasTag);
