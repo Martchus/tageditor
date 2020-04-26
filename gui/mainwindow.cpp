@@ -273,21 +273,23 @@ void MainWindow::pathEntered()
  */
 void MainWindow::fileSelected()
 {
-    if (!m_internalFileSelection) {
-        const QModelIndexList selectedIndexes = m_ui->filesTreeView->selectionModel()->selectedRows();
-        if (selectedIndexes.count() == 1) {
-            const QString path(m_fileModel->filePath(m_fileFilterModel->mapToSource(selectedIndexes.at(0))));
-            const QFileInfo fileInfo(path);
-            if (fileInfo.isFile()) {
-                startParsing(path);
-                m_ui->pathLineEdit->setText(fileInfo.dir().path());
-            } else if (fileInfo.isDir()) {
-                m_ui->pathLineEdit->setText(path);
-            }
-            m_ui->pathLineEdit->setProperty("classNames", QStringList());
-            updateStyle(m_ui->pathLineEdit);
-        }
+    if (m_internalFileSelection) {
+        return;
     }
+    const QModelIndexList selectedIndexes = m_ui->filesTreeView->selectionModel()->selectedRows();
+    if (selectedIndexes.count() != 1) {
+        return;
+    }
+    const QString path(m_fileModel->filePath(m_fileFilterModel->mapToSource(selectedIndexes.at(0))));
+    const QFileInfo fileInfo(path);
+    if (fileInfo.isFile()) {
+        startParsing(path);
+        m_ui->pathLineEdit->setText(fileInfo.dir().path());
+    } else if (fileInfo.isDir()) {
+        m_ui->pathLineEdit->setText(path);
+    }
+    m_ui->pathLineEdit->setProperty("classNames", QStringList());
+    updateStyle(m_ui->pathLineEdit);
 }
 
 /*!
