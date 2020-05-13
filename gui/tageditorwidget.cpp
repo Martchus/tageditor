@@ -1362,9 +1362,7 @@ bool TagEditorWidget::writeFileInfoToFile(QFile &file)
         QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to open file \"%1\".").arg(file.fileName()));
         return false;
     }
-    QTextStream stream(&file);
-    stream.setCodec(QTextCodec::codecForName("UTF-8"));
-    stream << fileInfoHtml();
+    file.write(fileInfoHtml());
     file.close();
 
     if (file.error() != QFileDevice::NoError) {
