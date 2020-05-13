@@ -27,8 +27,6 @@
 #include <QFileDialog>
 #include <QFileSystemModel>
 #include <QMessageBox>
-#include <QTextCodec>
-#include <QTextStream>
 
 #include <iomanip>
 

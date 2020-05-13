@@ -10,6 +10,7 @@
 #include <tagparser/tag.h>
 
 #include <c++utilities/conversion/binaryconversion.h>
+#include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
 
 #include <QAbstractItemModel>
@@ -17,7 +18,6 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QFileInfo>
-#include <QTextCodec>
 
 #include <ios>
 #include <iostream>
@@ -86,12 +86,15 @@ QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encodin
     default:;
     }
 
-    const char *const codecName = textEncodingToCodecName(encoding);
-    const auto *codec = QTextCodec::codecForName(codecName);
-    if (!codec) {
-        codec = QTextCodec::codecForLocale();
-    }
-    return codec->toUnicode(data, static_cast<int>(dataSize));
+    const auto utf16Data = CppUtilities::convertString(textEncodingToCodecName(encoding),
+#if defined(CONVERSION_UTILITIES_BYTE_ORDER_LITTLE_ENDIAN)
+        "UTF-16LE",
+#else
+        "UTF-16BE",
+#endif
+        data, dataSize, 2.0f);
+    return QString::fromUtf16(
+        reinterpret_cast<const ushort *>(utf16Data.first.get()), static_cast<int>(utf16Data.second / (sizeof(ushort) / sizeof(char))));
 }
 
 QString stringToQString(const string &value, TagTextEncoding textEncoding)
@@ -121,13 +124,20 @@ string qstringToString(const QString &value, TagTextEncoding textEncoding)
         encodedString = QByteArray(
             reinterpret_cast<const char *>(value.utf16()), static_cast<int>(value.size() * static_cast<int>(sizeof(ushort) / sizeof(char))));
         break;
-    default: {
-        const char *const codecName = textEncodingToCodecName(textEncoding);
-        auto *codec = QTextCodec::codecForName(codecName);
-        if (!codec) {
-            codec = QTextCodec::codecForLocale();
-        }
-        encodedString = codec->fromUnicode(value);
+#if defined(CONVERSION_UTILITIES_BYTE_ORDER_LITTLE_ENDIAN)
+    case TagTextEncoding::Utf16BigEndian: {
+#else
+    case TagTextEncoding::Utf16LittleEndian: {
+#endif
+        const auto utf16Data = CppUtilities::convertString(
+#if defined(CONVERSION_UTILITIES_BYTE_ORDER_LITTLE_ENDIAN)
+            "UTF-16LE",
+#else
+            "UTF-16BE",
+#endif
+            textEncodingToCodecName(textEncoding), reinterpret_cast<const char *>(value.utf16()),
+            static_cast<int>(value.size() * static_cast<int>(sizeof(ushort) / sizeof(char))), 2.0f);
+        return string(utf16Data.first.get(), utf16Data.second);
     }
     }
     return string(encodedString.data(), static_cast<string::size_type>(encodedString.size()));
