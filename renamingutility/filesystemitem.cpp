@@ -140,7 +140,7 @@ FileSystemItem *FileSystemItem::findChild(const QString &name, const FileSystemI
 
 FileSystemItem *FileSystemItem::makeChildAvailable(const QString &relativePath)
 {
-    auto dirs = relativePath.split(QDir::separator(), QString::SkipEmptyParts);
+    auto dirs = relativePath.split(QDir::separator(), Qt::SkipEmptyParts);
     if (dirs.isEmpty()) {
         return this;
     }
