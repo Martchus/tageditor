@@ -18,24 +18,38 @@ language, bitrate, duration, size, timestamps, sampling frequency, FPS and other
 
 It also allows to inspect and validate the element structure of MP4 and Matroska files.
 
+## Backup/temporary files
+Sometimes the tag editor has to rewrite the entire file in order to apply changes. With the default settings this
+will happen most of the times.
+
+The next section describes how to tweak settings to avoid this at the cost of having some padding within the files
+and/or storing tags at the end of the file. **Note that temporary files also serve as a backup** in case something
+goes wrong, e.g. your computer crashes while saving or a bug within the tag editor breaks particularly structured files.
+To be save it might therefore even be desirable to enforce the creation of a temporary file. That is also possible to
+configure within the GUI and the CLI option `--force-rewrite`.
+
+Nevertheless, it will not always be possible to avoid rewriting a file in all cases anyways. You can configure a
+directory for temporary files within the GUI settings or the CLI option `--temp-dir`. Then you can easily clean up all
+temporary files at some point together. For efficiency the temporary directory should be on the same file system
+as the files you are editing. A feature to delete temporary files automatically has not been implemented yet.
+
 ## File layout options
 ### Tag position
-The editor allows you to choose whether tags should be placed at the beginning or at
-the end of an MP4/Matroska file.
+The editor allows you to choose whether tags should be placed at the beginning or at the end of an MP4/Matroska file.
+Placing tags at the end of the file can avoid having to rewrite the entire file to apply changes.
 
 In the CLI, this is controlled via `--tag-pos` option.
-To enfore a specific `--tag-pos`, even if this requires the file to be rewritten, combine
-with the `--force` option.
+To enfore a specific `--tag-pos`, even if this requires the file to be rewritten, combine with the `--force` option.
 
-ID3v2 tags and Vorbis/Opus comments can only be placed at the beginning. ID3v1 tags
-can only be placed at the end of the file.
+ID3v2 tags and Vorbis/Opus comments can only be placed at the beginning. ID3v1 tags can only be placed at the end of the
+file. Hence this configuration has no effect when dealing with such tags.
 
 ### Index position
-It is also possible to control the position of the index/cues. However, this is currently
-only supported when dealing with Matroska files.
+It is also possible to control the position of the index/cues. However, this is currently only supported when dealing
+with Matroska files.
 
-Note: This can not be implemented for MP4 since tags and index are tied to each other. When dealing
-with MP4 files the index position will always be the same as the tag position.
+Note: This can not be implemented for MP4 since tags and index are tied to each other. When dealing with MP4 files the
+index position will always be the same as the tag position.
 
 #### Faststart
 Putting the index at the beginning of the file is sometimes called *faststart*.
@@ -47,8 +61,8 @@ tageditor set --index-pos front --force
 ```
 
 ### Padding
-Padding allows adding additional tag information without rewriting the entire file
-or appending the tag. Usage of padding can be configured:
+Padding allows adding additional tag information without rewriting the entire file or appending the tag. Usage of
+padding can be configured:
 - minimum/maximum padding: The file is rewritten if the padding would fall below/exceed the specifed limits.
 - preferred padding: If the file needs to be rewritten the preferred padding is used.
 
