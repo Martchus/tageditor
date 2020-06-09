@@ -70,8 +70,8 @@ TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::Known
     , m_pictureSelection(nullptr)
     , m_plainTextEdit(nullptr)
     , m_descriptionLineEdit(nullptr)
-    , m_restoreButton(nullptr)
-    , m_lockButton(nullptr)
+    , m_restoreAction(nullptr)
+    , m_lockAction(nullptr)
     , m_isLocked(false)
 {
     m_layout->setContentsMargins(QMargins());
@@ -222,9 +222,9 @@ void TagFieldEdit::setLocked(bool locked)
         return;
     }
     m_isLocked = locked;
-    if (m_lockButton) {
-        m_lockButton->setPixmap(QIcon::fromTheme(locked ? QStringLiteral("object-locked") : QStringLiteral("object-unlocked")).pixmap(16));
-        m_lockButton->setToolTip(
+    if (m_lockAction) {
+        m_lockAction->setIcon(QIcon::fromTheme(locked ? QStringLiteral("object-locked") : QStringLiteral("object-unlocked")));
+        m_lockAction->setToolTip(
             locked ? tr("Keep previous value only if not present in the next file") : tr("Keep previous value even if present in next file"));
     }
 }
@@ -323,10 +323,10 @@ ClearLineEdit *TagFieldEdit::setupLineEdit()
     m_lineEdit = new ClearLineEdit(this);
     m_lineEdit->setPlaceholderText(tr("empty"));
     static_cast<ButtonOverlay *>(m_lineEdit)->setClearButtonEnabled(true);
-    m_lineEdit->insertCustomButton(0, setupLockButton());
-    m_lineEdit->insertCustomButton(1, setupRestoreButton());
+    m_lineEdit->addCustomAction(setupLockAction());
+    m_lineEdit->addCustomAction(setupRestoreAction());
     m_lineEdit->installEventFilter(this);
-    connect(m_lineEdit, &ClearLineEdit::textChanged, this, &TagFieldEdit::showRestoreButton);
+    connect(m_lineEdit, &ClearLineEdit::textChanged, this, &TagFieldEdit::showRestoreAction);
     m_layout->addWidget(m_lineEdit);
     m_widgets << m_lineEdit;
     return m_lineEdit;
@@ -339,11 +339,11 @@ ClearPlainTextEdit *TagFieldEdit::setupPlainTextEdit()
 {
     m_plainTextEdit = new ClearPlainTextEdit(this);
     m_plainTextEdit->setClearButtonEnabled(true);
-    m_plainTextEdit->insertCustomButton(0, setupLockButton());
-    m_plainTextEdit->insertCustomButton(1, setupRestoreButton());
+    m_plainTextEdit->addCustomAction(setupLockAction());
+    m_plainTextEdit->addCustomAction(setupRestoreAction());
     m_plainTextEdit->setStyleSheet(
         QStringLiteral("color: ") + QGuiApplication::palette().text().color().name(QColor::HexArgb)); // not sure why this is otherwise gray
-    connect(m_plainTextEdit->document(), &QTextDocument::contentsChanged, this, &TagFieldEdit::showRestoreButton);
+    connect(m_plainTextEdit->document(), &QTextDocument::contentsChanged, this, &TagFieldEdit::showRestoreAction);
     m_layout->addWidget(m_plainTextEdit);
     m_widgets << m_plainTextEdit;
     return m_plainTextEdit;
@@ -384,11 +384,11 @@ ClearComboBox *TagFieldEdit::setupGenreComboBox()
         tr("Top 40"), tr("Trailer"), tr("Trance"), tr("Tribal"), tr("Trip-Hop"), tr("Trop Rock"), tr("Vocal"), tr("World Music") }));
     m_comboBox->setCurrentIndex(0);
     m_comboBox->setClearButtonEnabled(true);
-    m_comboBox->insertCustomButton(0, setupLockButton());
-    m_comboBox->insertCustomButton(1, setupRestoreButton());
+    m_comboBox->addCustomAction(setupLockAction());
+    m_comboBox->addCustomAction(setupRestoreAction());
     m_comboBox->installEventFilter(this);
     m_comboBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    connect(m_comboBox, &ClearComboBox::currentTextChanged, this, &TagFieldEdit::showRestoreButton);
+    connect(m_comboBox, &ClearComboBox::currentTextChanged, this, &TagFieldEdit::showRestoreAction);
 
     m_layout->addWidget(m_comboBox);
     m_widgets << m_comboBox;
@@ -404,11 +404,11 @@ ClearSpinBox *TagFieldEdit::setupSpinBox()
     m_spinBoxes.first->setPlaceholderText(tr("empty"));
     m_spinBoxes.first->setMinimumHidden(true);
     m_spinBoxes.first->setClearButtonEnabled(true);
-    m_spinBoxes.first->insertCustomButton(0, setupLockButton());
-    m_spinBoxes.first->insertCustomButton(1, setupRestoreButton());
+    m_spinBoxes.first->addCustomAction(setupLockAction());
+    m_spinBoxes.first->addCustomAction(setupRestoreAction());
     m_spinBoxes.first->installEventFilter(this);
     m_spinBoxes.first->setMaximum(32766);
-    connect(m_spinBoxes.first, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreButton);
+    connect(m_spinBoxes.first, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreAction);
     m_layout->addWidget(m_spinBoxes.first);
     m_widgets << m_spinBoxes.first;
     return m_spinBoxes.first;
@@ -428,7 +428,7 @@ QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> &TagFieldEdit::s
     m_spinBoxes.first->installEventFilter(this);
     m_spinBoxes.first->setMaximum(32766);
     m_spinBoxes.first->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    connect(m_spinBoxes.first, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreButton);
+    connect(m_spinBoxes.first, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreAction);
     subLayout->addWidget(m_spinBoxes.first);
     m_widgets << m_spinBoxes.first;
 
@@ -442,10 +442,10 @@ QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> &TagFieldEdit::s
     m_spinBoxes.second->setClearButtonEnabled(true);
     m_spinBoxes.second->installEventFilter(this);
     m_spinBoxes.second->setMaximum(32766);
-    m_spinBoxes.second->insertCustomButton(0, setupLockButton());
-    m_spinBoxes.second->insertCustomButton(1, setupRestoreButton());
+    m_spinBoxes.second->addCustomAction(setupLockAction());
+    m_spinBoxes.second->addCustomAction(setupRestoreAction());
     m_spinBoxes.second->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-    connect(m_spinBoxes.second, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreButton);
+    connect(m_spinBoxes.second, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreAction);
     subLayout->addWidget(m_spinBoxes.second);
     m_widgets << m_spinBoxes.second;
 
@@ -459,7 +459,7 @@ QPair<QtUtilities::ClearSpinBox *, QtUtilities::ClearSpinBox *> &TagFieldEdit::s
 PicturePreviewSelection *TagFieldEdit::setupPictureSelection()
 {
     m_pictureSelection = new PicturePreviewSelection(nullptr, KnownField::Invalid, this);
-    connect(m_pictureSelection, &PicturePreviewSelection::pictureChanged, this, &TagFieldEdit::showRestoreButton);
+    connect(m_pictureSelection, &PicturePreviewSelection::pictureChanged, this, &TagFieldEdit::showRestoreAction);
     m_layout->addWidget(m_pictureSelection);
     m_widgets << m_pictureSelection;
     return m_pictureSelection;
@@ -487,7 +487,7 @@ ClearLineEdit *TagFieldEdit::setupDescriptionLineEdit()
     m_descriptionLineEdit->setPlaceholderText(tr("empty"));
     static_cast<ButtonOverlay *>(m_descriptionLineEdit)->setClearButtonEnabled(true);
     m_descriptionLineEdit->installEventFilter(this);
-    connect(m_descriptionLineEdit, &ClearLineEdit::textChanged, this, &TagFieldEdit::showRestoreButton);
+    connect(m_descriptionLineEdit, &ClearLineEdit::textChanged, this, &TagFieldEdit::showRestoreAction);
 
     m_layout->addWidget(m_descriptionLineEdit);
     m_widgets << m_descriptionLineEdit;
@@ -677,8 +677,8 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         m_descriptionLineEdit->setEnabled(false);
         m_descriptionLineEdit->clear();
     }
-    if (updateRestoreButton && m_restoreButton) {
-        m_restoreButton->setVisible((!updated && m_restoreButton->isVisible()) || m_tags->size() > 1);
+    if (updateRestoreButton && m_restoreAction) {
+        m_restoreAction->setVisible((!updated && m_restoreAction->isVisible()) || m_tags->size() > 1);
     }
     if (updated) {
         setLocked(false);
@@ -721,44 +721,44 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
 /*!
  * \brief Internally called by the other setup methods to create the "restore button".
  */
-IconButton *TagFieldEdit::setupRestoreButton()
+QAction *TagFieldEdit::setupRestoreAction()
 {
-    if (m_restoreButton) {
-        return m_restoreButton;
+    if (m_restoreAction) {
+        return m_restoreAction;
     }
-    m_restoreButton = new IconButton(this);
-    m_restoreButton->setPixmap(QIcon::fromTheme(QStringLiteral("edit-undo")).pixmap(16));
-    m_restoreButton->setToolTip(tr("Restore value as it is currently present in the file"));
-    connect(m_restoreButton, &IconButton::clicked, this, &TagFieldEdit::handleRestoreButtonClicked);
+    m_restoreAction = new QAction(this);
+    m_restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-undo")));
+    m_restoreAction->setToolTip(tr("Restore value as it is currently present in the file"));
+    connect(m_restoreAction, &QAction::triggered, this, &TagFieldEdit::handleRestoreButtonClicked);
     // ownership might be transfered to a child widget/layout
-    connect(m_restoreButton, &IconButton::destroyed, this, &TagFieldEdit::handleRestoreButtonDestroyed);
-    return m_restoreButton;
+    connect(m_restoreAction, &QAction::destroyed, this, &TagFieldEdit::handleRestoreButtonDestroyed);
+    return m_restoreAction;
 }
 
 /*!
  * \brief Internally called by the other setup methods to create the "lock button".
  */
-IconButton *TagFieldEdit::setupLockButton()
+QAction *TagFieldEdit::setupLockAction()
 {
-    if (m_lockButton) {
-        return m_lockButton;
+    if (m_lockAction) {
+        return m_lockAction;
     }
     m_isLocked = !m_isLocked;
-    m_lockButton = new IconButton(this);
+    m_lockAction = new QAction(this);
     setLocked(!m_isLocked);
-    connect(m_lockButton, &IconButton::clicked, this, &TagFieldEdit::toggleLocked);
+    connect(m_lockAction, &QAction::triggered, this, &TagFieldEdit::toggleLocked);
     // ownership might be transfered to a child widget/layout
-    connect(m_lockButton, &IconButton::destroyed, this, &TagFieldEdit::handleLockButtonDestroyed);
-    return m_lockButton;
+    connect(m_lockAction, &QAction::destroyed, this, &TagFieldEdit::handleLockButtonDestroyed);
+    return m_lockAction;
 }
 
 /*!
  * \brief Internally called to show the restore button (if there is one and at least one tag is assigned).
  */
-void TagFieldEdit::showRestoreButton()
+void TagFieldEdit::showRestoreAction()
 {
-    if (m_restoreButton) {
-        m_restoreButton->setVisible(m_tags->size());
+    if (m_restoreAction) {
+        m_restoreAction->setVisible(m_tags->size());
     }
 }
 
@@ -928,8 +928,8 @@ void TagFieldEdit::handleRestoreButtonClicked()
  */
 void TagFieldEdit::handleRestoreButtonDestroyed(QObject *obj)
 {
-    if (obj == m_restoreButton) {
-        m_restoreButton = nullptr;
+    if (obj == m_restoreAction) {
+        m_restoreAction = nullptr;
     }
 }
 
@@ -938,8 +938,8 @@ void TagFieldEdit::handleRestoreButtonDestroyed(QObject *obj)
  */
 void TagFieldEdit::handleLockButtonDestroyed(QObject *obj)
 {
-    if (obj == m_lockButton) {
-        m_lockButton = nullptr;
+    if (obj == m_lockAction) {
+        m_lockAction = nullptr;
     }
 }
 

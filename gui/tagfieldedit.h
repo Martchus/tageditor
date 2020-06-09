@@ -86,9 +86,9 @@ private:
     bool updateValue(TagParser::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool updateValue(
         const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
-    QtUtilities::IconButton *setupRestoreButton();
-    QtUtilities::IconButton *setupLockButton();
-    void showRestoreButton();
+    QAction *setupRestoreAction();
+    QAction *setupLockAction();
+    void showRestoreAction();
     QString applyAutoCorrection(const QString &textValue);
     void concretizePreviousValueHandling(PreviousValueHandling &previousValueHandling);
 
@@ -103,8 +103,8 @@ private:
     PicturePreviewSelection *m_pictureSelection;
     QtUtilities::ClearPlainTextEdit *m_plainTextEdit;
     QtUtilities::ClearLineEdit *m_descriptionLineEdit;
-    QtUtilities::IconButton *m_restoreButton;
-    QtUtilities::IconButton *m_lockButton;
+    QAction *m_restoreAction;
+    QAction *m_lockAction;
     bool m_isLocked;
     bool m_autoCorrectionApplied;
 };
