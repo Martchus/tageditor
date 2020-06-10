@@ -1008,10 +1008,14 @@ void CliTests::testJsonExport()
     string stdout, stderr;
 
     const auto file(testFilePath("matroska_wave1/test3.mkv"));
-    const auto expectedJson(readFile(testFilePath("matroska_wave1-test3.json"), 2048));
+    const auto expectedJsonPath(testFilePath("matroska_wave1-test3.json"));
     const char *const args[] = { "tageditor", "export", "--pretty", "-f", file.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args);
-    CPPUNIT_ASSERT_EQUAL(expectedJson, stdout);
+    const char *const jqArgs[]
+        = { "jq", "--argfile", "expected", expectedJsonPath.data(), "--argjson", "actual", stdout.data(), "-n", "$actual == $expected", nullptr };
+    execHelperAppInSearchPath("jq", jqArgs, stdout, stderr);
+    CPPUNIT_ASSERT_EQUAL(""s, stderr);
+    CPPUNIT_ASSERT_EQUAL("true\n"s, stdout);
 #endif // TAGEDITOR_JSON_EXPORT
 }
 
