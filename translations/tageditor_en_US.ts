@@ -4636,7 +4636,7 @@ Remarks
         <translation></translation>
     </message>
     <message>
-        <location filename="../renamingutility/filesystemitem.cpp" line="158"/>
+        <location filename="../renamingutility/filesystemitem.cpp" line="164"/>
         <source>will be created</source>
         <translation type="unfinished"></translation>
     </message>
