@@ -9,6 +9,8 @@
 #include <tagparser/signature.h>
 #include <tagparser/tag.h>
 
+#include <qtutilities/misc/compat.h>
+
 #include <c++utilities/conversion/binaryconversion.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
@@ -82,7 +84,8 @@ QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encodin
 #else
     case TagTextEncoding::Utf16BigEndian:
 #endif
-        return QString::fromUtf16(reinterpret_cast<const ushort *>(data), static_cast<int>(dataSize / (sizeof(ushort) / sizeof(char))));
+        return QString::fromUtf16(
+            reinterpret_cast<const QtUtilities::Utf16CharType *>(data), static_cast<int>(dataSize / (sizeof(ushort) / sizeof(char))));
     default:;
     }
 
@@ -93,8 +96,8 @@ QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encodin
         "UTF-16BE",
 #endif
         data, dataSize, 2.0f);
-    return QString::fromUtf16(
-        reinterpret_cast<const ushort *>(utf16Data.first.get()), static_cast<int>(utf16Data.second / (sizeof(ushort) / sizeof(char))));
+    return QString::fromUtf16(reinterpret_cast<const QtUtilities::Utf16CharType *>(utf16Data.first.get()),
+        static_cast<int>(utf16Data.second / (sizeof(ushort) / sizeof(char))));
 }
 
 QString stringToQString(const string &value, TagTextEncoding textEncoding)
@@ -174,7 +177,7 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
             res += ' ';
         } else if (whitespace) {
             if (i) {
-                auto rest = str.midRef(i);
+                auto rest = QtUtilities::midRef(str, i);
                 static const char *const connectingWords[] = { "the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on ", "as " };
                 for (const char *word : connectingWords) {
                     if (rest.startsWith(QLatin1String(word), Qt::CaseInsensitive)) {
@@ -235,11 +238,11 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
         int delimIndex = title.indexOf(delim);
         while (delimIndex > lastDelimIndex) {
             bool ok = false;
-            trackNumber = title.midRef(lastDelimIndex, delimIndex - lastDelimIndex).toInt(&ok);
+            trackNumber = QtUtilities::midRef(title, lastDelimIndex, delimIndex - lastDelimIndex).toInt(&ok);
             if (ok) {
                 int titleStart = delimIndex + delim.size();
                 for (const auto &delim : delims) {
-                    if (title.midRef(titleStart).startsWith(delim)) {
+                    if (QtUtilities::midRef(title, titleStart).startsWith(delim)) {
                         titleStart += delim.size();
                         break;
                     }

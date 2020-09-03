@@ -31,6 +31,7 @@
 #include <c++utilities/io/ansiescapecodes.h>
 #include <c++utilities/io/path.h>
 
+#include <QActionGroup>
 #include <QCheckBox>
 #include <QClipboard>
 #include <QDesktopServices>

@@ -39,7 +39,11 @@ void NotificationLabel::paintEvent(QPaintEvent *event)
 {
     QStyle *style = QWidget::style();
     QStyleOption option;
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+    option.initFrom(this);
+#else
     option.init(this);
+#endif
     int iconSize = option.rect.height() > m_maxIconSize ? m_maxIconSize : option.rect.height();
     QRect pixmapRect(option.rect.x(), option.rect.y(), iconSize, iconSize);
     pixmapRect.moveCenter(QRect(option.rect.x(), option.rect.y(), iconSize, option.rect.height()).center());

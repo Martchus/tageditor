@@ -187,7 +187,7 @@ include(BasicConfig)
 
 # find qtutilities
 if (WIDGETS_GUI OR QUICK_GUI)
-    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX} 6.1.0 REQUIRED)
+    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX} 6.3.0 REQUIRED)
     use_qt_utilities()
 endif ()
 
