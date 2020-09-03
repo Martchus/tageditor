@@ -102,7 +102,7 @@ See the release section on GitHub.
     * for statically linked binaries checkout the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
 
 ## Usage
-The Tag Editor has a GUI (Qt 5) and a command line interface. For a C++ library
+The Tag Editor has a Qt-based GUI and a command line interface. For a C++ library
 interface checkout the underlying tagparser library.
 
 ### GUI
@@ -292,10 +292,10 @@ Here are some Bash examples which illustrate getting and setting tag information
 
 ## Build instructions
 The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).  
-When the Qt GUI is enabled, Qt 5 and [qtutilities](https://github.com/Martchus/qtutilities) are required, too.
+When the Qt GUI is enabled, Qt and [qtutilities](https://github.com/Martchus/qtutilities) are required, too.
 
-### Building with Qt 5 GUI
-The following Qt 5 modules are requried: core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
+### Building with Qt GUI
+The following Qt modules are requried (version 5.6 or higher): core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
 
 ### Select Qt module for web view and JavaScript
 * Add `-DWEBVIEW_PROVIDER:STRING=webkit/webengine/none` to the CMake arguments to use either Qt WebKit (works with
@@ -304,7 +304,7 @@ The following Qt 5 modules are requried: core concurrent gui network widgets dec
 * Add `-DJS_PROVIDER:STRING=script/qml/none` to the CMake arguments to use either Qt Script, Qt QML or no JavaScript
   engine at all. If no JavaScript engine is used, the renaming utility is disabled.
 
-### Building without Qt 5 GUI
+### Building without Qt GUI
 It is possible to build without the GUI if only the CLI is needed. In this case no Qt dependencies (including qtutilities) are required.
 
 To build without GUI, add the following parameters to the CMake call:
@@ -319,7 +319,7 @@ JSON export. To enable it, add `-DENABLE_JSON_EXPORT` to the CMake arguments.
 When enabled, the following additional dependencies are required (only at build-time): rapidjson, reflective-rapidjson and llvm/clang
 
 ### Building this straight
-0. Install (preferably the latest version of) g++ or clang, the required Qt 5 modules and CMake.
+0. Install (preferably the latest version of) g++ or clang, the required Qt modules and CMake.
 1. Get the sources of additional dependencies and the tag editor itself. For the lastest version from Git clone the following repositories:  
    ```
    cd $SOURCES
