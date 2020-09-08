@@ -80,15 +80,15 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     m_menu->setIcon(searchIcon);
     m_searchMusicBrainzAction = m_lastSearchAction = m_menu->addAction(tr("Query MusicBrainz"));
     m_searchMusicBrainzAction->setIcon(searchIcon);
-    m_searchMusicBrainzAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+    m_searchMusicBrainzAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_M));
     connect(m_searchMusicBrainzAction, &QAction::triggered, this, &DbQueryWidget::searchMusicBrainz);
     m_searchLyricsWikiaAction = m_menu->addAction(tr("Query LyricsWikia"));
     m_searchLyricsWikiaAction->setIcon(searchIcon);
-    m_searchLyricsWikiaAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
+    m_searchLyricsWikiaAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_L));
     connect(m_searchLyricsWikiaAction, &QAction::triggered, this, &DbQueryWidget::searchLyricsWikia);
     m_searchMakeItPersonalAction = m_menu->addAction(tr("Query makeitpersonal"));
     m_searchMakeItPersonalAction->setIcon(searchIcon);
-    m_searchMakeItPersonalAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_K));
+    m_searchMakeItPersonalAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_K));
     connect(m_searchMakeItPersonalAction, &QAction::triggered, this, &DbQueryWidget::searchMakeItPersonal);
     m_menu->addSeparator();
     m_insertPresentDataAction = m_menu->addAction(tr("Use present data as search criteria"));
