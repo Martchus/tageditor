@@ -699,7 +699,7 @@
       <item>
        <widget class="QPushButton" name="abortClosePushButton">
         <property name="toolTip">
-         <string>closes the window or aborts the currently running process</string>
+         <string>Closes the window or aborts the currently running process</string>
         </property>
         <property name="text">
          <string>Close</string>
@@ -709,7 +709,7 @@
       <item>
        <widget class="QPushButton" name="generatePreviewPushButton">
         <property name="toolTip">
-         <string>generates new file and directory names using the entered script</string>
+         <string>Generates new file and directory names using the entered script</string>
         </property>
         <property name="text">
          <string>Generate preview</string>
@@ -719,7 +719,7 @@
       <item>
        <widget class="QPushButton" name="applyChangingsPushButton">
         <property name="toolTip">
-         <string>applies previously generated file and directory names</string>
+         <string>Applies previously generated file and directory names</string>
         </property>
         <property name="text">
          <string>Apply generated names</string>
