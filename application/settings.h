@@ -12,6 +12,7 @@
 #include <qtutilities/settingsdialog/qtsettings.h>
 
 #include <QByteArray>
+#include <QRegularExpression>
 #include <QString>
 
 namespace Settings {
@@ -22,12 +23,19 @@ enum class AdoptFields { Never, WithinDirectory, Always };
 
 enum class MultipleTagHandling { SingleEditorPerTarget, SeparateEditors };
 
+struct CustomSubstitution {
+    QRegularExpression regex;
+    QString replacement;
+    bool enabled = false;
+};
+
 struct AutoCompletition {
     AutoCompletition();
     bool insertTitleFromFilename = false;
     bool trimWhitespaces = true;
     bool formatNames = false;
     bool fixUmlauts = false;
+    CustomSubstitution customSubstitution;
     KnownFieldModel fields;
 };
 

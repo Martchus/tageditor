@@ -219,6 +219,10 @@ bool EditorAutoCorrectionOptionPage::apply()
         settings.trimWhitespaces = ui()->trimWhitespacesCheckBox->isChecked();
         settings.formatNames = ui()->formatNamesCheckBox->isChecked();
         settings.fixUmlauts = ui()->fixUmlautsCheckBox->isChecked();
+        auto &subst = settings.customSubstitution;
+        subst.enabled = ui()->customSubstitutionGroupBox->isChecked();
+        subst.regex = QRegularExpression(ui()->regularExpressionLineEdit->text());
+        subst.replacement = ui()->replacementLineEdit->text();
         if (m_model) {
             settings.fields.setItems(m_model->items());
         }
@@ -234,6 +238,10 @@ void EditorAutoCorrectionOptionPage::reset()
         ui()->trimWhitespacesCheckBox->setChecked(settings.trimWhitespaces);
         ui()->formatNamesCheckBox->setChecked(settings.formatNames);
         ui()->fixUmlautsCheckBox->setChecked(settings.fixUmlauts);
+        const auto &subst = settings.customSubstitution;
+        ui()->customSubstitutionGroupBox->setChecked(subst.enabled);
+        ui()->regularExpressionLineEdit->setText(subst.regex.pattern());
+        ui()->replacementLineEdit->setText(subst.replacement);
         if (m_model) {
             m_model->setItems(settings.fields.items());
         }

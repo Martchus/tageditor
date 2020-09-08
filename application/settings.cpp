@@ -81,6 +81,11 @@ void restore()
     v.editor.autoCompletition.trimWhitespaces = settings.value(QStringLiteral("trimwhitespaces"), true).toBool();
     v.editor.autoCompletition.formatNames = settings.value(QStringLiteral("formatnames"), false).toBool();
     v.editor.autoCompletition.fixUmlauts = settings.value(QStringLiteral("fixumlauts"), false).toBool();
+    settings.beginGroup(QStringLiteral("customsubst"));
+    v.editor.autoCompletition.customSubstitution.enabled = settings.value(QStringLiteral("enabled")).toBool();
+    v.editor.autoCompletition.customSubstitution.regex = settings.value(QStringLiteral("regex")).toRegularExpression();
+    v.editor.autoCompletition.customSubstitution.replacement = settings.value(QStringLiteral("replacement")).toString();
+    settings.endGroup();
     settings.endGroup();
     v.editor.backupDirectory = settings.value(QStringLiteral("tempdir")).toString().toStdString();
     v.editor.hideCoverButtons = settings.value(QStringLiteral("hidecoverbtn"), false).toBool();
@@ -225,6 +230,11 @@ void save()
     settings.setValue(QStringLiteral("trimwhitespaces"), v.editor.autoCompletition.trimWhitespaces);
     settings.setValue(QStringLiteral("formatnames"), v.editor.autoCompletition.formatNames);
     settings.setValue(QStringLiteral("fixumlauts"), v.editor.autoCompletition.fixUmlauts);
+    settings.beginGroup(QStringLiteral("customsubst"));
+    settings.setValue(QStringLiteral("enabled"), v.editor.autoCompletition.customSubstitution.enabled);
+    settings.setValue(QStringLiteral("regex"), v.editor.autoCompletition.customSubstitution.regex);
+    settings.setValue(QStringLiteral("replacement"), v.editor.autoCompletition.customSubstitution.replacement);
+    settings.endGroup();
     settings.endGroup();
     settings.setValue(QStringLiteral("tempdir"), QString::fromStdString(v.editor.backupDirectory));
     settings.setValue(QStringLiteral("hidecoverbtn"), v.editor.hideCoverButtons);

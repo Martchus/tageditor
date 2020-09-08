@@ -28,28 +28,75 @@
       <item>
        <widget class="QCheckBox" name="insertTitleFromFilenameCheckBox">
         <property name="text">
-         <string>insert title from filename if none present</string>
+         <string>Insert title from filename if none present</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="trimWhitespacesCheckBox">
         <property name="text">
-         <string>trim whitespaces</string>
+         <string>Trim whitespaces</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="formatNamesCheckBox">
         <property name="text">
-         <string>format names like &quot;an example_name&quot; to &quot;An Example Name&quot;</string>
+         <string>Format names like &quot;an example_name&quot; to &quot;An Example Name&quot;</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="fixUmlautsCheckBox">
         <property name="text">
-         <string>fix umlauts (replaces ae with ä for example)</string>
+         <string>Fix umlauts (replaces ae with ä for example)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="customSubstitutionCheckBox">
+        <property name="text">
+         <string>Custom substitution</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="customSubstitutionGroupBox">
+     <property name="title">
+      <string>Custom substitution</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QLabel" name="matchLabel">
+        <property name="text">
+         <string>Match pattern</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="replacementLabel">
+        <property name="text">
+         <string>Replacement</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="regularExpressionLineEdit">
+        <property name="placeholderText">
+         <string>regular expression</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="replacementLineEdit">
+        <property name="placeholderText">
+         <string>replacement (use \1, \2, … for capture expressions)</string>
         </property>
        </widget>
       </item>

@@ -787,6 +787,10 @@ QString TagFieldEdit::applyAutoCorrection(const QString &textValue)
     if (settings.fixUmlauts) {
         correctedValue = Utility::fixUmlauts(correctedValue);
     }
+    const auto &subst = settings.customSubstitution;
+    if (subst.enabled && subst.regex.isValid()) {
+        correctedValue.replace(subst.regex, subst.replacement);
+    }
     return correctedValue;
 }
 
