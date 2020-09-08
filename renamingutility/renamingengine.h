@@ -22,6 +22,7 @@ class FilteredFileSystemItemModel;
 class TagEditorObject;
 class RenamingEngine;
 
+#ifndef TAGEDITOR_NO_JSENGINE
 class PreviewGenerator final : public QThread {
     Q_OBJECT
 public:
@@ -45,6 +46,7 @@ protected:
 private:
     RenamingEngine *m_engine;
 };
+#endif
 
 class RenamingEngine : public QObject {
     Q_OBJECT

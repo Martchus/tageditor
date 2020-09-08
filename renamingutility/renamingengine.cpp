@@ -61,6 +61,7 @@ bool RenamingEngine::setProgram(const QString &program)
 #ifndef TAGEDITOR_NO_JSENGINE
     return setProgram(m_engine.evaluate(QStringLiteral("(function(){") % program % QStringLiteral("})")));
 #else
+    Q_UNUSED(program)
     m_errorLineNumber = 0;
     m_errorMessage = tr("Not compiled with ECMA support.");
     return false;
@@ -80,6 +81,8 @@ bool RenamingEngine::generatePreview(const QDir &rootDirectory, bool includeSubd
     (new PreviewGenerator(this))->start();
     return m_isBusy = true;
 #else
+    Q_UNUSED(rootDirectory)
+    Q_UNUSED(includeSubdirs)
     return false;
 #endif
 }
@@ -89,7 +92,9 @@ bool RenamingEngine::applyChangings()
     if (!m_rootItem || m_isBusy) {
         return false;
     }
+#ifndef TAGEDITOR_NO_JSENGINE
     (new RenamingThing(this))->start();
+#endif
     return m_isBusy = true;
 }
 
@@ -156,7 +161,9 @@ void RenamingEngine::resetStatus()
 
 void RenamingEngine::finalizeTaskCompletion()
 {
+#ifndef TAGEDITOR_NO_JSENGINE
     m_engine.moveToThread(thread());
+#endif
     m_isBusy = false;
 }
 
