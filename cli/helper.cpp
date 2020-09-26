@@ -87,7 +87,7 @@ void InterruptHandler::handler(int signum)
     if (EscapeCodes::enabled) {
         write(STDOUT_FILENO, "\e[1;33mWarning:\e[0m \e[1mSignal received, trying to abort ongoing process ...\e[0m\n", 84);
     } else {
-        write(STDOUT_FILENO, "Warning: Signal received, trying to abort ongoing process ...\n", 65);
+        write(STDOUT_FILENO, "Warning: Signal received, trying to abort ongoing process ...\n", 63);
     }
 
     // call custom handler
