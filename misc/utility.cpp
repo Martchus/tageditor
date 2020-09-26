@@ -166,6 +166,7 @@ QString elementPositionToQString(ElementPosition elementPosition)
 QString formatName(const QString &str, bool underscoreToWhitespace)
 {
     QString res;
+    res.reserve(str.size());
     bool whitespace = true;
     for (int i = 0, size = str.size(); i != size; ++i) {
         const QChar current = str.at(i);
@@ -178,7 +179,8 @@ QString formatName(const QString &str, bool underscoreToWhitespace)
         } else if (whitespace) {
             if (i) {
                 auto rest = QtUtilities::midRef(str, i);
-                static const char *const connectingWords[] = { "the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on ", "as " };
+                static const char *const connectingWords[]
+                    = { "the ", "a ", "an ", "of ", "or ", "and ", "in ", "to ", "at ", "on ", "as ", "vs ", "vs. " };
                 for (const char *word : connectingWords) {
                     if (rest.startsWith(QLatin1String(word), Qt::CaseInsensitive)) {
                         res += current.toLower();
