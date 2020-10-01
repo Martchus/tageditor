@@ -211,6 +211,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
         trackObject.setProperty(QStringLiteral("description"), QString::fromUtf8(track.description().data()));
         tracksObject.setProperty(trackIndex, trackObject TAGEDITOR_JS_READONLY);
     }
+    fileInfoObject.setProperty(QStringLiteral("tracks"), tracksObject TAGEDITOR_JS_READONLY);
 
     return fileInfoObject;
 }
