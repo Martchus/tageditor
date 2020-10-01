@@ -208,7 +208,10 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
         trackObject.setProperty(QStringLiteral("mediaType"), QString::fromUtf8(track.mediaTypeName()));
         trackObject.setProperty(QStringLiteral("format"), QString::fromUtf8(track.formatName()));
         trackObject.setProperty(QStringLiteral("formatAbbreviation"), QString::fromUtf8(track.formatAbbreviation()));
-        trackObject.setProperty(QStringLiteral("description"), QString::fromUtf8(track.description().data()));
+        trackObject.setProperty(QStringLiteral("version"), QString::number(track.version()));
+        trackObject.setProperty(QStringLiteral("language"), QString::fromStdString(track.language()));
+        trackObject.setProperty(QStringLiteral("description"), QString::fromStdString(track.description()));
+        trackObject.setProperty(QStringLiteral("shortDescription"), QString::fromStdString(track.shortDescription()));
         tracksObject.setProperty(trackIndex, trackObject TAGEDITOR_JS_READONLY);
     }
     fileInfoObject.setProperty(QStringLiteral("tracks"), tracksObject TAGEDITOR_JS_READONLY);
