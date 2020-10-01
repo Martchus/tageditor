@@ -11,6 +11,12 @@ var includeArtist = true
 var includeAlbum = true
 // specifies whether the title should be included
 var includeTitle = true
+// specifies whether tags like [foo] should be stripped from the title if deduced from file name
+var stripTags = false
+// specifies whether the title deduced from the file name should be kept as-is
+var keepTitleFromFileName = false
+// specifies whether track information should be appended (like [H.265-320p AAC-LC-2ch-eng AAC-LC-2ch-ger])
+var includeTrackInfo = false
 // specifies the "distribution directory"
 //var distDir = false;                        // don't move files around
 var distDir = "/path/to/my/music-collection" // move files to an appropriate subdirectory under this path
@@ -28,7 +34,10 @@ var isMiscFile = function (tag) {
 var isPartOfCollection = function (tag) {
     return tag.comment === "collection"
 }
+
+//
 // helper functions
+//
 
 // returns whether the specified \a value is not undefined and not an empty string.
 function notEmpty(value) {
@@ -57,7 +66,14 @@ function validDirectoryName(name) {
     return name !== undefined ? name.replace(/[\/\\]/gi, " - ").replace(
                                     /[<>?!*|:\".\n\f\r]/gi, "") : ""
 }
+// strips tags from the beginning or end of the string if configured
+function tagsStripped(name) {
+    return stripTags ? name.replace(/^(\[[^\]]*\]\s*)+/g, "").replace(/(\s*\[[^\]]*\])+$/g, "") : name;
+}
+
+//
 // actual script
+//
 
 // skip directories in this example script
 if (!tageditor.isFile) {
@@ -68,6 +84,7 @@ if (!tageditor.isFile) {
 // parse file using the built-in parseFileInfo function
 var fileInfo = tageditor.parseFileInfo(tageditor.currentPath)
 var tag = fileInfo.tag
+var tracks = fileInfo.tracks
 
 // deduce title and track number from the file name using the built-in parseFileName function (as fallback if tags missing)
 var infoFromFileName = tageditor.parseFileName(fileInfo.currentBaseName)
@@ -156,13 +173,23 @@ var title = validFileName(tag.title)
 if (includeTitle) {
     // use value from file name if the tag has no title information
     if (!notEmpty(title)) {
-        title = validFileName(infoFromFileName.title)
+        if (!keepTitleFromFileName) {
+            title = validFileName(tagsStripped(infoFromFileName.title))
+        }
+        if (!notEmpty(title)) {
+            title = validFileName(tagsStripped(fileInfo.currentBaseName))
+        }
     }
     if (newName.length > 0) {
         newName = newName.concat(lastSeparator, title)
     } else {
         newName = newName.concat(title)
     }
+}
+
+// append track info
+if (includeTrackInfo && tracks.length > 0) {
+    newName = newName.concat(" [", tracks.map(track => track.description).join(" "), "]")
 }
 
 // append an appropriate suffix
