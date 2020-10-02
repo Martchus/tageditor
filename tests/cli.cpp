@@ -743,11 +743,11 @@ void CliTests::testDisplayingInfo()
           "    Document version              2\n"
           "    Tag position                  before data\n"
           "    Index position                before data\n",
-            " - \e[1mTracks: H.264-576p / AAC-LC-2ch\e[0m\n"
+            " - \e[1mTracks: H.264-Main@L3.1-576p / AAC-LC-2ch\e[0m\n"
             "    ID                            1863976627\n"
             "    Type                          Video\n"
             "    Format                        Advanced Video Coding Main Profile\n"
-            "    Abbreviation                  H.264\n"
+            "    Abbreviation                  H.264 Main\n"
             "    Raw format ID                 V_MPEG4/ISO/AVC\n"
             "    FPS                           24\n",
             "    ID                            3134325680\n"
@@ -823,12 +823,12 @@ void CliTests::testSettingTrackMetaData()
           "    Document version              2\n"
           "    Tag position                  before data\n"
           "    Index position                before data\n",
-            " - \e[1mTracks: H.264-576p / AAC-LC-2ch-ger\e[0m\n"
+            " - \e[1mTracks: H.264-Main@L3.1-576p / AAC-LC-2ch-ger\e[0m\n"
             "    ID                            1863976627\n"
             "    Name                          video track\n"
             "    Type                          Video\n"
             "    Format                        Advanced Video Coding Main Profile\n"
-            "    Abbreviation                  H.264\n"
+            "    Abbreviation                  H.264 Main\n"
             "    Raw format ID                 V_MPEG4/ISO/AVC\n"
             "    FPS                           24\n",
             "    ID                            3134325680\n"
