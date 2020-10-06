@@ -244,7 +244,7 @@ currently shown tag.</string>
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>678</width>
+            <width>688</width>
             <height>0</height>
            </rect>
           </property>
@@ -421,6 +421,19 @@ currently shown tag.</string>
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>tagSelectionComboBox</tabstop>
+  <tabstop>keepPreviousValuesPushButton</tabstop>
+  <tabstop>tagOptionsPushButton</tabstop>
+  <tabstop>restoreEntriesPushButton</tabstop>
+  <tabstop>clearEntriesPushButton</tabstop>
+  <tabstop>scrollArea</tabstop>
+  <tabstop>abortButton</tabstop>
+  <tabstop>saveButton</tabstop>
+  <tabstop>nextButton</tabstop>
+  <tabstop>deleteTagsButton</tabstop>
+  <tabstop>closeButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
