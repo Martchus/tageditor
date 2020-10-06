@@ -338,6 +338,7 @@ ClearLineEdit *TagFieldEdit::setupLineEdit()
 ClearPlainTextEdit *TagFieldEdit::setupPlainTextEdit()
 {
     m_plainTextEdit = new ClearPlainTextEdit(this);
+    m_plainTextEdit->setTabChangesFocus(true);
     m_plainTextEdit->setClearButtonEnabled(true);
     m_plainTextEdit->addCustomAction(setupLockAction());
     m_plainTextEdit->addCustomAction(setupRestoreAction());
