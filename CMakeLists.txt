@@ -14,7 +14,7 @@ set(META_GUI_OPTIONAL true)
 set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 3)
 set(META_VERSION_MINOR 3)
-set(META_VERSION_PATCH 9)
+set(META_VERSION_PATCH 10)
 set(META_ADD_DEFAULT_CPP_UNIT_TEST_APPLICATION ON)
 
 # add project files
@@ -178,16 +178,15 @@ set(REQUIRED_ICONS
     image-resize-symbolic)
 
 # find c++utilities
-set(CONFIGURATION_PACKAGE_SUFFIX
-    ""
-    CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
+set(CONFIGURATION_PACKAGE_SUFFIX "" CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
 find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} 5.5.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
 # find qtutilities
 if (WIDGETS_GUI OR QUICK_GUI)
-    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX} 6.3.0 REQUIRED)
+    set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES "${CONFIGURATION_PACKAGE_SUFFIX}" CACHE STRING "sets the suffix for qtutilities")
+    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} 6.3.0 REQUIRED)
     use_qt_utilities()
 endif ()
 
