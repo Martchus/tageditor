@@ -46,7 +46,7 @@
      <x>0</x>
      <y>0</y>
      <width>1225</width>
-     <height>26</height>
+     <height>30</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -82,6 +82,7 @@
     <property name="title">
      <string>A&amp;pplication</string>
     </property>
+    <addaction name="actionNew_window"/>
     <addaction name="actionSettings"/>
     <addaction name="actionOpen_MusicBrainz_search"/>
     <addaction name="lockLayout"/>
@@ -361,6 +362,14 @@
    </property>
    <property name="text">
     <string>&amp;Lock layout</string>
+   </property>
+  </action>
+  <action name="actionNew_window">
+   <property name="icon">
+    <iconset theme="window-new"/>
+   </property>
+   <property name="text">
+    <string>New window</string>
    </property>
   </action>
  </widget>

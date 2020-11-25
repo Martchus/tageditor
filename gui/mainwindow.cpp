@@ -114,6 +114,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // connect signals and slots, install event filter
     //  menu: application
+    connect(m_ui->actionNew_window, &QAction::triggered, this, &MainWindow::showNewWindow);
     connect(m_ui->actionSettings, &QAction::triggered, this, &MainWindow::showSettingsDlg);
     connect(m_ui->actionOpen_MusicBrainz_search, &QAction::triggered, this, &MainWindow::toggleDbQueryWidget);
     connect(m_ui->lockLayout, &QAction::triggered, this, &MainWindow::toggleLayoutLocked);
@@ -376,6 +377,17 @@ void MainWindow::showAboutDlg()
     } else {
         m_aboutDlg->activateWindow();
     }
+}
+
+
+/*!
+ * \brief MainWindow::showNewWindow
+ */
+void MainWindow::showNewWindow()
+{
+    auto *const newWindow = new MainWindow;
+    newWindow->setAttribute(Qt::WA_DeleteOnClose);
+    newWindow->show();
 }
 
 /*!

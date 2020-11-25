@@ -175,7 +175,8 @@ set(REQUIRED_ICONS
     system-file-manager
     document-save
     view-media-lyrics
-    image-resize-symbolic)
+    image-resize-symbolic
+    window-new)
 
 # find c++utilities
 set(CONFIGURATION_PACKAGE_SUFFIX

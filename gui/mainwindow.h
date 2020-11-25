@@ -69,6 +69,7 @@ private Q_SLOTS:
     void handleCurrentPathChanged(const QString &newPath);
 
     // settings
+    void showNewWindow();
     void showSettingsDlg();
     void applySettingsFromDialog();
 
