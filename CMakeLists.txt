@@ -178,14 +178,18 @@ set(REQUIRED_ICONS
     image-resize-symbolic)
 
 # find c++utilities
-set(CONFIGURATION_PACKAGE_SUFFIX "" CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
+set(CONFIGURATION_PACKAGE_SUFFIX
+    ""
+    CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
 find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} 5.5.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
 # find qtutilities
 if (WIDGETS_GUI OR QUICK_GUI)
-    set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES "${CONFIGURATION_PACKAGE_SUFFIX}" CACHE STRING "sets the suffix for qtutilities")
+    set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES
+        "${CONFIGURATION_PACKAGE_SUFFIX}"
+        CACHE STRING "sets the suffix for qtutilities")
     find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} 6.3.0 REQUIRED)
     use_qt_utilities()
 endif ()
