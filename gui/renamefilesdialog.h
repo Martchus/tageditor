@@ -45,7 +45,8 @@ private Q_SLOTS:
     void previewItemSelected(const QItemSelection &selected, const QItemSelection &deselected);
     void pasteScriptFromFile(const QString &fileName);
     void pasteScriptFromClipboard();
-    void pasteDefaultExampleScript();
+    void pasteSimpleExampleScript();
+    void pasteAdvancedExampleScript();
     void showTreeViewContextMenu(const QPoint &position);
     void showSelectScriptFileDlg();
     void abortClose();

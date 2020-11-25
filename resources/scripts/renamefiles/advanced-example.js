@@ -18,7 +18,7 @@ var keepTitleFromFileName = false
 // specifies whether track information should be appended (like [H.265-320p AAC-LC-2ch-eng AAC-LC-2ch-ger])
 var includeTrackInfo = false
 // specifies the "distribution directory"
-//var distDir = false;                        // don't move files around
+//var distDir = false                        // don't move files around
 var distDir = "/path/to/my/music-collection" // move files to an appropriate subdirectory under this path
 // directory used to store collections which contain songs from multiple artists
 var collectionsDir = "collections"
@@ -59,16 +59,16 @@ function appropriateDigitCount(pos, total) {
 // returns a copy of the specified \a name with characters that might be avoided in file names striped out
 function validFileName(name) {
     return name !== undefined ? name.replace(/[\/\\]/gi, " - ").replace(
-                                    /[<>?!*|:\"\n\f\r]/gi, "") : ""
+        /[<>?!*|:\"\n\f\r]/gi, "") : ""
 }
 // returns a copy of the specified \a name with characters that might be avoided in directory names striped out.
 function validDirectoryName(name) {
     return name !== undefined ? name.replace(/[\/\\]/gi, " - ").replace(
-                                    /[<>?!*|:\".\n\f\r]/gi, "") : ""
+        /[<>?!*|:\".\n\f\r]/gi, "") : ""
 }
 // strips tags from the beginning or end of the string if configured
 function tagsStripped(name) {
-    return stripTags ? name.replace(/^(\[[^\]]*\]\s*)+/g, "").replace(/(\s*\[[^\]]*\])+$/g, "") : name;
+    return stripTags ? name.replace(/^(\[[^\]]*\]\s*)+/g, "").replace(/(\s*\[[^\]]*\])+$/g, "") : name
 }
 
 //
@@ -90,26 +90,26 @@ var tracks = fileInfo.tracks
 var infoFromFileName = tageditor.parseFileName(fileInfo.currentBaseName)
 
 // skip hidden and "desktop.ini" files
-if (fileInfo.currentName.indexOf(".") === 0
-        || fileInfo.currentName === "desktop.ini") {
+if (fileInfo.currentName.indexOf(".") === 0 ||
+    fileInfo.currentName === "desktop.ini") {
     tageditor.skip()
     return
 }
 
 // treat *.lrc files like their corresponding audio files
-var keepSuffix;
+var keepSuffix
 if (fileInfo.currentSuffix === "lrc") {
-    keepSuffix = fileInfo.currentSuffix; // keep the lrc suffix later
-    for(let extension of ["mp3", "flac", "m4a"]) {
-        fileInfo = tageditor.parseFileInfo(fileInfo.currentPathWithoutExtension + "." + extension);
-        tag = fileInfo.tag;
+    keepSuffix = fileInfo.currentSuffix // keep the lrc suffix later
+    for (let extension of ["mp3", "flac", "m4a"]) {
+        fileInfo = tageditor.parseFileInfo(fileInfo.currentPathWithoutExtension + "." + extension)
+        tag = fileInfo.tag
         if (!fileInfo.ioErrorOccured) {
-            break;
+            break
         }
     }
     if (fileInfo.ioErrorOccured) {
-        tageditor.skip("skipping, corresponding audio file not present");
-        return;
+        tageditor.skip("skipping, corresponding audio file not present")
+        return
     }
 }
 
@@ -133,10 +133,7 @@ if (fileInfo.currentSuffix === "tmp") {
 var fields = []
 
 // get the artist (preferably album artist), remove invalid characters and add it to fields array
-var artist = validFileName(tag.albumartist)
-if (artist.length === 0) {
-    artist = validFileName(tag.artist)
-}
+var artist = validFileName(tag.albumartist || tag.artist)
 if (includeArtist && !isPartOfCollection(tag) && notEmpty(artist)) {
     fields.push(artist)
 }
@@ -214,10 +211,7 @@ if (!distDir) {
     return
 }
 var path = [distDir]
-var artist = validDirectoryName(tag.albumartist)
-if (artist.length === 0) {
-    artist = validDirectoryName(tag.artist)
-}
+var artist = validDirectoryName(tag.albumartist || tag.artist)
 if (isPartOfCollection(tag)) {
     path.push(collectionsDir)
 } else if (isMiscFile(tag)) {

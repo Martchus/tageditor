@@ -54,10 +54,11 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent)
     m_ui->notificationLabel->setHidden(true);
 
     // setup pasteScriptButton menu
-    QMenu *pasteScriptButtonMenu = new QMenu(m_ui->pasteScriptPushButton);
-    pasteScriptButtonMenu->addAction(tr("from file"), this, &RenameFilesDialog::showSelectScriptFileDlg);
-    pasteScriptButtonMenu->addAction(tr("from clipboard"), this, &RenameFilesDialog::pasteScriptFromClipboard);
-    pasteScriptButtonMenu->addAction(tr("default script"), this, &RenameFilesDialog::pasteDefaultExampleScript);
+    auto *const pasteScriptButtonMenu = new QMenu(m_ui->pasteScriptPushButton);
+    pasteScriptButtonMenu->addAction(tr("File"), this, &RenameFilesDialog::showSelectScriptFileDlg);
+    pasteScriptButtonMenu->addAction(tr("Paste from clipboard"), this, &RenameFilesDialog::pasteScriptFromClipboard);
+    pasteScriptButtonMenu->addAction(tr("Simple example"), this, &RenameFilesDialog::pasteSimpleExampleScript);
+    pasteScriptButtonMenu->addAction(tr("Advanced example"), this, &RenameFilesDialog::pasteAdvancedExampleScript);
     m_ui->pasteScriptPushButton->setMenu(pasteScriptButtonMenu);
 
     // setup icons
@@ -76,7 +77,7 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent)
         m_ui->javaScriptPlainTextEdit->setPlainText(settings.editorScript);
         m_scriptModified = true;
     } else {
-        pasteDefaultExampleScript();
+        pasteSimpleExampleScript();
     }
 
     // connect signals and slots
@@ -354,9 +355,14 @@ void RenameFilesDialog::pasteScriptFromClipboard()
     m_ui->javaScriptPlainTextEdit->setPlainText(script);
 }
 
-void RenameFilesDialog::pasteDefaultExampleScript()
+void RenameFilesDialog::pasteSimpleExampleScript()
 {
-    pasteScriptFromFile(QStringLiteral(":/scripts/renamefiles/example1"));
+    pasteScriptFromFile(QStringLiteral(":/scripts/renamefiles/simple-example"));
+}
+
+void RenameFilesDialog::pasteAdvancedExampleScript()
+{
+    pasteScriptFromFile(QStringLiteral(":/scripts/renamefiles/advanced-example"));
 }
 
 void RenameFilesDialog::showTreeViewContextMenu(const QPoint &position)

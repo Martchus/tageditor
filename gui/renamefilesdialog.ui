@@ -98,7 +98,7 @@
             <item>
              <widget class="QPushButton" name="pasteScriptPushButton">
               <property name="text">
-               <string>Paste</string>
+               <string>Open/Examples</string>
               </property>
               <property name="icon">
                <iconset theme="edit-paste">
@@ -578,7 +578,7 @@
                 <item>
                  <widget class="PathLineEdit" name="scriptFilePathLineEdit">
                   <property name="placeholderText">
-                   <string>select a script file</string>
+                   <string>Select a script file</string>
                   </property>
                  </widget>
                 </item>
