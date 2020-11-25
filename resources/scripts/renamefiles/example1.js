@@ -96,20 +96,21 @@ if (fileInfo.currentName.indexOf(".") === 0
     return
 }
 
-// treat *.lrc files like their corresponding *.mp3 files
-var keepSuffix
+// treat *.lrc files like their corresponding audio files
+var keepSuffix;
 if (fileInfo.currentSuffix === "lrc") {
-    // deduce path of corresponding *.mp3 file
-    var correspondingMp3File = fileInfo.currentPathWithoutExtension + ".mp3"
-    // keep the lrc suffix later
-    keepSuffix = fileInfo.currentSuffix
-    // use the file info from the corresponding *.mp3 file
-    fileInfo = tageditor.parseFileInfo(correspondingMp3File)
-    if (fileInfo.ioErrorOccured) {
-        tageditor.skip("skipped, " + correspondingMp3File + " not present")
-        return
+    keepSuffix = fileInfo.currentSuffix; // keep the lrc suffix later
+    for(let extension of ["mp3", "flac", "m4a"]) {
+        fileInfo = tageditor.parseFileInfo(fileInfo.currentPathWithoutExtension + "." + extension);
+        tag = fileInfo.tag;
+        if (!fileInfo.ioErrorOccured) {
+            break;
+        }
     }
-    tag = fileInfo.tag
+    if (fileInfo.ioErrorOccured) {
+        tageditor.skip("skipping, corresponding audio file not present");
+        return;
+    }
 }
 
 // skip files which don't contain audio or video tracks
