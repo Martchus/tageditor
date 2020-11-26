@@ -351,12 +351,14 @@ void FileInfoModel::updateCache()
                 setItem(++currentRow, tagsItem);
                 setItem(currentRow, 1, defaultItem(tr("%1 tag(s) assigned", nullptr, trQuandity(tags.size())).arg(tags.size())));
 
-                for (const Tag *tag : tags) {
-                    auto *tagItem = defaultItem(tag->typeName());
+                for (const Tag *const tag : tags) {
+                    auto *const tagItem = defaultItem(tag->typeName());
                     ItemHelper tagHelper(tagItem);
                     tagHelper.appendRow(tr("Version"), tag->version());
-                    tagHelper.appendRow(tr("Target level"), tag->targetString());
-                    tagHelper.appendRow(tr("Size"), dataSizeToString(tag->size()));
+                    if (tag->supportsTarget() && !tag->target().isEmpty()) {
+                        tagHelper.appendRow(tr("Target level"), tag->targetString());
+                    }
+                    tagHelper.appendRow(tr("Size"), dataSizeToString(tag->size(), true));
                     tagHelper.appendRow(tr("Field count"), tag->fieldCount());
                     tagsItem->appendRow(tagItem);
                 }
@@ -379,8 +381,8 @@ void FileInfoModel::updateCache()
                 }
 
                 size_t number = 0;
-                for (const AbstractTrack *track : tracks) {
-                    auto *trackItem = defaultItem(tr("Track #%1").arg(++number));
+                for (const AbstractTrack *const track : tracks) {
+                    auto *const trackItem = defaultItem(tr("Track #%1").arg(++number));
                     ItemHelper trackHelper(trackItem);
                     trackHelper.appendRow(tr("ID"), track->id());
                     trackHelper.appendRow(tr("Number"), track->trackNumber());
@@ -405,35 +407,63 @@ void FileInfoModel::updateCache()
                     if (*fmtName) {
                         trackHelper.appendRow(tr("Extension"), fmtName);
                     }
-                    trackHelper.appendRow(tr("Format/codec ID"), track->formatId());
-                    trackHelper.appendRow(tr("Size"), track->size());
-                    trackHelper.appendRow(tr("Duration"), track->duration());
+                    if (!track->formatId().empty()) {
+                        trackHelper.appendRow(tr("Format/codec ID"), track->formatId());
+                    }
+                    if (track->size()) {
+                        trackHelper.appendRow(tr("Size"), dataSizeToString(track->size(), true));
+                    }
+                    if (!track->duration().isNull()) {
+                        trackHelper.appendRow(tr("Duration"), track->duration());
+                    }
                     if (track->bitrate() > 0.0) {
                         trackHelper.appendRow(tr("Avg. bitrate"), bitrateToString(track->bitrate()));
                     }
                     if (track->maxBitrate() > 0.0) {
                         trackHelper.appendRow(tr("Max. bitrate"), bitrateToString(track->maxBitrate()));
                     }
-                    trackHelper.appendRow(tr("Creation time"), track->creationTime());
-                    trackHelper.appendRow(tr("Modification time"), track->modificationTime());
-                    trackHelper.appendRow(tr("Language"), languageNameFromIsoWithFallback(track->language()));
-                    trackHelper.appendRow(tr("Compressor name"), track->compressorName());
+                    if (!track->creationTime().isNull()) {
+                        trackHelper.appendRow(tr("Creation time"), track->creationTime());
+                    }
+                    if (!track->modificationTime().isNull()) {
+                        trackHelper.appendRow(tr("Modification time"), track->modificationTime());
+                    }
+                    if (!track->language().empty()) {
+                        trackHelper.appendRow(tr("Language"), languageNameFromIsoWithFallback(track->language()));
+                    }
+                    if (!track->compressorName().empty()) {
+                        trackHelper.appendRow(tr("Compressor name"), track->compressorName());
+                    }
                     if (track->samplingFrequency()) {
                         trackHelper.appendRow(tr("Sampling frequency"),
                             track->extensionSamplingFrequency() ? QString::number(track->extensionSamplingFrequency()) % QStringLiteral(" Hz / ")
                                     % QString::number(track->samplingFrequency()) % QStringLiteral(" Hz")
                                                                 : QString::number(track->samplingFrequency()) + QStringLiteral(" Hz"));
                     }
-                    trackHelper.appendRow(track->mediaType() == MediaType::Video ? tr("Frame count") : tr("Sample count"), track->sampleCount());
-                    trackHelper.appendRow(tr("Bits per sample"), track->bitsPerSample());
-                    trackHelper.appendRow(tr("Quality"), track->quality());
-                    trackHelper.appendRow(tr("Pixel size"), track->pixelSize());
-                    trackHelper.appendRow(tr("Display size"), track->displaySize());
+                    if (track->sampleCount()) {
+                        trackHelper.appendRow(track->mediaType() == MediaType::Video ? tr("Frame count") : tr("Sample count"), track->sampleCount());
+                    }
+                    if (track->bitsPerSample()) {
+                        trackHelper.appendRow(tr("Bits per sample"), track->bitsPerSample());
+                    }
+                    if (track->quality()) {
+                        trackHelper.appendRow(tr("Quality"), track->quality());
+                    }
+                    if (!track->pixelSize().isNull()) {
+                        trackHelper.appendRow(tr("Pixel size"), track->pixelSize());
+                    }
+                    if (!track->displaySize().isNull()) {
+                        trackHelper.appendRow(tr("Display size"), track->displaySize());
+                    }
                     if (track->pixelAspectRatio().isValid()) {
                         trackHelper.appendRow(tr("Pixel Aspect Ratio"), track->pixelAspectRatio().toString());
                     }
-                    trackHelper.appendRow(tr("Cropping"), track->cropping());
-                    trackHelper.appendRow(tr("Resolution"), track->resolution());
+                    if (!track->cropping().isNull()) {
+                        trackHelper.appendRow(tr("Cropping"), track->cropping());
+                    }
+                    if (!track->resolution().isNull()) {
+                        trackHelper.appendRow(tr("Resolution"), track->resolution());
+                    }
                     if (track->channelConfigString()) {
                         trackHelper.appendRow(tr("Channel config"),
                             track->extensionChannelConfigString() ? QString::fromUtf8(track->extensionChannelConfigString()) % QStringLiteral(" / ")
@@ -481,8 +511,8 @@ void FileInfoModel::updateCache()
                 setItem(currentRow, 1, defaultItem(tr("%1 attachment(s) present", nullptr, trQuandity(attachments.size())).arg(attachments.size())));
 
                 size_t number = 0;
-                for (const AbstractAttachment *attachment : attachments) {
-                    auto *attachmentItem = defaultItem(tr("Attachment #%1").arg(++number));
+                for (const AbstractAttachment *const attachment : attachments) {
+                    auto *const attachmentItem = defaultItem(tr("Attachment #%1").arg(++number));
                     ItemHelper attachHelper(attachmentItem);
                     attachHelper.appendRow(tr("ID"), attachment->id());
                     attachHelper.appendRow(tr("Name"), attachment->name());
