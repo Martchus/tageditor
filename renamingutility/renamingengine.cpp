@@ -36,6 +36,17 @@ RenamingEngine::RenamingEngine(QObject *parent)
     connect(this, &RenamingEngine::changingsApplied, this, &RenamingEngine::processChangingsApplied);
 }
 
+RenamingEngine::~RenamingEngine()
+{
+#ifndef TAGEDITOR_NO_JSENGINE
+    for (auto *const child : children()) {
+        if (auto *const childThread = qobject_cast<QThread *>(child)) {
+            childThread->wait();
+        }
+    }
+#endif
+}
+
 #ifndef TAGEDITOR_NO_JSENGINE
 bool RenamingEngine::setProgram(const TAGEDITOR_JS_VALUE &program)
 {

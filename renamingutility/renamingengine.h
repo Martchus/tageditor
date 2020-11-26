@@ -56,6 +56,7 @@ class RenamingEngine : public QObject {
 
 public:
     explicit RenamingEngine(QObject *parent = nullptr);
+    ~RenamingEngine() override;
 
     FileSystemItem *rootItem() const;
 #ifndef TAGEDITOR_NO_JSENGINE
