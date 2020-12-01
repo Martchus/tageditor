@@ -398,7 +398,7 @@ public:
                                   "th {"
                                   "cursor: default;"
                                   "}"
-                                  "td.warning, td.critical, td.information {"
+                                  "td.warning, td.critical, td.information, td.debug {"
                                   "width: 18px;"
                                   "background-repeat: no-repeat;"
                                   "background-position:center;"
@@ -417,6 +417,8 @@ public:
             res.append(mkErrorIconData());
             res.append(QStringLiteral(");}td.information {background-image: url(data:image/png;base64,"));
             res.append(mkInfoIconData());
+            res.append(QStringLiteral(");}td.debug {background-image: url(data:image/png;base64,"));
+            res.append(mkDebugIconData());
             res.append(QStringLiteral(");}"));
         }
 #endif
