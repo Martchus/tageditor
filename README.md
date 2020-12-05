@@ -87,9 +87,11 @@ See the release section on GitHub.
       [the AUR](https://aur.archlinux.org/packages?SeB=m&K=Martchus)
     * for a binary repository checkout [my website](http://martchus.no-ip.biz/website/page.php?name=programming)
 * Tumbleweed, Leap, Fedora
-    * for RPM \*.spec files and binary repository checkout
-      [openSUSE Build Servide](https://build.opensuse.org/project/show/home:mkittler)
-    * there is also a [repo with builds of Git master](https://build.opensuse.org/project/show/home:mkittler:vcs)
+    * RPM \*.spec files and binaries are available via openSUSE Build Service
+        * latest releases: [download page](https://software.opensuse.org/download.html?project=home:mkittler&package=tageditor),
+          [project page](https://build.opensuse.org/project/show/home:mkittler)
+        * Git master: [download page](https://software.opensuse.org/download.html?project=home:mkittler:vcs&package=tageditor),
+          [project page](https://build.opensuse.org/project/show/home:mkittler:vcs)
 * Exherbo
     * there is a [package in the platypus repository](https://git.exherbo.org/summer/packages/media-sound/tageditor)
 * Gentoo
