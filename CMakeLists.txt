@@ -196,7 +196,12 @@ if (WIDGETS_GUI OR QUICK_GUI)
 endif ()
 
 # find tagparser
-find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 9.3.0 REQUIRED)
+set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
+if (CMAKE_VERSION VERSION_LESS 3.19)
+    find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 9.3.0 REQUIRED)
+else ()
+    find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 9.3.0...10.0.0 REQUIRED)
+endif ()
 use_tag_parser()
 
 # enable experimental JSON export
