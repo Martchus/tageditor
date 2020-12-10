@@ -26,8 +26,8 @@ public:
     explicit TargetLevelModel(QObject *parent = nullptr, DefaultSelection defaultSelection = DefaultSelection::None);
     explicit TargetLevelModel(const QList<QtUtilities::ChecklistItem> &items, QObject *parent = nullptr);
 
-    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-    virtual QString labelForId(const QVariant &id) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+    virtual QString labelForId(const QVariant &id) const override;
 };
 
 inline QtUtilities::ChecklistItem TargetLevelModel::mkItem(TagParser::TagTargetLevel field, Qt::CheckState checkState)
