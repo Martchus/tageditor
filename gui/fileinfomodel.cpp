@@ -7,7 +7,7 @@
 #include <tagparser/abstractcontainer.h>
 #include <tagparser/abstracttrack.h>
 #include <tagparser/diagnostics.h>
-#include <tagparser/language.h>
+#include <tagparser/localehelper.h>
 #include <tagparser/matroska/matroskacontainer.h>
 #include <tagparser/matroska/matroskaeditionentry.h>
 #include <tagparser/mediafileinfo.h>
@@ -428,8 +428,8 @@ void FileInfoModel::updateCache()
                     if (!track->modificationTime().isNull()) {
                         trackHelper.appendRow(tr("Modification time"), track->modificationTime());
                     }
-                    if (!track->language().empty()) {
-                        trackHelper.appendRow(tr("Language"), languageNameFromIsoWithFallback(track->language()));
+                    if (!track->locale().empty()) {
+                        trackHelper.appendRow(tr("Language"), track->locale().fullOrSomeAbbreviatedName());
                     }
                     if (!track->compressorName().empty()) {
                         trackHelper.appendRow(tr("Compressor name"), track->compressorName());
@@ -533,11 +533,7 @@ void FileInfoModel::updateCache()
                 ItemHelper chapterHelper(chapterItem);
                 chapterHelper.appendRow(tr("ID"), chapter->id());
                 for (const LocaleAwareString &name : chapter->names()) {
-                    static const string delim(", ");
-                    const string locale = joinStrings(
-                        initializer_list<string>{ joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true) }, delim,
-                        true);
-                    chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromUtf8(locale.data())), name);
+                    chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromUtf8(name.locale().toString())), name);
                 }
                 if (!chapter->startTime().isNegative()) {
                     chapterHelper.appendRow(tr("Start time"), chapter->startTime());

@@ -18,7 +18,7 @@
 #include <tagparser/abstracttrack.h>
 #include <tagparser/backuphelper.h>
 #include <tagparser/diagnostics.h>
-#include <tagparser/language.h>
+#include <tagparser/localehelper.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/progressfeedback.h>
 #include <tagparser/tag.h>
@@ -199,8 +199,8 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     printProperty("ID", track->id(), nullptr, true);
                     printProperty("Name", track->name());
                     printProperty("Type", track->mediaTypeName());
-                    if (isLanguageDefined(track->language())) {
-                        printProperty("Language", languageNameFromIsoWithFallback(track->language()));
+                    if (const auto &language = track->locale().fullOrSomeAbbreviatedName(); !language.empty()) {
+                        printProperty("Language", language);
                     }
                     const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
                     printProperty("Format", fmtName);
@@ -662,7 +662,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         if (field.denotes("name")) {
                             track->setName(value);
                         } else if (field.denotes("language")) {
-                            track->setLanguage(value);
+                            track->setLocale(Locale(std::string_view(value), LocaleFormat::Unknown));
                         } else if (field.denotes("tracknumber")) {
                             track->setTrackNumber(stringToNumber<std::uint32_t>(value));
                         } else if (field.denotes("enabled")) {

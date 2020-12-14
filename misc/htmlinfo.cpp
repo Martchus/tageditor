@@ -6,7 +6,7 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractcontainer.h>
 #include <tagparser/abstracttrack.h>
-#include <tagparser/language.h>
+#include <tagparser/localehelper.h>
 #include <tagparser/matroska/matroskacontainer.h>
 #include <tagparser/matroska/matroskaeditionentry.h>
 #include <tagparser/mediafileinfo.h>
@@ -589,8 +589,8 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Modification time"),
                 qstr(track->modificationTime().toString(DateTimeOutputFormat::DateAndTime, true)));
         }
-        if (!track->language().empty()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Language"), qstr(languageNameFromIsoWithFallback(track->language())));
+        if (const auto &language = track->locale().fullOrSomeAbbreviatedName(); !language.empty()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Language"), qstr(language));
         }
         if (!track->compressorName().empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Compressor name"), qstr(track->compressorName()));
@@ -709,10 +709,7 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "ID"), QString::number(chapter.id()));
         }
         for (const LocaleAwareString &name : chapter.names()) {
-            static const string delim(", ");
-            const string locale = joinStrings(
-                initializer_list<string>{ joinStrings(name.languages(), delim, true), joinStrings(name.countries(), delim, true) }, delim, true);
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name (%1)").arg(qstr(locale)), qstr(name));
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name (%1)").arg(qstr(name.locale().toString())), qstr(name));
         }
         if (!chapter.startTime().isNegative()) {
             rowMaker.mkRow(
