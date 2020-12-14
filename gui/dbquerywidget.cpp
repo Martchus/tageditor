@@ -312,7 +312,13 @@ void DbQueryWidget::showResults()
             if (value.isNull()) {
                 continue;
             }
-            if (value.type() == QVariant::String && value.toString().isEmpty()) {
+            if (
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                value.metaType() == QMetaType::fromType<QString>()
+#else
+                value.type() == QVariant::String
+#endif
+                && value.toString().isEmpty()) {
                 continue;
             }
             columnHasValues = true;
