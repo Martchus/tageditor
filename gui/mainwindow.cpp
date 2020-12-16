@@ -379,7 +379,6 @@ void MainWindow::showAboutDlg()
     }
 }
 
-
 /*!
  * \brief MainWindow::showNewWindow
  */
