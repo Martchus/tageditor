@@ -533,7 +533,7 @@ void FileInfoModel::updateCache()
                 ItemHelper chapterHelper(chapterItem);
                 chapterHelper.appendRow(tr("ID"), chapter->id());
                 for (const LocaleAwareString &name : chapter->names()) {
-                    chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromUtf8(name.locale().toString())), name);
+                    chapterHelper.appendRow(tr("Name (%1)").arg(QString::fromStdString(name.locale().toString())), name);
                 }
                 if (!chapter->startTime().isNegative()) {
                     chapterHelper.appendRow(tr("Start time"), chapter->startTime());
