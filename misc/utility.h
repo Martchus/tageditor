@@ -40,6 +40,11 @@ constexpr int trQuandity(quint64 quandity)
     return quandity > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : static_cast<int>(quandity);
 }
 
+inline QString qstr(std::string_view stdstr)
+{
+    return QString::fromUtf8(stdstr.data(), static_cast<int>(stdstr.size()));
+}
+
 } // namespace Utility
 
 #endif // UTILITYFEATURES_H

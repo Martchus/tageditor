@@ -159,7 +159,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             cout << "Technical information for \"" << file << "\":\n";
             cout << " - " << TextAttribute::Bold << "Container format: " << fileInfo.containerFormatName() << Phrases::End;
             printProperty("Size", dataSizeToString(fileInfo.size()));
-            if (const char *const mimeType = fileInfo.mimeType()) {
+            if (const auto mimeType = fileInfo.mimeType(); !mimeType.empty()) {
                 printProperty("Mime-type", mimeType);
             }
             const auto duration = fileInfo.duration();
@@ -202,9 +202,9 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     if (const auto &language = track->locale().fullOrSomeAbbreviatedName(); !language.empty()) {
                         printProperty("Language", language);
                     }
-                    const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
+                    const auto fmtName = track->formatName(), fmtAbbr = track->formatAbbreviation();
                     printProperty("Format", fmtName);
-                    if (strcmp(fmtName, fmtAbbr)) {
+                    if (fmtName != fmtAbbr) {
                         printProperty("Abbreviation", fmtAbbr);
                     }
                     printProperty("Extensions", track->format().extensionName());
@@ -223,13 +223,13 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
                     if (track->pixelAspectRatio().isValid()) {
                         printProperty("Pixel Aspect Ratio", track->pixelAspectRatio().toString());
                     }
-                    if (track->channelConfigString()) {
-                        printProperty("Channel config", track->channelConfigString());
+                    if (const auto cc = track->channelConfigString(); !cc.empty()) {
+                        printProperty("Channel config", cc);
                     } else {
                         printProperty("Channel count", track->channelCount());
                     }
-                    if (track->extensionChannelConfigString()) {
-                        printProperty("Extension channel config", track->extensionChannelConfigString());
+                    if (const auto ecc = track->extensionChannelConfigString(); !ecc.empty()) {
+                        printProperty("Extension channel config", ecc);
                     }
                     if (track->bitrate() > 0.0) {
                         printProperty("Bitrate", bitrateToString(track->bitrate()));
@@ -823,7 +823,7 @@ void extractField(
                                 continue;
                             }
                             for (const TagValue *value : valuesForField.first) {
-                                values.emplace_back(value, joinStrings({ tag->typeName(), numberToString(values.size()) }, "-", true));
+                                values.emplace_back(value, joinStrings({ std::string(tag->typeName()), numberToString(values.size()) }, "-", true));
                             }
                         } catch (const ConversionException &e) {
                             diag.emplace_back(DiagLevel::Critical,

@@ -199,7 +199,8 @@ QString TagEdit::generateLabel() const
     QStringList tagNames;
     tagNames.reserve(m_tags.size());
     for (const Tag *const tag : m_tags) {
-        tagNames << QString::fromUtf8(tag->typeName());
+        const auto typeName = tag->typeName();
+        tagNames << QString::fromUtf8(typeName.data(), typeName.size());
         if (!differentTargets && !(target == tag->target())) {
             differentTargets = true;
         }

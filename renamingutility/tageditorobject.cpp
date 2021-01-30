@@ -25,6 +25,7 @@ using namespace CppUtilities;
 using namespace QtUtilities;
 using namespace Utility;
 using namespace TagParser;
+using namespace Utility;
 
 namespace RenamingUtility {
 
@@ -177,9 +178,9 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     fileInfoObject.setProperty(QStringLiteral("diagMessages"), diagObj);
 
     // add MIME-type, suitable suffix and technical summary
-    fileInfoObject.setProperty(QStringLiteral("mimeType"), QString::fromUtf8(fileInfo.mimeType()) TAGEDITOR_JS_READONLY);
-    fileInfoObject.setProperty(QStringLiteral("suitableSuffix"), QString::fromUtf8(fileInfo.containerFormatAbbreviation()) TAGEDITOR_JS_READONLY);
-    fileInfoObject.setProperty(QStringLiteral("technicalSummary"), QString::fromUtf8(fileInfo.technicalSummary().data()) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("mimeType"), qstr(fileInfo.mimeType()) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("suitableSuffix"), qstr(fileInfo.containerFormatAbbreviation()) TAGEDITOR_JS_READONLY);
+    fileInfoObject.setProperty(QStringLiteral("technicalSummary"), qstr(fileInfo.technicalSummary()) TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("hasAudioTracks"), fileInfo.hasTracksOfType(MediaType::Audio) TAGEDITOR_JS_READONLY);
     fileInfoObject.setProperty(QStringLiteral("hasVideoTracks"), fileInfo.hasTracksOfType(MediaType::Video) TAGEDITOR_JS_READONLY);
 
@@ -205,9 +206,9 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     for (auto trackIterator = tracks.cbegin(), end = tracks.cend(); trackIterator != end; ++trackIterator, ++trackIndex) {
         const AbstractTrack &track = **trackIterator;
         auto trackObject = m_engine->newObject();
-        trackObject.setProperty(QStringLiteral("mediaType"), QString::fromUtf8(track.mediaTypeName()));
-        trackObject.setProperty(QStringLiteral("format"), QString::fromUtf8(track.formatName()));
-        trackObject.setProperty(QStringLiteral("formatAbbreviation"), QString::fromUtf8(track.formatAbbreviation()));
+        trackObject.setProperty(QStringLiteral("mediaType"), qstr(track.mediaTypeName()));
+        trackObject.setProperty(QStringLiteral("format"), qstr(track.formatName()));
+        trackObject.setProperty(QStringLiteral("formatAbbreviation"), qstr(track.formatAbbreviation()));
         trackObject.setProperty(QStringLiteral("version"), QString::number(track.version()));
         trackObject.setProperty(QStringLiteral("language"), QString::fromStdString(track.locale().someAbbreviatedName()));
         trackObject.setProperty(QStringLiteral("description"), QString::fromStdString(track.description()));

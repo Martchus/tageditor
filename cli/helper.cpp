@@ -177,9 +177,9 @@ printDiagMsg:
     }
 }
 
-void printProperty(const char *propName, const char *value, const char *suffix, Indentation indentation)
+void printProperty(const char *propName, std::string_view value, const char *suffix, Indentation indentation)
 {
-    if (!*value) {
+    if (value.empty()) {
         return;
     }
     const auto propLen(strlen(propName));
@@ -613,53 +613,54 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
 }
 
 template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
-std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(const char *idString, std::size_t idStringSize, const Tag *tag, TagType tagType)
+std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(std::string_view idString, const Tag *tag, TagType tagType)
 {
     auto res = make_pair<std::vector<const TagValue *>, bool>({}, false);
     if (!(tagType & tagTypeMask)) {
         return res;
     }
-    res.first = static_cast<const ConcreteTag *>(tag)->values(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize));
+    res.first = static_cast<const ConcreteTag *>(tag)->values(ConcreteTag::FieldType::fieldIdFromString(idString));
     res.second = true;
     return res;
 }
 
 template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
-bool setValuesForNativeField(const char *idString, std::size_t idStringSize, Tag *tag, TagType tagType, const std::vector<TagValue> &values)
+bool setValuesForNativeField(std::string_view idString, Tag *tag, TagType tagType, const std::vector<TagValue> &values)
 {
     if (!(tagType & tagTypeMask)) {
         return false;
     }
-    return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::FieldType::fieldIdFromString(idString, idStringSize), values);
+    return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::FieldType::fieldIdFromString(idString), values);
 }
 
-inline FieldId::FieldId(const char *nativeField, std::size_t nativeFieldSize, const GetValuesForNativeFieldType &valuesForNativeField,
-    const SetValuesForNativeFieldType &setValuesForNativeField)
+inline FieldId::FieldId(
+    std::string_view nativeField, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField)
     : m_knownField(KnownField::Invalid)
-    , m_nativeField(nativeField, nativeFieldSize)
+    , m_nativeField(nativeField)
     , m_valuesForNativeField(valuesForNativeField)
     , m_setValuesForNativeField(setValuesForNativeField)
 {
 }
 
 /// \remarks This wrapper is required because specifying c'tor template args is not possible.
-template <class ConcreteTag, TagType tagTypeMask> FieldId FieldId::fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize)
+template <class ConcreteTag, TagType tagTypeMask> FieldId FieldId::fromNativeField(std::string_view nativeFieldId)
 {
-    return FieldId(nativeFieldId, nativeFieldIdSize, bind(&valuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, nativeFieldIdSize, _1, _2),
-        bind(&setValuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, nativeFieldIdSize, _1, _2, _3));
+    return FieldId(nativeFieldId, bind(&valuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2),
+        bind(&setValuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2, _3));
 }
 
 FieldId FieldId::fromTagDenotation(const char *denotation, size_t denotationSize)
 {
     // check for native, format-specific denotation
     if (!strncmp(denotation, "mkv:", 4)) {
-        return FieldId::fromNativeField<MatroskaTag>(denotation + 4, denotationSize - 4);
+        return FieldId::fromNativeField<MatroskaTag>(std::string_view(denotation + 4, denotationSize - 4));
     } else if (!strncmp(denotation, "mp4:", 4)) {
-        return FieldId::fromNativeField<Mp4Tag>(denotation + 4, denotationSize - 4);
+        return FieldId::fromNativeField<Mp4Tag>(std::string_view(denotation + 4, denotationSize - 4));
     } else if (!strncmp(denotation, "vorbis:", 7)) {
-        return FieldId::fromNativeField<VorbisComment, TagType::VorbisComment | TagType::OggVorbisComment>(denotation + 7, denotationSize - 7);
+        return FieldId::fromNativeField<VorbisComment, TagType::VorbisComment | TagType::OggVorbisComment>(
+            std::string_view(denotation + 7, denotationSize - 7));
     } else if (!strncmp(denotation, "id3:", 7)) {
-        return FieldId::fromNativeField<Id3v2Tag>(denotation + 4, denotationSize - 4);
+        return FieldId::fromNativeField<Id3v2Tag>(std::string_view(denotation + 4, denotationSize - 4));
     } else if (!strncmp(denotation, "generic:", 8)) {
         // allow prefix 'generic:' for consistency
         denotation += 8, denotationSize -= 8;

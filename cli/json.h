@@ -42,7 +42,7 @@ struct TargetInfo : ReflectiveRapidJSON::JsonSerializable<TargetInfo> {
 struct TagInfo : ReflectiveRapidJSON::JsonSerializable<TagInfo> {
     TagInfo(const TagParser::Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &allocator);
 
-    const char *format = nullptr;
+    std::string_view format;
     TargetInfo target;
     std::unordered_map<std::string, std::vector<TagValue>> fields;
 };
@@ -52,7 +52,7 @@ struct FileInfo : ReflectiveRapidJSON::JsonSerializable<FileInfo> {
 
     std::string fileName;
     std::size_t size;
-    const char *mimeType;
+    std::string_view mimeType;
     std::vector<TagInfo> tags;
     std::string formatSummary;
     CppUtilities::TimeSpan duration;

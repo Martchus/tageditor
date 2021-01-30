@@ -919,7 +919,9 @@ void TagFieldEdit::handleRestoreButtonClicked()
     QMenu menu;
     int i = 0;
     for (auto *const tag : tags()) {
-        const auto *const action = menu.addAction(tr("restore to value from %1 (%2)").arg(tag->typeName()).arg(++i));
+        const auto typeName = tag->typeName();
+        const auto *const action
+            = menu.addAction(tr("restore to value from %1 (%2)").arg(QString::fromUtf8(typeName.data(), typeName.size())).arg(++i));
         connect(action, &QAction::triggered, [this, tag] {
             setLocked(false);
             updateValue(tag, PreviousValueHandling::Clear);

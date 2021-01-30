@@ -421,7 +421,8 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
         fileInfo.parseContainerFormat(diag);
         // TODO: show diagnostic messages
 
-        auto mimeType = QString::fromUtf8(fileInfo.mimeType());
+        const auto detectedMimeType = fileInfo.mimeType();
+        auto mimeType = QString::fromUtf8(detectedMimeType.data(), detectedMimeType.size());
         bool ok;
         mimeType = QInputDialog::getText(
             this, tr("Enter/confirm MIME type"), tr("Confirm or enter the MIME type of the selected file."), QLineEdit::Normal, mimeType, &ok);

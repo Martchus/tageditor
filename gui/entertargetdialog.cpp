@@ -89,8 +89,9 @@ EnterTargetDialog::~EnterTargetDialog()
 
 void EnterTargetDialog::updateLevelNamePlaceholderText(int i)
 {
-    const char *levelName = i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : nullptr;
-    m_ui->levelNameLineEdit->setPlaceholderText(levelName ? QString::fromUtf8(levelName) : QString());
+    const auto levelName
+        = i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : std::string_view();
+    m_ui->levelNameLineEdit->setPlaceholderText(QString::fromUtf8(levelName.data(), levelName.size()));
 }
 
 TagParser::TagTarget EnterTargetDialog::target() const

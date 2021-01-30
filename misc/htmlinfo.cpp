@@ -61,16 +61,6 @@ using namespace Utility;
 
 namespace HtmlInfo {
 
-inline QString qstr(const char *cstr)
-{
-    return QString::fromUtf8(cstr);
-}
-
-inline QString qstr(const string &stdstr)
-{
-    return QString::fromUtf8(stdstr.data(), static_cast<int>(stdstr.size()));
-}
-
 class RowMaker {
 public:
     RowMaker(QXmlStreamWriter &writer)
@@ -283,10 +273,10 @@ template <> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element
         writer.writeCharacters(QStringLiteral(", denoted type: 0x"));
         writer.writeCharacters(QString::number(seekId, 16));
         if (seekId <= numeric_limits<std::uint32_t>::max()) {
-            const char *const seekIdName = matroskaIdName(static_cast<std::uint32_t>(seekId));
-            if (*seekIdName) {
+            const auto seekIdName = matroskaIdName(static_cast<std::uint32_t>(seekId));
+            if (!seekIdName.empty()) {
                 writer.writeCharacters(QStringLiteral(" \""));
-                writer.writeCharacters(QString::fromLatin1(seekIdName));
+                writer.writeCharacters(QString::fromLatin1(seekIdName.data(), seekIdName.size()));
                 writer.writeCharacters(QStringLiteral("\""));
             }
         }
@@ -538,10 +528,10 @@ public:
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Name"), qstr(track->name()));
         }
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Type"), qstr(track->mediaTypeName()));
-        const char *fmtName = track->formatName(), *fmtAbbr = track->formatAbbreviation();
+        auto fmtName = track->formatName(), fmtAbbr = track->formatAbbreviation();
         rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Format"),
             QCoreApplication::translate("HtmlInfo", "The unabbreviated name of the track's format."), qstr(fmtName));
-        if (track->format() != GeneralMediaFormat::Unknown && strcmp(fmtName, fmtAbbr)) { // format name and abbreviation differ
+        if (track->format() != GeneralMediaFormat::Unknown && fmtName != fmtAbbr) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Abbreviation"),
                 QCoreApplication::translate("HtmlInfo", "The abbreviated name of the track's format."), qstr(fmtAbbr));
         }
@@ -559,7 +549,7 @@ public:
             }
         }
         fmtName = track->format().extensionName();
-        if (*fmtName) {
+        if (!fmtName.empty()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Extension"), QCoreApplication::translate("HtmlInfo", "Used format extensions."),
                 qstr(fmtName));
         }
@@ -631,15 +621,13 @@ public:
         if (!track->resolution().isNull()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Resolution"), qstr(track->resolution().toString()));
         }
-        if (track->channelConfigString()) {
-            if (track->extensionChannelConfigString()) {
+        if (const auto cc = track->channelConfigString(); !cc.empty()) {
+            if (const auto ecc = track->extensionChannelConfigString(); !ecc.empty()) {
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"),
-                    QCoreApplication::translate("HtmlInfo", "Channel configuration"),
-                    QStringLiteral("%1 / %2").arg(
-                        QString::fromUtf8(track->extensionChannelConfigString()), QString::fromUtf8(track->channelConfigString())));
+                    QCoreApplication::translate("HtmlInfo", "Channel configuration"), QStringLiteral("%1 / %2").arg(qstr(ecc), qstr(cc)));
             } else {
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel config"),
-                    QCoreApplication::translate("HtmlInfo", "Channel configuration"), QString::fromUtf8(track->channelConfigString()));
+                    QCoreApplication::translate("HtmlInfo", "Channel configuration"), qstr(cc));
             }
         } else if (track->channelCount()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Channel count"), QString::number(track->channelCount()));
@@ -650,8 +638,8 @@ public:
         if (track->fps()) {
             rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Frames per second"), QString::number(track->fps()));
         }
-        if (track->chromaFormat()) {
-            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chroma format"), qstr(track->chromaFormat()));
+        if (auto cf = track->chromaFormat(); !cf.empty()) {
+            rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Chroma format"), qstr(cf));
         }
         QStringList labels;
         if (track->isInterlaced()) {
@@ -918,14 +906,14 @@ public:
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Duration"), qstr(duration.toString(TimeSpanOutputFormat::WithMeasures)));
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Overall avg. bitrate"), qstr(bitrateToString(m_file.overallAverageBitrate())));
         }
-        const char *const mimeType = m_file.mimeType();
-        if (*mimeType) {
+        const auto mimeType = m_file.mimeType();
+        if (!mimeType.empty()) {
             m_rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Mime-type"), qstr(mimeType));
         }
         m_rowMaker.startRow(QCoreApplication::translate("HtmlInfo", "Container"));
         m_writer.writeCharacters(qstr(m_file.containerFormatName()));
-        const char *const subversion = m_file.containerFormatSubversion();
-        if (*subversion) {
+        const auto subversion = m_file.containerFormatSubversion();
+        if (!subversion.empty()) {
             mkSpace();
             m_writer.writeCharacters(qstr(subversion));
         }
@@ -996,7 +984,7 @@ public:
             startExtendedTableSection(moreId);
             for (const Tag *tag : tags) {
                 RowMaker rowMaker(m_writer);
-                rowMaker.startSubTab(tag->typeName());
+                rowMaker.startSubTab(qstr(tag->typeName()));
                 if (!tag->version().empty()) {
                     rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Version"), qstr(tag->version()));
                 }

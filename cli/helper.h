@@ -62,10 +62,9 @@ public:
 private:
     using GetValuesForNativeFieldType = std::function<std::pair<std::vector<const TagValue *>, bool>(const Tag *, TagType)>;
     using SetValuesForNativeFieldType = std::function<bool(Tag *, TagType, const std::vector<TagValue> &)>;
-    FieldId(const char *nativeField, std::size_t nativeFieldSize, const GetValuesForNativeFieldType &valuesForNativeField,
+    FieldId(std::string_view nativeField, const GetValuesForNativeFieldType &valuesForNativeField,
         const SetValuesForNativeFieldType &setValuesForNativeField);
-    template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
-    static FieldId fromNativeField(const char *nativeFieldId, std::size_t nativeFieldIdSize);
+    template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType> static FieldId fromNativeField(std::string_view nativeFieldId);
 
     KnownField m_knownField;
     std::string m_denotation;
@@ -245,13 +244,8 @@ constexpr bool isDigit(char c)
 std::string incremented(const std::string &str, unsigned int toIncrement = 1);
 
 void printDiagMessages(const TagParser::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false);
-void printProperty(const char *propName, const char *value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
+void printProperty(const char *propName, std::string_view value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
 void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
-
-inline void printProperty(const char *propName, const std::string &value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4)
-{
-    printProperty(propName, value.data(), suffix, indentation);
-}
 
 extern CppUtilities::TimeSpanOutputFormat timeSpanOutputFormat;
 
