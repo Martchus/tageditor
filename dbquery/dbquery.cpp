@@ -73,7 +73,7 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
         returnValue(artist);
     case KnownField::Genre:
         returnValue(genre);
-    case KnownField::Year:
+    case KnownField::RecordDate:
         returnValue(year);
     case KnownField::TrackPosition:
         return TagValue(PositionInSet(res.track, res.totalTracks));

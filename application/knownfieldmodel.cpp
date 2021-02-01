@@ -23,8 +23,6 @@ const char *KnownFieldModel::fieldName(KnownField field)
         return QT_TR_NOOP("Artist");
     case KnownField::Genre:
         return QT_TR_NOOP("Genre");
-    case KnownField::Year:
-        return QT_TR_NOOP("Year");
     case KnownField::Comment:
         return QT_TR_NOOP("Comment");
     case KnownField::Bpm:

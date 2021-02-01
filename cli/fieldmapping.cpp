@@ -15,7 +15,7 @@ static constexpr struct {
     { "album", KnownField::Album },
     { "artist", KnownField::Artist },
     { "genre", KnownField::Genre },
-    { "year", KnownField::Year },
+    { "year", KnownField::RecordDate },
     { "comment", KnownField::Comment },
     { "bpm", KnownField::Bpm },
     { "bps", KnownField::Bps },
