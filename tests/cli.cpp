@@ -258,7 +258,7 @@ void CliTests::testSpecifyingNativeFieldIds()
         = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "generic:releasedate", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(stderr.empty());
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Year              none" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Record date       none" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Release date      2010" }));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "FOO               bar" }));
 

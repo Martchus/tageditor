@@ -510,6 +510,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             fileInfo.parseContainerFormat(diag);
             fileInfo.parseTags(diag);
             fileInfo.parseTracks(diag);
+            fileInfo.parseAttachments(diag);
             vector<Tag *> tags;
 
             // remove tags with the specified targets
