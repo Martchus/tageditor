@@ -840,27 +840,25 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     // define function to parse the file
     const auto startThread = [this, &diag] {
         char result;
-        try { // credits for this nesting go to GCC regression 66145
+        try {
+            // try to open with write access
             try {
-                // try to open with write access
-                try {
-                    m_fileInfo.reopen(false);
-                } catch (const std::ios_base::failure &) {
-                    // try to open read-only if opening with write access failed
-                    m_fileInfo.reopen(true);
-                }
-                m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
-                m_fileInfo.parseEverything(diag);
-                result = ParsingSuccessful;
-            } catch (const Failure &) {
-                // the file has been opened; parsing notifications will be shown in the info box
-                result = FatalParsingError;
+                m_fileInfo.reopen(false);
             } catch (const std::ios_base::failure &) {
-                // the file could not be opened because an IO error occured
-                m_fileInfo.close(); // ensure file is closed
-                result = IoError;
+                // try to open read-only if opening with write access failed
+                m_fileInfo.reopen(true);
             }
-        } catch (const exception &e) {
+            m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
+            m_fileInfo.parseEverything(diag);
+            result = ParsingSuccessful;
+        } catch (const Failure &) {
+            // the file has been opened; parsing notifications will be shown in the info box
+            result = FatalParsingError;
+        } catch (const std::ios_base::failure &) {
+            // the file could not be opened because an IO error occured
+            m_fileInfo.close(); // ensure file is closed
+            result = IoError;
+        } catch (const std::exception &e) {
             diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", +e.what()), "parsing");
             result = FatalParsingError;
         } catch (...) {
@@ -904,6 +902,7 @@ bool TagEditorWidget::reparseFile()
  */
 void TagEditorWidget::showFile(char result)
 {
+    // handle IO errors
     if (result == IoError) {
         // update status
         updateFileStatusStatus();
@@ -916,96 +915,97 @@ void TagEditorWidget::showFile(char result)
         msgBox->setInformativeText(tr("Opening file: ") + m_currentPath);
         msgBox->show();
         emit statusMessage(statusMsg);
-    } else {
-        // load existing tags
+        return;
+    }
+
+    // load existing tags
+    m_tags.clear();
+    m_fileInfo.tags(m_tags);
+    // show notification if no existing tag(s) could be found
+    if (!m_tags.size()) {
+        m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
+    }
+
+    // create appropriate tags according to file type and user preferences when automatic tag management is enabled
+    auto &settings = Settings::values().tagPocessing;
+    if (settings.autoTagManagement) {
+        settings.creationSettings.requiredTargets.clear();
+        settings.creationSettings.requiredTargets.reserve(2);
+        for (const ChecklistItem &targetItem : Settings::values().editor.defaultTargets.items()) {
+            if (targetItem.isChecked()) {
+                settings.creationSettings.requiredTargets.emplace_back(
+                    containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
+            }
+        }
+        // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
+        // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
+        // TODO: still show the version as on disk in the info view
+        settings.creationSettings.flags -= TagCreationFlags::KeepExistingId3v2Version;
+        if (!m_fileInfo.createAppropriateTags(settings.creationSettings)) {
+            if (confirmCreationOfId3TagForUnsupportedFile()) {
+                settings.creationSettings.flags += TagCreationFlags::KeepExistingId3v2Version;
+                m_fileInfo.createAppropriateTags(settings.creationSettings);
+            }
+        }
+        // tags might have been adjusted -> reload tags
         m_tags.clear();
         m_fileInfo.tags(m_tags);
-        // show notification if no existing tag(s) could be found
-        if (!m_tags.size()) {
-            m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
-        }
-
-        // create appropriate tags according to file type and user preferences when automatic tag management is enabled
-        auto &settings = Settings::values().tagPocessing;
-        if (settings.autoTagManagement) {
-            settings.creationSettings.requiredTargets.clear();
-            settings.creationSettings.requiredTargets.reserve(2);
-            for (const ChecklistItem &targetItem : Settings::values().editor.defaultTargets.items()) {
-                if (targetItem.isChecked()) {
-                    settings.creationSettings.requiredTargets.emplace_back(
-                        containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
-                }
-            }
-            // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
-            // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
-            // TODO: still show the version as on disk in the info view
-            settings.creationSettings.flags -= TagCreationFlags::KeepExistingId3v2Version;
-            if (!m_fileInfo.createAppropriateTags(settings.creationSettings)) {
-                if (confirmCreationOfId3TagForUnsupportedFile()) {
-                    settings.creationSettings.flags += TagCreationFlags::KeepExistingId3v2Version;
-                    m_fileInfo.createAppropriateTags(settings.creationSettings);
-                }
-            }
-            // tags might have been adjusted -> reload tags
-            m_tags.clear();
-            m_fileInfo.tags(m_tags);
-        }
-
-        // show parsing status/result using parsing notification widget
-        auto diagLevel = m_diag.level();
-        if (diagLevel < worstDiagLevel) {
-            diagLevel |= m_diagReparsing.level();
-        }
-        if (diagLevel >= DiagLevel::Critical) {
-            // we catched no exception, but there are critical diag messages
-            // -> treat those as fatal parsing errors
-            result = LoadingResult::FatalParsingError;
-        }
-        switch (result) {
-        case ParsingSuccessful:
-            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
-            m_ui->parsingNotificationWidget->setText(tr("File could be parsed correctly."));
-            break;
-        default:
-            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
-            m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
-        }
-        bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount() > 1;
-        if (diagLevel >= TagParser::DiagLevel::Critical) {
-            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
-            m_ui->parsingNotificationWidget->appendLine(tr("Errors occured."));
-        } else if (diagLevel == TagParser::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported()
-            || multipleSegmentsNotTested) {
-            m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
-            if (diagLevel == TagParser::DiagLevel::Warning) {
-                m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
-            }
-        }
-        if (m_fileInfo.isReadOnly()) {
-            m_ui->parsingNotificationWidget->appendLine(tr("No write access; the file has been opened in read-only mode."));
-        }
-        if (!m_fileInfo.areTagsSupported()) {
-            m_ui->parsingNotificationWidget->appendLine(tr("File format is not supported (an ID3 tag can be added anyways)."));
-        }
-        if (multipleSegmentsNotTested) {
-            m_ui->parsingNotificationWidget->appendLine(
-                tr("The file is composed of multiple segments. Dealing with such files has not been tested yet and might be broken."));
-        }
-
-        // update relevant (UI) components
-        m_fileWatcher->addPath(m_currentPath);
-        m_fileChangedOnDisk = false;
-        updateInfoView();
-        updateDocumentTitleEdits();
-        updateTagEditsAndAttachmentEdits();
-        updateTagSelectionComboBox();
-        updateTagManagementMenu();
-        emit tagValuesLoaded();
-        insertTitleFromFilename();
-        updateFileStatusStatus();
-        emit statusMessage(tr("The file %1 has been opened.").arg(m_currentPath));
-        emit fileShown();
     }
+
+    // show parsing status/result using parsing notification widget
+    auto diagLevel = m_diag.level();
+    if (diagLevel < worstDiagLevel) {
+        diagLevel |= m_diagReparsing.level();
+    }
+    if (diagLevel >= DiagLevel::Critical) {
+        // we catched no exception, but there are critical diag messages
+        // -> treat those as fatal parsing errors
+        result = LoadingResult::FatalParsingError;
+    }
+    switch (result) {
+    case ParsingSuccessful:
+        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
+        m_ui->parsingNotificationWidget->setText(tr("File could be parsed correctly."));
+        break;
+    default:
+        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
+        m_ui->parsingNotificationWidget->setText(tr("File couldn't be parsed correctly."));
+    }
+    bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount() > 1;
+    if (diagLevel >= TagParser::DiagLevel::Critical) {
+        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
+        m_ui->parsingNotificationWidget->appendLine(tr("Errors occured."));
+    } else if (diagLevel == TagParser::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported()
+        || multipleSegmentsNotTested) {
+        m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
+        if (diagLevel == TagParser::DiagLevel::Warning) {
+            m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));
+        }
+    }
+    if (m_fileInfo.isReadOnly()) {
+        m_ui->parsingNotificationWidget->appendLine(tr("No write access; the file has been opened in read-only mode."));
+    }
+    if (!m_fileInfo.areTagsSupported()) {
+        m_ui->parsingNotificationWidget->appendLine(tr("File format is not supported (an ID3 tag can be added anyways)."));
+    }
+    if (multipleSegmentsNotTested) {
+        m_ui->parsingNotificationWidget->appendLine(
+            tr("The file is composed of multiple segments. Dealing with such files has not been tested yet and might be broken."));
+    }
+
+    // update relevant (UI) components
+    m_fileWatcher->addPath(m_currentPath);
+    m_fileChangedOnDisk = false;
+    updateInfoView();
+    updateDocumentTitleEdits();
+    updateTagEditsAndAttachmentEdits();
+    updateTagSelectionComboBox();
+    updateTagManagementMenu();
+    emit tagValuesLoaded();
+    insertTitleFromFilename();
+    updateFileStatusStatus();
+    emit statusMessage(tr("The file %1 has been opened.").arg(m_currentPath));
+    emit fileShown();
 }
 
 /*!
