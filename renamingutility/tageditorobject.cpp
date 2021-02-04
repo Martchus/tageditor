@@ -9,6 +9,7 @@
 #include <tagparser/abstracttrack.h>
 #include <tagparser/exceptions.h>
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/progressfeedback.h>
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>
 
@@ -143,6 +144,7 @@ const QString &TagEditorObject::newRelativeDirectory() const
 TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
 {
     Diagnostics diag;
+    AbortableProgressFeedback progress; // FIXME: actually use the progress object
     MediaFileInfo fileInfo(toNativeFileName(fileName).data());
 
     // add basic file information
@@ -160,7 +162,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     // parse further file information
     bool criticalParseingErrorOccured = false, ioErrorOccured = false;
     try {
-        fileInfo.parseEverything(diag);
+        fileInfo.parseEverything(diag, progress);
     } catch (const Failure &) {
         // parsing notifications will be addded anyways
         criticalParseingErrorOccured = true;

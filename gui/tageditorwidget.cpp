@@ -832,13 +832,14 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     // write diagnostics to m_diagReparsing if making results are avalable
     m_makingResultsAvailable &= sameFile;
     Diagnostics &diag = m_makingResultsAvailable ? m_diagReparsing : m_diag;
+    AbortableProgressFeedback progress; // FIXME: actually use the progress object
     // clear diagnostics
     diag.clear();
     m_diagReparsing.clear();
     // show filename
     m_ui->fileNameLabel->setText(m_fileName);
     // define function to parse the file
-    const auto startThread = [this, &diag] {
+    const auto startThread = [this, &diag, &progress] {
         char result;
         try {
             // try to open with write access
@@ -849,7 +850,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                 m_fileInfo.reopen(true);
             }
             m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
-            m_fileInfo.parseEverything(diag);
+            m_fileInfo.parseEverything(diag, progress);
             result = ParsingSuccessful;
         } catch (const Failure &) {
             // the file has been opened; parsing notifications will be shown in the info box
@@ -975,8 +976,7 @@ void TagEditorWidget::showFile(char result)
     if (diagLevel >= TagParser::DiagLevel::Critical) {
         m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
         m_ui->parsingNotificationWidget->appendLine(tr("Errors occured."));
-    } else if (diagLevel == TagParser::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported()
-        || multipleSegmentsNotTested) {
+    } else if (diagLevel == TagParser::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported() || multipleSegmentsNotTested) {
         m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
         if (diagLevel == TagParser::DiagLevel::Warning) {
             m_ui->parsingNotificationWidget->appendLine(tr("There are warnings."));

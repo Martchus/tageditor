@@ -7,6 +7,7 @@
 #include <tagparser/abstractattachment.h>
 #include <tagparser/diagnostics.h>
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/progressfeedback.h>
 
 #include <qtutilities/misc/conversion.h>
 
@@ -99,7 +100,8 @@ void AttachmentsEdit::addFile(const QString &path)
     auto *const attachment = fileInfo()->container()->createAttachment();
     attachment->setIgnored(true);
     Diagnostics diag;
-    attachment->setFile(toNativeFileName(path).data(), diag);
+    AbortableProgressFeedback progress; // FIXME: actually use the progress object
+    attachment->setFile(toNativeFileName(path).data(), diag, progress);
     // TODO: show diag messages
     m_addedAttachments << attachment;
     m_model->addAttachment(-1, attachment, true, path);

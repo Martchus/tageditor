@@ -107,7 +107,8 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         inputFileInfo.setForceFullParse(validateArg.isPresent());
         inputFileInfo.open(true);
         Diagnostics diag;
-        inputFileInfo.parseEverything(diag);
+        AbortableProgressFeedback progress; // FIXME: actually use the progress object
+        inputFileInfo.parseEverything(diag, progress);
 
         // generate and save info
         Diagnostics diagReparsing;
@@ -148,12 +149,13 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
     MediaFileInfo fileInfo;
     for (const char *file : filesArg.values()) {
         Diagnostics diag;
+        AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
-            fileInfo.parseContainerFormat(diag);
-            fileInfo.parseEverything(diag);
+            fileInfo.parseContainerFormat(diag, progress);
+            fileInfo.parseEverything(diag, progress);
 
             // print general/container-related info
             cout << "Technical information for \"" << file << "\":\n";
@@ -331,12 +333,13 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
     MediaFileInfo fileInfo;
     for (const char *file : filesArg.values()) {
         Diagnostics diag;
+        AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
-            fileInfo.parseContainerFormat(diag);
-            fileInfo.parseTags(diag);
+            fileInfo.parseContainerFormat(diag, progress);
+            fileInfo.parseTags(diag, progress);
             cout << "Tag information for \"" << file << "\":\n";
             const auto tags = fileInfo.tags();
             if (tags.empty()) {
@@ -503,14 +506,15 @@ void setTagInfo(const SetTagInfoArgs &args)
     static string context("setting tags");
     for (const char *file : args.filesArg.values()) {
         Diagnostics diag;
+        AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // parse tags and tracks (tracks are relevent because track meta-data such as language can be changed as well)
             cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
             fileInfo.setPath(file);
-            fileInfo.parseContainerFormat(diag);
-            fileInfo.parseTags(diag);
-            fileInfo.parseTracks(diag);
-            fileInfo.parseAttachments(diag);
+            fileInfo.parseContainerFormat(diag, progress);
+            fileInfo.parseTags(diag, progress);
+            fileInfo.parseTracks(diag, progress);
+            fileInfo.parseAttachments(diag, progress);
             vector<Tag *> tags;
 
             // remove tags with the specified targets
@@ -616,8 +620,9 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 // assume the file refers to a picture
                                 MediaFileInfo fileInfo(relevantDenotedValue->value);
                                 Diagnostics diag;
+                                AbortableProgressFeedback progress; // FIXME: actually use the progress object
                                 fileInfo.open(true);
-                                fileInfo.parseContainerFormat(diag);
+                                fileInfo.parseContainerFormat(diag, progress);
                                 auto buff = make_unique<char[]>(fileInfo.size());
                                 fileInfo.stream().seekg(static_cast<streamoff>(fileInfo.containerOffset()));
                                 fileInfo.stream().read(buff.get(), static_cast<streamoff>(fileInfo.size()));
@@ -699,7 +704,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             if (args.addAttachmentArg.isPresent() || args.updateAttachmentArg.isPresent() || args.removeAttachmentArg.isPresent()
                 || args.removeExistingAttachmentsArg.isPresent()) {
                 static const string context("setting attachments");
-                fileInfo.parseAttachments(diag);
+                fileInfo.parseAttachments(diag, progress);
                 if (fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok && container) {
                     // ignore all existing attachments if argument is specified
                     if (args.removeExistingAttachmentsArg.isPresent()) {
@@ -800,6 +805,7 @@ void extractField(
     MediaFileInfo inputFileInfo;
     for (const char *file : inputFilesArg.values()) {
         Diagnostics diag;
+        AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // setup media file info
             inputFileInfo.setPath(file);
@@ -809,8 +815,8 @@ void extractField(
             if (!fieldDenotations.empty()) {
                 // extract tag field
                 (outputFileArg.isPresent() ? cout : cerr) << "Extracting field " << fieldArg.values().front() << " of \"" << file << "\" ..." << endl;
-                inputFileInfo.parseContainerFormat(diag);
-                inputFileInfo.parseTags(diag);
+                inputFileInfo.parseContainerFormat(diag, progress);
+                inputFileInfo.parseTags(diag, progress);
                 auto tags = inputFileInfo.tags();
                 vector<pair<const TagValue *, string>> values;
                 // iterate through all tags
@@ -873,8 +879,8 @@ void extractField(
                 }
                 logStream << " of \"" << file << "\" ..." << endl;
 
-                inputFileInfo.parseContainerFormat(diag);
-                inputFileInfo.parseAttachments(diag);
+                inputFileInfo.parseContainerFormat(diag, progress);
+                inputFileInfo.parseAttachments(diag, progress);
                 vector<pair<const AbstractAttachment *, string>> attachments;
                 // iterate through all attachments
                 for (const AbstractAttachment *attachment : inputFileInfo.attachments()) {
@@ -938,15 +944,16 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
     MediaFileInfo fileInfo;
 
     // gather tags for each file
+    Diagnostics diag; // FIXME: actually use diag object
+    AbortableProgressFeedback progress; // FIXME: actually use the progress object
     for (const char *file : filesArg.values()) {
-        Diagnostics diag;
         try {
             // parse tags
             fileInfo.setPath(file);
             fileInfo.open(true);
-            fileInfo.parseContainerFormat(diag);
-            fileInfo.parseTags(diag);
-            fileInfo.parseTracks(diag);
+            fileInfo.parseContainerFormat(diag, progress);
+            fileInfo.parseTags(diag, progress);
+            fileInfo.parseTracks(diag, progress);
             jsonData.emplace_back(fileInfo, document.GetAllocator());
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;

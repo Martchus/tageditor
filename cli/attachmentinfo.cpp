@@ -2,6 +2,7 @@
 
 #include <tagparser/abstractattachment.h>
 #include <tagparser/abstractcontainer.h>
+#include <tagparser/progressfeedback.h>
 
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/conversion/stringbuilder.h>
@@ -118,7 +119,8 @@ void AttachmentInfo::apply(AbstractAttachment *attachment, TagParser::Diagnostic
         attachment->setId(id);
     }
     if (path) {
-        attachment->setFile(path, diag);
+        AbortableProgressFeedback progress;
+        attachment->setFile(path, diag, progress);
     }
     if (name) {
         attachment->setName(name);

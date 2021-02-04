@@ -7,6 +7,7 @@
 
 #include <tagparser/diagnostics.h>
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/progressfeedback.h>
 
 namespace CppUtilities {
 
@@ -900,9 +901,10 @@ void CliTests::testExtraction()
     const char *const args1[] = { "tageditor", "extract", "cover", "-f", mp4File1.data(), "-o", "/tmp/extracted.jpeg", nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
     Diagnostics diag;
+    AbortableProgressFeedback progress;
     MediaFileInfo extractedInfo("/tmp/extracted.jpeg");
     extractedInfo.open(true);
-    extractedInfo.parseContainerFormat(diag);
+    extractedInfo.parseContainerFormat(diag, progress);
     CPPUNIT_ASSERT_EQUAL(static_cast<std::uint64_t>(22771), extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     extractedInfo.invalidate();
@@ -915,7 +917,7 @@ void CliTests::testExtraction()
     CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
     TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
-    extractedInfo.parseContainerFormat(diag);
+    extractedInfo.parseContainerFormat(diag, progress);
     CPPUNIT_ASSERT_EQUAL(static_cast<std::uint64_t>(22771), extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
     CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));

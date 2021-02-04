@@ -10,6 +10,7 @@
 #include <tagparser/id3/id3v2frame.h>
 #include <tagparser/id3/id3v2tag.h>
 #include <tagparser/mediafileinfo.h>
+#include <tagparser/progressfeedback.h>
 #include <tagparser/tag.h>
 #include <tagparser/vorbis/vorbiscomment.h>
 #include <tagparser/vorbis/vorbiscommentfield.h>
@@ -416,10 +417,10 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     try {
         MediaFileInfo fileInfo(toNativeFileName(path).constData());
-        Diagnostics diag;
+        Diagnostics diag; // FIXME: show diagnostic messages
+        AbortableProgressFeedback progress; // FIXME: actually use the progress object
         fileInfo.open(true);
-        fileInfo.parseContainerFormat(diag);
-        // TODO: show diagnostic messages
+        fileInfo.parseContainerFormat(diag, progress);
 
         const auto detectedMimeType = fileInfo.mimeType();
         auto mimeType = QString::fromUtf8(detectedMimeType.data(), detectedMimeType.size());
