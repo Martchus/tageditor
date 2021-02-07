@@ -333,15 +333,23 @@ When enabled, the following additional dependencies are required (only at build-
    git clone https://github.com/Martchus/tageditor.git
    git clone https://github.com/Martchus/subdirs.git
    ```
-2. Build and install everything in one step:  
+2. Configure the build
    ```
    cd $BUILD_DIR
    cmake \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="/install/prefix" \
     $SOURCES/subdirs/tageditor
+   ```
+    * Replace `/install/prefix` with the directory where you want to install.
+3. Build and install everything in one step:
+   ```
+   cd $BUILD_DIR
    make install -j$(nproc)
    ```
+    * If the install directory is not writable, do **not** conduct the build as root. Instead, set `DESTDIR` to a
+      writable location (e.g. `make DESTDIR="temporary/install/dir" install …`) and move the files from there to
+      the desired location afterwards.
 
 ## TODOs
 * Support more formats (JPEG/EXIF, PDF metadata, Theora in Ogg, ...)
