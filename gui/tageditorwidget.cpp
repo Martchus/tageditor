@@ -862,9 +862,6 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         } catch (const std::exception &e) {
             diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", +e.what()), "parsing");
             result = FatalParsingError;
-        } catch (...) {
-            diag.emplace_back(TagParser::DiagLevel::Critical, "Something completely unexpected happened", "parsing");
-            result = FatalParsingError;
         }
         QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
     };
@@ -1191,9 +1188,6 @@ bool TagEditorWidget::startSaving()
             }
         } catch (const exception &e) {
             m_diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", e.what()), "making");
-            processingError = true;
-        } catch (...) {
-            m_diag.emplace_back(TagParser::DiagLevel::Critical, "Something completely unexpected happened", "making");
             processingError = true;
         }
         QMetaObject::invokeMethod(
