@@ -832,14 +832,13 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     // write diagnostics to m_diagReparsing if making results are avalable
     m_makingResultsAvailable &= sameFile;
     Diagnostics &diag = m_makingResultsAvailable ? m_diagReparsing : m_diag;
-    AbortableProgressFeedback progress; // FIXME: actually use the progress object
     // clear diagnostics
     diag.clear();
     m_diagReparsing.clear();
     // show filename
     m_ui->fileNameLabel->setText(m_fileName);
     // define function to parse the file
-    const auto startThread = [this, &diag, &progress] {
+    const auto startThread = [this, &diag] {
         char result;
         try {
             // try to open with write access
@@ -849,6 +848,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
                 // try to open read-only if opening with write access failed
                 m_fileInfo.reopen(true);
             }
+            AbortableProgressFeedback progress; // FIXME: actually use the progress object
             m_fileInfo.setForceFullParse(Settings::values().editor.forceFullParse);
             m_fileInfo.parseEverything(diag, progress);
             result = ParsingSuccessful;
