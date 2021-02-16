@@ -300,6 +300,9 @@ When the Qt GUI is enabled, Qt and [qtutilities](https://github.com/Martchus/qtu
 ### Building with Qt GUI
 The following Qt modules are requried (version 5.6 or higher): core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
 
+Note that old Qt versions like 5.6 lack support for modern JavaScript features. To use the JavaScript-based renaming tool
+is recommend to use at least Qt 5.12.
+
 ### Select Qt module for web view and JavaScript
 * Add `-DWEBVIEW_PROVIDER:STRING=webkit/webengine/none` to the CMake arguments to use either Qt WebKit (works with
   'revived' version as well), Qt WebEngine or no web view at all. If no web view is used, the file information can only
