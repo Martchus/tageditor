@@ -52,12 +52,7 @@ function notNull(value) {
 }
 // returns the string representation of \a pos using at least as many digits as \a total has
 function appropriateDigitCount(pos, total) {
-    var res = pos + ""
-    var count = (total + "").length
-    while (res.length < count) {
-        res = "0" + res
-    }
-    return res
+    return pos.toString().padStart(total.toString().length, "0")
 }
 // returns a copy of the specified \a name with characters that might be avoided in file names striped out
 function validFileName(name) {

@@ -25,8 +25,8 @@ if (!fileInfo.hasAudioTracks && !fileInfo.hasVideoTracks) {
 const fieldsToInclude = [tag.albumartist || tag.artist, tag.album, tag.trackPos || infoFromFileName.trackPos, tag.title || infoFromFileName.title]
 let newName = ""
 for (let field of fieldsToInclude) {
-    if (typeof field === "number") {
-        for (field = field + "", count = (tag.trackTotal + "").length; field.length < count; field = "0" + field);
+    if (typeof field === "number" && tag.trackTotal) {
+        field = field.toString().padStart(tag.trackTotal.toString().length, "0")
     }
     if (field && field.length !== 0) {
         newName = newName.concat(newName.length === 0 ? "" : " - ", field)
