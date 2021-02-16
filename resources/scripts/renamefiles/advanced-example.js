@@ -18,8 +18,11 @@ var keepTitleFromFileName = false
 // specifies whether track information should be appended (like [H.265-320p AAC-LC-2ch-eng AAC-LC-2ch-ger])
 var includeTrackInfo = false
 // specifies the "distribution directory"
-//var distDir = false                        // don't move files around
-var distDir = "/path/to/my/music-collection" // move files to an appropriate subdirectory under this path
+var distDir = false                            // don't move files around
+//var distDir = "/path/to/my/music-collection" // move files to an appropriate subdirectory under this path
+// move tracks into subdirectories for ranges (like 0001, 0025, 0050, 0100, …) to avoid too many files within one level
+var maxTracksPerDir = false
+//var maxTracksPerDir = 25
 // directory used to store collections which contain songs from multiple artists
 var collectionsDir = "collections"
 // directory used to store miscellaneous songs by miscellaneous artists
@@ -146,7 +149,9 @@ if (includeAlbum && notEmpty(tag.album)) {
 
 // get the track/disk position and add it to fields array
 // use the value from the tag if possible; otherwise the value deduced from the filename
-if (notNull(tag.trackPos)) {
+var trackPos = tag.trackPos || infoFromFileName.trackPos
+tageditor.writeLog("trackpos: " + trackPos)
+if (notNull(trackPos)) {
     var pos = []
     // push the disk position
     if (notNull(tag.diskPos) && notNull(tag.diskTotal) && tag.diskTotal >= 2) {
@@ -159,8 +164,6 @@ if (notNull(tag.trackPos)) {
         pos.push(appropriateDigitCount(tag.trackPos, 10))
     }
     fields.push(pos.join("-"))
-} else if (notNull(infoFromFileName.trackPos)) {
-    fields.push(appropriateDigitCount(infoFromFileName.trackPos, 10))
 }
 
 // join the first part of the new name
@@ -207,32 +210,43 @@ if (notEmpty(suffix)) {
 tageditor.rename(newName)
 
 // set the distribution directory
-if (!distDir) {
-    return
-}
-var path = [distDir]
-var artist = validDirectoryName(tag.albumartist || tag.artist)
-if (isPartOfCollection(tag)) {
-    path.push(collectionsDir)
-} else if (isMiscFile(tag)) {
-    path.push(miscDir)
-} else if (notEmpty(artist)) {
-    path.push(artist)
-} else {
-    path.push(miscDir)
-}
-var album = validDirectoryName(tag.album)
-if (notEmpty(album)) {
-    if (notEmpty(tag.year)) {
-        path.push([tag.year.split("-")[0], album].join(" - "))
+var path = []
+if (distDir) {
+    path.push(distDir)
+    var artist = validDirectoryName(tag.albumartist || tag.artist)
+    if (isPartOfCollection(tag)) {
+        path.push(collectionsDir)
+    } else if (isMiscFile(tag)) {
+        path.push(miscDir)
+    } else if (notEmpty(artist)) {
+        path.push(artist)
     } else {
-        path.push(album)
+        path.push(miscDir)
     }
-} else if (notEmpty(artist) && !isMiscFile(tag)) {
-    path.push(miscAlbumDir)
+    var album = validDirectoryName(tag.album)
+    if (notEmpty(album)) {
+        if (notEmpty(tag.year)) {
+            path.push([tag.year.split("-")[0], album].join(" - "))
+        } else {
+            path.push(album)
+        }
+    } else if (notEmpty(artist) && !isMiscFile(tag)) {
+        path.push(miscAlbumDir)
+    }
+    if (tag.diskTotal >= 2) {
+        path.push("Disk " + appropriateDigitCount(tag.diskPos, tag.diskTotal))
+    }
 }
-if (tag.diskTotal >= 2) {
-    path.push("Disk " + appropriateDigitCount(tag.diskPos, tag.diskTotal))
+
+// set "range directory"
+if (!trackPos && (trackPos = fileInfo.currentBaseName.match(/\d+/))) {
+    trackPos = parseInt(trackPos) // if there's no track pos, take first best number from filename
 }
+if (maxTracksPerDir && notNull(trackPos)) {
+    path.push(((Math.floor(trackPos / maxTracksPerDir) * maxTracksPerDir) || 1).toString().padStart(4, "0"))
+}
+
 // apply new relative directory
-tageditor.move(path.join("/"))
+if (path.length) {
+    tageditor.move(path.join("/"))
+}
