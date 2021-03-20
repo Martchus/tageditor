@@ -124,8 +124,8 @@ string qstringToString(const QString &value, TagTextEncoding textEncoding)
 #else
     case TagTextEncoding::Utf16BigEndian:
 #endif
-        encodedString = QByteArray(
-            reinterpret_cast<const char *>(value.utf16()), static_cast<int>(value.size() * static_cast<int>(sizeof(ushort) / sizeof(char))));
+        encodedString = QByteArray(reinterpret_cast<const char *>(value.utf16()),
+            static_cast<QByteArray::size_type>(value.size()) * static_cast<QByteArray::size_type>(sizeof(ushort) / sizeof(char)));
         break;
 #if defined(CONVERSION_UTILITIES_BYTE_ORDER_LITTLE_ENDIAN)
     case TagTextEncoding::Utf16BigEndian: {
@@ -139,7 +139,7 @@ string qstringToString(const QString &value, TagTextEncoding textEncoding)
             "UTF-16BE",
 #endif
             textEncodingToCodecName(textEncoding), reinterpret_cast<const char *>(value.utf16()),
-            static_cast<int>(value.size() * static_cast<int>(sizeof(ushort) / sizeof(char))), 2.0f);
+            static_cast<std::size_t>(value.size()) * (sizeof(ushort) / sizeof(char)), 2.0f);
         return string(utf16Data.first.get(), utf16Data.second);
     }
     }
@@ -243,9 +243,9 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
             trackNumber = QtUtilities::midRef(title, lastDelimIndex, delimIndex - lastDelimIndex).toInt(&ok);
             if (ok) {
                 int titleStart = delimIndex + delim.size();
-                for (const auto &delim : delims) {
-                    if (QtUtilities::midRef(title, titleStart).startsWith(delim)) {
-                        titleStart += delim.size();
+                for (const auto &delim2 : delims) {
+                    if (QtUtilities::midRef(title, titleStart).startsWith(delim2)) {
+                        titleStart += delim2.size();
                         break;
                     }
                 }

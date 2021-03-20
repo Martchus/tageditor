@@ -189,6 +189,7 @@ Qt::ItemFlags AttachmentsModel::flags(const QModelIndex &index) const
         switch (index.column()) {
         case 0:
             flags |= Qt::ItemIsUserCheckable;
+            break;
         case 1:
         case 2:
             flags |= Qt::ItemIsEditable;

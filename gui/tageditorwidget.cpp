@@ -411,17 +411,18 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
 
     // add/update AttachmentsEdit widget
     if (m_fileInfo.areAttachmentsSupported()) {
-        AttachmentsEdit *edit;
+        AttachmentsEdit *attachmentsEdit;
         // reuse existing edit (assigned in if-condition!) or ...
-        if ((widgetIndex < m_ui->stackedWidget->count()) && (edit = qobject_cast<AttachmentsEdit *>(m_ui->stackedWidget->widget(widgetIndex)))) {
-            edit->setFileInfo(&m_fileInfo, true);
+        if ((widgetIndex < m_ui->stackedWidget->count())
+            && (attachmentsEdit = qobject_cast<AttachmentsEdit *>(m_ui->stackedWidget->widget(widgetIndex)))) {
+            attachmentsEdit->setFileInfo(&m_fileInfo, true);
         } else {
             // ... create and add a new edit
-            edit = new AttachmentsEdit(&m_fileInfo, this);
-            connect(m_ui->clearEntriesPushButton, &QPushButton::clicked, edit, &AttachmentsEdit::clear);
-            connect(m_ui->restoreEntriesPushButton, &QPushButton::clicked, edit, &AttachmentsEdit::restore);
+            attachmentsEdit = new AttachmentsEdit(&m_fileInfo, this);
+            connect(m_ui->clearEntriesPushButton, &QPushButton::clicked, attachmentsEdit, &AttachmentsEdit::clear);
+            connect(m_ui->restoreEntriesPushButton, &QPushButton::clicked, attachmentsEdit, &AttachmentsEdit::restore);
             //connect(edit, &AttachmentsEdit::returnPressed, this, &TagEditorWidget::handleReturnPressed);
-            m_ui->stackedWidget->insertWidget(widgetIndex, edit);
+            m_ui->stackedWidget->insertWidget(widgetIndex, attachmentsEdit);
         }
         ++widgetIndex;
     }

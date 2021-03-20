@@ -9,6 +9,7 @@
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/signature.h>
 
+#include <qtutilities/misc/conversion.h>
 #include <qtutilities/misc/dialogutils.h>
 #include <qtutilities/models/checklistmodel.h>
 
@@ -89,9 +90,8 @@ EnterTargetDialog::~EnterTargetDialog()
 
 void EnterTargetDialog::updateLevelNamePlaceholderText(int i)
 {
-    const auto levelName
-        = i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : std::string_view();
-    m_ui->levelNameLineEdit->setPlaceholderText(QString::fromUtf8(levelName.data(), levelName.size()));
+    m_ui->levelNameLineEdit->setPlaceholderText(qstringFromStdStringView(
+        i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : std::string_view()));
 }
 
 TagParser::TagTarget EnterTargetDialog::target() const

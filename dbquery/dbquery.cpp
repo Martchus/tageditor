@@ -86,7 +86,7 @@ TagValue QueryResultsModel::fieldValue(int row, KnownField knownField) const
     case KnownField::Cover:
         if (!res.cover.isEmpty()) {
             TagValue tagValue(res.cover.data(), static_cast<size_t>(res.cover.size()), TagDataType::Picture);
-            tagValue.setMimeType(containerMimeType(parseSignature(res.cover.data(), res.cover.size())));
+            tagValue.setMimeType(containerMimeType(parseSignature(res.cover.data(), static_cast<std::size_t>(res.cover.size()))));
             return tagValue;
         }
         break;

@@ -506,15 +506,15 @@ void setTagInfo(const SetTagInfoArgs &args)
     static string context("setting tags");
     for (const char *file : args.filesArg.values()) {
         Diagnostics diag;
-        AbortableProgressFeedback progress; // FIXME: actually use the progress object
+        AbortableProgressFeedback parsingProgress; // FIXME: actually use the progress object
         try {
             // parse tags and tracks (tracks are relevent because track meta-data such as language can be changed as well)
             cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
             fileInfo.setPath(file);
-            fileInfo.parseContainerFormat(diag, progress);
-            fileInfo.parseTags(diag, progress);
-            fileInfo.parseTracks(diag, progress);
-            fileInfo.parseAttachments(diag, progress);
+            fileInfo.parseContainerFormat(diag, parsingProgress);
+            fileInfo.parseTags(diag, parsingProgress);
+            fileInfo.parseTracks(diag, parsingProgress);
+            fileInfo.parseAttachments(diag, parsingProgress);
             vector<Tag *> tags;
 
             // remove tags with the specified targets
@@ -618,16 +618,16 @@ void setTagInfo(const SetTagInfoArgs &args)
                             // add value from file
                             try {
                                 // assume the file refers to a picture
-                                MediaFileInfo fileInfo(relevantDenotedValue->value);
-                                Diagnostics diag;
-                                AbortableProgressFeedback progress; // FIXME: actually use the progress object
-                                fileInfo.open(true);
-                                fileInfo.parseContainerFormat(diag, progress);
-                                auto buff = make_unique<char[]>(fileInfo.size());
-                                fileInfo.stream().seekg(static_cast<streamoff>(fileInfo.containerOffset()));
-                                fileInfo.stream().read(buff.get(), static_cast<streamoff>(fileInfo.size()));
-                                TagValue value(move(buff), fileInfo.size(), TagDataType::Picture);
-                                value.setMimeType(fileInfo.mimeType());
+                                MediaFileInfo coverFileInfo(relevantDenotedValue->value);
+                                Diagnostics coverDiag;
+                                AbortableProgressFeedback coverProgress; // FIXME: actually use the progress object
+                                coverFileInfo.open(true);
+                                coverFileInfo.parseContainerFormat(coverDiag, coverProgress);
+                                auto buff = make_unique<char[]>(coverFileInfo.size());
+                                coverFileInfo.stream().seekg(static_cast<streamoff>(coverFileInfo.containerOffset()));
+                                coverFileInfo.stream().read(buff.get(), static_cast<streamoff>(coverFileInfo.size()));
+                                TagValue value(move(buff), coverFileInfo.size(), TagDataType::Picture);
+                                value.setMimeType(coverFileInfo.mimeType());
                                 convertedValues.emplace_back(move(value));
                             } catch (const TagParser::Failure &) {
                                 diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
@@ -703,8 +703,8 @@ void setTagInfo(const SetTagInfoArgs &args)
             bool attachmentsModified = false;
             if (args.addAttachmentArg.isPresent() || args.updateAttachmentArg.isPresent() || args.removeAttachmentArg.isPresent()
                 || args.removeExistingAttachmentsArg.isPresent()) {
-                static const string context("setting attachments");
-                fileInfo.parseAttachments(diag, progress);
+                static const string attachmentsContext("setting attachments");
+                fileInfo.parseAttachments(diag, parsingProgress);
                 if (fileInfo.attachmentsParsingStatus() == ParsingStatus::Ok && container) {
                     // ignore all existing attachments if argument is specified
                     if (args.removeExistingAttachmentsArg.isPresent()) {
@@ -737,8 +737,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                         attachmentsModified |= currentInfo.next(container, diag);
                     }
                 } else {
-                    diag.emplace_back(
-                        DiagLevel::Critical, "Unable to assign attachments because the container object has not been initialized.", context);
+                    diag.emplace_back(DiagLevel::Critical, "Unable to assign attachments because the container object has not been initialized.",
+                        attachmentsContext);
                 }
             }
 
@@ -746,11 +746,11 @@ void setTagInfo(const SetTagInfoArgs &args)
             fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
             try {
                 // create handler for progress updates and aborting
-                AbortableProgressFeedback progress(logNextStep, logStepPercentage);
-                const InterruptHandler handler(bind(&AbortableProgressFeedback::tryToAbort, ref(progress)));
+                AbortableProgressFeedback applyProgress(logNextStep, logStepPercentage);
+                const InterruptHandler handler(bind(&AbortableProgressFeedback::tryToAbort, ref(applyProgress)));
 
                 // apply changes
-                fileInfo.applyChanges(diag, progress);
+                fileInfo.applyChanges(diag, applyProgress);
 
                 // notify about completion
                 finalizeLog();
@@ -855,7 +855,7 @@ void extractField(
                                                       : outputFileArg.values().front();
                         try {
                             outputFileStream.open(path, ios_base::out | ios_base::binary);
-                            outputFileStream.write(value.first->dataPointer(), value.first->dataSize());
+                            outputFileStream.write(value.first->dataPointer(), static_cast<std::streamsize>(value.first->dataSize()));
                             outputFileStream.flush();
                             cout << " - Value has been saved to \"" << path << "\"." << endl;
                         } catch (const std::ios_base::failure &) {
@@ -865,7 +865,7 @@ void extractField(
                 } else {
                     // write data to stdout if no output file has been specified
                     for (const auto &value : values) {
-                        cout.write(value.first->dataPointer(), value.first->dataSize());
+                        cout.write(value.first->dataPointer(), static_cast<std::streamsize>(value.first->dataSize()));
                     }
                 }
             } else {

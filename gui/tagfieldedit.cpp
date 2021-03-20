@@ -11,6 +11,7 @@
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>
 
+#include <qtutilities/misc/conversion.h>
 #include <qtutilities/widgets/clearcombobox.h>
 #include <qtutilities/widgets/clearlineedit.h>
 #include <qtutilities/widgets/clearplaintextedit.h>
@@ -572,9 +573,9 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     if (m_lineEdit || m_comboBox || m_plainTextEdit) {
         const auto text([&] {
             try {
-                const auto text(Utility::tagValueToQString(value));
-                const auto correctedText = applyAutoCorrection(text);
-                if (correctedText != text) {
+                const auto textValue = Utility::tagValueToQString(value);
+                const auto correctedText = applyAutoCorrection(textValue);
+                if (correctedText != textValue) {
                     autoCorrectionApplied = true;
                 }
                 return correctedText;
@@ -699,17 +700,17 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
     }
     const auto pixmap(QIcon::fromTheme(QStringLiteral("emblem-error")).pixmap(16));
     const auto text([&] {
-        QString text;
+        QString textValue;
         if (conversionError) {
-            text = tr("The value of this field could not be read from the file because it couldn't be converted properly.");
+            textValue = tr("The value of this field could not be read from the file because it couldn't be converted properly.");
             if (!canApplyField) {
-                text += QChar('\n');
+                textValue += QChar('\n');
             }
         }
         if (!canApplyField) {
-            text += tr("The field can not be applied when saving the file and will be lost.");
+            textValue += tr("The field can not be applied when saving the file and will be lost.");
         }
-        return text;
+        return textValue;
     }());
     for (auto *const overlay : widgets) {
         if (overlay) {
@@ -919,9 +920,7 @@ void TagFieldEdit::handleRestoreButtonClicked()
     QMenu menu;
     int i = 0;
     for (auto *const tag : tags()) {
-        const auto typeName = tag->typeName();
-        const auto *const action
-            = menu.addAction(tr("restore to value from %1 (%2)").arg(QString::fromUtf8(typeName.data(), typeName.size())).arg(++i));
+        const auto *const action = menu.addAction(tr("restore to value from %1 (%2)").arg(qstringFromStdStringView(tag->typeName())).arg(++i));
         connect(action, &QAction::triggered, [this, tag] {
             setLocked(false);
             updateValue(tag, PreviousValueHandling::Clear);

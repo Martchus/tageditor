@@ -508,8 +508,8 @@ void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultInde
                 if (row != index.row()) {
                     return;
                 }
-                if (auto *const tagEdit = m_tagEditorWidget->activeTagEdit()) {
-                    tagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
+                if (auto *const activeTagEdit = m_tagEditorWidget->activeTagEdit()) {
+                    activeTagEdit->setValue(KnownField::Cover, m_model->fieldValue(row, KnownField::Cover), previousValueHandling);
                 }
             });
             break;
@@ -531,8 +531,8 @@ void DbQueryWidget::applyResults(TagEdit *tagEdit, const QModelIndex &resultInde
                 if (row != index.row()) {
                     return;
                 }
-                if (auto *const tagEdit = m_tagEditorWidget->activeTagEdit()) {
-                    tagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
+                if (auto *const activeTagEdit = m_tagEditorWidget->activeTagEdit()) {
+                    activeTagEdit->setValue(KnownField::Lyrics, m_model->fieldValue(row, KnownField::Lyrics), previousValueHandling);
                 }
             });
             break;

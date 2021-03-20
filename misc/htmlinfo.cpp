@@ -13,6 +13,7 @@
 #include <tagparser/mp4/mp4container.h>
 #include <tagparser/signature.h>
 
+#include <qtutilities/misc/conversion.h>
 #include <qtutilities/resources/resources.h>
 
 #include <c++utilities/chrono/datetime.h>
@@ -276,7 +277,7 @@ template <> void mkElementContent(QXmlStreamWriter &writer, EbmlElement *element
             const auto seekIdName = matroskaIdName(static_cast<std::uint32_t>(seekId));
             if (!seekIdName.empty()) {
                 writer.writeCharacters(QStringLiteral(" \""));
-                writer.writeCharacters(QString::fromLatin1(seekIdName.data(), seekIdName.size()));
+                writer.writeCharacters(qstringFromStdStringView(seekIdName));
                 writer.writeCharacters(QStringLiteral("\""));
             }
         }
@@ -962,7 +963,7 @@ public:
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"),
                     QStringLiteral("%1 (%2 %)")
                         .arg(qstr(dataSizeToString(m_file.paddingSize(), true)))
-                        .arg(static_cast<double>(m_file.paddingSize()) / m_file.size() * 100.0, 0, 'g', 2));
+                        .arg(static_cast<double>(m_file.paddingSize()) / static_cast<double>(m_file.size()) * 100.0, 0, 'g', 2));
             }
 
             m_writer.writeEndElement();

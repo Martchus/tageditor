@@ -251,14 +251,14 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
     }
     // -> sort recordings within each release by track number and add recordings to results
     for (auto &releaseAndRecordings : recordingsByRelease) {
-        auto &recordings = releaseAndRecordings.second;
-        std::sort(recordings.begin(), recordings.end(), [](const auto &recording1, const auto &recording2) {
+        auto &recordingsOfRelease = releaseAndRecordings.second;
+        std::sort(recordingsOfRelease.begin(), recordingsOfRelease.end(), [](const auto &recording1, const auto &recording2) {
             if (recording1.disk != recording2.disk) {
                 return recording1.disk < recording2.disk;
             }
             return recording1.track < recording2.track;
         });
-        for (auto &recording : recordings) {
+        for (auto &recording : recordingsOfRelease) {
             m_results << move(recording);
         }
     }

@@ -56,7 +56,7 @@ void AttachmentsEdit::setFileInfo(TagParser::MediaFileInfo *fileInfo, bool updat
     if (fileInfo && fileInfo->areAttachmentsSupported()) {
         if (AbstractContainer *container = fileInfo->container()) {
             auto count = container->attachmentCount();
-            m_currentAttachments.reserve(count);
+            m_currentAttachments.reserve(static_cast<decltype(m_currentAttachments)::size_type>(count));
             for (size_t i = 0; i < count; ++i) {
                 m_currentAttachments << container->attachment(i);
             }
@@ -136,7 +136,7 @@ void AttachmentsEdit::extractSelected()
                     NativeFileStream file;
                     file.exceptions(ios_base::badbit | ios_base::failbit);
                     try {
-                        input.seekg(data->startOffset());
+                        input.seekg(static_cast<std::streamoff>(data->startOffset()), std::ios_base::beg);
                         file.open(toNativeFileName(fileName).data(), ios_base::out | ios_base::binary);
                         CopyHelper<0x1000> helper;
                         helper.copy(input, file, data->size());

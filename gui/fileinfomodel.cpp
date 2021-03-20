@@ -51,7 +51,7 @@ QStandardItem *defaultItem(const QString &text)
 
 QStandardItem *defaultItem(std::string_view text)
 {
-    return defaultItem(QString::fromUtf8(text.data(), text.size()));
+    return defaultItem(qstringFromStdStringView(text));
 }
 
 class ItemHelper {
@@ -72,7 +72,7 @@ public:
     void appendRow(const QString &label, std::string_view text)
     {
         if (!text.empty()) {
-            appendRow(label, QString::fromUtf8(text.data(), text.size()));
+            appendRow(label, qstringFromStdStringView(text));
         }
     }
 
@@ -313,10 +313,9 @@ void FileInfoModel::updateCache()
         QString containerName;
         const auto containerFormatName = m_file->containerFormatName();
         if (const auto subversion = m_file->containerFormatSubversion(); !subversion.empty()) {
-            containerName = QString::fromUtf8(containerFormatName.data(), containerFormatName.size()) % QChar(' ')
-                % QString::fromUtf8(subversion.data(), subversion.size());
+            containerName = qstringFromStdStringView(containerFormatName) % QChar(' ') % qstringFromStdStringView(subversion);
         } else {
-            containerName = QString::fromUtf8(containerFormatName.data(), containerFormatName.size());
+            containerName = qstringFromStdStringView(containerFormatName);
         }
         setItem(currentRow, 1, defaultItem(containerName));
 
@@ -465,8 +464,8 @@ void FileInfoModel::updateCache()
                     if (const auto cc = track->channelConfigString(); !cc.empty()) {
                         const auto ecc = track->extensionChannelConfigString();
                         trackHelper.appendRow(tr("Channel config"),
-                            !ecc.empty() ? QString::fromUtf8(ecc.data(), ecc.size()) % QStringLiteral(" / ") % QString::fromUtf8(cc.data(), cc.size())
-                                         : QString::fromUtf8(cc.data(), cc.size()));
+                            !ecc.empty() ? qstringFromStdStringView(ecc) % QStringLiteral(" / ") % qstringFromStdStringView(cc)
+                                         : qstringFromStdStringView(cc));
                     } else {
                         trackHelper.appendRow(tr("Channel count"), track->channelCount());
                     }

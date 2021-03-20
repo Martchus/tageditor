@@ -452,14 +452,14 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
                 [this, selectionModel, currentIndex, conn](const QModelIndex &parent, int, int) {
                     disconnect(*conn);
                     if (parent == currentIndex) {
-                        const QModelIndex next = m_fileFilterModel->index(0, 0, parent);
-                        if (next.isValid()) {
-                            if (m_ui->filesTreeView->model()->hasChildren(next)) {
+                        const QModelIndex nextFetched = m_fileFilterModel->index(0, 0, parent);
+                        if (nextFetched.isValid()) {
+                            if (m_ui->filesTreeView->model()->hasChildren(nextFetched)) {
                                 // next item is a directory -> keep on searching
-                                selectNextFile(selectionModel, next, false);
+                                selectNextFile(selectionModel, nextFetched, false);
                             } else {
                                 m_ui->filesTreeView->selectionModel()->setCurrentIndex(
-                                    next, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+                                    nextFetched, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
                             }
                         } else {
                             selectNextFile(selectionModel, currentIndex, true);

@@ -347,11 +347,11 @@ template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField fiel
             using FieldType = typename TagType::FieldType;
             using TypeInfoType = typename FieldType::TypeInfoType;
             using IndexCompareType = typename Traits::Conditional<std::is_unsigned<TypeInfoType>, make_unsigned<decltype(index)>::type, TypeInfoType>;
-            FieldType field(id, values[index]);
+            auto newField = FieldType(id, values[index]);
             if (static_cast<IndexCompareType>(index) < numeric_limits<TypeInfoType>::max()) {
-                field.setTypeInfo(static_cast<TypeInfoType>(index));
+                newField.setTypeInfo(static_cast<TypeInfoType>(index));
             }
-            fields.insert(std::make_pair(id, field));
+            fields.insert(std::make_pair(id, newField));
         }
     }
 }
@@ -422,8 +422,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
         fileInfo.open(true);
         fileInfo.parseContainerFormat(diag, progress);
 
-        const auto detectedMimeType = fileInfo.mimeType();
-        auto mimeType = QString::fromUtf8(detectedMimeType.data(), detectedMimeType.size());
+        auto mimeType = qstringFromStdStringView(fileInfo.mimeType());
         bool ok;
         mimeType = QInputDialog::getText(
             this, tr("Enter/confirm MIME type"), tr("Confirm or enter the MIME type of the selected file."), QLineEdit::Normal, mimeType, &ok);
