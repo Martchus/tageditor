@@ -410,6 +410,7 @@ ClearSpinBox *TagFieldEdit::setupSpinBox()
     m_spinBoxes.first->addCustomAction(setupRestoreAction());
     m_spinBoxes.first->installEventFilter(this);
     m_spinBoxes.first->setMaximum(32766);
+    m_spinBoxes.first->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     connect(m_spinBoxes.first, static_cast<void (ClearSpinBox::*)(int)>(&ClearSpinBox::valueChanged), this, &TagFieldEdit::showRestoreAction);
     m_layout->addWidget(m_spinBoxes.first);
     m_widgets << m_spinBoxes.first;
