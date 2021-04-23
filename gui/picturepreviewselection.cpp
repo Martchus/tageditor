@@ -416,9 +416,9 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
     assert(m_currentTypeIndex < m_values.size());
     TagValue &selectedCover = m_values[m_currentTypeIndex];
     try {
-        MediaFileInfo fileInfo(toNativeFileName(path).constData());
-        Diagnostics diag; // FIXME: show diagnostic messages
-        AbortableProgressFeedback progress; // FIXME: actually use the progress object
+        auto fileInfo = MediaFileInfo(std::string_view(toNativeFileName(path).constData()));
+        auto diag = Diagnostics(); // FIXME: show diagnostic messages
+        auto progress = AbortableProgressFeedback(); // FIXME: actually use the progress object
         fileInfo.open(true);
         fileInfo.parseContainerFormat(diag, progress);
 

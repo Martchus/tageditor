@@ -145,7 +145,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
 {
     Diagnostics diag;
     AbortableProgressFeedback progress; // FIXME: actually use the progress object
-    MediaFileInfo fileInfo(toNativeFileName(fileName).data());
+    MediaFileInfo fileInfo(std::string(toNativeFileName(fileName).data()));
 
     // add basic file information
     auto fileInfoObject = m_engine->newObject();

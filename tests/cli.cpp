@@ -902,7 +902,7 @@ void CliTests::testExtraction()
     TESTUTILS_ASSERT_EXEC(args1);
     Diagnostics diag;
     AbortableProgressFeedback progress;
-    MediaFileInfo extractedInfo("/tmp/extracted.jpeg");
+    MediaFileInfo extractedInfo("/tmp/extracted.jpeg"sv);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat(diag, progress);
     CPPUNIT_ASSERT_EQUAL(static_cast<std::uint64_t>(22771), extractedInfo.size());

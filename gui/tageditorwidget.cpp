@@ -823,7 +823,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         // set path of file info
         m_currentPath = path;
         m_fileInfo.setSaveFilePath(string());
-        m_fileInfo.setPath(toNativeFileName(path).data());
+        m_fileInfo.setPath(std::string(toNativeFileName(path).data()));
         // update file name and directory
         const QFileInfo fileInfo(path);
         m_lastDir = m_currentDir;

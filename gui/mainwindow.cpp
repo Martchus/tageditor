@@ -523,7 +523,7 @@ void MainWindow::showSaveAsDlg()
     const QString path
         = QFileDialog::getSaveFileName(this, tr("Save changes as - ") + QCoreApplication::applicationName(), m_ui->tagEditorWidget->currentDir());
     if (!path.isEmpty()) {
-        m_ui->tagEditorWidget->fileInfo().setSaveFilePath(toNativeFileName(path).data());
+        m_ui->tagEditorWidget->fileInfo().setSaveFilePath(std::string(toNativeFileName(path).data()));
         m_ui->tagEditorWidget->applyEntriesAndSaveChangings();
     }
 }

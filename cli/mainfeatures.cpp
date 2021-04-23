@@ -103,21 +103,21 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
     try {
         // parse tags
-        MediaFileInfo inputFileInfo(inputFileArg.values().front());
+        auto inputFileInfo = MediaFileInfo(std::string(inputFileArg.values().front()));
         inputFileInfo.setForceFullParse(validateArg.isPresent());
         inputFileInfo.open(true);
-        Diagnostics diag;
-        AbortableProgressFeedback progress; // FIXME: actually use the progress object
+        auto diag = Diagnostics();
+        auto progress = AbortableProgressFeedback(); // FIXME: actually use the progress object
         inputFileInfo.parseEverything(diag, progress);
 
         // generate and save info
-        Diagnostics diagReparsing;
+        auto diagReparsing = Diagnostics();
         (outputFileArg.isPresent() ? cout : cerr) << "Saving file info for \"" << inputFileArg.values().front() << "\" ..." << endl;
         if (!outputFileArg.isPresent()) {
             cout << HtmlInfo::generateInfo(inputFileInfo, diag, diagReparsing).data() << endl;
             return;
         }
-        QFile file(fromNativeFileName(outputFileArg.values().front()));
+        auto file = QFile(fromNativeFileName(outputFileArg.values().front()));
         if (file.open(QFile::WriteOnly) && file.write(HtmlInfo::generateInfo(inputFileInfo, diag, diagReparsing)) && file.flush()) {
             cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
         } else {
@@ -152,7 +152,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
         AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // parse tags
-            fileInfo.setPath(file);
+            fileInfo.setPath(std::string(file));
             fileInfo.open(true);
             fileInfo.parseContainerFormat(diag, progress);
             fileInfo.parseEverything(diag, progress);
@@ -336,7 +336,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
         AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // parse tags
-            fileInfo.setPath(file);
+            fileInfo.setPath(std::string(file));
             fileInfo.open(true);
             fileInfo.parseContainerFormat(diag, progress);
             fileInfo.parseTags(diag, progress);
@@ -498,7 +498,7 @@ void setTagInfo(const SetTagInfoArgs &args)
 
     // set backup path
     if (args.backupDirArg.isPresent()) {
-        fileInfo.setBackupDirectory(args.backupDirArg.values().front());
+        fileInfo.setBackupDirectory(std::string(args.backupDirArg.values().front()));
     }
 
     // iterate through all specified files
@@ -510,7 +510,7 @@ void setTagInfo(const SetTagInfoArgs &args)
         try {
             // parse tags and tracks (tracks are relevent because track meta-data such as language can be changed as well)
             cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
-            fileInfo.setPath(file);
+            fileInfo.setPath(std::string(file));
             fileInfo.parseContainerFormat(diag, parsingProgress);
             fileInfo.parseTags(diag, parsingProgress);
             fileInfo.parseTracks(diag, parsingProgress);
@@ -808,7 +808,7 @@ void extractField(
         AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // setup media file info
-            inputFileInfo.setPath(file);
+            inputFileInfo.setPath(std::string(file));
             inputFileInfo.open(true);
 
             // extract either tag field or attachment
@@ -949,7 +949,7 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
     for (const char *file : filesArg.values()) {
         try {
             // parse tags
-            fileInfo.setPath(file);
+            fileInfo.setPath(std::string(file));
             fileInfo.open(true);
             fileInfo.parseContainerFormat(diag, progress);
             fileInfo.parseTags(diag, progress);
