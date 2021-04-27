@@ -129,16 +129,16 @@ template <class TagType> bool fieldPredicate(int i, const std::pair<typename Tag
  * \param previousValueHandling Specifies the "previous value handling policy".
  */
 template <class TagType>
-int fetchId3v2CoverValues(
-    const TagType *tag, KnownField field, QList<TagParser::TagValue> &values, const int valueCount, const PreviousValueHandling previousValueHandling)
+int fetchId3v2CoverValues(const TagType *tag, KnownField field, std::vector<TagParser::TagValue> &values, const std::size_t valueCount,
+    const PreviousValueHandling previousValueHandling)
 {
     values.reserve(valueCount);
     int first = -1;
     const auto &fields = tag->fields();
     auto range = fields.equal_range(tag->fieldId(field));
-    for (int i = 0; i < valueCount; ++i) {
+    for (std::size_t i = 0; i < valueCount; ++i) {
         if (i >= values.size()) {
-            values << TagValue();
+            values.emplace_back();
         }
         auto pair = find_if(range.first, range.second, std::bind(fieldPredicate<TagType>, i, placeholders::_1));
         if (pair != range.second) {
@@ -151,10 +151,10 @@ int fetchId3v2CoverValues(
             values[i].clearDataAndMetadata();
         }
         if (first < 0 && !values[i].isEmpty()) {
-            first = i;
+            first = static_cast<int>(i);
         }
     }
-    values.erase(values.begin() + valueCount, values.end());
+    values.erase(values.begin() + static_cast<typename std::remove_reference_t<decltype(values)>::difference_type>(valueCount), values.end());
     return first;
 }
 
@@ -184,13 +184,13 @@ bool PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
         int first;
         switch (m_tag->type()) {
         case TagType::Id3v2Tag:
-            first
-                = fetchId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
+            first = fetchId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values,
+                static_cast<std::size_t>(m_ui->switchTypeComboBox->count()), previousValueHandling);
             break;
         case TagType::VorbisComment:
         case TagType::OggVorbisComment:
-            first = fetchId3v2CoverValues(
-                static_cast<VorbisComment *>(m_tag), m_field, m_values, m_ui->switchTypeComboBox->count(), previousValueHandling);
+            first = fetchId3v2CoverValues(static_cast<VorbisComment *>(m_tag), m_field, m_values,
+                static_cast<std::size_t>(m_ui->switchTypeComboBox->count()), previousValueHandling);
             break;
         default:
             first = 0;
@@ -198,7 +198,7 @@ bool PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
         if (first >= 0) {
             m_ui->switchTypeComboBox->setCurrentIndex(first);
         }
-        m_currentTypeIndex = m_ui->switchTypeComboBox->currentIndex();
+        m_currentTypeIndex = static_cast<std::size_t>(m_ui->switchTypeComboBox->currentIndex());
         connect(m_ui->switchTypeComboBox, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this,
             &PicturePreviewSelection::typeSwitched);
     } else {
@@ -212,13 +212,13 @@ bool PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
                     m_values[0] = value;
                 }
             } else {
-                m_values << value;
+                m_values.emplace_back(value);
             }
         }
         if (m_values.size()) {
             m_values.erase(m_values.begin() + 1, m_values.end());
         } else {
-            m_values << TagValue();
+            m_values.emplace_back();
         }
     }
     const auto hideDesc = !m_tag->supportsDescription(m_field);
@@ -324,14 +324,14 @@ void PicturePreviewSelection::assignImageToTagValue(const QImage &image, TagValu
  * \param field Specifies the field.
  * \param values Specifies the values to be pushed.
  */
-template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField field, const QList<TagParser::TagValue> &values)
+template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField field, const std::vector<TagParser::TagValue> &values)
 {
     auto &fields = tag->fields();
     const auto id = tag->fieldId(field);
     const auto range = fields.equal_range(id);
     const auto first = range.first;
-    // iterate through all tag values
-    for (int index = 0, valueCount = values.size(); index < valueCount; ++index) {
+
+    for (std::size_t index = 0, valueCount = values.size(); index < valueCount; ++index) {
         // check whether there is already a tag value with the current index/type
         auto pair = find_if(first, range.second, std::bind(fieldPredicate<TagType>, index, placeholders::_1));
         if (pair != range.second) {
@@ -343,7 +343,7 @@ template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField fiel
                 // -> remove these values as we only support one value of a type in the same tag
                 pair->second.setValue(TagValue());
             }
-        } else if (!values[index].isEmpty()) {
+        } else if (!values[static_cast<std::size_t>(index)].isEmpty()) {
             using FieldType = typename TagType::FieldType;
             using TypeInfoType = typename FieldType::TypeInfoType;
             using IndexCompareType = typename Traits::Conditional<std::is_unsigned<TypeInfoType>, make_unsigned<decltype(index)>::type, TypeInfoType>;
@@ -351,7 +351,7 @@ template <class TagType> void pushId3v2CoverValues(TagType *tag, KnownField fiel
             if (static_cast<IndexCompareType>(index) < numeric_limits<TypeInfoType>::max()) {
                 newField.setTypeInfo(static_cast<TypeInfoType>(index));
             }
-            fields.insert(std::make_pair(id, newField));
+            fields.insert(std::pair(id, std::move(newField)));
         }
     }
 }
@@ -375,8 +375,8 @@ void PicturePreviewSelection::apply()
         default:;
         }
     } else {
-        if (m_values.size()) {
-            m_tag->setValue(m_field, m_values.first());
+        if (!m_values.empty()) {
+            m_tag->setValue(m_field, m_values.front());
         } else {
             m_tag->setValue(m_field, TagValue());
         }
@@ -388,8 +388,8 @@ void PicturePreviewSelection::apply()
  */
 void PicturePreviewSelection::clear()
 {
-    for (int i = 0, count = m_values.count(); i < count; ++i) {
-        m_values[i].clearDataAndMetadata();
+    for (auto &value : m_values) {
+        value.clearDataAndMetadata();
     }
     updatePreview(m_currentTypeIndex);
     updateDescription(m_currentTypeIndex);
@@ -487,16 +487,15 @@ void PicturePreviewSelection::pasteOfSelectedType(const char *format)
  */
 void PicturePreviewSelection::removeSelected()
 {
-    if (m_currentTypeIndex < m_values.size()) {
-        if (m_values[m_currentTypeIndex].isEmpty()) {
-            QMessageBox::information(this, QCoreApplication::applicationName(), tr("There is no cover to remove."));
-        } else {
-            m_values[m_currentTypeIndex].clearData();
-            updatePreview(m_currentTypeIndex);
-            emit pictureChanged();
-        }
-    } else {
+    if (m_currentTypeIndex >= m_values.size()) {
         throw logic_error("Invalid type selected (no corresponding value assigned).");
+    }
+    if (m_values[m_currentTypeIndex].isEmpty()) {
+        QMessageBox::information(this, QCoreApplication::applicationName(), tr("There is no cover to remove."));
+    } else {
+        m_values[m_currentTypeIndex].clearData();
+        updatePreview(m_currentTypeIndex);
+        emit pictureChanged();
     }
 }
 
@@ -707,11 +706,11 @@ void PicturePreviewSelection::dropEvent(QDropEvent *event)
 /*!
  * \brief Handles selected type being switched.
  */
-void PicturePreviewSelection::typeSwitched(int index)
+void PicturePreviewSelection::typeSwitched(std::size_t index)
 {
     assert(m_currentTypeIndex < m_values.size());
-    int lastIndex = m_currentTypeIndex;
-    if (index < 0 || index >= m_values.size()) {
+    const auto lastIndex = m_currentTypeIndex;
+    if (index >= m_values.size()) {
         throw logic_error("current type index is invalid");
     } else {
         m_currentTypeIndex = index;
@@ -723,7 +722,7 @@ void PicturePreviewSelection::typeSwitched(int index)
 /*!
  * \brief Shows the description of type with the specified \a newIndex.
  */
-void PicturePreviewSelection::updateDescription(int newIndex)
+void PicturePreviewSelection::updateDescription(std::size_t newIndex)
 {
     // show description of selected type
     m_ui->descriptionLineEdit->setText(Utility::stringToQString(m_values[newIndex].description(), m_values[newIndex].descriptionEncoding()));
@@ -732,7 +731,7 @@ void PicturePreviewSelection::updateDescription(int newIndex)
 /*!
  * \brief Shows the description of type with the specified \a newIndex and saves the description of the type with the specified \a lastIndex before.
  */
-void PicturePreviewSelection::updateDescription(int lastIndex, int newIndex)
+void PicturePreviewSelection::updateDescription(std::size_t lastIndex, std::size_t newIndex)
 {
     TagTextEncoding enc;
     if (m_tag) {
@@ -750,7 +749,7 @@ void PicturePreviewSelection::updateDescription(int lastIndex, int newIndex)
 /*!
  * \brief Updates the preview to show the type with the specified \a index.
  */
-void PicturePreviewSelection::updatePreview(int index)
+void PicturePreviewSelection::updatePreview(std::size_t index)
 {
     if (!m_scene) {
         m_scene = new QGraphicsScene(m_ui->previewGraphicsView);

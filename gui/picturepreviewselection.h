@@ -74,10 +74,10 @@ protected:
     void dropEvent(QDropEvent *event) override;
 
 private Q_SLOTS:
-    void typeSwitched(int index);
-    void updateDescription(int newIndex);
-    void updateDescription(int lastIndex, int newIndex);
-    void updatePreview(int index);
+    void typeSwitched(std::size_t index);
+    void updateDescription(std::size_t newIndex);
+    void updateDescription(std::size_t lastIndex, std::size_t newIndex);
+    void updatePreview(std::size_t index);
     void showContextMenu(const QPoint &position);
 
 private:
@@ -96,11 +96,11 @@ private:
     QGraphicsRectItem *m_rectItem;
     TagParser::Tag *m_tag;
     TagParser::KnownField m_field;
-    QList<TagParser::TagValue> m_values;
+    std::vector<TagParser::TagValue> m_values;
     std::size_t m_currentFileSize;
     QSize m_currentResolution;
     QString m_currentMimeType;
-    int m_currentTypeIndex;
+    std::size_t m_currentTypeIndex;
 };
 
 /*!
