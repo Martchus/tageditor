@@ -28,6 +28,39 @@ using namespace Settings;
 
 namespace Cli {
 
+const std::vector<std::string_view> &id3v2CoverTypeNames()
+{
+    static const auto t
+        = std::vector<std::string_view>{ "other"sv, "file-icon"sv, "other-file-icon"sv, "front-cover"sv, "back-cover"sv, "leaflet-page"sv, "media"sv,
+              "lead-performer"sv, "artist"sv, "conductor"sv, "band"sv, "composer"sv, "lyricist"sv, "recording-location"sv, "during-recording"sv,
+              "during-performance"sv, "movie-screen-capture"sv, "bright-colored-fish"sv, "illustration"sv, "artist-logotype"sv, "publisher"sv };
+    return t;
+}
+
+CoverType id3v2CoverType(std::string_view coverName)
+{
+    static const auto mapping = [] {
+        const auto &names = id3v2CoverTypeNames();
+        auto map = std::map<std::string_view, CoverType>();
+        auto index = CoverType();
+        for (const auto name : names) {
+            map[name] = index++;
+        }
+        return map;
+    }();
+    if (const auto i = mapping.find(coverName); i != mapping.end()) {
+        return i->second;
+    } else {
+        return invalidCoverType;
+    }
+}
+
+std::string_view id3v2CoverName(CoverType coverType)
+{
+    const auto &names = id3v2CoverTypeNames();
+    return coverType < names.size() ? names[coverType] : "?"sv;
+}
+
 CppUtilities::TimeSpanOutputFormat timeSpanOutputFormat = TimeSpanOutputFormat::WithMeasures;
 
 /*!
@@ -208,16 +241,16 @@ void printProperty(const char *propName, ElementPosition elementPosition, const 
     }
 }
 
-void printFieldName(const char *fieldName, size_t fieldNameLen)
+void printFieldName(std::string_view fieldName)
 {
     cout << "    " << fieldName;
     // also write padding
-    if (fieldNameLen >= 18) {
+    if (fieldName.size() >= 18) {
         // write at least one space
         cout << ' ';
         return;
     }
-    for (auto i = fieldNameLen; i < 18; ++i) {
+    for (auto i = fieldName.size(); i < 18; ++i) {
         cout << ' ';
     }
 }
@@ -233,13 +266,30 @@ void printTagValue(const TagValue &value)
     cout << '\n';
 }
 
+template <class TagType> static void printId3v2CoverValues(TagType *tag)
+{
+    const auto &fields = tag->fields();
+    const auto id = tag->fieldId(KnownField::Cover);
+    for (auto range = fields.equal_range(id); range.first != range.second; ++range.first) {
+        const auto &field = range.first->second;
+        printFieldName(argsToString("Cover (", id3v2CoverName(static_cast<CoverType>(field.typeInfo())), ")"));
+        printTagValue(field.value());
+    }
+}
+
 void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool skipEmpty)
 {
-    // write field name
-    const char *fieldName = scope.field.name();
-    const auto fieldNameLen = strlen(fieldName);
-
+    const auto fieldName = std::string_view(scope.field.name());
     try {
+        if (scope.field.knownFieldForTag(tag, tagType) == KnownField::Cover) {
+            if (tagType == TagType::Id3v2Tag) {
+                printId3v2CoverValues(static_cast<const Id3v2Tag *>(tag));
+            } else {
+                printId3v2CoverValues(static_cast<const VorbisComment *>(tag));
+            }
+            return;
+        }
+
         // parse field denotation
         const auto &values = scope.field.values(tag, tagType);
 
@@ -255,20 +305,20 @@ void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool s
 
         // print empty value (if not prevented)
         if (values.first.empty()) {
-            printFieldName(fieldName, fieldNameLen);
+            printFieldName(fieldName);
             cout << "none\n";
             return;
         }
 
         // print values
         for (const auto &value : values.first) {
-            printFieldName(fieldName, fieldNameLen);
+            printFieldName(fieldName);
             printTagValue(*value);
         }
 
     } catch (const ConversionException &e) {
         // handle conversion error which might happen when parsing field denotation
-        printFieldName(fieldName, fieldNameLen);
+        printFieldName(fieldName);
         cout << "unable to parse - " << e.what() << '\n';
     }
 }
@@ -283,7 +333,7 @@ template <typename ConcreteTag> void printNativeFields(const Tag *tag)
         }
 
         const auto fieldId(ConcreteTag::FieldType::fieldIdToString(field.first));
-        printFieldName(fieldId.data(), fieldId.size());
+        printFieldName(fieldId);
         printTagValue(field.second.value());
     }
 }
@@ -613,7 +663,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
 }
 
 template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
-std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(std::string_view idString, const Tag *tag, TagType tagType)
+static std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(std::string_view idString, const Tag *tag, TagType tagType)
 {
     auto res = make_pair<std::vector<const TagValue *>, bool>({}, false);
     if (!(tagType & tagTypeMask)) {
@@ -625,7 +675,7 @@ std::pair<std::vector<const TagValue *>, bool> valuesForNativeField(std::string_
 }
 
 template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
-bool setValuesForNativeField(std::string_view idString, Tag *tag, TagType tagType, const std::vector<TagValue> &values)
+static bool setValuesForNativeField(std::string_view idString, Tag *tag, TagType tagType, const std::vector<TagValue> &values)
 {
     if (!(tagType & tagTypeMask)) {
         return false;
@@ -633,20 +683,35 @@ bool setValuesForNativeField(std::string_view idString, Tag *tag, TagType tagTyp
     return static_cast<ConcreteTag *>(tag)->setValues(ConcreteTag::FieldType::fieldIdFromString(idString), values);
 }
 
-inline FieldId::FieldId(
-    std::string_view nativeField, const GetValuesForNativeFieldType &valuesForNativeField, const SetValuesForNativeFieldType &setValuesForNativeField)
+template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType>
+static KnownField knownFieldForNativeField(std::string_view idString, const Tag *tag, TagType tagType)
+{
+    if (!(tagType & tagTypeMask)) {
+        return KnownField::Invalid;
+    }
+    try {
+        return static_cast<const ConcreteTag *>(tag)->knownField(ConcreteTag::FieldType::fieldIdFromString(idString));
+    } catch (const ConversionException &) {
+        return KnownField::Invalid;
+    }
+}
+
+inline FieldId::FieldId(std::string_view nativeField, GetValuesForNativeFieldType &&valuesForNativeField,
+    SetValuesForNativeFieldType &&setValuesForNativeField, KnownFieldForNativeFieldType &&knownFieldForNativeField)
     : m_knownField(KnownField::Invalid)
     , m_nativeField(nativeField)
-    , m_valuesForNativeField(valuesForNativeField)
-    , m_setValuesForNativeField(setValuesForNativeField)
+    , m_valuesForNativeField(std::move(valuesForNativeField))
+    , m_setValuesForNativeField(std::move(setValuesForNativeField))
+    , m_knownFieldForNativeField(std::move(knownFieldForNativeField))
 {
 }
 
 /// \remarks This wrapper is required because specifying c'tor template args is not possible.
 template <class ConcreteTag, TagType tagTypeMask> FieldId FieldId::fromNativeField(std::string_view nativeFieldId)
 {
-    return FieldId(nativeFieldId, bind(&valuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2),
-        bind(&setValuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2, _3));
+    return FieldId(nativeFieldId, std::bind(&valuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2),
+        std::bind(&setValuesForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2, _3),
+        std::bind(&knownFieldForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2));
 }
 
 FieldId FieldId::fromTagDenotation(const char *denotation, size_t denotationSize)
@@ -697,6 +762,15 @@ bool FieldId::setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &
         return m_setValuesForNativeField(tag, tagType, values);
     } else {
         return tag->setValues(m_knownField, values);
+    }
+}
+
+KnownField FieldId::knownFieldForTag(const Tag *tag, TagType tagType) const
+{
+    if (!m_nativeField.empty()) {
+        return m_knownFieldForNativeField(tag, tagType);
+    } else {
+        return m_knownField;
     }
 }
 

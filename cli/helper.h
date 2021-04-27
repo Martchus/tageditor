@@ -3,7 +3,9 @@
 
 #include "../application/knownfieldmodel.h"
 
+#include <tagparser/id3/id3v2tag.h>
 #include <tagparser/tag.h>
+#include <tagparser/vorbis/vorbiscomment.h>
 
 #include <c++utilities/application/commandlineutils.h>
 #include <c++utilities/chrono/datetime.h>
@@ -13,6 +15,7 @@
 #include <c++utilities/misc/traits.h>
 
 #include <functional>
+#include <string_view>
 #include <type_traits>
 #include <unordered_map>
 #include <vector>
@@ -44,11 +47,18 @@ CPP_UTILITIES_MARK_FLAG_ENUM_CLASS(TagParser, TagParser::TagType)
 
 namespace Cli {
 
+using CoverType = std::conditional_t<sizeof(typename Id3v2Tag::FieldType::TypeInfoType) >= sizeof(typename VorbisComment::FieldType::TypeInfoType),
+    typename Id3v2Tag::FieldType::TypeInfoType, typename VorbisComment::FieldType::TypeInfoType>;
+constexpr auto invalidCoverType = std::numeric_limits<CoverType>::max();
+const std::vector<std::string_view> &id3v2CoverTypeNames();
+CoverType id3v2CoverType(std::string_view coverName);
+std::string_view id3v2CoverName(CoverType coverType);
+
 class FieldId {
     friend struct std::hash<FieldId>;
 
 public:
-    FieldId(KnownField m_knownField = KnownField::Invalid, const char *denotation = nullptr, std::size_t denotationSize = 0);
+    explicit FieldId(KnownField m_knownField = KnownField::Invalid, const char *denotation = nullptr, std::size_t denotationSize = 0);
     static FieldId fromTagDenotation(const char *denotation, std::size_t denotationSize);
     static FieldId fromTrackDenotation(const char *denotation, std::size_t denotationSize);
     bool operator==(const FieldId &other) const;
@@ -58,12 +68,14 @@ public:
     const std::string &denotation() const;
     std::pair<std::vector<const TagValue *>, bool> values(const Tag *tag, TagType tagType) const;
     bool setValues(Tag *tag, TagType tagType, const std::vector<TagValue> &values) const;
+    KnownField knownFieldForTag(const Tag *tag, TagType tagType) const;
 
 private:
     using GetValuesForNativeFieldType = std::function<std::pair<std::vector<const TagValue *>, bool>(const Tag *, TagType)>;
     using SetValuesForNativeFieldType = std::function<bool(Tag *, TagType, const std::vector<TagValue> &)>;
-    FieldId(std::string_view nativeField, const GetValuesForNativeFieldType &valuesForNativeField,
-        const SetValuesForNativeFieldType &setValuesForNativeField);
+    using KnownFieldForNativeFieldType = std::function<KnownField(const Tag *, TagType)>;
+    FieldId(std::string_view nativeField, GetValuesForNativeFieldType &&valuesForNativeField, SetValuesForNativeFieldType &&setValuesForNativeField,
+        KnownFieldForNativeFieldType &&knownFieldForNativeField);
     template <class ConcreteTag, TagType tagTypeMask = ConcreteTag::tagType> static FieldId fromNativeField(std::string_view nativeFieldId);
 
     KnownField m_knownField;
@@ -71,6 +83,7 @@ private:
     std::string m_nativeField;
     GetValuesForNativeFieldType m_valuesForNativeField;
     SetValuesForNativeFieldType m_setValuesForNativeField;
+    KnownFieldForNativeFieldType m_knownFieldForNativeField;
 };
 
 inline FieldId::FieldId(KnownField knownField, const char *denotation, std::size_t denotationSize)
@@ -105,7 +118,7 @@ inline const std::string &FieldId::denotation() const
 }
 
 struct FieldScope {
-    FieldScope(KnownField field = KnownField::Invalid, TagType tagType = TagType::Unspecified, TagTarget tagTarget = TagTarget());
+    explicit FieldScope(KnownField field = KnownField::Invalid, TagType tagType = TagType::Unspecified, TagTarget tagTarget = TagTarget());
     bool operator==(const FieldScope &other) const;
     bool isTrack() const;
 
@@ -150,7 +163,7 @@ inline FieldValue::FieldValue(DenotationType type, unsigned int fileIndex, const
 
 class InterruptHandler {
 public:
-    InterruptHandler(std::function<void()> handler);
+    explicit InterruptHandler(std::function<void()> handler);
     ~InterruptHandler();
 
 private:

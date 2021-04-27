@@ -18,11 +18,13 @@
 #include <tagparser/abstracttrack.h>
 #include <tagparser/backuphelper.h>
 #include <tagparser/diagnostics.h>
+#include <tagparser/id3/id3v2tag.h>
 #include <tagparser/localehelper.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/progressfeedback.h>
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>
+#include <tagparser/vorbis/vorbiscomment.h>
 
 #ifdef TAGEDITOR_JSON_EXPORT
 #include <reflective_rapidjson/json/reflector.h>
@@ -52,6 +54,7 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <string_view>
 
 using namespace std;
 using namespace CppUtilities;
@@ -93,6 +96,9 @@ void printFieldNames(const ArgumentOccurrence &)
             " - Tag modifier: " TAG_MODIFIER "\n"
             " - Track modifier: track=id1,id2,id3,... track=all\n"
             " - Target modifier:\n      " TARGET_MODIFIER "\n"
+            "ID3v2 cover types:\n"
+         << joinStrings<std::remove_reference_t<decltype(id3v2CoverTypeNames())>, std::string>(id3v2CoverTypeNames(), "\n"sv, false, " - "sv, ""sv)
+         << '\n'
          << flush;
 }
 
@@ -379,6 +385,41 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
     }
 }
 
+template <class TagType>
+bool fieldPredicate(CoverType coverType, const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
+{
+    return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == static_cast<typename TagType::FieldType::TypeInfoType>(coverType))
+                                            : (coverType == 0);
+}
+
+template <class TagType> static void setId3v2CoverValues(TagType *tag, std::vector<std::pair<TagValue, CoverType>> &&values)
+{
+    auto &fields = tag->fields();
+    const auto id = tag->fieldId(KnownField::Cover);
+    const auto range = fields.equal_range(id);
+    const auto first = range.first;
+
+    for (auto &[tagValue, coverType] : values) {
+        // check whether there is already a tag value with the current index/type
+        auto pair = find_if(first, range.second, std::bind(fieldPredicate<TagType>, coverType, placeholders::_1));
+        if (pair != range.second) {
+            // there is already a tag value with the current index/type
+            // -> update this value
+            pair->second.setValue(tagValue);
+            // check whether there are more values with the current index/type assigned
+            while ((pair = find_if(++pair, range.second, std::bind(fieldPredicate<TagType>, coverType, placeholders::_1))) != range.second) {
+                // -> remove these values as we only support one value of a type in the same tag
+                pair->second.setValue(TagValue());
+            }
+        } else if (!tagValue.isEmpty()) {
+            using FieldType = typename TagType::FieldType;
+            auto newField = FieldType(id, tagValue);
+            newField.setTypeInfo(static_cast<typename FieldType::TypeInfoType>(coverType));
+            fields.insert(std::pair(id, std::move(newField)));
+        }
+    }
+}
+
 void setTagInfo(const SetTagInfoArgs &args)
 {
     CMD_UTILS_START_CONSOLE;
@@ -603,7 +644,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                             continue;
                         }
                         // convert the values to TagValue
-                        vector<TagValue> convertedValues;
+                        auto convertedValues = std::vector<TagValue>();
+                        auto convertedValuesWithCoverType = std::vector<std::pair<TagValue, CoverType>>();
                         for (const FieldValue *relevantDenotedValue : fieldDenotation.second.relevantValues) {
                             // assign an empty TagValue to remove the field if denoted value is empty
                             if (relevantDenotedValue->value.empty()) {
@@ -616,31 +658,71 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 continue;
                             }
                             // add value from file
+                            const auto parts = splitStringSimple<std::vector<std::string_view>>(relevantDenotedValue->value, ":", 3);
+                            const auto path = parts.empty() ? std::string_view() : parts.front();
                             try {
                                 // assume the file refers to a picture
-                                MediaFileInfo coverFileInfo(relevantDenotedValue->value);
-                                Diagnostics coverDiag;
-                                AbortableProgressFeedback coverProgress; // FIXME: actually use the progress object
-                                coverFileInfo.open(true);
-                                coverFileInfo.parseContainerFormat(coverDiag, coverProgress);
-                                auto buff = make_unique<char[]>(coverFileInfo.size());
-                                coverFileInfo.stream().seekg(static_cast<streamoff>(coverFileInfo.containerOffset()));
-                                coverFileInfo.stream().read(buff.get(), static_cast<streamoff>(coverFileInfo.size()));
-                                TagValue value(move(buff), coverFileInfo.size(), TagDataType::Picture);
-                                value.setMimeType(coverFileInfo.mimeType());
-                                convertedValues.emplace_back(move(value));
+                                auto value = TagValue();
+                                if (!path.empty()) {
+                                    auto coverFileInfo = MediaFileInfo(path);
+                                    auto coverDiag = Diagnostics();
+                                    auto coverProgress = AbortableProgressFeedback(); // FIXME: actually use the progress object
+                                    coverFileInfo.open(true);
+                                    coverFileInfo.parseContainerFormat(coverDiag, coverProgress);
+                                    auto buff = make_unique<char[]>(coverFileInfo.size());
+                                    coverFileInfo.stream().seekg(static_cast<streamoff>(coverFileInfo.containerOffset()));
+                                    coverFileInfo.stream().read(buff.get(), static_cast<streamoff>(coverFileInfo.size()));
+                                    value = TagValue(std::move(buff), coverFileInfo.size(), TagDataType::Picture);
+                                    value.setMimeType(coverFileInfo.mimeType());
+                                }
+                                if (parts.size() > 2) {
+                                    value.setDescription(parts[2], TagTextEncoding::Utf8);
+                                }
+                                if (parts.size() > 1 && denotedScope.field.knownFieldForTag(tag, tagType) == KnownField::Cover
+                                    && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment)) {
+                                    const auto coverType = id3v2CoverType(parts[1]);
+                                    if (coverType == invalidCoverType) {
+                                        diag.emplace_back(DiagLevel::Warning,
+                                            argsToString("Specified cover type \"", parts[1], "\" is invalid. Ignoring the specified field/value."),
+                                            context);
+                                    } else {
+                                        convertedValuesWithCoverType.emplace_back(std::pair(std::move(value), coverType));
+                                    }
+                                } else {
+                                    if (parts.size() > 1) {
+                                        diag.emplace_back(DiagLevel::Warning,
+                                            argsToString("Ignoring cover type \"", parts[1], "\" for ", tag->typeName(),
+                                                ". It is only supported by the cover field and the tag formats ID3v2 and Vorbis Comment."),
+                                            context);
+                                    }
+                                    convertedValues.emplace_back(std::move(value));
+                                }
                             } catch (const TagParser::Failure &) {
                                 diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
-                            } catch (const std::ios_base::failure &) {
-                                diag.emplace_back(DiagLevel::Critical, "An IO error occured when parsing the specified cover file.", context);
+                            } catch (const std::ios_base::failure &e) {
+                                diag.emplace_back(DiagLevel::Critical,
+                                    argsToString("An IO error occured when parsing the specified cover file: ", e.what()), context);
                             }
                         }
                         // finally set the values
                         try {
-                            denotedScope.field.setValues(tag, tagType, convertedValues);
+                            if (!convertedValues.empty() || convertedValuesWithCoverType.empty()) {
+                                denotedScope.field.setValues(tag, tagType, convertedValues);
+                            }
                         } catch (const ConversionException &e) {
                             diag.emplace_back(DiagLevel::Critical,
                                 argsToString("Unable to parse denoted field ID \"", denotedScope.field.name(), "\": ", e.what()), context);
+                        }
+                        if (!convertedValuesWithCoverType.empty()) {
+                            switch (tagType) {
+                            case TagType::Id3v2Tag:
+                                setId3v2CoverValues(static_cast<Id3v2Tag *>(tag), std::move(convertedValuesWithCoverType));
+                                break;
+                            case TagType::VorbisComment:
+                                setId3v2CoverValues(static_cast<VorbisComment *>(tag), std::move(convertedValuesWithCoverType));
+                                break;
+                            default:;
+                            }
                         }
                     }
                 }
