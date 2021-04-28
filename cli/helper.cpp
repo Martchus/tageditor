@@ -284,10 +284,11 @@ void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool s
         if (scope.field.knownFieldForTag(tag, tagType) == KnownField::Cover) {
             if (tagType == TagType::Id3v2Tag) {
                 printId3v2CoverValues(static_cast<const Id3v2Tag *>(tag));
-            } else {
+                return;
+            } else if (tagType == TagType::VorbisComment) {
                 printId3v2CoverValues(static_cast<const VorbisComment *>(tag));
+                return;
             }
-            return;
         }
 
         // parse field denotation
