@@ -1,3 +1,5 @@
+#include "resources/config.h"
+
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/misc.h>
@@ -8,6 +10,9 @@
 #include <tagparser/diagnostics.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/progressfeedback.h>
+
+#include <cstdlib>
+#include <cstring>
 
 namespace CppUtilities {
 
@@ -1015,7 +1020,8 @@ void CliTests::testJsonExport()
     TESTUTILS_ASSERT_EXEC(args);
     const char *const jqArgs[]
         = { "jq", "--argfile", "expected", expectedJsonPath.data(), "--argjson", "actual", stdout.data(), "-n", "$actual == $expected", nullptr };
-    execHelperAppInSearchPath("jq", jqArgs, stdout, stderr);
+    const auto *const logJsonExport = std::getenv(PROJECT_VARNAME_UPPER "_LOG_JQ_INVOCATION");
+    execHelperAppInSearchPath("jq", jqArgs, stdout, stderr, !logJsonExport || !std::strlen(logJsonExport));
     CPPUNIT_ASSERT_EQUAL(""s, stderr);
     CPPUNIT_ASSERT_EQUAL("true\n"s, stdout);
 #endif // TAGEDITOR_JSON_EXPORT
