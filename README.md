@@ -118,6 +118,11 @@ The basic workflow is quite simple:
 You can set the behaviour of the editor to keep previous values, so you don't have to enter
 information like album name or artist for all files in an album again and again.
 
+Note that the GUI does *not* support setting multiple values of the same field (besides covers of
+different types). If a file already contains fields with multiple values, the additional values
+are discarded. Use the CLI if support for multiple values per field is required but note that not
+all tag formats support this anyways.
+
 #### Screenshots
 ##### Main window under Openbox/qt5ct with Breeze theme/icons
 ![main window/Openbox/qt5ct/Breeze theme](/resources/screenshots/mainwindow.png?raw=true)
