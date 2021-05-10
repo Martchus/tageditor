@@ -241,27 +241,45 @@ void printProperty(const char *propName, ElementPosition elementPosition, const 
     }
 }
 
-void printFieldName(std::string_view fieldName)
+static void printFieldName(std::string_view fieldName)
 {
     cout << "    " << fieldName;
     // also write padding
-    if (fieldName.size() >= 18) {
+    constexpr auto defaultIndent = 18;
+    if (fieldName.size() >= defaultIndent) {
         // write at least one space
         cout << ' ';
         return;
     }
-    for (auto i = fieldName.size(); i < 18; ++i) {
+    for (auto i = fieldName.size(); i < defaultIndent; ++i) {
         cout << ' ';
     }
 }
 
-void printTagValue(const TagValue &value)
+static void printTagValue(const TagValue &value)
 {
     try {
         cout << value.toString(TagTextEncoding::Utf8);
     } catch (const ConversionException &) {
         // handle case when value can not be displayed as string
         cout << "can't display as string (see --extract)";
+    }
+    cout << '\n';
+}
+
+static void printDescription(const TagValue &value)
+{
+    if (value.description().empty()) {
+        return;
+    }
+    printFieldName("  description:");
+    if (value.descriptionEncoding() == TagTextEncoding::Utf8) {
+        cout << value.description();
+    } else {
+        auto tempValue = TagValue();
+        tempValue.setDescription(value.description(), value.descriptionEncoding());
+        tempValue.convertDescriptionEncoding(TagTextEncoding::Utf8);
+        cout << tempValue.description();
     }
     cout << '\n';
 }
@@ -274,6 +292,7 @@ template <class TagType> static void printId3v2CoverValues(TagType *tag)
         const auto &field = range.first->second;
         printFieldName(argsToString("Cover (", id3v2CoverName(static_cast<CoverType>(field.typeInfo())), ")"));
         printTagValue(field.value());
+        printDescription(field.value());
     }
 }
 
@@ -315,6 +334,7 @@ void printField(const FieldScope &scope, const Tag *tag, TagType tagType, bool s
         for (const auto &value : values.first) {
             printFieldName(fieldName);
             printTagValue(*value);
+            printDescription(*value);
         }
 
     } catch (const ConversionException &e) {
