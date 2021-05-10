@@ -51,6 +51,7 @@ class CliTests : public TestFixture {
 #ifdef PLATFORM_UNIX
     CPPUNIT_TEST(testBasicReading);
     CPPUNIT_TEST(testBasicWriting);
+    CPPUNIT_TEST(testModifyingCover);
     CPPUNIT_TEST(testSpecifyingNativeFieldIds);
     CPPUNIT_TEST(testHandlingOfTargets);
     CPPUNIT_TEST(testId3SpecificOptions);
@@ -76,6 +77,7 @@ public:
 #ifdef PLATFORM_UNIX
     void testBasicReading();
     void testBasicWriting();
+    void testModifyingCover();
     void testSpecifyingNativeFieldIds();
     void testHandlingOfTargets();
     void testId3SpecificOptions();
@@ -232,6 +234,81 @@ void CliTests::testBasicWriting()
 
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFileBackup.data()));
+}
+
+/*!
+ * \brief Tests adding a cover.
+ */
+void CliTests::testModifyingCover()
+{
+    cout << "\nModifying cover" << endl;
+    string stdout, stderr;
+    const auto coverFile = testFilePath("matroska_wave1/logo3_256x256.png");
+    const auto mp3File1 = workingCopyPath("mtx-test-data/mp3/id3-tag-and-xing-header.mp3");
+    const auto mp3File1Backup = mp3File1 + ".bak";
+
+    // add two front covers and one back cover
+    const auto otherCover = "cover=" + coverFile;
+    const auto frontCover0 = "cover0=" % coverFile + ":front-cover:foo";
+    const auto frontCover1 = "cover0=" % coverFile + ":front-cover:bar";
+    const auto backCover0 = "cover0=" % coverFile + ":back-cover";
+    const char *const args1[] = { "tageditor", "get", "-f", mp3File1.data(), nullptr };
+    const char *const args2[]
+        = { "tageditor", "set", otherCover.data(), frontCover0.data(), frontCover1.data(), backCover0.data(), "-f", mp3File1.data(), nullptr };
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    CPPUNIT_ASSERT_MESSAGE("covers added",
+        testContainsSubstrings(stdout,
+            {
+                " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
+                "    Cover (other)     can't display as string (see --extract)\n"
+                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "      description:    foo\n"
+                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "      description:    bar\n"
+                "    Cover (back-cover) can't display as string (see --extract)\n",
+            }));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
+
+    // test whether empty trailing ":" does *not* affect all descriptions
+    const char *const args3[] = { "tageditor", "set", "cover0=:front-cover:", "-f", mp3File1.data(), nullptr };
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    CPPUNIT_ASSERT_MESSAGE("covers not altered",
+        testContainsSubstrings(stdout,
+            {
+                " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
+                "    Cover (other)     can't display as string (see --extract)\n"
+                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "      description:    foo\n"
+                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "      description:    bar\n"
+                "    Cover (back-cover) can't display as string (see --extract)\n",
+            }));
+    CPPUNIT_ASSERT_EQUAL(-1, remove(mp3File1Backup.data()));
+
+    // remove all front covers by omitting trailing ":"
+    const char *const args4[] = { "tageditor", "set", "cover0=:front-cover", "-f", mp3File1.data(), nullptr };
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args4, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("front covers removed", std::string::npos, stdout.find("front-cover"));
+    CPPUNIT_ASSERT_MESSAGE("other covers not altered",
+        testContainsSubstrings(stdout,
+            {
+                " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
+                "    Cover (other)     can't display as string (see --extract)\n"
+                "    Cover (back-cover) can't display as string (see --extract)\n",
+            }));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
+
+    // remove all covers
+    const char *const args5[] = { "tageditor", "set", "cover0=", "-f", mp3File1.data(), nullptr };
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args5, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("All covers removed", std::string::npos, stdout.find("Cover"));
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
+
+    CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1.data()));
 }
 
 /*!
