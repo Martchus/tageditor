@@ -385,30 +385,47 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
     }
 }
 
+struct Id3v2Cover {
+    explicit Id3v2Cover(TagValue &&value, CoverType type, std::optional<std::string_view> description)
+        : value(std::move(value))
+        , type(type)
+        , description(description)
+    {
+    }
+    TagValue value;
+    CoverType type;
+    std::optional<std::string_view> description;
+};
+
 template <class TagType>
-bool fieldPredicate(CoverType coverType, const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
+bool fieldPredicate(CoverType coverType, std::optional<std::string_view> description,
+    const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
 {
-    return pair.second.isTypeInfoAssigned() ? (pair.second.typeInfo() == static_cast<typename TagType::FieldType::TypeInfoType>(coverType))
-                                            : (coverType == 0);
+    const auto &[fieldId, field] = pair;
+    const auto typeMatches
+        = field.isTypeInfoAssigned() ? (field.typeInfo() == static_cast<typename TagType::FieldType::TypeInfoType>(coverType)) : (coverType == 0);
+    const auto descMatches = !description.has_value() || field.value().description() == description.value();
+    return typeMatches && descMatches;
 }
 
-template <class TagType> static void setId3v2CoverValues(TagType *tag, std::vector<std::pair<TagValue, CoverType>> &&values)
+template <class TagType> static void setId3v2CoverValues(TagType *tag, std::vector<Id3v2Cover> &&values)
 {
     auto &fields = tag->fields();
     const auto id = tag->fieldId(KnownField::Cover);
     const auto range = fields.equal_range(id);
     const auto first = range.first;
 
-    for (auto &[tagValue, coverType] : values) {
-        // check whether there is already a tag value with the current index/type
-        auto pair = find_if(first, range.second, std::bind(fieldPredicate<TagType>, coverType, placeholders::_1));
+    for (auto &[tagValue, coverType, description] : values) {
+        // check whether there is already a tag value with the current type and description
+        auto pair = std::find_if(first, range.second, std::bind(&fieldPredicate<TagType>, coverType, description, placeholders::_1));
         if (pair != range.second) {
-            // there is already a tag value with the current index/type
+            // there is already a tag value with the current type and description
             // -> update this value
             pair->second.setValue(tagValue);
-            // check whether there are more values with the current index/type assigned
-            while ((pair = find_if(++pair, range.second, std::bind(fieldPredicate<TagType>, coverType, placeholders::_1))) != range.second) {
-                // -> remove these values as we only support one value of a type in the same tag
+            // check whether there are more values with the current type and description
+            while ((pair = std::find_if(++pair, range.second, std::bind(&fieldPredicate<TagType>, coverType, description, placeholders::_1)))
+                != range.second) {
+                // -> remove these values as we only support one value of a type/description in the same tag
                 pair->second.setValue(TagValue());
             }
         } else if (!tagValue.isEmpty()) {
@@ -645,7 +662,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         }
                         // convert the values to TagValue
                         auto convertedValues = std::vector<TagValue>();
-                        auto convertedValuesWithCoverType = std::vector<std::pair<TagValue, CoverType>>();
+                        auto convertedId3v2CoverValues = std::vector<Id3v2Cover>();
                         for (const FieldValue *relevantDenotedValue : fieldDenotation.second.relevantValues) {
                             // assign an empty TagValue to remove the field if denoted value is empty
                             if (relevantDenotedValue->value.empty()) {
@@ -675,8 +692,10 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     value = TagValue(std::move(buff), coverFileInfo.size(), TagDataType::Picture);
                                     value.setMimeType(coverFileInfo.mimeType());
                                 }
+                                auto description = std::optional<std::string_view>();
                                 if (parts.size() > 2) {
                                     value.setDescription(parts[2], TagTextEncoding::Utf8);
+                                    description = parts[2];
                                 }
                                 if (parts.size() > 1 && denotedScope.field.knownFieldForTag(tag, tagType) == KnownField::Cover
                                     && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment)) {
@@ -686,7 +705,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                             argsToString("Specified cover type \"", parts[1], "\" is invalid. Ignoring the specified field/value."),
                                             context);
                                     } else {
-                                        convertedValuesWithCoverType.emplace_back(std::pair(std::move(value), coverType));
+                                        convertedId3v2CoverValues.emplace_back(std::move(value), coverType, description);
                                     }
                                 } else {
                                     if (parts.size() > 1) {
@@ -706,20 +725,20 @@ void setTagInfo(const SetTagInfoArgs &args)
                         }
                         // finally set the values
                         try {
-                            if (!convertedValues.empty() || convertedValuesWithCoverType.empty()) {
+                            if (!convertedValues.empty() || convertedId3v2CoverValues.empty()) {
                                 denotedScope.field.setValues(tag, tagType, convertedValues);
                             }
                         } catch (const ConversionException &e) {
                             diag.emplace_back(DiagLevel::Critical,
                                 argsToString("Unable to parse denoted field ID \"", denotedScope.field.name(), "\": ", e.what()), context);
                         }
-                        if (!convertedValuesWithCoverType.empty()) {
+                        if (!convertedId3v2CoverValues.empty()) {
                             switch (tagType) {
                             case TagType::Id3v2Tag:
-                                setId3v2CoverValues(static_cast<Id3v2Tag *>(tag), std::move(convertedValuesWithCoverType));
+                                setId3v2CoverValues(static_cast<Id3v2Tag *>(tag), std::move(convertedId3v2CoverValues));
                                 break;
                             case TagType::VorbisComment:
-                                setId3v2CoverValues(static_cast<VorbisComment *>(tag), std::move(convertedValuesWithCoverType));
+                                setId3v2CoverValues(static_cast<VorbisComment *>(tag), std::move(convertedId3v2CoverValues));
                                 break;
                             default:;
                             }

@@ -275,16 +275,22 @@ Here are some Bash examples which illustrate getting and setting tag information
   tageditor set cover=":front-cover" cover0="/path/to/back-cover.jpg:back-cover:The description" -f foo.mp3
   ```
 
-    - The syntax is `path:cover-type:description`. The cover type and description are optional.
-    - In this example the front cover is removed (by passing an empty path) and the back cover set to the specified
-      file. Other cover types are not affected.
-    - When specifying a cover without type, all existing covers are replaced and the new cover will be of the
-      type "other".
-    - To replace all existing covers when specifying a cover type
-      use e.g. `… cover= cover0="/path/to/back-cover.jpg:back-cover"`.
-    - The names of all cover types can be shown via `tageditor --print-field-names`.
+    - The general syntax is `path:cover-type:description`. The cover type and description are optional.
     - The `0` after the 2nd `cover` is required. Otherwise the 2nd cover would only be set in the 2nd file (which
       is not even specified in this example).
+    - In this example the front cover is removed (by passing an empty path) and the back cover set to the specified
+      file and description. Existing covers of other types and with other descriptions are not affected.
+    - When specifying a cover without type, all existing covers are replaced and the new cover will be of the
+      type "other".
+        - To replace all existing covers when specifying a cover type
+          use e.g. `… cover= cover0="/path/to/back-cover.jpg:back-cover"`.
+    - It is possible to add multiple covers of the same type with only different descriptions. However, when
+      leaving the description out (2nd `:` is absent), all existing covers of the specified type are replaced and
+      the new cover will have an empty description.
+        - To affect only the covers with an empty description, be sure to keep the trailing `:`.
+        - To remove all existing covers of a certain type but regardless of the description
+          use e.g. `… cover=":back-cover"`.
+    - The names of all cover types can be shown via `tageditor --print-field-names`.
     - This is only supported by the tag formats ID3v2 and Vorbis Comment. The type and description are ignored
       when dealing with a different format.
 
