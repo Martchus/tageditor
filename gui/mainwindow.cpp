@@ -368,8 +368,8 @@ void MainWindow::toggleDbQueryWidget()
 void MainWindow::showAboutDlg()
 {
     if (!m_aboutDlg) {
-        m_aboutDlg = new AboutDialog(this, QStringLiteral(APP_URL),
-            tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."),
+        m_aboutDlg = new AboutDialog(this, QString(), QStringLiteral("<p>Developed by " APP_AUTHOR "<br>Fallback icons from KDE/Breeze project</p>"),
+            QString(), QString(), tr("A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags."),
             QImage(QStringLiteral(":/tageditor/icons/hicolor/128x128/apps/tageditor.png")));
     }
     if (m_aboutDlg->isHidden()) {

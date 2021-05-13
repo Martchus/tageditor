@@ -1,10 +1,13 @@
 <RCC>
     <qresource prefix="/tageditor">
         <file>icons/hicolor/16x16/apps/tageditor.png</file>
-        <file>icons/hicolor/32x32/settingscategories/system-file-manager.png</file>
-        <file>icons/hicolor/32x32/settingscategories/key-enter.png</file>
-        <file>icons/hicolor/32x32/settingscategories/tag.png</file>
-        <file>icons/hicolor/32x32/settingscategories/preferences-other.png</file>
         <file>icons/hicolor/128x128/apps/tageditor.png</file>
+        <file>icons/hicolor/32x32/settingscategories/document-edit.svg</file>
+        <file>icons/hicolor/32x32/settingscategories/input-keyboard-symbolic.svg</file>
+        <file>icons/hicolor/32x32/settingscategories/plugins.svg</file>
+        <file>icons/hicolor/32x32/settingscategories/preferences-other.svg</file>
+        <file>icons/hicolor/32x32/settingscategories/system-file-manager.svg</file>
+        <file>icons/hicolor/32x32/settingscategories/tag.svg</file>
+        <file>icons/hicolor/32x32/settingscategories/view-list-tree.svg</file>
     </qresource>
 </RCC>

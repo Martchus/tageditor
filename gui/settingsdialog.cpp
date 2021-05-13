@@ -652,13 +652,13 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     category->setDisplayName(tr("Tag processing"));
     category->assignPages(
         { new TagProcessingGeneralOptionPage, new Id3v1OptionPage, new Id3v2OptionPage, new TagProcessingTargetsOptionPage, new FileLayoutPage });
-    category->setIcon(QIcon::fromTheme(QStringLiteral("tag"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.png"))));
+    category->setIcon(QIcon::fromTheme(QStringLiteral("tag"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/tag.svg"))));
     categories << category;
 
     category = new OptionCategory(this);
     category->setDisplayName(tr("Editor"));
-    category->setIcon(
-        QIcon::fromTheme(QStringLiteral("document-edit"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/key-enter.png"))));
+    category->setIcon(QIcon::fromTheme(
+        QStringLiteral("document-edit"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/document-edit.svg"))));
     category->assignPages({ new EditorGeneralOptionPage, new EditorTempOptionPage(this), new EditorFieldsOptionPage, new InfoOptionPage,
         new EditorAutoCorrectionOptionPage, new EditorDbQueryOptionsPage });
     categories << category;
@@ -666,7 +666,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     category = new OptionCategory(this);
     category->setDisplayName(tr("File browser"));
     category->setIcon(QIcon::fromTheme(
-        QStringLiteral("view-list-tree"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/system-file-manager.png"))));
+        QStringLiteral("view-list-tree"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/view-list-tree.svg"))));
     category->assignPages({ new FileBrowserGeneralOptionPage });
     categories << category;
 
@@ -676,7 +676,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
 
     setMinimumSize(800, 450);
     setWindowIcon(QIcon::fromTheme(
-        QStringLiteral("preferences-other"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/preferences-other.png"))));
+        QStringLiteral("preferences-other"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/preferences-other.svg"))));
 
     // some settings could be applied without restarting the application, good idea?
     //connect(this, &Dialogs::SettingsDialog::applied, bind(&Dialogs::QtSettings::apply, &Settings::qtSettings()));
