@@ -678,6 +678,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                             // add value from file
                             const auto parts = splitStringSimple<std::vector<std::string_view>>(relevantDenotedValue->value, ":", 3);
                             const auto path = parts.empty() ? std::string_view() : parts.front();
+                            const auto fieldType = denotedScope.field.knownFieldForTag(tag, tagType);
+                            const auto dataType = fieldType == KnownField::Cover ? TagDataType::Picture : TagDataType::Text;
                             try {
                                 // assume the file refers to a picture
                                 auto value = TagValue();
@@ -688,9 +690,9 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     coverFileInfo.open(true);
                                     coverFileInfo.parseContainerFormat(coverDiag, coverProgress);
                                     auto buff = make_unique<char[]>(coverFileInfo.size());
-                                    coverFileInfo.stream().seekg(static_cast<streamoff>(coverFileInfo.containerOffset()));
+                                    coverFileInfo.stream().seekg(static_cast<streamoff>(0));
                                     coverFileInfo.stream().read(buff.get(), static_cast<streamoff>(coverFileInfo.size()));
-                                    value = TagValue(std::move(buff), coverFileInfo.size(), TagDataType::Picture);
+                                    value = TagValue(std::move(buff), coverFileInfo.size(), dataType, TagTextEncoding::Utf8);
                                     value.setMimeType(coverFileInfo.mimeType());
                                 }
                                 auto description = std::optional<std::string_view>();
@@ -698,7 +700,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     value.setDescription(parts[2], TagTextEncoding::Utf8);
                                     description = parts[2];
                                 }
-                                if (parts.size() > 1 && denotedScope.field.knownFieldForTag(tag, tagType) == KnownField::Cover
+                                if (parts.size() > 1 && fieldType == KnownField::Cover
                                     && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment)) {
                                     const auto coverType = id3v2CoverType(parts[1]);
                                     if (coverType == invalidCoverType) {
@@ -718,10 +720,10 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     convertedValues.emplace_back(std::move(value));
                                 }
                             } catch (const TagParser::Failure &) {
-                                diag.emplace_back(DiagLevel::Critical, "Unable to parse specified cover file.", context);
+                                diag.emplace_back(DiagLevel::Critical, "Unable to parse specified file.", context);
                             } catch (const std::ios_base::failure &e) {
                                 diag.emplace_back(DiagLevel::Critical,
-                                    argsToString("An IO error occured when parsing the specified cover file: ", e.what()), context);
+                                    argsToString("An IO error occured when parsing the specified file: ", e.what()), context);
                             }
                         }
                         // finally set the values
