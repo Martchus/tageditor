@@ -13,6 +13,7 @@ struct SetTagInfoArgs {
     SetTagInfoArgs(CppUtilities::Argument &filesArg, CppUtilities::Argument &verboseArg);
     CppUtilities::Argument &filesArg;
     CppUtilities::Argument &verboseArg;
+    CppUtilities::ConfigValueArgument quietArg;
     CppUtilities::ConfigValueArgument docTitleArg;
     CppUtilities::ConfigValueArgument removeOtherFieldsArg;
     CppUtilities::ConfigValueArgument treatUnknownFilesAsMp3FilesArg;

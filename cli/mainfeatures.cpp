@@ -561,6 +561,7 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
 
     // iterate through all specified files
+    const auto quiet = args.quietArg.isPresent();
     unsigned int fileIndex = 0;
     static string context("setting tags");
     for (const char *file : args.filesArg.values()) {
@@ -568,7 +569,9 @@ void setTagInfo(const SetTagInfoArgs &args)
         AbortableProgressFeedback parsingProgress; // FIXME: actually use the progress object
         try {
             // parse tags and tracks (tracks are relevent because track meta-data such as language can be changed as well)
-            cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
+            if (!quiet) {
+                cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
+            }
             fileInfo.setPath(std::string(file));
             fileInfo.parseContainerFormat(diag, parsingProgress);
             fileInfo.parseTags(diag, parsingProgress);
@@ -850,15 +853,17 @@ void setTagInfo(const SetTagInfoArgs &args)
             fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
             try {
                 // create handler for progress updates and aborting
-                AbortableProgressFeedback applyProgress(logNextStep, logStepPercentage);
-                const InterruptHandler handler(bind(&AbortableProgressFeedback::tryToAbort, ref(applyProgress)));
+                auto applyProgress = quiet ? AbortableProgressFeedback() : AbortableProgressFeedback(logNextStep, logStepPercentage);
+                const auto handler = InterruptHandler(std::bind(&AbortableProgressFeedback::tryToAbort, std::ref(applyProgress)));
 
                 // apply changes
                 fileInfo.applyChanges(diag, applyProgress);
 
                 // notify about completion
                 finalizeLog();
-                cout << " - Changes have been applied." << endl;
+                if (!quiet) {
+                    cout << " - Changes have been applied." << endl;
+                }
             } catch (const TagParser::OperationAbortedException &) {
                 finalizeLog();
                 cerr << Phrases::Warning << "The operation has been aborted." << Phrases::EndFlush;

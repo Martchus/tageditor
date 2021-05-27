@@ -32,6 +32,7 @@ namespace Cli {
 SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
     : filesArg(filesArg)
     , verboseArg(verboseArg)
+    , quietArg("quiet", 'q', "suppress printing progress information")
     , docTitleArg("doc-title", 'd', "specifies the document title (has no affect if not supported by the container)",
           { "title of first segment", "title of second segment" })
     , removeOtherFieldsArg(
@@ -128,10 +129,11 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
         " set mkv:CUSTOM_FIELD=\"Matroska-only\" vorbis:CUSTOM_FIELD=\"Vorbis-only\" mp4:©ust=\"MP4-only\" \\\n"
         "             -f file.mkv file.ogg file.m4a\n"
         "For more examples and detailed descriptions see " APP_URL "#writing-tags");
-    setTagInfoArg.setSubArguments({ &valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg,
-        &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
-        &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
-        &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &verboseArg, &outputFilesArg });
+    setTagInfoArg.setSubArguments(
+        { &valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg,
+            &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg,
+            &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg,
+            &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &verboseArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli
@@ -148,7 +150,7 @@ int main(int argc, char *argv[])
     ConfigValueArgument timeSpanFormatArg("time-span-format", '\0', "specifies the output format for time spans", { "measures/colons/seconds" });
     timeSpanFormatArg.setPreDefinedCompletionValues("measures colons seconds");
     // verbose option
-    ConfigValueArgument verboseArg("verbose", 'v', "be verbose");
+    ConfigValueArgument verboseArg("verbose", 'v', "be verbose, print debug and info messages");
     // input/output file/files
     ConfigValueArgument fileArg("file", 'f', "specifies the path of the file to be opened", { "path" });
     ConfigValueArgument defaultFileArg(fileArg);
