@@ -237,37 +237,38 @@ void CliTests::testBasicWriting()
 }
 
 /*!
- * \brief Tests adding a cover.
+ * \brief Tests adding a cover and other fields which are directly read from a file.
  */
 void CliTests::testModifyingCover()
 {
     cout << "\nModifying cover" << endl;
     string stdout, stderr;
     const auto coverFile = testFilePath("matroska_wave1/logo3_256x256.png");
+    const auto lyricsFile = workingCopyPath("lyrics.txt", WorkingCopyMode::NoCopy);
     const auto mp3File1 = workingCopyPath("mtx-test-data/mp3/id3-tag-and-xing-header.mp3");
     const auto mp3File1Backup = mp3File1 + ".bak";
+    writeFile(lyricsFile, "I\nam\nno\nsong\nwriter\n");
 
-    // add two front covers and one back cover
+    // add two front covers and one back cover and lyrics from a file
     const auto otherCover = "cover=" + coverFile;
     const auto frontCover0 = "cover0=" % coverFile + ":front-cover:foo";
     const auto frontCover1 = "cover0=" % coverFile + ":front-cover:bar";
     const auto backCover0 = "cover0=" % coverFile + ":back-cover";
+    const auto lyrics = "lyrics>=" + lyricsFile;
     const char *const args1[] = { "tageditor", "get", "-f", mp3File1.data(), nullptr };
-    const char *const args2[]
-        = { "tageditor", "set", otherCover.data(), frontCover0.data(), frontCover1.data(), backCover0.data(), "-f", mp3File1.data(), nullptr };
+    const char *const args2[] = { "tageditor", "set", otherCover.data(), frontCover0.data(), frontCover1.data(), backCover0.data(), lyrics.data(),
+        "-f", mp3File1.data(), nullptr };
     CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT_MESSAGE("covers added",
         testContainsSubstrings(stdout,
-            {
-                " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
+            { " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n", "    Lyrics            I\nam\nno\nsong\nwriter\n",
                 "    Cover (other)     can't display as string (see --extract)\n"
                 "    Cover (front-cover) can't display as string (see --extract)\n"
                 "      description:    foo\n"
                 "    Cover (front-cover) can't display as string (see --extract)\n"
                 "      description:    bar\n"
-                "    Cover (back-cover) can't display as string (see --extract)\n",
-            }));
+                "    Cover (back-cover) can't display as string (see --extract)\n" }));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 
     // test whether empty trailing ":" does *not* affect all descriptions
