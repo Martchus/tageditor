@@ -725,8 +725,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                             } catch (const TagParser::Failure &) {
                                 diag.emplace_back(DiagLevel::Critical, "Unable to parse specified file.", context);
                             } catch (const std::ios_base::failure &e) {
-                                diag.emplace_back(DiagLevel::Critical,
-                                    argsToString("An IO error occured when parsing the specified file: ", e.what()), context);
+                                diag.emplace_back(
+                                    DiagLevel::Critical, argsToString("An IO error occured when parsing the specified file: ", e.what()), context);
                             }
                         }
                         // finally set the values
