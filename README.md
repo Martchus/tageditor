@@ -310,18 +310,6 @@ Here are some Bash examples which illustrate getting and setting tag information
    and file names are just passed as specified.
 3. The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
 
-### Windows only
-  * Codepage is set to UTF-8 to ensure *3.* is handled correctly by the terminal. So
-    far it seems that this effort just causes weird truncating behaviour in some cases and might
-    prevent pipes/redirections to function. One can use MSYS2 terminal to work around this.
-  * All UTF-16 encoded arguments as provided by WinAPI are converted to UTF-8 so *2.*
-    shouldn't cause any trouble.
-  * A workaround to support filenames containing non-ASCII characters (despite the lack of an UTF-8
-    supporting `std::fstream` under Windows) can be enabled by adding `-DUSE_NATIVE_FILE_BUFFER=ON`
-    to the CMake arguments **when building `c++utilities`**. It is *not* sufficient to specify this
-    option only when building `tagparser` or Tag Editor.
-
-
 ## Build instructions
 The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).  
 When the Qt GUI is enabled, Qt and [qtutilities](https://github.com/Martchus/qtutilities) are required, too.
@@ -383,16 +371,25 @@ When enabled, the following additional dependencies are required (only at build-
       writable location (e.g. `make DESTDIR="temporary/install/dir" install …`) and move the files from there to
       the desired location afterwards.
 
-## TODOs
+## TODOs and known problems
 * Support more formats (JPEG/EXIF, PDF metadata, Theora in Ogg, ...)
 * Allow adding tags to specific streams when dealing with Ogg
 * Set tag information concurrently if multiple files have been specified (CLI)
 * Support adding cue-sheet to FLAC files
+* Generally improve the CLI to make its use more convenient and cover more use-cases
 
-### Bugs
-* Large file information is not shown when using Qt WebEngine
+### Known problems and caveats
+* Large file information is not shown when using Qt WebEngine or the GUI becomes unresponsive. Use the feature to parse the full
+  file structure in combination with the Qt WebEngine-based view with caution.
 * It is recommend to create backups before editing because I can not test whether the underlying library
   works with all kinds of files (when forcing rewrite a backup is always created).
-* Also note the issue tracker on GitHub
+* More TODOs and bugs are tracked in the [issue section at GitHub](https://github.com/Martchus/tageditor/issues).
 
-More TODOs and bugs are tracked in the [issue section at GitHub](https://github.com/Martchus/tageditor/issues).
+### Windows-specific issues
+The following caveats apply to Windows' default terminal emulator `cmd.exe`. I recommend to use Mintty (e.g. via MSYS2) instead.
+
+* The console's codepage is set to UTF-8 to ensure point *3.* of the "Text encoding" section is handled correctly. Use
+  `set ENABLE_CP_UTF8=0` if this is not wanted.
+* To enable console output for Tag Editor which is built as a GUI application it is attaching to the parent
+  processes' console. However, this prevents redirections to work. In this case redirections are needed, use
+  `set ENABLE_CONSOLE=0` to disable that behavior.
