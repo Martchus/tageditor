@@ -840,7 +840,8 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     m_ui->fileNameLabel->setText(m_fileName);
     // define function to parse the file
     const auto startThread = [this, &diag] {
-        char result;
+        auto result = char();
+        auto ioError = QString();
         try {
             // try to open with write access
             try {
@@ -856,15 +857,18 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         } catch (const Failure &) {
             // the file has been opened; parsing notifications will be shown in the info box
             result = FatalParsingError;
-        } catch (const std::ios_base::failure &) {
+        } catch (const std::ios_base::failure &e) {
             // the file could not be opened because an IO error occured
             m_fileInfo.close(); // ensure file is closed
             result = IoError;
+            if ((ioError = QString::fromLocal8Bit(e.what())).isEmpty()) {
+                ioError = tr("unknown error");
+            }
         } catch (const std::exception &e) {
             diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", +e.what()), "parsing");
             result = FatalParsingError;
         }
-        QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result));
+        QMetaObject::invokeMethod(this, "showFile", Qt::QueuedConnection, Q_ARG(char, result), Q_ARG(QString, ioError));
     };
     // perform the operation concurrently
     m_ongoingFileOperation = QtConcurrent::run(startThread);
@@ -899,19 +903,19 @@ bool TagEditorWidget::reparseFile()
  * parsing operation using Qt::QueuedConnection.
  * \param result Specifies whether the file could be load sucessfully.
  */
-void TagEditorWidget::showFile(char result)
+void TagEditorWidget::showFile(char result, const QString &ioError)
 {
     // handle IO errors
     if (result == IoError) {
         // update status
         updateFileStatusStatus();
-        static const QString statusMsg(tr("The file could not be opened because an IO error occurred."));
+        static const QString statusMsg(tr("The file could not be opened because an IO error occurred: %1"));
         auto msgBox = new QMessageBox(this);
         msgBox->setIcon(QMessageBox::Critical);
         msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
         msgBox->setWindowTitle(tr("Opening file - ") + QCoreApplication::applicationName());
-        msgBox->setText(statusMsg);
-        msgBox->setInformativeText(tr("Opening file: ") + m_currentPath);
+        msgBox->setText(statusMsg.arg(ioError));
+        msgBox->setInformativeText(tr("Tried to open file: ") + m_currentPath);
         msgBox->show();
         emit statusMessage(statusMsg);
         return;
@@ -1176,7 +1180,8 @@ bool TagEditorWidget::startSaving()
         });
         AbortableProgressFeedback progress(std::move(showStep), std::move(showPercentage));
 
-        bool processingError = false, ioError = false, canceled = false;
+        auto ioError = QString();
+        auto processingError = false, canceled = false;
         try {
             try {
                 m_fileInfo.applyChanges(m_diag, progress);
@@ -1184,15 +1189,17 @@ bool TagEditorWidget::startSaving()
                 canceled = true;
             } catch (const Failure &) {
                 processingError = true;
-            } catch (const std::ios_base::failure &) {
-                ioError = true;
+            } catch (const std::ios_base::failure &e) {
+                if ((ioError = QString::fromLocal8Bit(e.what())).isEmpty()) {
+                    ioError = tr("unknown error");
+                }
             }
         } catch (const exception &e) {
             m_diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", e.what()), "making");
             processingError = true;
         }
         QMetaObject::invokeMethod(
-            this, "showSavingResult", Qt::QueuedConnection, Q_ARG(bool, processingError), Q_ARG(bool, ioError), Q_ARG(bool, canceled));
+            this, "showSavingResult", Qt::QueuedConnection, Q_ARG(QString, ioError), Q_ARG(bool, processingError), Q_ARG(bool, canceled));
     };
     // use another thread to perform the operation
     m_ongoingFileOperation = QtConcurrent::run(startThread);
@@ -1207,7 +1214,7 @@ bool TagEditorWidget::startSaving()
  *
  * \param sucess Specifies whether the file could be saved sucessfully.
  */
-void TagEditorWidget::showSavingResult(bool processingError, bool ioError, bool canceled)
+void TagEditorWidget::showSavingResult(QString ioError, bool processingError, bool canceled)
 {
     m_ui->abortButton->setHidden(true);
     m_ui->makingNotificationWidget->setNotificationType(NotificationType::TaskComplete);
@@ -1215,7 +1222,7 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError, bool 
     m_ui->makingNotificationWidget->setPercentage(-1);
     m_ui->makingNotificationWidget->setHidden(false);
     m_makingResultsAvailable = true;
-    if (!processingError && !ioError) {
+    if (!processingError && ioError.isEmpty()) {
         // display status messages
         QString statusMsg;
         size_t critical = 0, warnings = 0;
@@ -1271,10 +1278,16 @@ void TagEditorWidget::showSavingResult(bool processingError, bool ioError, bool 
         // fatal errors occured
 
         // -> show status
-        static const QString processingErrorMsg(tr("The tags could not be saved. See the info box for detail."));
-        static const QString ioErrorMsg(tr("The tags could not be saved because an IO error occured."));
-        const auto &errorMsg = ioError ? ioErrorMsg : processingErrorMsg;
-        QMessageBox::critical(this, QCoreApplication::applicationName(), errorMsg);
+        static const QString processingErrorMsg = tr("The tags could not be saved. Checkout the info box for details.");
+        static const QString ioErrorMsg = tr("The tags could not be saved because an IO error occured: %1");
+        const auto errorMsg = !ioError.isEmpty() ? ioErrorMsg.arg(ioError) : processingErrorMsg;
+        auto msgBox = new QMessageBox(this);
+        msgBox->setIcon(QMessageBox::Critical);
+        msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+        msgBox->setWindowTitle(tr("Saving file - ") + QCoreApplication::applicationName());
+        msgBox->setText(errorMsg);
+        msgBox->setInformativeText(tr("Tried to save file: ") + m_currentPath);
+        msgBox->show();
         emit statusMessage(errorMsg);
         m_ui->makingNotificationWidget->setText(errorMsg);
         m_ui->makingNotificationWidget->setNotificationType(NotificationType::Critical);

@@ -101,7 +101,7 @@ protected:
 private Q_SLOTS:
     // editor
     void fileChangedOnDisk(const QString &path);
-    void showFile(char result);
+    void showFile(char result, const QString &ioError);
     void handleReturnPressed();
     void handleKeepPreviousValuesActionTriggered(QAction *action);
     void addTag(const std::function<TagParser::Tag *(TagParser::MediaFileInfo &)> &createTag);
@@ -109,7 +109,7 @@ private Q_SLOTS:
     void changeTarget(TagParser::Tag *tag);
 
     // saving
-    void showSavingResult(bool processingError, bool ioError, bool canceled);
+    void showSavingResult(QString ioError, bool processingError, bool canceled);
 
     // info (web) view
     void initInfoView();
