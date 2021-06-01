@@ -716,7 +716,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     }
                                 } else {
                                     if (parts.size() > 1) {
-                                        diag.emplace_back(DiagLevel::Warning,
+                                        diag.emplace_back(
+                                            tag->type() == TagType::Id3v1Tag && fileInfo.hasId3v2Tag() ? DiagLevel::Information : DiagLevel::Warning,
                                             argsToString("Ignoring cover type \"", parts[1], "\" for ", tag->typeName(),
                                                 ". It is only supported by the cover field and the tag formats ID3v2 and Vorbis Comment."),
                                             context);
