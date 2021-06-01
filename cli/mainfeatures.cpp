@@ -51,6 +51,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <filesystem>
 #include <iomanip>
 #include <iostream>
 #include <memory>
@@ -850,7 +851,14 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
 
             // apply changes
+            auto modificationDateError = std::error_code();
+            auto modificationDate = std::filesystem::file_time_type();
+            auto modifiedFilePath = std::filesystem::path();
             fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
+            if (args.preserveModificationTimeArg.isPresent()) {
+                modifiedFilePath = fileInfo.saveFilePath().empty() ? fileInfo.path() : fileInfo.saveFilePath();
+                modificationDate = std::filesystem::last_write_time(modifiedFilePath, modificationDateError);
+            }
             try {
                 // create handler for progress updates and aborting
                 auto applyProgress = quiet ? AbortableProgressFeedback() : AbortableProgressFeedback(logNextStep, logStepPercentage);
@@ -871,6 +879,14 @@ void setTagInfo(const SetTagInfoArgs &args)
             } catch (const TagParser::Failure &) {
                 finalizeLog();
                 cerr << " - " << Phrases::Error << "Failed to apply changes." << Phrases::EndFlush;
+            }
+            if (args.preserveModificationTimeArg.isPresent()) {
+                if (!modificationDateError) {
+                    std::filesystem::last_write_time(modifiedFilePath, modificationDate, modificationDateError);
+                }
+                if (modificationDateError) {
+                    diag.emplace_back(DiagLevel::Critical, "Unable to preserve modification time: " + modificationDateError.message(), context);
+                }
             }
         } catch (const TagParser::Failure &) {
             finalizeLog();

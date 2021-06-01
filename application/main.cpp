@@ -81,6 +81,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
           { "path 1", "path 2" })
     , backupDirArg("temp-dir", '\0', "specifies the directory for temporary/backup files", { "path" })
     , layoutOnlyArg("layout-only", 'l', "confirms layout-only changes")
+    , preserveModificationTimeArg("preserve-modification-time", '\0', "preserves the file's modification time")
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setRequiredValueCount(Argument::varValueCount);
@@ -133,7 +134,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
         { &valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg,
             &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg,
             &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg,
-            &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &verboseArg, &quietArg, &outputFilesArg });
+            &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg, &verboseArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli
