@@ -130,11 +130,11 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
         " set mkv:CUSTOM_FIELD=\"Matroska-only\" vorbis:CUSTOM_FIELD=\"Vorbis-only\" mp4:©ust=\"MP4-only\" \\\n"
         "             -f file.mkv file.ogg file.m4a\n"
         "For more examples and detailed descriptions see " APP_URL "#writing-tags");
-    setTagInfoArg.setSubArguments(
-        { &valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg, &id3v2UsageArg,
-            &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg, &removeTargetArg,
-            &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg, &maxPaddingArg,
-            &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg, &verboseArg, &quietArg, &outputFilesArg });
+    setTagInfoArg.setSubArguments({ &valuesArg, &filesArg, &docTitleArg, &removeOtherFieldsArg, &treatUnknownFilesAsMp3FilesArg, &id3v1UsageArg,
+        &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
+        &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
+        &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg,
+        &verboseArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli
