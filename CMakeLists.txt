@@ -186,6 +186,9 @@ find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} 5.5.0 REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
+# link against a possibly required extra library for std::filesystem
+use_standard_filesystem()
+
 # find qtutilities
 if (WIDGETS_GUI OR QUICK_GUI)
     set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES
