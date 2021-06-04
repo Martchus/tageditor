@@ -470,7 +470,6 @@ PicturePreviewSelection *TagFieldEdit::setupPictureSelection()
 
 /*!
  * \brief Internally called by setupUi() to setup a file selection.
- * \remarks TODO
  */
 QWidget *TagFieldEdit::setupFileSelection()
 {
