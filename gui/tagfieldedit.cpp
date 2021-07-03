@@ -732,7 +732,7 @@ QAction *TagFieldEdit::setupRestoreAction()
     m_restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-undo")));
     m_restoreAction->setToolTip(tr("Restore value as it is currently present in the file"));
     connect(m_restoreAction, &QAction::triggered, this, &TagFieldEdit::handleRestoreButtonClicked);
-    // ownership might be transfered to a child widget/layout
+    // ownership might be transferred to a child widget/layout
     connect(m_restoreAction, &QAction::destroyed, this, &TagFieldEdit::handleRestoreButtonDestroyed);
     return m_restoreAction;
 }
@@ -749,7 +749,7 @@ QAction *TagFieldEdit::setupLockAction()
     m_lockAction = new QAction(this);
     setLocked(!m_isLocked);
     connect(m_lockAction, &QAction::triggered, this, &TagFieldEdit::toggleLocked);
-    // ownership might be transfered to a child widget/layout
+    // ownership might be transferred to a child widget/layout
     connect(m_lockAction, &QAction::destroyed, this, &TagFieldEdit::handleLockButtonDestroyed);
     return m_lockAction;
 }

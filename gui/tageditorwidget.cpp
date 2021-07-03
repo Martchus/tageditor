@@ -371,7 +371,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
                 tagsByTarget[index] << tag;
             }
         }
-        // create a singe editor per target or seperate editors for each tag depending on the settings
+        // create a single editor per target or separate editors for each tag depending on the settings
         bool hasAutoCorrectionBeenApplied = false;
         switch (Settings::values().editor.multipleTagHandling) {
         case Settings::MultipleTagHandling::SingleEditorPerTarget:
@@ -403,7 +403,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
             addParsingNotificationLine(tr("Some values have been changed by the auto-correction."));
         }
     } else {
-        // there are no tags -> leave one edit existend but ensure no tags are assigned
+        // there are no tags -> leave one edit existed but ensure no tags are assigned
         fetchNextEdit();
         edit->setTag(nullptr, false);
         ++widgetIndex;
@@ -787,7 +787,7 @@ void TagEditorWidget::foreachTagEdit(const std::function<void(TagEdit *)> &funct
 }
 
 /*!
- * \brief Returns the active tag edit or nullptr if there is currently no acitve tag edit.
+ * \brief Returns the active tag edit or nullptr if there is currently no active tag edit.
  */
 TagEdit *TagEditorWidget::activeTagEdit()
 {
@@ -830,7 +830,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         m_currentDir = fileInfo.absolutePath();
         m_fileName = fileInfo.fileName();
     }
-    // write diagnostics to m_diagReparsing if making results are avalable
+    // write diagnostics to m_diagReparsing if making results are available
     m_makingResultsAvailable &= sameFile;
     Diagnostics &diag = m_makingResultsAvailable ? m_diagReparsing : m_diag;
     // clear diagnostics
@@ -858,7 +858,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
             // the file has been opened; parsing notifications will be shown in the info box
             result = FatalParsingError;
         } catch (const std::ios_base::failure &e) {
-            // the file could not be opened because an IO error occured
+            // the file could not be opened because an IO error occurred
             m_fileInfo.close(); // ensure file is closed
             result = IoError;
             if ((ioError = QString::fromLocal8Bit(e.what())).isEmpty()) {
@@ -901,7 +901,7 @@ bool TagEditorWidget::reparseFile()
  * \brief Shows the current file info (technical info, tags, ...).
  * This private slot is invoked from the thread which performed the
  * parsing operation using Qt::QueuedConnection.
- * \param result Specifies whether the file could be load sucessfully.
+ * \param result Specifies whether the file could be load successfully.
  */
 void TagEditorWidget::showFile(char result, const QString &ioError)
 {
@@ -961,7 +961,7 @@ void TagEditorWidget::showFile(char result, const QString &ioError)
         diagLevel |= m_diagReparsing.level();
     }
     if (diagLevel >= DiagLevel::Critical) {
-        // we catched no exception, but there are critical diag messages
+        // we caught no exception, but there are critical diag messages
         // -> treat those as fatal parsing errors
         result = LoadingResult::FatalParsingError;
     }
@@ -977,7 +977,7 @@ void TagEditorWidget::showFile(char result, const QString &ioError)
     bool multipleSegmentsNotTested = m_fileInfo.containerFormat() == ContainerFormat::Matroska && m_fileInfo.container()->segmentCount() > 1;
     if (diagLevel >= TagParser::DiagLevel::Critical) {
         m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Critical);
-        m_ui->parsingNotificationWidget->appendLine(tr("Errors occured."));
+        m_ui->parsingNotificationWidget->appendLine(tr("Errors occurred."));
     } else if (diagLevel == TagParser::DiagLevel::Warning || m_fileInfo.isReadOnly() || !m_fileInfo.areTagsSupported() || multipleSegmentsNotTested) {
         m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Warning);
         if (diagLevel == TagParser::DiagLevel::Warning) {
@@ -1212,7 +1212,7 @@ bool TagEditorWidget::startSaving()
  * This private slot is invoked from the thread which performed the
  * saving operation using Qt::QueuedConnection.
  *
- * \param sucess Specifies whether the file could be saved sucessfully.
+ * \param success Specifies whether the file could be saved successfully.
  */
 void TagEditorWidget::showSavingResult(QString ioError, bool processingError, bool canceled)
 {
@@ -1275,11 +1275,11 @@ void TagEditorWidget::showSavingResult(QString ioError, bool processingError, bo
         }
         m_nextFileAfterSaving = false;
     } else {
-        // fatal errors occured
+        // fatal errors occurred
 
         // -> show status
         static const QString processingErrorMsg = tr("The tags could not be saved. Checkout the info box for details.");
-        static const QString ioErrorMsg = tr("The tags could not be saved because an IO error occured: %1");
+        static const QString ioErrorMsg = tr("The tags could not be saved because an IO error occurred: %1");
         const auto errorMsg = !ioError.isEmpty() ? ioErrorMsg.arg(ioError) : processingErrorMsg;
         auto msgBox = new QMessageBox(this);
         msgBox->setIcon(QMessageBox::Critical);

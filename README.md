@@ -63,7 +63,7 @@ tageditor set --index-pos front --force
 ### Padding
 Padding allows adding additional tag information without rewriting the entire file or appending the tag. Usage of
 padding can be configured:
-- minimum/maximum padding: The file is rewritten if the padding would fall below/exceed the specifed limits.
+- minimum/maximum padding: The file is rewritten if the padding would fall below/exceed the specified limits.
 - preferred padding: If the file needs to be rewritten the preferred padding is used.
 
 Default value for minimum and maximum padding is zero (in the CLI and GUI). This leads to the fact that
@@ -225,7 +225,7 @@ Here are some Bash examples which illustrate getting and setting tag information
   ```
   The number after the field name specifies the index of the first file to use the value for. The first index is 0.
 
-* Sets the title specificly for the track with the ID ``3134325680`` and removes
+* Sets the title specifically for the track with the ID ``3134325680`` and removes
   the tags targeting the song/track and the album/movie/episode in general:  
   ```
   tageditor set target-level=30 target-tracks=3134325680 title="Title for track 3134325680" \
@@ -311,11 +311,11 @@ Here are some Bash examples which illustrate getting and setting tag information
 3. The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
 
 ## Build instructions
-The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libaries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).  
+The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libraries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).  
 When the Qt GUI is enabled, Qt and [qtutilities](https://github.com/Martchus/qtutilities) are required, too.
 
 ### Building with Qt GUI
-The following Qt modules are requried (version 5.6 or higher): core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
+The following Qt modules are required (version 5.6 or higher): core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
 
 Note that old Qt versions like 5.6 lack support for modern JavaScript features. To use the JavaScript-based renaming tool
 is recommend to use at least Qt 5.12.
@@ -343,7 +343,7 @@ When enabled, the following additional dependencies are required (only at build-
 
 ### Building this straight
 0. Install (preferably the latest version of) g++ or clang, the required Qt modules and CMake.
-1. Get the sources of additional dependencies and the tag editor itself. For the lastest version from Git clone the following repositories:  
+1. Get the sources of additional dependencies and the tag editor itself. For the latest version from Git clone the following repositories:  
    ```
    cd $SOURCES
    git clone https://github.com/Martchus/cpp-utilities.git c++utilities

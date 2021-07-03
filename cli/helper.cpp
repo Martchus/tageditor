@@ -75,7 +75,7 @@ bool InterruptHandler::s_handlerRegistered = false;
 /*!
  * \brief Registers the specified \a handler for SIGINT and SIGTERM as long as this object is alive.
  * \remarks The specified \a handler should only call functions which are permitted to be used in signal handlers
- *          (eg. use POSIX write() instread of std::cout).
+ *          (eg. use POSIX write() instead of std::cout).
  * \throws Throws std::runtime_error when attempting to create a 2nd instance.
  */
 InterruptHandler::InterruptHandler(std::function<void()> handler)
@@ -666,7 +666,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                      << "note: This is only possible when the \"set\"-operation is used." << endl;
                 exit(-1);
             } else {
-                // file index might have been specified explicitely
+                // file index might have been specified explicitly
                 // if not (mult == 1) use the index of the last value and increase it by one if the value is not an additional one
                 // if there are no previous values, just use the index 0
                 fieldValues.allValues.emplace_back(type,

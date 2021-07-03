@@ -212,7 +212,7 @@ const QByteArray *QueryResultsModel::cover(const QModelIndex &index) const
 /*!
  * \brief Fetches the cover the specified \a index.
  * \returns
- *  - true if the cover is immidiately available or an error occurs immidiately
+ *  - true if the cover is immediately available or an error occurs immediately
  *  - and false if the cover will be fetched asynchronously.
  *
  * If the cover is fetched asynchronously the coverAvailable() signal is emitted, when the cover
@@ -243,7 +243,7 @@ const QString *QueryResultsModel::lyrics(const QModelIndex &index) const
 /*!
  * \brief Fetches the lyrics the specified \a index.
  * \returns
- *  - true if the lyrics are immidiately available or an error occurs immidiately
+ *  - true if the lyrics are immediately available or an error occurs immediately
  *  - and false if the lyrics will be fetched asynchronously.
  *
  * If the lyrics are fetched asynchronously the lyricsAvailable() signal is emitted, when the lyrics

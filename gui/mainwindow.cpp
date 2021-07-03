@@ -445,7 +445,7 @@ void MainWindow::selectNextFile(QItemSelectionModel *selectionModel, const QMode
         if (m_fileFilterModel->canFetchMore(currentIndex)) {
             // files and subdirectories have to be fetched
             // -> QFileSystemModel seems to fetch files and directories async
-            // -> hence fetchMore will return immediatly
+            // -> hence fetchMore will return immediately
             // -> select next file when rowsInserted is emitted
             auto conn = make_shared<QMetaObject::Connection>();
             *conn = connect(m_fileFilterModel, &QAbstractItemModel::rowsInserted,

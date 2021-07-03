@@ -130,13 +130,13 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
             cout << "File information has been saved to \"" << outputFileArg.values().front() << "\"." << endl;
         } else {
             const auto errorMessage = file.errorString().toUtf8();
-            cerr << Phrases::Error << "An IO error occured when writing the file \"" << outputFileArg.values().front()
+            cerr << Phrases::Error << "An IO error occurred when writing the file \"" << outputFileArg.values().front()
                  << "\": " << std::string_view(errorMessage.data(), errorMessage.size()) << Phrases::EndFlush;
         }
     } catch (const TagParser::Failure &) {
-        cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
+        cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
     } catch (const std::ios_base::failure &e) {
-        cerr << Phrases::Error << "An IO error occured when reading the file \"" << inputFileArg.values().front() << "\": " << e.what()
+        cerr << Phrases::Error << "An IO error occurred when reading the file \"" << inputFileArg.values().front() << "\": " << e.what()
              << Phrases::EndFlush;
     }
 #else
@@ -318,9 +318,9 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             }
 
         } catch (const TagParser::Failure &) {
-            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch (const std::ios_base::failure &) {
-            cerr << Phrases::Error << "An IO error occured when reading the file \"" << file << "\"" << Phrases::EndFlush;
+            cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\"" << Phrases::EndFlush;
         }
 
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
@@ -381,9 +381,9 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
                 }
             }
         } catch (const TagParser::Failure &) {
-            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch (const std::ios_base::failure &) {
-            cerr << Phrases::Error << "An IO error occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
         }
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
         cout << endl;
@@ -572,7 +572,7 @@ void setTagInfo(const SetTagInfoArgs &args)
         Diagnostics diag;
         AbortableProgressFeedback parsingProgress; // FIXME: actually use the progress object
         try {
-            // parse tags and tracks (tracks are relevent because track meta-data such as language can be changed as well)
+            // parse tags and tracks (tracks are relevant because track meta-data such as language can be changed as well)
             if (!quiet) {
                 cout << TextAttribute::Bold << "Setting tag information for \"" << file << "\" ..." << Phrases::EndFlush;
             }
@@ -731,7 +731,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 diag.emplace_back(DiagLevel::Critical, "Unable to parse specified file.", context);
                             } catch (const std::ios_base::failure &e) {
                                 diag.emplace_back(
-                                    DiagLevel::Critical, argsToString("An IO error occured when parsing the specified file: ", e.what()), context);
+                                    DiagLevel::Critical, argsToString("An IO error occurred when parsing the specified file: ", e.what()), context);
                             }
                         }
                         // finally set the values
@@ -894,10 +894,10 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
         } catch (const TagParser::Failure &) {
             finalizeLog();
-            cerr << " - " << Phrases::Error << "A parsing failure occured when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
+            cerr << " - " << Phrases::Error << "A parsing failure occurred when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
         } catch (const std::ios_base::failure &e) {
             finalizeLog();
-            cerr << " - " << Phrases::Error << "An IO error occured when reading/writing the file \"" << file << "\": " << e.what()
+            cerr << " - " << Phrases::Error << "An IO error occurred when reading/writing the file \"" << file << "\": " << e.what()
                  << Phrases::EndFlush;
         }
 
@@ -924,7 +924,7 @@ void extractField(
     }
     if (((fieldDenotations.size() != 1) || (!attachmentInfo.hasId && !attachmentInfo.name))
         && ((fieldDenotations.size() == 1) && (attachmentInfo.hasId || attachmentInfo.name))) {
-        cerr << Phrases::Error << "Excactly one field or attachment needs to be specified." << Phrases::EndFlush;
+        cerr << Phrases::Error << "Exactly one field or attachment needs to be specified." << Phrases::EndFlush;
         exit(-1);
     }
     if (!inputFilesArg.isPresent() || inputFilesArg.values().empty()) {
@@ -989,7 +989,7 @@ void extractField(
                             outputFileStream.flush();
                             cout << " - Value has been saved to \"" << path << "\"." << endl;
                         } catch (const std::ios_base::failure &e) {
-                            cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\": " << e.what()
+                            cerr << " - " << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what()
                                  << Phrases::End;
                         }
                     }
@@ -1040,7 +1040,7 @@ void extractField(
                             outputFileStream.flush();
                             cout << " - Value has been saved to \"" << path << "\"." << endl;
                         } catch (const std::ios_base::failure &e) {
-                            cerr << " - " << Phrases::Error << "An IO error occured when writing the file \"" << path << "\": " << e.what()
+                            cerr << " - " << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what()
                                  << Phrases::EndFlush;
                         }
                     }
@@ -1052,9 +1052,9 @@ void extractField(
             }
 
         } catch (const TagParser::Failure &) {
-            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::End;
+            cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::End;
         } catch (const std::ios_base::failure &e) {
-            cerr << Phrases::Error << "An IO error occured when reading the file \"" << file << "\": " << e.what() << Phrases::End;
+            cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\": " << e.what() << Phrases::End;
         }
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
     }
@@ -1088,9 +1088,9 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
             fileInfo.parseTracks(diag, progress);
             jsonData.emplace_back(fileInfo, document.GetAllocator());
         } catch (const TagParser::Failure &) {
-            cerr << Phrases::Error << "A parsing failure occured when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
         } catch (const std::ios_base::failure &e) {
-            cerr << Phrases::Error << "An IO error occured when reading the file \"" << file << "\": " << e.what() << Phrases::EndFlush;
+            cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\": " << e.what() << Phrases::EndFlush;
         }
     }
 

@@ -448,7 +448,7 @@ void PicturePreviewSelection::addOfSelectedType(const QString &path)
     } catch (const TagParser::Failure &) {
         QMessageBox::critical(this, QCoreApplication::applicationName(), tr("Unable to parse specified cover file."));
     } catch (const std::ios_base::failure &) {
-        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("An IO error occured when parsing the specified cover file."));
+        QMessageBox::critical(this, QCoreApplication::applicationName(), tr("An IO error occurred when parsing the specified cover file."));
     }
     updatePreview(m_currentTypeIndex);
 }

@@ -164,7 +164,7 @@ TAGEDITOR_JS_VALUE TagEditorObject::parseFileInfo(const QString &fileName)
     try {
         fileInfo.parseEverything(diag, progress);
     } catch (const Failure &) {
-        // parsing notifications will be addded anyways
+        // parsing notifications will be added anyways
         criticalParseingErrorOccured = true;
     } catch (const std::ios_base::failure &) {
         criticalParseingErrorOccured = true;

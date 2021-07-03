@@ -50,7 +50,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
     , id3InitOnCreateArg("id3-init-on-create", '\0',
           "indicates whether to initialize newly created ID3 tags (according to specified usage) with the values of the already present ID3 tags")
     , id3TransferOnRemovalArg("id3-transfer-on-removal", '\0',
-          "indicates whether values of removed ID3 tags (according to specified usage) should be transfered to remaining ID3 tags (no values will be "
+          "indicates whether values of removed ID3 tags (according to specified usage) should be transferred to remaining ID3 tags (no values will be "
           "overwritten)")
     , encodingArg("encoding", '\0', "specifies the preferred encoding", { "latin1/utf8/utf16le/utf16be" })
     , removeTargetArg("remove-target", '\0', "removes all tags with the specified target")

@@ -176,7 +176,7 @@ void RenameFilesDialog::startGeneratingPreview()
                     m_ui->notificationLabel->setText(
                         tr("The script is not valid.\nError in line %1: %3").arg(m_engine->errorLineNumber()).arg(m_engine->errorMessage()));
                 } else {
-                    m_ui->notificationLabel->setText(tr("An error occured when parsing the script: %1").arg(m_engine->errorMessage()));
+                    m_ui->notificationLabel->setText(tr("An error occurred when parsing the script: %1").arg(m_engine->errorMessage()));
                 }
                 m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
             }
@@ -214,7 +214,7 @@ void RenameFilesDialog::showPreviewProgress(int itemsProcessed, int errorsOccure
     QString text = tr("%1 files/directories processed", nullptr, itemsProcessed).arg(itemsProcessed);
     if (m_errorsOccured > 0) {
         text.append(QChar('\n'));
-        text.append(tr("%1 error(s) occured", nullptr, errorsOccured).arg(errorsOccured));
+        text.append(tr("%1 error(s) occurred", nullptr, errorsOccured).arg(errorsOccured));
     }
     m_ui->notificationLabel->setText(text);
 }
@@ -239,7 +239,7 @@ void RenameFilesDialog::showPreviewResults()
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
     if (m_errorsOccured) {
-        m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", nullptr, m_errorsOccured).arg(m_errorsOccured));
+        m_ui->notificationLabel->appendLine(tr("%1 error(s) occurred.", nullptr, m_errorsOccured).arg(m_errorsOccured));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
 }
@@ -257,7 +257,7 @@ void RenameFilesDialog::showChangsingsResults()
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
     if (m_errorsOccured) {
-        m_ui->notificationLabel->appendLine(tr("%1 error(s) occured.", nullptr, m_errorsOccured).arg(m_errorsOccured));
+        m_ui->notificationLabel->appendLine(tr("%1 error(s) occurred.", nullptr, m_errorsOccured).arg(m_errorsOccured));
         m_ui->notificationLabel->setNotificationType(NotificationType::Warning);
     }
 }

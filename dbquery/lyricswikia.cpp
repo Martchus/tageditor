@@ -286,7 +286,7 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
         }
     }
 
-    // requets lyrics (lyrics are trunacted in XML response so just get them via the regular Wiki page)
+    // requets lyrics (lyrics are truncated in XML response so just get them via the regular Wiki page)
     // -> fall back to self-crafted URL if it was not possible to parse it from XML
     if (parsedUrl.isEmpty()) {
         lazyInitializeLyricsWikiaSongId(assocDesc);

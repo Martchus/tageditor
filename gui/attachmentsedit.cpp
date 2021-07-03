@@ -118,7 +118,7 @@ void AttachmentsEdit::showFileSelection()
                 tr("The file couldn't be added because the attachments of the file could not be parsed successfully."));
         } catch (const std::ios_base::failure &failure) {
             QMessageBox::warning(this, QApplication::applicationName(),
-                tr("The file couldn't be added because an IO error occured: ") + QString::fromLocal8Bit(failure.what()));
+                tr("The file couldn't be added because an IO error occurred: ") + QString::fromLocal8Bit(failure.what()));
         }
     }
 }
@@ -142,7 +142,7 @@ void AttachmentsEdit::extractSelected()
                         helper.copy(input, file, data->size());
                     } catch (const std::ios_base::failure &failure) {
                         QMessageBox::warning(this, QApplication::applicationName(),
-                            tr("An IO error occured when extracting the attached file: ") + QString::fromLocal8Bit(failure.what()));
+                            tr("An IO error occurred when extracting the attached file: ") + QString::fromLocal8Bit(failure.what()));
                     }
                 }
             } else {
