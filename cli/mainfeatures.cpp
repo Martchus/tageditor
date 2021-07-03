@@ -131,10 +131,12 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
         } else {
             const auto errorMessage = file.errorString().toUtf8();
             cerr << Phrases::Error << "An IO error occurred when writing the file \"" << outputFileArg.values().front()
-                 << "\": " << std::string_view(errorMessage.data(), errorMessage.size()) << Phrases::EndFlush;
+                 << "\": " << std::string_view(errorMessage.data(), static_cast<std::string_view::size_type>(errorMessage.size()))
+                 << Phrases::EndFlush;
         }
     } catch (const TagParser::Failure &) {
-        cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << inputFileArg.values().front() << "\"." << Phrases::EndFlush;
+        cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << inputFileArg.values().front() << "\"."
+             << Phrases::EndFlush;
     } catch (const std::ios_base::failure &e) {
         cerr << Phrases::Error << "An IO error occurred when reading the file \"" << inputFileArg.values().front() << "\": " << e.what()
              << Phrases::EndFlush;
