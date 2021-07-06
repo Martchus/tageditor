@@ -635,17 +635,17 @@
     </message>
     <message>
         <location filename="../gui/attachmentsedit.cpp" line="121"/>
-        <source>The file couldn&apos;t be added because an IO error occured: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/attachmentsedit.cpp" line="145"/>
-        <source>An IO error occured when extracting the attached file: </source>
+        <source>The file couldn&apos;t be added because an IO error occurred: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/attachmentsedit.cpp" line="132"/>
         <source>Select where to store the extracted file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/attachmentsedit.cpp" line="145"/>
+        <source>An IO error occurred when extracting the attached file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2533,6 +2533,11 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../gui/picturepreviewselection.cpp" line="451"/>
+        <source>An IO error occurred when parsing the specified cover file.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../gui/picturepreviewselection.cpp" line="473"/>
         <source>Unable to load image from clipboard.</source>
         <translation type="unfinished"></translation>
@@ -2570,11 +2575,6 @@ another position would prevent rewriting the entire file</source>
     <message>
         <location filename="../gui/picturepreviewselection.cpp" line="435"/>
         <source>The selected file is very large (for a cover). Do you want to continue?</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="451"/>
-        <source>An IO error occured when parsing the specified cover file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2762,6 +2762,14 @@ another position would prevent rewriting the entire file</source>
             <numerusform>%1 files/directories processed</numerusform>
         </translation>
     </message>
+    <message numerus="yes">
+        <location filename="../gui/renamefilesdialog.cpp" line="217"/>
+        <source>%1 error(s) occurred</source>
+        <translation type="unfinished">
+            <numerusform></numerusform>
+            <numerusform></numerusform>
+        </translation>
+    </message>
     <message>
         <location filename="../gui/renamefilesdialog.cpp" line="228"/>
         <source>Preview has been generated.</source>
@@ -2778,10 +2786,8 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="242"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="260"/>
         <source>%1 error(s) occured.</source>
-        <translation>
+        <translation type="vanished">
             <numerusform>%1 error occured.</numerusform>
             <numerusform>%1 errors occured.</numerusform>
         </translation>
@@ -2844,8 +2850,17 @@ Error in line %1: %3</source>
     </message>
     <message>
         <location filename="../gui/renamefilesdialog.cpp" line="179"/>
-        <source>An error occured when parsing the script: %1</source>
+        <source>An error occurred when parsing the script: %1</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../gui/renamefilesdialog.cpp" line="242"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="260"/>
+        <source>%1 error(s) occurred.</source>
+        <translation type="unfinished">
+            <numerusform>%1 error occurred.</numerusform>
+            <numerusform>%1 errors occurred.</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="../gui/renamefilesdialog.cpp" line="187"/>
@@ -2863,9 +2878,8 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="217"/>
         <source>%1 error(s) occured</source>
-        <translation>
+        <translation type="vanished">
             <numerusform>%1 error occured</numerusform>
             <numerusform>%1 errors occured</numerusform>
         </translation>
@@ -3216,11 +3230,6 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="980"/>
-        <source>Errors occured.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../gui/tageditorwidget.cpp" line="1039"/>
         <source>No file has been opened, so tags can not be saved.</source>
         <translation type="unfinished"></translation>
@@ -3290,6 +3299,11 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../gui/tageditorwidget.cpp" line="980"/>
+        <source>Errors occurred.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../gui/tageditorwidget.cpp" line="1248"/>
         <source>Saving tags has been canceled.</source>
         <translation type="unfinished"></translation>
@@ -3310,11 +3324,6 @@ Error in line %1: %3</source>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="1281"/>
         <source>The tags could not be saved. Checkout the info box for details.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1282"/>
-        <source>The tags could not be saved because an IO error occured: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3412,6 +3421,11 @@ Error in line %1: %3</source>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="1519"/>
         <source>Unable to remove the tag because the current process hasn&apos;t been finished yet.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="1282"/>
+        <source>The tags could not be saved because an IO error occurred: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3604,7 +3618,7 @@ currently shown tag.</source>
         <location filename="../gui/tagfieldedit.cpp" line="406"/>
         <location filename="../gui/tagfieldedit.cpp" line="428"/>
         <location filename="../gui/tagfieldedit.cpp" line="443"/>
-        <location filename="../gui/tagfieldedit.cpp" line="490"/>
+        <location filename="../gui/tagfieldedit.cpp" line="489"/>
         <source>empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4559,32 +4573,32 @@ currently shown tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="485"/>
+        <location filename="../gui/tagfieldedit.cpp" line="484"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="505"/>
+        <location filename="../gui/tagfieldedit.cpp" line="504"/>
         <source>no widget for editing this field type available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="706"/>
+        <location filename="../gui/tagfieldedit.cpp" line="705"/>
         <source>The value of this field could not be read from the file because it couldn&apos;t be converted properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="712"/>
+        <location filename="../gui/tagfieldedit.cpp" line="711"/>
         <source>The field can not be applied when saving the file and will be lost.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="734"/>
+        <location filename="../gui/tagfieldedit.cpp" line="733"/>
         <source>Restore value as it is currently present in the file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="924"/>
+        <location filename="../gui/tagfieldedit.cpp" line="923"/>
         <source>restore to value from %1 (%2)</source>
         <translation type="unfinished"></translation>
     </message>
