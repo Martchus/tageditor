@@ -269,7 +269,6 @@ void TagEdit::invalidate()
     // remove current widgets
     for (QWidget *const edit : m_widgets) {
         removeEdit(edit);
-        edit->deleteLater();
     }
     m_widgets.clear();
     // recreate widgets
@@ -296,7 +295,6 @@ void TagEdit::setupUi()
         // there are no tags assigned -> remove all editing controls
         for (QWidget *const edit : m_widgets) {
             removeEdit(edit);
-            edit->deleteLater();
         }
         m_widgets.clear();
         setUpdatesEnabled(true);
@@ -308,13 +306,12 @@ void TagEdit::setupUi()
     TagFieldEdit *edit = nullptr;
     int rowOverall = 0, rowLeft = 0, rowRight = 0;
     for (const auto &item : Settings::values().editor.fields.items()) {
-        KnownField field = static_cast<KnownField>(item.id().toInt());
+        const auto field = static_cast<KnownField>(item.id().toInt());
         if (!item.isChecked() || !hasField(field)) {
             // the field is either disabled or it is not supported by at least one of the assigned tags
             if ((edit = m_widgets.value(field))) {
                 m_widgets.remove(field);
                 removeEdit(edit);
-                edit->deleteLater();
             }
             continue;
         }
@@ -342,7 +339,7 @@ void TagEdit::setupUi()
             default:
                 // the other fields are shown at the left side
                 prevIndex = m_layoutLeft->indexOf(edit);
-                if (prevIndex > 0 && (rowLeft * 2 + 1) != prevIndex) {
+                if (prevIndex >= 0 && (rowLeft * 2 + 1) != prevIndex) {
                     QLayoutItem *item1 = m_layoutLeft->itemAt(prevIndex - 1);
                     QLayoutItem *item2 = m_layoutLeft->itemAt(prevIndex);
                     QWidget *label = item1->widget();
@@ -389,26 +386,34 @@ void TagEdit::setupUi()
 }
 
 /*!
- * \brief Internally called to remove an edit.
+ * \brief Internally called to delete an edit removing it (and its label) from its current layout.
  */
 void TagEdit::removeEdit(QWidget *edit)
 {
-    // delete label of the widget (if present) as well
-    // the left layout might contain the label
-    if (QWidget *const label = m_layoutLeft->labelForField(edit)) {
-        label->deleteLater();
-    }
-    // or the right layout might contain the label
-    int i = m_layoutRight->indexOf(edit) - 1;
-    if (i < 0) {
+    edit->deleteLater();
+    // the left layout might contain the edit
+    const auto leftIndex = m_layoutLeft->indexOf(edit);
+    if (leftIndex > 0) {
+        // delete label as well
+        if (QWidget *const label = m_layoutLeft->labelForField(edit)) {
+            label->deleteLater();
+        }
+        m_layoutLeft->removeWidget(edit);
         return;
     }
-    QLayoutItem *const item = m_layoutRight->itemAt(i);
-    if (!item || !item->widget()) {
+    // or the right layout might contain the edit
+    const auto rightIndex = m_layoutRight->indexOf(edit);
+    if (rightIndex < 0) {
         return;
     }
-    item->widget()->deleteLater();
-    m_layoutRight->removeWidget(item->widget());
+    // delete label as well
+    QLayoutItem *const labelItem = m_layoutRight->itemAt(rightIndex - 1);
+    m_layoutRight->removeWidget(edit);
+    if (!labelItem || !labelItem->widget()) {
+        return;
+    }
+    labelItem->widget()->deleteLater();
+    m_layoutRight->removeWidget(labelItem->widget());
 }
 
 /*!
