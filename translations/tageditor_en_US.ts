@@ -858,11 +858,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.ui" line="6"/>
-        <source>MusicBrainz/LyricsWikia search</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../gui/dbquerywidget.ui" line="101"/>
         <source>Searches for meta data matching the specified &quot;Search criteria&quot;</source>
         <translation type="unfinished"></translation>
@@ -933,6 +928,11 @@
     <message>
         <location filename="../gui/dbquerywidget.ui" line="91"/>
         <source>Aborts the current query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/dbquerywidget.ui" line="6"/>
+        <source>Metadata search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2109,7 +2109,7 @@ another position would prevent rewriting the entire file</source>
     </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="156"/>
-        <source>&amp;MusicBrains/LyricsWikia search</source>
+        <source>&amp;Metadata search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2233,6 +2233,11 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../gui/mainwindow.ui" line="337"/>
+        <source>&amp;Toggle metadata search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../gui/mainwindow.ui" line="364"/>
         <source>&amp;Lock layout</source>
         <translation type="unfinished"></translation>
@@ -2245,11 +2250,6 @@ another position would prevent rewriting the entire file</source>
     <message>
         <location filename="../gui/mainwindow.ui" line="340"/>
         <source>F10</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/mainwindow.ui" line="337"/>
-        <source>&amp;Toggle MusicBrainz/LyricsWikia search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
