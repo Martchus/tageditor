@@ -37,7 +37,7 @@ bool MakeItPersonalResultsModel::fetchLyrics(const QModelIndex &index)
 
 void MakeItPersonalResultsModel::parseInitialResults(const QByteArray &data)
 {
-    // prepare parsing LyricsWikia meta data
+    // prepare parsing meta data
     beginResetModel();
     m_results.clear();
 
