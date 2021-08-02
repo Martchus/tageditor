@@ -3,7 +3,7 @@
  <class>QtGui::DbQueryWidget</class>
  <widget class="QWidget" name="QtGui::DbQueryWidget">
   <property name="windowTitle">
-   <string>MusicBrainz/LyricsWikia search</string>
+   <string>Metadata search</string>
   </property>
   <layout class="QVBoxLayout" name="dialogLayout">
    <property name="spacing">

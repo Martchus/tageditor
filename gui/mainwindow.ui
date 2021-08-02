@@ -153,7 +153,7 @@
     <bool>false</bool>
    </property>
    <property name="windowTitle">
-    <string>&amp;MusicBrains/LyricsWikia search</string>
+    <string>&amp;Metadata search</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
@@ -334,7 +334,7 @@
      <normaloff>.</normaloff>.</iconset>
    </property>
    <property name="text">
-    <string>&amp;Toggle MusicBrainz/LyricsWikia search</string>
+    <string>&amp;Toggle metadata search</string>
    </property>
    <property name="shortcut">
     <string>F10</string>
