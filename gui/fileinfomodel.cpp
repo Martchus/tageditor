@@ -342,7 +342,7 @@ void FileInfoModel::updateCache()
 
         // tags
         {
-            const auto tags = m_file->tags();
+            const auto tags = m_file->parsedTags();
             if (!tags.empty()) {
                 auto *tagsItem = defaultItem(tr("Tags"));
                 setItem(++currentRow, tagsItem);

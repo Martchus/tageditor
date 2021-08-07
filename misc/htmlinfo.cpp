@@ -970,7 +970,7 @@ public:
         }
 
         // tags
-        auto tags = m_file.tags();
+        const auto tags = m_file.parsedTags();
         if (!tags.empty()) {
             startTableSection();
             const QString moreId(QStringLiteral("tagsMore"));
@@ -983,7 +983,7 @@ public:
             m_writer.writeEndElement();
 
             startExtendedTableSection(moreId);
-            for (const Tag *tag : tags) {
+            for (const Tag *const tag : tags) {
                 RowMaker rowMaker(m_writer);
                 rowMaker.startSubTab(qstr(tag->typeName()));
                 if (!tag->version().empty()) {
