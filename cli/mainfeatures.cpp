@@ -730,10 +730,10 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     convertedValues.emplace_back(std::move(value));
                                 }
                             } catch (const TagParser::Failure &) {
-                                diag.emplace_back(DiagLevel::Critical, "Unable to parse specified file.", context);
+                                diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse specified file \"", path, "\"."), context);
                             } catch (const std::ios_base::failure &e) {
-                                diag.emplace_back(
-                                    DiagLevel::Critical, argsToString("An IO error occurred when parsing the specified file: ", e.what()), context);
+                                diag.emplace_back(DiagLevel::Critical,
+                                    argsToString("An IO error occurred when parsing the specified file \"", path, "\": ", e.what()), context);
                             }
                         }
                         // finally set the values
