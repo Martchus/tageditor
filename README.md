@@ -210,13 +210,20 @@ Here are some Bash examples which illustrate getting and setting tag information
   ```
   tageditor set title="Title of "{1st,2nd,3rd}" file" title="Title of "{4..16}"th file" \
     album="The Album" artist="The Artist" \
-    cover=/path/to/image track={1..16}/16 --files /some/dir/*.m4a
+    cover'=/path/to/image' lyrics'>=/path/to/lyrics' track'+=1/16' --files /some/dir/*.m4a
   ```
 
-    - The first file will get the title *Title of 1st file*, the second file will get the name *Title of 2nd file* and so on.
-    - The 16th and following files will all get the title *Title of the 16th file*.
-    - The same scheme is used for the track numbers.
-    - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the file */path/to/image*.
+    - As shown, it is possible to specify multiple files at once.
+    - The `>` after the field name `lyrics` causes the tag editor to read the value from the specified file.
+      This works for other fields as well and is implied for `cover`.
+    - The `+` sign after the field name `track` indicates that the field value should be increased after a file
+      has been processed.
+    - Specifying a field multiple times allows to specify different values for the different files.
+        - So in this example, the first file will get the title *Title of 1st file*, the second file will get the
+          name *Title of 2nd file* and so on.
+        - The 16th and following files will all get the title *Title of the 16th file*.
+        - All files will get the album name *The Album*, the artist *The Artist* and the cover image from the
+          file `/path/to/image` and the lyrics from the file `/path/to/lyrics`.
 
 * Sets title of both specified files and the album of the second specified file:  
   ```
@@ -272,8 +279,6 @@ Here are some Bash examples which illustrate getting and setting tag information
   # now set the titles and other tag information
   tageditor set "${titles[@]}" album="Some Album" track+=1/25 disk=1/1 -f *.m4a
   ```  
-  **Note**: The *+* sign after the field name *track* which indicates that the field value should be increased after
-  a file has been processed.
 
 * Sets a cover of a special type with a description:  
   ```
