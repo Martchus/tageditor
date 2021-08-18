@@ -149,7 +149,7 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
 #endif
 }
 
-void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const Argument &verboseArg)
+void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const Argument &verboseArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
 
@@ -165,6 +165,9 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
         AbortableProgressFeedback progress; // FIXME: actually use the progress object
         try {
             // parse tags
+            if (validateArg.isPresent()) {
+                fileInfo.setForceFullParse(true);
+            }
             fileInfo.setPath(std::string(file));
             fileInfo.open(true);
             fileInfo.parseContainerFormat(diag, progress);

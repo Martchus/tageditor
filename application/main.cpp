@@ -164,9 +164,11 @@ int main(int argc, char *argv[])
     OperationArgument printFieldNamesArg("print-field-names", '\0', "lists available field names, track attribute names and modifier");
     printFieldNamesArg.setCallback(Cli::printFieldNames);
     // display general file info
+    ConfigValueArgument validateArg(
+        "validate", 'c', "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     OperationArgument displayFileInfoArg("info", 'i', "displays general file information", PROJECT_NAME " info -f /some/dir/*.m4a");
-    displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg)));
-    displayFileInfoArg.setSubArguments({ &filesArg, &verboseArg });
+    displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg), std::cref(validateArg)));
+    displayFileInfoArg.setSubArguments({ &filesArg, &validateArg, &verboseArg });
     // display tag info
     ConfigValueArgument fieldsArg("fields", 'n', "specifies the field names to be displayed", { "title", "album", "artist", "trackpos" });
     fieldsArg.setRequiredValueCount(Argument::varValueCount);
@@ -197,8 +199,6 @@ int main(int argc, char *argv[])
     exportArg.setSubArguments({ &filesArg, &prettyArg });
     exportArg.setCallback(std::bind(Cli::exportToJson, _1, std::cref(filesArg), std::cref(prettyArg)));
     // file info
-    ConfigValueArgument validateArg(
-        "validate", 'c', "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     OperationArgument genInfoArg("html-info", '\0', "generates technical information about the specified file as HTML document");
     genInfoArg.setSubArguments({ &fileArg, &validateArg, &outputFileArg });
     genInfoArg.setCallback(std::bind(Cli::generateFileInfo, _1, std::cref(fileArg), std::cref(outputFileArg), std::cref(validateArg)));

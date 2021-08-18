@@ -51,7 +51,8 @@ extern const char *const fieldNames;
 extern const char *const fieldNamesForSet;
 void applyGeneralConfig(const CppUtilities::Argument &timeSapnFormatArg);
 void printFieldNames(const CppUtilities::ArgumentOccurrence &occurrence);
-void displayFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &filesArg, const CppUtilities::Argument &verboseArg);
+void displayFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &filesArg, const CppUtilities::Argument &verboseArg,
+    const CppUtilities::Argument &validateArg);
 void generateFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &inputFileArg,
     const CppUtilities::Argument &outputFileArg, const CppUtilities::Argument &validateArg);
 void displayTagInfo(const CppUtilities::Argument &fieldsArg, const CppUtilities::Argument &showUnsupportedArg, const CppUtilities::Argument &filesArg,
