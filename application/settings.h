@@ -79,6 +79,7 @@ struct TagProcessing {
     TagParser::TagTextEncoding preferredEncoding = TagParser::TagTextEncoding::Utf8;
     UnsupportedFieldHandling unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     bool autoTagManagement = true;
+    bool preserveModificationTime = false;
     TagParser::TagCreationSettings creationSettings;
     FileLayout fileLayout;
 };

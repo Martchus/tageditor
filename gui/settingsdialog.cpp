@@ -357,6 +357,7 @@ bool TagProcessingGeneralOptionPage::apply()
             settings.unsupportedFieldHandling = UnsupportedFieldHandling::Discard;
         }
         settings.autoTagManagement = ui()->autoTagManagementCheckBox->isChecked();
+        settings.preserveModificationTime = ui()->preserveModificationTimeCheckBox->isChecked();
     }
     return true;
 }
@@ -391,6 +392,7 @@ void TagProcessingGeneralOptionPage::reset()
             break;
         }
         ui()->autoTagManagementCheckBox->setChecked(settings.autoTagManagement);
+        ui()->preserveModificationTimeCheckBox->setChecked(settings.preserveModificationTime);
     }
 }
 

@@ -98,21 +98,45 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>&lt;span style=&quot;font-weight: bold;&quot;&gt;Automatic tag management&lt;/span&gt;
-&lt;br&gt;If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually (eg. adding an ID3 tag if none is present yet) and settings like ID3 usage have no effect.</string>
+    <widget class="QGroupBox" name="timestampsGroupBox_2">
+     <property name="title">
+      <string>Automatic tag management</string>
      </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually (eg. adding an ID3 tag if none is present yet) and settings like ID3 usage have no effect.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="autoTagManagementCheckBox">
+        <property name="text">
+         <string>Enable automatic tag management (default)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="autoTagManagementCheckBox">
-     <property name="text">
-      <string>Enable automatic tag management (default)</string>
+    <widget class="QGroupBox" name="timestampsGroupBox">
+     <property name="title">
+      <string>Timestamps</string>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QCheckBox" name="preserveModificationTimeCheckBox">
+        <property name="text">
+         <string>Preserve modification time</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
@@ -133,7 +157,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="preferredTextEncodingButtonGroup"/>
   <buttongroup name="unsupportedButtonGroup"/>
+  <buttongroup name="preferredTextEncodingButtonGroup"/>
  </buttongroups>
 </ui>

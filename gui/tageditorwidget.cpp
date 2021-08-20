@@ -53,6 +53,7 @@
 #include <QtConcurrent>
 
 #include <algorithm>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 
@@ -1161,7 +1162,7 @@ bool TagEditorWidget::startSaving()
     m_fileInfo.setMaxPadding(fileLayoutSettings.maxPadding);
     m_fileInfo.setPreferredPadding(fileLayoutSettings.preferredPadding);
     m_fileInfo.setBackupDirectory(settings.editor.backupDirectory);
-    const auto startThread = [this] {
+    const auto startThread = [this, preserveModificationTime = settings.tagPocessing.preserveModificationTime] {
         // define functions to show the saving progress and to actually applying the changes
         auto showPercentage([this](AbortableProgressFeedback &progress) {
             if (m_abortClicked) {
@@ -1183,6 +1184,13 @@ bool TagEditorWidget::startSaving()
         auto ioError = QString();
         auto processingError = false, canceled = false;
         try {
+            auto modificationDateError = std::error_code();
+            auto modificationDate = std::filesystem::file_time_type();
+            auto modifiedFilePath = std::filesystem::path();
+            if (preserveModificationTime) {
+                modifiedFilePath = m_fileInfo.saveFilePath().empty() ? m_fileInfo.path() : m_fileInfo.saveFilePath();
+                modificationDate = std::filesystem::last_write_time(modifiedFilePath, modificationDateError);
+            }
             try {
                 m_fileInfo.applyChanges(m_diag, progress);
             } catch (const OperationAbortedException &) {
@@ -1194,8 +1202,18 @@ bool TagEditorWidget::startSaving()
                     ioError = tr("unknown error");
                 }
             }
+            if (preserveModificationTime) {
+                if (!modificationDateError) {
+                    std::filesystem::last_write_time(modifiedFilePath, modificationDate, modificationDateError);
+                }
+                if (modificationDateError) {
+                    m_diag.emplace_back(
+                        DiagLevel::Critical, "Unable to preserve modification time: " + modificationDateError.message(), "applying changes");
+                }
+            }
         } catch (const exception &e) {
-            m_diag.emplace_back(TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", e.what()), "making");
+            m_diag.emplace_back(
+                TagParser::DiagLevel::Critical, argsToString("Something completely unexpected happened: ", e.what()), "applying changes");
             processingError = true;
         }
         QMetaObject::invokeMethod(

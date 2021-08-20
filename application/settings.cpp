@@ -128,6 +128,8 @@ void restore()
         v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     }
     v.tagPocessing.autoTagManagement = settings.value(QStringLiteral("autotagmanagement"), true).toBool();
+    v.tagPocessing.preserveModificationTime
+        = settings.value(QStringLiteral("preservemodificationtime"), v.tagPocessing.preserveModificationTime).toBool();
     settings.beginGroup(QStringLiteral("id3v1"));
     switch (settings.value(QStringLiteral("usage"), 0).toInt()) {
     case 1:
@@ -259,6 +261,7 @@ void save()
     settings.setValue(QStringLiteral("preferredencoding"), static_cast<int>(v.tagPocessing.preferredEncoding));
     settings.setValue(QStringLiteral("unsupportedfieldhandling"), static_cast<int>(v.tagPocessing.unsupportedFieldHandling));
     settings.setValue(QStringLiteral("autotagmanagement"), v.tagPocessing.autoTagManagement);
+    settings.setValue(QStringLiteral("preservemodificationtime"), v.tagPocessing.preserveModificationTime);
     settings.beginGroup(QStringLiteral("id3v1"));
     settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.creationSettings.id3v1usage));
     settings.endGroup();
