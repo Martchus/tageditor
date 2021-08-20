@@ -54,7 +54,7 @@ void restore()
     Settings &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
-    switch (settings.value(QStringLiteral("adoptfields"), 0).toInt()) {
+    switch (settings.value(QStringLiteral("adoptfields"), static_cast<int>(v.editor.adoptFields)).toInt()) {
     case 1:
         v.editor.adoptFields = AdoptFields::WithinDirectory;
         break;
@@ -65,8 +65,8 @@ void restore()
         v.editor.adoptFields = AdoptFields::Never;
         break;
     }
-    v.editor.saveAndShowNextOnEnter = settings.value(QStringLiteral("saveandshownextonenter"), false).toBool();
-    v.editor.askBeforeDeleting = settings.value(QStringLiteral("askbeforedeleting"), true).toBool();
+    v.editor.saveAndShowNextOnEnter = settings.value(QStringLiteral("saveandshownextonenter"), v.editor.saveAndShowNextOnEnter).toBool();
+    v.editor.askBeforeDeleting = settings.value(QStringLiteral("askbeforedeleting"), v.editor.askBeforeDeleting).toBool();
     switch (settings.value(QStringLiteral("multipletaghandling"), 0).toInt()) {
     case 0:
         v.editor.multipleTagHandling = MultipleTagHandling::SingleEditorPerTarget;
@@ -77,7 +77,7 @@ void restore()
     }
     v.editor.hideTagSelectionComboBox = settings.value(QStringLiteral("hidetagselectioncombobox"), false).toBool();
     settings.beginGroup(QStringLiteral("autocorrection"));
-    v.editor.autoCompletition.insertTitleFromFilename = settings.value(QStringLiteral("inserttitlefromfilename"), false).toBool();
+    v.editor.autoCompletition.insertTitleFromFilename = settings.value(QStringLiteral("inserttitlefromfilename")).toBool();
     v.editor.autoCompletition.trimWhitespaces = settings.value(QStringLiteral("trimwhitespaces"), true).toBool();
     v.editor.autoCompletition.formatNames = settings.value(QStringLiteral("formatnames"), false).toBool();
     v.editor.autoCompletition.fixUmlauts = settings.value(QStringLiteral("fixumlauts"), false).toBool();
@@ -88,26 +88,26 @@ void restore()
     settings.endGroup();
     settings.endGroup();
     v.editor.backupDirectory = settings.value(QStringLiteral("tempdir")).toString().toStdString();
-    v.editor.hideCoverButtons = settings.value(QStringLiteral("hidecoverbtn"), false).toBool();
+    v.editor.hideCoverButtons = settings.value(QStringLiteral("hidecoverbtn"), v.editor.hideCoverButtons).toBool();
     settings.endGroup();
 
     v.editor.fields.restore(settings, QStringLiteral("selectedfields"));
     v.editor.autoCompletition.fields.restore(settings, QStringLiteral("autocorrectionfields"));
 
     settings.beginGroup(QStringLiteral("info"));
-    v.editor.forceFullParse = settings.value(QStringLiteral("forcefullparse"), false).toBool();
+    v.editor.forceFullParse = settings.value(QStringLiteral("forcefullparse"), v.editor.forceFullParse).toBool();
 #ifndef TAGEDITOR_NO_WEBVIEW
-    v.editor.noWebView = settings.value(QStringLiteral("nowebview"), false).toBool();
+    v.editor.noWebView = settings.value(QStringLiteral("nowebview"), v.editor.noWebView).toBool();
 #endif
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("filebrowser"));
-    v.fileBrowser.hideBackupFiles = settings.value(QStringLiteral("hidebackupfiles"), true).toBool();
-    v.fileBrowser.readOnly = settings.value(QStringLiteral("readonly"), true).toBool();
+    v.fileBrowser.hideBackupFiles = settings.value(QStringLiteral("hidebackupfiles"), v.fileBrowser.hideBackupFiles).toBool();
+    v.fileBrowser.readOnly = settings.value(QStringLiteral("readonly"), v.fileBrowser.readOnly).toBool();
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("tagprocessing"));
-    switch (settings.value(QStringLiteral("preferredencoding"), 1).toInt()) {
+    switch (settings.value(QStringLiteral("preferredencoding"), static_cast<int>(v.tagPocessing.preferredEncoding)).toInt()) {
     case 0:
         v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Latin1;
         break;
@@ -120,14 +120,14 @@ void restore()
     default:
         v.tagPocessing.preferredEncoding = TagParser::TagTextEncoding::Utf8;
     }
-    switch (settings.value(QStringLiteral("unsupportedfieldhandling"), 0).toInt()) {
+    switch (settings.value(QStringLiteral("unsupportedfieldhandling"), static_cast<int>(v.tagPocessing.unsupportedFieldHandling)).toInt()) {
     case 1:
         v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Discard;
         break;
     default:
         v.tagPocessing.unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     }
-    v.tagPocessing.autoTagManagement = settings.value(QStringLiteral("autotagmanagement"), true).toBool();
+    v.tagPocessing.autoTagManagement = settings.value(QStringLiteral("autotagmanagement"), v.tagPocessing.autoTagManagement).toBool();
     v.tagPocessing.preserveModificationTime
         = settings.value(QStringLiteral("preservemodificationtime"), v.tagPocessing.preserveModificationTime).toBool();
     settings.beginGroup(QStringLiteral("id3v1"));
@@ -184,9 +184,12 @@ void restore()
         break;
     }
     v.tagPocessing.fileLayout.forceIndexPosition = settings.value(QStringLiteral("forceindexpos"), true).toBool();
-    v.tagPocessing.fileLayout.minPadding = settings.value(QStringLiteral("minpad"), 0).toUInt();
-    v.tagPocessing.fileLayout.maxPadding = settings.value(QStringLiteral("maxpad"), 0).toUInt();
-    v.tagPocessing.fileLayout.preferredPadding = settings.value(QStringLiteral("prefpad"), 0).toUInt();
+    v.tagPocessing.fileLayout.minPadding
+        = settings.value(QStringLiteral("minpad"), static_cast<qulonglong>(v.tagPocessing.fileLayout.minPadding)).toULongLong();
+    v.tagPocessing.fileLayout.maxPadding
+        = settings.value(QStringLiteral("maxpad"), static_cast<qulonglong>(v.tagPocessing.fileLayout.maxPadding)).toULongLong();
+    v.tagPocessing.fileLayout.preferredPadding
+        = settings.value(QStringLiteral("prefpad"), static_cast<qulonglong>(v.tagPocessing.fileLayout.preferredPadding)).toULongLong();
     settings.endGroup();
     settings.endGroup();
 
@@ -198,8 +201,8 @@ void restore()
     settings.endGroup();
 
     settings.beginGroup(QStringLiteral("dbquery"));
-    v.dbQuery.widgetShown = settings.value(QStringLiteral("visible"), false).toBool();
-    v.dbQuery.override = settings.value(QStringLiteral("override"), true).toBool();
+    v.dbQuery.widgetShown = settings.value(QStringLiteral("visible"), v.dbQuery.widgetShown).toBool();
+    v.dbQuery.override = settings.value(QStringLiteral("override"), v.dbQuery.override).toBool();
     v.dbQuery.fields.restore(settings, QStringLiteral("fields"));
     v.dbQuery.musicBrainzUrl = settings.value(QStringLiteral("musicbrainzurl")).toString();
     v.dbQuery.lyricsWikiaUrl = settings.value(QStringLiteral("lyricwikiurl")).toString();
