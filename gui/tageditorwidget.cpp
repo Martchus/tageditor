@@ -930,32 +930,6 @@ void TagEditorWidget::showFile(char result, const QString &ioError)
         m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
     }
 
-    // create appropriate tags according to file type and user preferences when automatic tag management is enabled
-    auto &settings = Settings::values().tagPocessing;
-    if (settings.autoTagManagement) {
-        settings.creationSettings.requiredTargets.clear();
-        settings.creationSettings.requiredTargets.reserve(2);
-        for (const ChecklistItem &targetItem : Settings::values().editor.defaultTargets.items()) {
-            if (targetItem.isChecked()) {
-                settings.creationSettings.requiredTargets.emplace_back(
-                    containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
-            }
-        }
-        // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
-        // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
-        // TODO: still show the version as on disk in the info view
-        settings.creationSettings.flags -= TagCreationFlags::KeepExistingId3v2Version;
-        if (!m_fileInfo.createAppropriateTags(settings.creationSettings)) {
-            if (confirmCreationOfId3TagForUnsupportedFile()) {
-                settings.creationSettings.flags += TagCreationFlags::KeepExistingId3v2Version;
-                m_fileInfo.createAppropriateTags(settings.creationSettings);
-            }
-        }
-        // tags might have been adjusted -> reload tags
-        m_tags.clear();
-        m_fileInfo.tags(m_tags);
-    }
-
     // show parsing status/result using parsing notification widget
     auto diagLevel = m_diag.level();
     if (diagLevel < worstDiagLevel) {
@@ -996,10 +970,35 @@ void TagEditorWidget::showFile(char result, const QString &ioError)
             tr("The file is composed of multiple segments. Dealing with such files has not been tested yet and might be broken."));
     }
 
+    // show file info (before creating tags so the file is shown as on disk)
+    updateInfoView();
+
+    // create appropriate tags according to file type and user preferences when automatic tag management is enabled
+    auto &settings = Settings::values().tagPocessing;
+    if (settings.autoTagManagement) {
+        settings.creationSettings.requiredTargets.clear();
+        settings.creationSettings.requiredTargets.reserve(2);
+        for (const ChecklistItem &targetItem : Settings::values().editor.defaultTargets.items()) {
+            if (targetItem.isChecked()) {
+                settings.creationSettings.requiredTargets.emplace_back(
+                    containerTargetLevelValue(m_fileInfo.containerFormat(), static_cast<TagTargetLevel>(targetItem.id().toInt())));
+            }
+        }
+        // TODO: allow initialization of new ID3 tag with values from already present ID3 tag
+        // TODO: allow not to transfer values from removed ID3 tag to remaining ID3 tags
+        settings.creationSettings.flags -= TagCreationFlags::TreatUnknownFilesAsMp3Files;
+        if (!m_fileInfo.createAppropriateTags(settings.creationSettings) && confirmCreationOfId3TagForUnsupportedFile()) {
+            settings.creationSettings.flags += TagCreationFlags::TreatUnknownFilesAsMp3Files;
+            m_fileInfo.createAppropriateTags(settings.creationSettings);
+        }
+        // tags might have been adjusted -> reload tags
+        m_tags.clear();
+        m_fileInfo.tags(m_tags);
+    }
+
     // update relevant (UI) components
     m_fileWatcher->addPath(m_currentPath);
     m_fileChangedOnDisk = false;
-    updateInfoView();
     updateDocumentTitleEdits();
     updateTagEditsAndAttachmentEdits();
     updateTagSelectionComboBox();
