@@ -853,6 +853,9 @@ void setTagInfo(const SetTagInfoArgs &args)
                         }
                         attachmentsModified |= currentInfo.next(container, diag);
                     }
+                } else if (fileInfo.attachmentsParsingStatus() == ParsingStatus::NotSupported) {
+                    diag.emplace_back(
+                        DiagLevel::Critical, "Unable to assign attachments because that is not supported for the file's format.", attachmentsContext);
                 } else {
                     diag.emplace_back(DiagLevel::Critical, "Unable to assign attachments because the container object has not been initialized.",
                         attachmentsContext);
