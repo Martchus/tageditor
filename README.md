@@ -102,6 +102,8 @@ See the release section on GitHub.
 * Windows
     * for mingw-w64 PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs)
     * for binaries checkout the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
+        * the Qt 6 based version is stable and preferable but only supports Windows 10
+        * the Qt 5 based version should still work on older versions down to Windows 7 although this is not regularly checked
 
 ## Usage
 The Tag Editor has a Qt-based GUI and a command line interface. For a C++ library
