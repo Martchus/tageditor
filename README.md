@@ -404,3 +404,13 @@ The following caveats apply to Windows' default terminal emulator `cmd.exe`. I r
 * To enable console output for Tag Editor which is built as a GUI application it is attaching to the parent
   processes' console. However, this prevents redirections to work. In this case redirections are needed, use
   `set ENABLE_CONSOLE=0` to disable that behavior.
+
+---
+
+The dark mode introduced with Windows 10 is not supported but this can be
+[worked around](https://github.com/Martchus/syncthingtray#workaround-missing-support-for-windows-10-dark-mode).
+
+---
+
+Per monitor DPI awareness (v2) is not working out of the box but experimental support
+[can be enabled](https://github.com/Martchus/syncthingtray#enable-experimental-support-for-windows-per-monitor-dpi-awareness-v2).
