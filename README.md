@@ -318,16 +318,24 @@ Here are some Bash examples which illustrate getting and setting tag information
 3. The CLI prints all values in UTF-8 encoding (no matter which encoding is actually used in the tag).
 
 ## Build instructions
-The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libraries. For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).  
+The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and
+[tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libraries.
+For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
 When the Qt GUI is enabled, Qt and [qtutilities](https://github.com/Martchus/qtutilities) are required, too.
 
+To avoid building c++utilities/tagparser/qtutilities separately, follow the instructions under
+"Building this straight". There's also documentation about
+[various build variables](https://github.com/Martchus/cpp-utilities/blob/master/doc/buildvariables.md) which
+can be passed to CMake to influence the build.
+
 ### Building with Qt GUI
-The following Qt modules are required (version 5.6 or higher): core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
+The Qt GUI is enabled by default. The following Qt modules are required (version 5.6 or higher):
+core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
 
-Note that old Qt versions like 5.6 lack support for modern JavaScript features. To use the JavaScript-based renaming tool
-is recommend to use at least Qt 5.12.
+Note that old Qt versions like 5.6 lack support for modern JavaScript features. To use the JavaScript-based
+renaming tool it is recommend to use at least Qt 5.12.
 
-### Select Qt module for web view and JavaScript
+#### Select Qt module for web view and JavaScript
 * Add `-DWEBVIEW_PROVIDER:STRING=webkit/webengine/none` to the CMake arguments to use either Qt WebKit (works with
   'revived' version as well), Qt WebEngine or no web view at all. If no web view is used, the file information can only
   be shown using a plain tree view. Otherwise the user can choose between a web page and a tree view.
@@ -349,10 +357,12 @@ JSON export. To enable it, add `-DENABLE_JSON_EXPORT` to the CMake arguments.
 When enabled, the following additional dependencies are required (only at build-time): rapidjson, reflective-rapidjson and llvm/clang
 
 ### Building this straight
-0. Install (preferably the latest version of) g++ or clang, the required Qt modules and CMake.
-1. Get the sources of additional dependencies and the tag editor itself. For the latest version from Git clone the following repositories:  
+0. Install (preferably the latest version of) the CGG toolchain or Clang, the required Qt modules,
+   [iso-codes](https://salsa.debian.org/iso-codes-team/iso-codes), iconv, zlib, CMake and Ninja.
+1. Get the sources of additional dependencies and the tag editor itself.
+   For the latest version from Git clone the following repositories:
    ```
-   cd $SOURCES
+   cd "$SOURCES"
    git clone -c core.symlinks=true https://github.com/Martchus/cpp-utilities.git c++utilities
    git clone -c core.symlinks=true https://github.com/Martchus/tagparser.git
    git clone -c core.symlinks=true https://github.com/Martchus/qtutilities.git                  # only required for Qt GUI
@@ -366,20 +376,23 @@ When enabled, the following additional dependencies are required (only at build-
    fix this.
 2. Configure the build
    ```
-   cd $BUILD_DIR
+   cd "$BUILD_DIR"
    cmake \
+    -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
+    -DLANGUAGE_FILE_ISO_639_2="/usr/share/iso-codes/json/iso_639-2.json" \
     -DCMAKE_INSTALL_PREFIX="/install/prefix" \
-    $SOURCES/subdirs/tageditor
+    "$SOURCES/subdirs/tageditor"
    ```
     * Replace `/install/prefix` with the directory where you want to install.
+    * Replace `/usr/…/iso_639-2.json` with the path for your iso-codes installation.
 3. Build and install everything in one step:
    ```
-   cd $BUILD_DIR
-   make install -j$(nproc)
+   cd "$BUILD_DIR"
+   ninja install
    ```
     * If the install directory is not writable, do **not** conduct the build as root. Instead, set `DESTDIR` to a
-      writable location (e.g. `make DESTDIR="temporary/install/dir" install …`) and move the files from there to
+      writable location (e.g. `DESTDIR="temporary/install/dir" ninja install`) and move the files from there to
       the desired location afterwards.
 
 ## TODOs and known problems
