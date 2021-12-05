@@ -817,7 +817,6 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
 
             // alter attachments
-            bool attachmentsModified = false;
             if (args.addAttachmentArg.isPresent() || args.updateAttachmentArg.isPresent() || args.removeAttachmentArg.isPresent()
                 || args.removeExistingAttachmentsArg.isPresent()) {
                 static const string attachmentsContext("setting attachments");
@@ -828,7 +827,6 @@ void setTagInfo(const SetTagInfoArgs &args)
                         for (size_t i = 0, count = container->attachmentCount(); i < count; ++i) {
                             container->attachment(i)->setIgnored(false);
                         }
-                        attachmentsModified = true;
                     }
                     // add/update/remove attachments
                     AttachmentInfo currentInfo;
@@ -837,21 +835,21 @@ void setTagInfo(const SetTagInfoArgs &args)
                         for (const char *value : args.addAttachmentArg.values(i)) {
                             currentInfo.parseDenotation(value);
                         }
-                        attachmentsModified |= currentInfo.next(container, diag);
+                        currentInfo.next(container, diag);
                     }
                     currentInfo.action = AttachmentAction::Update;
                     for (size_t i = 0, occurrences = args.updateAttachmentArg.occurrences(); i != occurrences; ++i) {
                         for (const char *value : args.updateAttachmentArg.values(i)) {
                             currentInfo.parseDenotation(value);
                         }
-                        attachmentsModified |= currentInfo.next(container, diag);
+                        currentInfo.next(container, diag);
                     }
                     currentInfo.action = AttachmentAction::Remove;
                     for (size_t i = 0, occurrences = args.removeAttachmentArg.occurrences(); i != occurrences; ++i) {
                         for (const char *value : args.removeAttachmentArg.values(i)) {
                             currentInfo.parseDenotation(value);
                         }
-                        attachmentsModified |= currentInfo.next(container, diag);
+                        currentInfo.next(container, diag);
                     }
                 } else if (fileInfo.attachmentsParsingStatus() == ParsingStatus::NotSupported) {
                     diag.emplace_back(
