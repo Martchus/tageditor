@@ -415,7 +415,7 @@ The following caveats apply to Windows' default terminal emulator `cmd.exe`. I r
 * The console's codepage is set to UTF-8 to ensure point *3.* of the "Text encoding" section is handled correctly. Use
   `set ENABLE_CP_UTF8=0` if this is not wanted.
 * To enable console output for Tag Editor which is built as a GUI application it is attaching to the parent
-  processes' console. However, this prevents redirections to work. In this case redirections are needed, use
+  processes' console. However, this prevents redirections to work. If redirections are needed, use
   `set ENABLE_CONSOLE=0` to disable that behavior.
 
 ---
