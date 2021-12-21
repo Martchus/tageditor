@@ -204,7 +204,7 @@ QString fixUmlauts(const QString &str)
 {
     auto words = str.split(QChar(' '));
     static const QLatin1String exceptions[] = { QLatin1String("reggae"), QLatin1String("blues"), QLatin1String("auer"), QLatin1String("aues"),
-        QLatin1String("manuel"), QLatin1String("duet"), QLatin1String("neue"), QLatin1String("prologue") };
+        QLatin1String("manuel"), QLatin1String("duet"), QLatin1String("duel"), QLatin1String("neue"), QLatin1String("prologue") };
     static const QLatin1String pairs[6][2] = { { QLatin1String("ae"), QLatin1String("\xe4") }, { QLatin1String("ue"), QLatin1String("\xfc") },
         { QLatin1String("oe"), QLatin1String("\xf6") }, { QLatin1String("Ae"), QLatin1String("\xc4") },
         { QLatin1String("Ue"), QLatin1String("\xdc") }, { QLatin1String("Oe"), QLatin1String("\xd6") } };
