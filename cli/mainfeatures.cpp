@@ -579,12 +579,12 @@ void setTagInfo(const SetTagInfoArgs &args)
             fileInfo.parseTags(diag, parsingProgress);
             fileInfo.parseTracks(diag, parsingProgress);
             fileInfo.parseAttachments(diag, parsingProgress);
-            vector<Tag *> tags;
 
             // remove tags with the specified targets
-            if (validRemoveTargetsSpecified) {
+            auto tags = std::vector<Tag *>();
+            if (!targetsToRemove.empty()) {
                 fileInfo.tags(tags);
-                for (auto *tag : tags) {
+                for (auto *const tag : tags) {
                     if (find(targetsToRemove.cbegin(), targetsToRemove.cend(), tag->target()) != targetsToRemove.cend()) {
                         fileInfo.removeTag(tag);
                     }

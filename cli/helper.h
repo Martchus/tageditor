@@ -298,8 +298,8 @@ TagUsage parseUsageDenotation(const CppUtilities::Argument &usageArg, TagUsage d
 TagTextEncoding parseEncodingDenotation(const CppUtilities::Argument &encodingArg, TagTextEncoding defaultEncoding);
 ElementPosition parsePositionDenotation(const CppUtilities::Argument &posArg, const CppUtilities::Argument &valueArg, ElementPosition defaultPos);
 std::uint64_t parseUInt64(const CppUtilities::Argument &arg, std::uint64_t defaultValue);
-TagTarget::IdContainerType parseIds(const std::string &concatenatedIds);
-bool applyTargetConfiguration(TagTarget &target, const std::string &configStr);
+TagTarget::IdContainerType parseIds(std::string_view concatenatedIds);
+bool applyTargetConfiguration(TagTarget &target, std::string_view configStr);
 FieldDenotations parseFieldDenotations(const CppUtilities::Argument &fieldsArg, bool readOnly);
 std::string tagName(const Tag *tag);
 bool stringToBool(const std::string &str);

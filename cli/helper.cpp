@@ -475,12 +475,15 @@ std::uint64_t parseUInt64(const Argument &arg, std::uint64_t defaultValue)
     return defaultValue;
 }
 
-TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
+TagTarget::IdContainerType parseIds(std::string_view concatenatedIds)
 {
-    auto splittedIds = splitString(concatenatedIds, ",", EmptyPartsTreat::Omit);
-    TagTarget::IdContainerType convertedIds;
+    const auto splittedIds = splitStringSimple(concatenatedIds, ",");
+    auto convertedIds = TagTarget::IdContainerType();
     convertedIds.reserve(splittedIds.size());
     for (const auto &id : splittedIds) {
+        if (id.empty()) {
+            continue;
+        }
         try {
             convertedIds.push_back(stringToNumber<TagTarget::IdType>(id));
         } catch (const ConversionException &) {
@@ -492,7 +495,7 @@ TagTarget::IdContainerType parseIds(const std::string &concatenatedIds)
     return convertedIds;
 }
 
-bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
+bool applyTargetConfiguration(TagTarget &target, std::string_view configStr)
 {
     if (!configStr.empty()) {
         if (configStr.compare(0, 13, "target-level=") == 0) {
@@ -504,7 +507,7 @@ bool applyTargetConfiguration(TagTarget &target, const std::string &configStr)
                 exit(-1);
             }
         } else if (configStr.compare(0, 17, "target-levelname=") == 0) {
-            target.setLevelName(configStr.substr(17));
+            target.setLevelName(std::string(configStr.substr(17)));
         } else if (configStr.compare(0, 14, "target-tracks=") == 0) {
             target.tracks() = parseIds(configStr.substr(14));
         } else if (configStr.compare(0, 16, "target-chapters=") == 0) {
@@ -616,9 +619,9 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
 
         // read field name
         const auto equationPos = strchr(fieldDenotationString, '=');
-        size_t fieldNameLen = equationPos ? static_cast<size_t>(equationPos - fieldDenotationString) : strlen(fieldDenotationString);
+        auto fieldNameLen = equationPos ? static_cast<size_t>(equationPos - fieldDenotationString) : strlen(fieldDenotationString);
         // field name might denote increment ("+") or path disclosure (">")
-        DenotationType type = DenotationType::Normal;
+        auto type = DenotationType::Normal;
         if (fieldNameLen && equationPos) {
             switch (*(equationPos - 1)) {
             case '+':
