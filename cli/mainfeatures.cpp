@@ -497,18 +497,11 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
 
     // determine targets to remove
-    vector<TagTarget> targetsToRemove;
-    bool validRemoveTargetsSpecified = false;
+    auto targetsToRemove = std::vector<TagTarget>();
     for (size_t i = 0, max = args.removeTargetArg.occurrences(); i != max; ++i) {
+        auto &target = targetsToRemove.emplace_back();
         for (const auto &targetDenotation : args.removeTargetArg.values(i)) {
-            targetsToRemove.emplace_back();
-            if (!strcmp(targetDenotation, ",")) {
-                if (validRemoveTargetsSpecified) {
-                    targetsToRemove.emplace_back();
-                }
-            } else if (applyTargetConfiguration(targetsToRemove.back(), targetDenotation)) {
-                validRemoveTargetsSpecified = true;
-            } else {
+            if (!applyTargetConfiguration(target, targetDenotation)) {
                 cerr << Phrases::Error << "The given target specification \"" << targetDenotation << "\" is invalid." << Phrases::EndFlush;
                 exit(-1);
             }
