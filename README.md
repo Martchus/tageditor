@@ -238,7 +238,7 @@ Here are some Bash examples which illustrate getting and setting tag information
   the tags targeting the song/track and the album/movie/episode in general:  
   ```
   tageditor set target-level=30 target-tracks=3134325680 title="Title for track 3134325680" \
-    --remove-targets target-level=50 , target-level=30 \
+    --remove-target target-level=50 --remove-target target-level=30 \
     --files file.mka
   ```
   For more information checkout the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).

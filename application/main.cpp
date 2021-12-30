@@ -126,7 +126,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
         " set mkv:FOO=bar1 mp4:©foo=bar2 -f file.mkv file.m4a\n" PROJECT_NAME
         " set title0=\"Title for both files\" album1=\"Album for 2nd file\" -f file1.ogg file2.mp3\n" PROJECT_NAME
         " set target-level=30 target-tracks=3134325680 title=\"Title for track 3134325680\" \\\n"
-        "             --remove-targets target-level=50 , target-level=30 -f file.mka\n" PROJECT_NAME
+        "             --remove-target target-level=50 --remove-target target-level=30 -f file.mka\n" PROJECT_NAME
         " set mkv:CUSTOM_FIELD=\"Matroska-only\" vorbis:CUSTOM_FIELD=\"Vorbis-only\" mp4:©ust=\"MP4-only\" \\\n"
         "             -f file.mkv file.ogg file.m4a\n"
         "For more examples and detailed descriptions see " APP_URL "#writing-tags");
