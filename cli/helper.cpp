@@ -579,6 +579,12 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
             continue;
         } else if (applyTargetConfiguration(scope.tagTarget, fieldDenotationString)) {
             continue;
+        } else if (!strcmp(fieldDenotationString, "target-matching=exact")) {
+            scope.exactTargetMatching = true;
+            continue;
+        } else if (!strcmp(fieldDenotationString, "target-matching=relaxed")) {
+            scope.exactTargetMatching = false;
+            continue;
         } else if (!strncmp(fieldDenotationString, "track-id=", 9)) {
             const vector<string> parts = splitString<vector<string>>(fieldDenotationString + 9, ",", EmptyPartsTreat::Omit);
             bool allTracks = false;

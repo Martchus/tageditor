@@ -125,6 +125,7 @@ struct FieldScope {
     FieldId field;
     TagType tagType;
     TagTarget tagTarget;
+    bool exactTargetMatching;
     bool allTracks;
     std::vector<std::uint64_t> trackIds;
 };
@@ -133,13 +134,14 @@ inline FieldScope::FieldScope(KnownField field, TagType tagType, TagTarget tagTa
     : field(field)
     , tagType(tagType)
     , tagTarget(tagTarget)
+    , exactTargetMatching(true)
     , allTracks(false)
 {
 }
 
 inline bool FieldScope::operator==(const FieldScope &other) const
 {
-    return field == other.field && tagType == other.tagType && tagTarget == other.tagTarget;
+    return field == other.field && tagType == other.tagType && tagTarget == other.tagTarget && exactTargetMatching == other.exactTargetMatching;
 }
 
 inline bool FieldScope::isTrack() const

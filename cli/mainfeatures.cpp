@@ -663,7 +663,9 @@ void setTagInfo(const SetTagInfoArgs &args)
                         const FieldScope &denotedScope = fieldDenotation.first;
                         // skip values which scope does not match the current tag
                         if (denotedScope.isTrack() || !(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType & tagType))
-                            || !(!targetSupported || denotedScope.tagTarget == tagTarget)) {
+                            || !(!targetSupported
+                                || (denotedScope.exactTargetMatching ? denotedScope.tagTarget == tagTarget
+                                                                     : denotedScope.tagTarget.matches(tagTarget)))) {
                             continue;
                         }
                         // convert the values to TagValue

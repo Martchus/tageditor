@@ -13,8 +13,8 @@ set(META_APP_DESCRIPTION
 set(META_GUI_OPTIONAL true)
 set(META_JS_SRC_DIR renamingutility)
 set(META_VERSION_MAJOR 3)
-set(META_VERSION_MINOR 5)
-set(META_VERSION_PATCH 2)
+set(META_VERSION_MINOR 6)
+set(META_VERSION_PATCH 0)
 set(META_ADD_DEFAULT_CPP_UNIT_TEST_APPLICATION ON)
 
 # add project files
@@ -199,7 +199,7 @@ if (WIDGETS_GUI OR QUICK_GUI)
 endif ()
 
 # find tagparser
-find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 10.1.0 REQUIRED)
+find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 10.4.0 REQUIRED)
 use_tag_parser()
 
 # enable experimental JSON export
