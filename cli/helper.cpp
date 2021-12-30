@@ -515,7 +515,7 @@ bool applyTargetConfiguration(TagTarget &target, std::string_view configStr)
         } else if (configStr.compare(0, 16, "target-editions=") == 0) {
             target.editions() = parseIds(configStr.substr(16));
         } else if (configStr.compare(0, 19, "target-attachments=") == 0) {
-            target.attachments() = parseIds(configStr.substr(17));
+            target.attachments() = parseIds(configStr.substr(19));
         } else if (configStr.compare(0, 13, "target-reset=") == 0) {
             if (*(configStr.data() + 13)) {
                 cerr << Phrases::Error << "Invalid assignment " << (configStr.data() + 13) << " for target-reset." << Phrases::EndFlush;
