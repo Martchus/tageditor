@@ -165,7 +165,7 @@ inline FieldValue::FieldValue(DenotationType type, unsigned int fileIndex, const
 
 class InterruptHandler {
 public:
-    explicit InterruptHandler(std::function<void()> handler);
+    explicit InterruptHandler(std::function<void()> &&handler);
     ~InterruptHandler();
 
 private:

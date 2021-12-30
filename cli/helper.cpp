@@ -78,13 +78,13 @@ bool InterruptHandler::s_handlerRegistered = false;
  *          (eg. use POSIX write() instead of std::cout).
  * \throws Throws std::runtime_error when attempting to create a 2nd instance.
  */
-InterruptHandler::InterruptHandler(std::function<void()> handler)
+InterruptHandler::InterruptHandler(std::function<void()> &&handler)
 {
     // set handler function or throw if an instance has already been created
     if (s_handler) {
         throw runtime_error("Only one instance of InterruptHandler can exist at a time.");
     }
-    s_handler = handler;
+    s_handler = std::move(handler);
 
     // register handler if not registered yet
     if (!s_handlerRegistered) {
