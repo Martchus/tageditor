@@ -53,13 +53,6 @@
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QCheckBox" name="customSubstitutionCheckBox">
-        <property name="text">
-         <string>Custom substitution</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
