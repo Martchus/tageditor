@@ -484,7 +484,7 @@ void setTagInfo(const SetTagInfoArgs &args)
         exit(-1);
     }
 
-    TagCreationSettings settings;
+    auto settings = TagCreationSettings();
     settings.flags = TagCreationFlags::None;
 
     // determine targets to remove
@@ -555,11 +555,11 @@ void setTagInfo(const SetTagInfoArgs &args)
 
     // iterate through all specified files
     const auto quiet = args.quietArg.isPresent();
-    unsigned int fileIndex = 0;
-    static string context("setting tags");
+    auto fileIndex = 0u;
+    static auto context = std::string("setting tags");
     for (const char *file : args.filesArg.values()) {
-        Diagnostics diag;
-        AbortableProgressFeedback parsingProgress; // FIXME: actually use the progress object
+        auto diag = Diagnostics();
+        auto parsingProgress = AbortableProgressFeedback(); // FIXME: actually use the progress object
         try {
             // parse tags and tracks (tracks are relevant because track meta-data such as language can be changed as well)
             if (!quiet) {
@@ -772,7 +772,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
 
             // alter tracks
-            for (AbstractTrack *track : fileInfo.tracks()) {
+            for (AbstractTrack *const track : fileInfo.tracks()) {
                 for (const auto &fieldDenotation : fields) {
                     // skip empty values
                     const auto &values = fieldDenotation.second.relevantValues;
@@ -837,7 +837,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         }
                     }
                     // add/update/remove attachments
-                    AttachmentInfo currentInfo;
+                    auto currentInfo = AttachmentInfo();
                     currentInfo.action = AttachmentAction::Add;
                     for (size_t i = 0, occurrences = args.addAttachmentArg.occurrences(); i != occurrences; ++i) {
                         for (const char *value : args.addAttachmentArg.values(i)) {
