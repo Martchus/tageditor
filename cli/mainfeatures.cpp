@@ -487,15 +487,6 @@ void setTagInfo(const SetTagInfoArgs &args)
     TagCreationSettings settings;
     settings.flags = TagCreationFlags::None;
 
-    // determine required targets
-    for (const auto &fieldDenotation : fields) {
-        const FieldScope &scope = fieldDenotation.first;
-        if (!scope.isTrack()
-            && find(settings.requiredTargets.cbegin(), settings.requiredTargets.cend(), scope.tagTarget) == settings.requiredTargets.cend()) {
-            settings.requiredTargets.push_back(scope.tagTarget);
-        }
-    }
-
     // determine targets to remove
     auto targetsToRemove = std::vector<TagTarget>();
     for (size_t i = 0, max = args.removeTargetArg.occurrences(); i != max; ++i) {
@@ -592,6 +583,46 @@ void setTagInfo(const SetTagInfoArgs &args)
                 tags.clear();
             }
 
+            // select the relevant values for the current file index
+            for (auto &fieldDenotation : fields) {
+                FieldValues &denotedValues = fieldDenotation.second;
+                std::vector<FieldValue *> &relevantDenotedValues = denotedValues.relevantValues;
+                relevantDenotedValues.clear();
+                unsigned int currentFileIndex = 0;
+                for (FieldValue &denotatedValue : denotedValues.allValues) {
+                    if ((denotatedValue.fileIndex <= fileIndex)
+                        && (relevantDenotedValues.empty() || (denotatedValue.fileIndex >= currentFileIndex))) {
+                        if (currentFileIndex != denotatedValue.fileIndex) {
+                            currentFileIndex = denotatedValue.fileIndex;
+                            relevantDenotedValues.clear();
+                        }
+                        relevantDenotedValues.push_back(&denotatedValue);
+                    }
+                }
+            }
+
+            // determine required targets
+            settings.requiredTargets.clear();
+            for (const auto &fieldDenotation : fields) {
+                const FieldScope &scope = fieldDenotation.first;
+                if (scope.isTrack() || !scope.exactTargetMatching) {
+                    continue;
+                }
+                const std::vector<FieldValue *> &relevantDenotedValues = fieldDenotation.second.relevantValues;
+                auto hasNonEmptyValues = false;
+                for (const auto &value : relevantDenotedValues) {
+                    if (!value->value.empty()) {
+                        hasNonEmptyValues = true;
+                        break;
+                    }
+                }
+                if (hasNonEmptyValues
+                    && std::find(settings.requiredTargets.cbegin(), settings.requiredTargets.cend(), scope.tagTarget)
+                        == settings.requiredTargets.cend()) {
+                    settings.requiredTargets.emplace_back(scope.tagTarget);
+                }
+            }
+
             // create new tags according to settings
             fileInfo.createAppropriateTags(settings);
             auto container = fileInfo.container();
@@ -611,24 +642,6 @@ void setTagInfo(const SetTagInfoArgs &args)
                     }
                 } else {
                     diag.emplace_back(DiagLevel::Warning, "Setting the document title is not supported for the file.", context);
-                }
-            }
-
-            // select the relevant values for the current file index
-            for (auto &fieldDenotation : fields) {
-                FieldValues &denotedValues = fieldDenotation.second;
-                vector<FieldValue *> &relevantDenotedValues = denotedValues.relevantValues;
-                denotedValues.relevantValues.clear();
-                unsigned int currentFileIndex = 0;
-                for (FieldValue &denotatedValue : denotedValues.allValues) {
-                    if ((denotatedValue.fileIndex <= fileIndex)
-                        && (relevantDenotedValues.empty() || (denotatedValue.fileIndex >= currentFileIndex))) {
-                        if (currentFileIndex != denotatedValue.fileIndex) {
-                            currentFileIndex = denotatedValue.fileIndex;
-                            relevantDenotedValues.clear();
-                        }
-                        relevantDenotedValues.push_back(&denotatedValue);
-                    }
                 }
             }
 
