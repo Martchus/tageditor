@@ -535,65 +535,70 @@ bool applyTargetConfiguration(TagTarget &target, std::string_view configStr)
 
 FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
 {
-    FieldDenotations fields;
+    auto fields = FieldDenotations();
     if (!fieldsArg.isPresent()) {
         return fields;
     }
 
-    const vector<const char *> &fieldDenotations = fieldsArg.values();
-    FieldScope scope;
+    const std::vector<const char *> &fieldDenotations = fieldsArg.values();
+    auto scope = FieldScope();
 
-    for (const char *fieldDenotationString : fieldDenotations) {
+    for (std::string_view fieldDenotationString : fieldDenotations) {
         // check for tag or target specifier
-        const auto fieldDenotationLen = strlen(fieldDenotationString);
-        if (!strncmp(fieldDenotationString, "tag=", 4)) {
-            if (fieldDenotationLen == 4) {
+        if (startsWith(fieldDenotationString, "tag=")) {
+            const auto tagTypeString = fieldDenotationString.substr(4);
+            if (tagTypeString.empty()) {
                 cerr << Phrases::Error << "The \"tag\"-specifier has been used with no value(s)." << Phrases::End
                      << "note: Possible values are id3,id3v1,id3v2,itunes,vorbis,matroska and all." << endl;
-                exit(-1);
-            } else {
-                TagType tagType = TagType::Unspecified;
-                for (const auto &part : splitString(fieldDenotationString + 4, ",", EmptyPartsTreat::Omit)) {
-                    if (part == "id3v1") {
-                        tagType |= TagType::Id3v1Tag;
-                    } else if (part == "id3v2") {
-                        tagType |= TagType::Id3v2Tag;
-                    } else if (part == "id3") {
-                        tagType |= TagType::Id3v1Tag | TagType::Id3v2Tag;
-                    } else if (part == "itunes" || part == "mp4") {
-                        tagType |= TagType::Mp4Tag;
-                    } else if (part == "vorbis") {
-                        tagType |= TagType::VorbisComment | TagType::OggVorbisComment;
-                    } else if (part == "matroska") {
-                        tagType |= TagType::MatroskaTag;
-                    } else if (part == "all" || part == "any") {
-                        tagType = TagType::Unspecified;
-                        break;
-                    } else {
-                        cerr << Phrases::Error << "The value \"" << part << " for the \"tag\"-specifier is invalid." << Phrases::End
-                             << "note: Possible values are id3,id3v1,id3v2,itunes,vorbis,matroska and all." << endl;
-                        exit(-1);
-                    }
-                }
-                scope.tagType = tagType;
-                scope.allTracks = false;
-                scope.trackIds.clear();
+                std::exit(-1);
             }
+            auto tagType = TagType::Unspecified;
+            for (const auto &part : splitStringSimple<std::vector<std::string_view>>(tagTypeString, ",")) {
+                if (part.empty()) {
+                    continue;
+                }
+                if (part == "id3v1") {
+                    tagType |= TagType::Id3v1Tag;
+                } else if (part == "id3v2") {
+                    tagType |= TagType::Id3v2Tag;
+                } else if (part == "id3") {
+                    tagType |= TagType::Id3v1Tag | TagType::Id3v2Tag;
+                } else if (part == "itunes" || part == "mp4") {
+                    tagType |= TagType::Mp4Tag;
+                } else if (part == "vorbis") {
+                    tagType |= TagType::VorbisComment | TagType::OggVorbisComment;
+                } else if (part == "matroska") {
+                    tagType |= TagType::MatroskaTag;
+                } else if (part == "all" || part == "any") {
+                    tagType = TagType::Unspecified;
+                    break;
+                } else {
+                    cerr << Phrases::Error << "The value \"" << part << " for the \"tag\"-specifier is invalid." << Phrases::End
+                         << "note: Possible values are id3,id3v1,id3v2,itunes,vorbis,matroska and all." << endl;
+                    std::exit(-1);
+                }
+            }
+            scope.tagType = tagType;
+            scope.allTracks = false;
+            scope.trackIds.clear();
             continue;
         } else if (applyTargetConfiguration(scope.tagTarget, fieldDenotationString)) {
             continue;
-        } else if (!strcmp(fieldDenotationString, "target-matching=exact")) {
+        } else if (fieldDenotationString == "target-matching=exact") {
             scope.exactTargetMatching = true;
             continue;
-        } else if (!strcmp(fieldDenotationString, "target-matching=relaxed")) {
+        } else if (fieldDenotationString == "target-matching=relaxed") {
             scope.exactTargetMatching = false;
             continue;
-        } else if (!strncmp(fieldDenotationString, "track-id=", 9)) {
-            const vector<string> parts = splitString<vector<string>>(fieldDenotationString + 9, ",", EmptyPartsTreat::Omit);
-            bool allTracks = false;
-            vector<std::uint64_t> trackIds;
+        } else if (startsWith(fieldDenotationString, "track-id=")) {
+            const auto parts = splitStringSimple<std::vector<std::string_view>>(fieldDenotationString.substr(9), ",");
+            auto allTracks = false;
+            auto trackIds = vector<std::uint64_t>();
             trackIds.reserve(parts.size());
             for (const auto &part : parts) {
+                if (part.empty()) {
+                    continue;
+                }
                 if (part == "all" || part == "any") {
                     allTracks = true;
                     break;
@@ -603,7 +608,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                 } catch (const ConversionException &) {
                     cerr << Phrases::Error << "The value provided with the \"track\"-specifier is invalid." << Phrases::End
                          << "note: It must be a comma-separated list of track IDs." << endl;
-                    exit(-1);
+                    std::exit(-1);
                 }
             }
             scope.allTracks = allTracks;
@@ -612,18 +617,18 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
         }
 
         // check whether field name starts with + indicating an additional value
-        bool additionalValue = *fieldDenotationString == '+';
+        auto additionalValue = !fieldDenotationString.empty() && fieldDenotationString.front() == '+';
         if (additionalValue) {
-            ++fieldDenotationString;
+            fieldDenotationString = fieldDenotationString.substr(1);
         }
 
         // read field name
-        const auto equationPos = strchr(fieldDenotationString, '=');
-        auto fieldNameLen = equationPos ? static_cast<size_t>(equationPos - fieldDenotationString) : strlen(fieldDenotationString);
+        const auto equationPos = fieldDenotationString.find('=');
+        auto fieldNameLen = equationPos != std::string_view::npos ? equationPos : fieldDenotationString.size();
         // field name might denote increment ("+") or path disclosure (">")
         auto type = DenotationType::Normal;
-        if (fieldNameLen && equationPos) {
-            switch (*(equationPos - 1)) {
+        if (fieldNameLen && equationPos != std::string_view::npos && equationPos) {
+            switch (fieldDenotationString[equationPos - 1]) {
             case '+':
                 type = DenotationType::Increment;
                 --fieldNameLen;
@@ -637,10 +642,9 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
         }
 
         // field name might specify a file index
-        unsigned int fileIndex = 0, mult = 1;
-        for (const char *digitPos = fieldDenotationString + fieldNameLen - 1; fieldNameLen && isDigit(*digitPos);
-             --fieldNameLen, --digitPos, mult *= 10) {
-            fileIndex += static_cast<unsigned int>(*digitPos - '0') * mult;
+        auto fileIndex = 0u, mult = 1u;
+        for (auto digitPos = fieldNameLen - 1; fieldNameLen && isDigit(fieldDenotationString[digitPos]); --fieldNameLen, --digitPos, mult *= 10) {
+            fileIndex += static_cast<unsigned int>(fieldDenotationString[digitPos] - '0') * mult;
         }
         if (!fieldNameLen) {
             cerr << Phrases::Error << "The field denotation \"" << fieldDenotationString << "\" has no field name." << Phrases::EndFlush;
@@ -648,17 +652,17 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
         }
 
         // parse the denoted field ID
+        const auto fieldName = fieldDenotationString.substr(0, fieldNameLen);
         try {
             if (scope.isTrack()) {
-                scope.field = FieldId::fromTrackDenotation(fieldDenotationString, fieldNameLen);
+                scope.field = FieldId::fromTrackDenotation(fieldName);
             } else {
-                scope.field = FieldId::fromTagDenotation(fieldDenotationString, fieldNameLen);
+                scope.field = FieldId::fromTagDenotation(fieldName);
             }
         } catch (const ConversionException &e) {
             // unable to parse field ID denotation -> discard the field denotation
-            cerr << Phrases::Error << "The field denotation \"" << string(fieldDenotationString, fieldNameLen)
-                 << "\" could not be parsed: " << e.what() << Phrases::EndFlush;
-            exit(-1);
+            cerr << Phrases::Error << "The field denotation \"" << fieldName << "\" could not be parsed: " << e.what() << Phrases::EndFlush;
+            std::exit(-1);
         }
 
         // read cover always from file
@@ -669,24 +673,24 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
         // add field denotation scope
         auto &fieldValues = fields[scope];
         // add value to the scope (if present)
-        if (equationPos) {
+        if (equationPos != std::string_view::npos) {
             if (readOnly) {
-                cerr << Phrases::Error << "A value has been specified for \"" << string(fieldDenotationString, fieldNameLen) << "\"." << Phrases::End
+                cerr << Phrases::Error << "A value has been specified for \"" << fieldName << "\"." << Phrases::End
                      << "note: This is only possible when the \"set\"-operation is used." << endl;
-                exit(-1);
+                std::exit(-1);
             } else {
                 // file index might have been specified explicitly
                 // if not (mult == 1) use the index of the last value and increase it by one if the value is not an additional one
                 // if there are no previous values, just use the index 0
                 fieldValues.allValues.emplace_back(type,
                     mult == 1 ? (fieldValues.allValues.empty() ? 0 : fieldValues.allValues.back().fileIndex + (additionalValue ? 0 : 1)) : fileIndex,
-                    equationPos + 1);
+                    fieldDenotationString.substr(equationPos + 1));
             }
         }
         if (additionalValue && readOnly) {
-            cerr << Phrases::Error << "Indication of an additional value for \"" << string(fieldDenotationString, fieldNameLen) << "\" is invalid."
-                 << Phrases::End << "note: This is only possible when the \"set\"-operation is used." << endl;
-            exit(-1);
+            cerr << Phrases::Error << "Indication of an additional value for \"" << fieldName << "\" is invalid." << Phrases::End
+                 << "note: This is only possible when the \"set\"-operation is used." << endl;
+            std::exit(-1);
         }
     }
     return fields;
@@ -744,34 +748,33 @@ template <class ConcreteTag, TagType tagTypeMask> FieldId FieldId::fromNativeFie
         std::bind(&knownFieldForNativeField<ConcreteTag, tagTypeMask>, nativeFieldId, _1, _2));
 }
 
-FieldId FieldId::fromTagDenotation(const char *denotation, size_t denotationSize)
+FieldId FieldId::fromTagDenotation(std::string_view denotation)
 {
     // check for native, format-specific denotation
-    if (!strncmp(denotation, "mkv:", 4)) {
-        return FieldId::fromNativeField<MatroskaTag>(std::string_view(denotation + 4, denotationSize - 4));
-    } else if (!strncmp(denotation, "mp4:", 4)) {
-        return FieldId::fromNativeField<Mp4Tag>(std::string_view(denotation + 4, denotationSize - 4));
-    } else if (!strncmp(denotation, "vorbis:", 7)) {
-        return FieldId::fromNativeField<VorbisComment, TagType::VorbisComment | TagType::OggVorbisComment>(
-            std::string_view(denotation + 7, denotationSize - 7));
-    } else if (!strncmp(denotation, "id3:", 7)) {
-        return FieldId::fromNativeField<Id3v2Tag>(std::string_view(denotation + 4, denotationSize - 4));
-    } else if (!strncmp(denotation, "generic:", 8)) {
+    if (startsWith(denotation, "mkv:")) {
+        return FieldId::fromNativeField<MatroskaTag>(denotation.substr(4));
+    } else if (startsWith(denotation, "mp4:")) {
+        return FieldId::fromNativeField<Mp4Tag>(denotation.substr(4));
+    } else if (startsWith(denotation, "vorbis:")) {
+        return FieldId::fromNativeField<VorbisComment, TagType::VorbisComment | TagType::OggVorbisComment>(denotation.substr(7));
+    } else if (startsWith(denotation, "id3:")) {
+        return FieldId::fromNativeField<Id3v2Tag>(denotation.substr(4));
+    } else if (startsWith(denotation, "generic:")) {
         // allow prefix 'generic:' for consistency
-        denotation += 8, denotationSize -= 8;
+        denotation = denotation.substr(8);
     }
 
     // determine KnownField for generic denotation
-    const auto knownField(FieldMapping::knownField(denotation, denotationSize));
+    const auto knownField(FieldMapping::knownField(denotation.data(), denotation.size()));
     if (knownField == KnownField::Invalid) {
         throw ConversionException("generic field name is unknown");
     }
     return FieldId(knownField, nullptr, 0);
 }
 
-FieldId FieldId::fromTrackDenotation(const char *denotation, size_t denotationSize)
+FieldId FieldId::fromTrackDenotation(std::string_view denotation)
 {
-    return FieldId(KnownField::Invalid, denotation, denotationSize);
+    return FieldId(KnownField::Invalid, denotation.data(), denotation.size());
 }
 
 std::pair<std::vector<const TagValue *>, bool> FieldId::values(const Tag *tag, TagType tagType) const

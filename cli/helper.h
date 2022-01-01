@@ -59,8 +59,8 @@ class FieldId {
 
 public:
     explicit FieldId(KnownField m_knownField = KnownField::Invalid, const char *denotation = nullptr, std::size_t denotationSize = 0);
-    static FieldId fromTagDenotation(const char *denotation, std::size_t denotationSize);
-    static FieldId fromTrackDenotation(const char *denotation, std::size_t denotationSize);
+    static FieldId fromTagDenotation(std::string_view denotation);
+    static FieldId fromTrackDenotation(std::string_view denotation);
     bool operator==(const FieldId &other) const;
     KnownField knownField() const;
     const char *name() const;
@@ -150,13 +150,13 @@ inline bool FieldScope::isTrack() const
 }
 
 struct FieldValue {
-    FieldValue(DenotationType type, unsigned int fileIndex, const char *value);
+    FieldValue(DenotationType type, unsigned int fileIndex, std::string_view value);
     DenotationType type;
     unsigned int fileIndex;
     std::string value;
 };
 
-inline FieldValue::FieldValue(DenotationType type, unsigned int fileIndex, const char *value)
+inline FieldValue::FieldValue(DenotationType type, unsigned int fileIndex, std::string_view value)
     : type(type)
     , fileIndex(fileIndex)
     , value(value)
