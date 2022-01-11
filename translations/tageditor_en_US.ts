@@ -1007,33 +1007,32 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="59"/>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="69"/>
+        <location filename="../gui/editorautocorrectionoptionpage.ui" line="62"/>
         <source>Custom substitution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="78"/>
+        <location filename="../gui/editorautocorrectionoptionpage.ui" line="71"/>
         <source>Match pattern</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="85"/>
+        <location filename="../gui/editorautocorrectionoptionpage.ui" line="78"/>
         <source>Replacement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="92"/>
+        <location filename="../gui/editorautocorrectionoptionpage.ui" line="85"/>
         <source>regular expression</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="99"/>
+        <location filename="../gui/editorautocorrectionoptionpage.ui" line="92"/>
         <source>replacement (use \1, \2, … for capture expressions)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="112"/>
+        <location filename="../gui/editorautocorrectionoptionpage.ui" line="105"/>
         <source>Fields</source>
         <translation type="unfinished"></translation>
     </message>
