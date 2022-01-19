@@ -25,7 +25,7 @@ will happen most of the times.
 The next section describes how to tweak settings to avoid this at the cost of having some padding within the files
 and/or storing tags at the end of the file. **Note that temporary files also serve as a backup** in case something
 goes wrong, e.g. your computer crashes while saving or a bug within the tag editor breaks particularly structured files.
-To be save it might therefore even be desirable to enforce the creation of a temporary file. That is also possible to
+To be safe it might therefore even be desirable to enforce the creation of a temporary file. That is also possible to
 configure within the GUI and the CLI option `--force-rewrite`.
 
 Nevertheless, it will not always be possible to avoid rewriting a file in all cases anyways. You can configure a
@@ -39,10 +39,10 @@ The editor allows you to choose whether tags should be placed at the beginning o
 Placing tags at the end of the file can avoid having to rewrite the entire file to apply changes.
 
 In the CLI, this is controlled via `--tag-pos` option.
-To enfore a specific `--tag-pos`, even if this requires the file to be rewritten, combine with the `--force` option.
+To enforce a specific `--tag-pos`, even if this requires the file to be rewritten, combine with the `--force` option.
 
 ID3v2 tags and Vorbis/Opus comments can only be placed at the beginning. ID3v1 tags can only be placed at the end of the
-file. Hence this configuration has no effect when dealing with such tags.
+file. Hence, this configuration has no effect when dealing with such tags.
 
 ### Index position
 It is also possible to control the position of the index/cues. However, this is currently only supported when dealing
