@@ -954,7 +954,7 @@ void CliTests::testSettingTrackMetaData()
             "    Extensions                    Spectral Band Replication and Parametric Stereo / HE-AAC v2\n"
             "    Raw format ID                 mp4a\n"
             "    Size                          879.65 KiB (900759 byte)\n"
-            "    Duration                      3 min 138 ms 645 µs 800 ns\n"
+            "    Duration                      3 min 138 ms 666 µs 600 ns\n"
             "    Channel config                1 channel: front-center\n"
             "    Extension channel config      2 channels: front-left, front-right\n"
             "    Bitrate                       40 kbit/s\n"
