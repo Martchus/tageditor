@@ -262,7 +262,8 @@ static void printTagValue(const TagValue &value)
         cout << value.toString(TagTextEncoding::Utf8);
     } catch (const ConversionException &) {
         // handle case when value can not be displayed as string
-        cout << "can't display as string (see --extract)";
+        const auto type = !value.mimeType().empty() ? std::string_view(value.mimeType()) : std::string_view("data");
+        cout << "can't display " << type << " as string (use --extract)";
     }
     cout << '\n';
 }

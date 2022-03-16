@@ -263,12 +263,12 @@ void CliTests::testModifyingCover()
     CPPUNIT_ASSERT_MESSAGE("covers added",
         testContainsSubstrings(stdout,
             { " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n", "    Lyrics            I\nam\nno\nsong\nwriter\n",
-                "    Cover (other)     can't display as string (see --extract)\n"
-                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "    Cover (other)     can't display image/png as string (use --extract)\n"
+                "    Cover (front-cover) can't display image/png as string (use --extract)\n"
                 "      description:    foo\n"
-                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "    Cover (front-cover) can't display image/png as string (use --extract)\n"
                 "      description:    bar\n"
-                "    Cover (back-cover) can't display as string (see --extract)\n" }));
+                "    Cover (back-cover) can't display image/png as string (use --extract)\n" }));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 
     // test whether empty trailing ":" does *not* affect all descriptions
@@ -279,12 +279,12 @@ void CliTests::testModifyingCover()
         testContainsSubstrings(stdout,
             {
                 " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
-                "    Cover (other)     can't display as string (see --extract)\n"
-                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "    Cover (other)     can't display image/png as string (use --extract)\n"
+                "    Cover (front-cover) can't display image/png as string (use --extract)\n"
                 "      description:    foo\n"
-                "    Cover (front-cover) can't display as string (see --extract)\n"
+                "    Cover (front-cover) can't display image/png as string (use --extract)\n"
                 "      description:    bar\n"
-                "    Cover (back-cover) can't display as string (see --extract)\n",
+                "    Cover (back-cover) can't display image/png as string (use --extract)\n",
             }));
     CPPUNIT_ASSERT_EQUAL(-1, remove(mp3File1Backup.data()));
 
@@ -297,8 +297,8 @@ void CliTests::testModifyingCover()
         testContainsSubstrings(stdout,
             {
                 " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
-                "    Cover (other)     can't display as string (see --extract)\n"
-                "    Cover (back-cover) can't display as string (see --extract)\n",
+                "    Cover (other)     can't display image/png as string (use --extract)\n"
+                "    Cover (back-cover) can't display image/png as string (use --extract)\n",
             }));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 
