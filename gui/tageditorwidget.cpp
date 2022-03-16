@@ -1187,7 +1187,7 @@ bool TagEditorWidget::startSaving()
             auto modificationDate = std::filesystem::file_time_type();
             auto modifiedFilePath = std::filesystem::path();
             if (preserveModificationTime) {
-                modifiedFilePath = m_fileInfo.saveFilePath().empty() ? m_fileInfo.path() : m_fileInfo.saveFilePath();
+                modifiedFilePath = std::filesystem::u8path(m_fileInfo.saveFilePath().empty() ? m_fileInfo.path() : m_fileInfo.saveFilePath());
                 modificationDate = std::filesystem::last_write_time(modifiedFilePath, modificationDateError);
             }
             try {

@@ -874,7 +874,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             auto modifiedFilePath = std::filesystem::path();
             fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
             if (args.preserveModificationTimeArg.isPresent()) {
-                modifiedFilePath = fileInfo.saveFilePath().empty() ? fileInfo.path() : fileInfo.saveFilePath();
+                modifiedFilePath = std::filesystem::u8path(fileInfo.saveFilePath().empty() ? fileInfo.path() : fileInfo.saveFilePath());
                 modificationDate = std::filesystem::last_write_time(modifiedFilePath, modificationDateError);
             }
             try {
