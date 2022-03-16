@@ -59,7 +59,7 @@ void displayTagInfo(const CppUtilities::Argument &fieldsArg, const CppUtilities:
     const CppUtilities::Argument &verboseArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
 void extractField(const CppUtilities::Argument &fieldArg, const CppUtilities::Argument &attachmentArg, const CppUtilities::Argument &inputFilesArg,
-    const CppUtilities::Argument &outputFileArg, const CppUtilities::Argument &verboseArg);
+    const CppUtilities::Argument &outputFileArg, const CppUtilities::Argument &indexArg, const CppUtilities::Argument &verboseArg);
 void exportToJson(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &filesArg, const CppUtilities::Argument &prettyArg);
 
 } // namespace Cli

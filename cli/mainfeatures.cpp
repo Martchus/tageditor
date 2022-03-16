@@ -925,14 +925,14 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
 }
 
-void extractField(
-    const Argument &fieldArg, const Argument &attachmentArg, const Argument &inputFilesArg, const Argument &outputFileArg, const Argument &verboseArg)
+void extractField(const Argument &fieldArg, const Argument &attachmentArg, const Argument &inputFilesArg, const Argument &outputFileArg,
+    const Argument &indexArg, const Argument &verboseArg)
 {
     CMD_UTILS_START_CONSOLE;
 
     // parse specified field and attachment
     const auto fieldDenotations = parseFieldDenotations(fieldArg, true);
-    AttachmentInfo attachmentInfo;
+    auto attachmentInfo = AttachmentInfo();
     if (attachmentArg.isPresent()) {
         attachmentInfo.parseDenotation(attachmentArg.values().front());
     }
@@ -946,13 +946,29 @@ void extractField(
         exit(-1);
     }
 
-    MediaFileInfo inputFileInfo;
+    static constexpr auto noIndex = std::numeric_limits<std::size_t>::max();
+    auto index = noIndex;
+    if (indexArg.isPresent()) {
+        try {
+            if ((index = stringToNumber<std::size_t>(indexArg.firstValue())) == noIndex) {
+                throw ConversionException();
+            }
+        } catch (const ConversionException &) {
+            cerr << Phrases::Error << "Specified index is no valid unsigned integer." << Phrases::EndFlush;
+            exit(-1);
+        }
+    }
+
+    // read values/attachments
+    auto inputFileInfo = MediaFileInfo();
+    auto values = std::vector<std::pair<const TagValue *, std::string>>();
+    auto attachments = std::vector<std::pair<const AbstractAttachment *, std::string>>();
+    auto diag = Diagnostics();
     for (const char *file : inputFilesArg.values()) {
-        Diagnostics diag;
-        AbortableProgressFeedback progress; // FIXME: actually use the progress object
+        auto progress = AbortableProgressFeedback(); // FIXME: actually use the progress object
         try {
             // setup media file info
-            inputFileInfo.setPath(std::string(file));
+            inputFileInfo.setPath(std::string_view(file));
             inputFileInfo.open(true);
 
             // extract either tag field or attachment
@@ -962,7 +978,6 @@ void extractField(
                 inputFileInfo.parseContainerFormat(diag, progress);
                 inputFileInfo.parseTags(diag, progress);
                 auto tags = inputFileInfo.tags();
-                vector<pair<const TagValue *, string>> values;
                 // iterate through all tags
                 for (const Tag *tag : tags) {
                     const TagType tagType = tag->type();
@@ -983,36 +998,6 @@ void extractField(
                         }
                     }
                 }
-                if (values.empty()) {
-                    cerr << " - " << Phrases::Error << "None of the specified files has a (supported) " << fieldArg.values().front() << " field."
-                         << Phrases::End;
-                } else if (outputFileArg.isPresent()) {
-                    string outputFilePathWithoutExtension, outputFileExtension;
-                    if (values.size() > 1) {
-                        outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
-                        outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
-                    }
-                    for (const auto &value : values) {
-                        NativeFileStream outputFileStream;
-                        outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
-                        auto path = values.size() > 1 ? joinStrings({ outputFilePathWithoutExtension, "-", value.second, outputFileExtension })
-                                                      : outputFileArg.values().front();
-                        try {
-                            outputFileStream.open(path, ios_base::out | ios_base::binary);
-                            outputFileStream.write(value.first->dataPointer(), static_cast<std::streamsize>(value.first->dataSize()));
-                            outputFileStream.flush();
-                            cout << " - Value has been saved to \"" << path << "\"." << endl;
-                        } catch (const std::ios_base::failure &e) {
-                            cerr << " - " << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what()
-                                 << Phrases::End;
-                        }
-                    }
-                } else {
-                    // write data to stdout if no output file has been specified
-                    for (const auto &value : values) {
-                        cout.write(value.first->dataPointer(), static_cast<std::streamsize>(value.first->dataSize()));
-                    }
-                }
             } else {
                 // extract attachment
                 auto &logStream = (outputFileArg.isPresent() ? cout : cerr);
@@ -1026,52 +1011,100 @@ void extractField(
 
                 inputFileInfo.parseContainerFormat(diag, progress);
                 inputFileInfo.parseAttachments(diag, progress);
-                vector<pair<const AbstractAttachment *, string>> attachments;
+
                 // iterate through all attachments
                 for (const AbstractAttachment *attachment : inputFileInfo.attachments()) {
                     if ((attachmentInfo.hasId && attachment->id() == attachmentInfo.id) || (attachment->name() == attachmentInfo.name)) {
                         attachments.emplace_back(attachment, joinStrings({ attachment->name(), numberToString(attachments.size()) }, "-", true));
                     }
                 }
-                if (attachments.empty()) {
-                    cerr << " - " << Phrases::Error << "None of the specified files has a (supported) attachment with the specified ID/name."
-                         << Phrases::End;
-                } else if (outputFileArg.isPresent()) {
-                    string outputFilePathWithoutExtension, outputFileExtension;
-                    if (attachments.size() > 1) {
-                        outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
-                        outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
-                    }
-                    for (const auto &attachment : attachments) {
-                        NativeFileStream outputFileStream;
-                        outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
-                        auto path = attachments.size() > 1
-                            ? joinStrings({ outputFilePathWithoutExtension, "-", attachment.second, outputFileExtension })
-                            : outputFileArg.values().front();
-                        try {
-                            outputFileStream.open(path, ios_base::out | ios_base::binary);
-                            attachment.first->data()->copyTo(outputFileStream);
-                            outputFileStream.flush();
-                            cout << " - Value has been saved to \"" << path << "\"." << endl;
-                        } catch (const std::ios_base::failure &e) {
-                            cerr << " - " << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what()
-                                 << Phrases::EndFlush;
-                        }
-                    }
-                } else {
-                    for (const auto &attachment : attachments) {
-                        attachment.first->data()->copyTo(cout);
-                    }
-                }
             }
-
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::End;
         } catch (const std::ios_base::failure &e) {
             cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\": " << e.what() << Phrases::End;
         }
-        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
     }
+
+    // write values/attachments
+    if (!fieldDenotations.empty()) {
+        if (values.empty()) {
+            cerr << Phrases::Error << "None of the specified files has a (supported) " << fieldArg.values().front() << " field." << Phrases::End;
+        } else if (index != noIndex && index >= values.size()) {
+            cerr << Phrases::Error << "The specified index is out of range as the specified files/fields have only " << values.size() << " values."
+                 << Phrases::End;
+        } else if (outputFileArg.isPresent()) {
+            if (index != noIndex) {
+                if (index) {
+                    values[index].swap(values.front());
+                }
+                values.resize(1);
+            }
+            auto outputFilePathWithoutExtension = std::string(), outputFileExtension = std::string();
+            if (values.size() > 1) {
+                outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
+                outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
+            }
+            for (const auto &value : values) {
+                auto outputFileStream = NativeFileStream();
+                outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
+                auto path = values.size() > 1 ? joinStrings({ outputFilePathWithoutExtension, "-", value.second, outputFileExtension })
+                                              : outputFileArg.values().front();
+                try {
+                    outputFileStream.open(path, ios_base::out | ios_base::binary);
+                    outputFileStream.write(value.first->dataPointer(), static_cast<std::streamsize>(value.first->dataSize()));
+                    outputFileStream.flush();
+                    cout << "Value has been saved to \"" << path << "\"." << endl;
+                } catch (const std::ios_base::failure &e) {
+                    cerr << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what() << Phrases::End;
+                }
+            }
+        } else {
+            // write data to stdout if no output file has been specified
+            for (const auto &value : values) {
+                cout.write(value.first->dataPointer(), static_cast<std::streamsize>(value.first->dataSize()));
+            }
+        }
+    } else {
+        if (attachments.empty()) {
+            cerr << Phrases::Error << "None of the specified files has a (supported) attachment with the specified ID/name." << Phrases::End;
+        } else if (index != noIndex && index >= values.size()) {
+            cerr << Phrases::Error << "The specified index is out of range as the specified files have only " << attachments.size() << " attachments."
+                 << Phrases::End;
+        } else if (outputFileArg.isPresent()) {
+            if (index != noIndex) {
+                if (index) {
+                    attachments[index].swap(attachments.front());
+                }
+                attachments.resize(1);
+            }
+            auto outputFilePathWithoutExtension = std::string(), outputFileExtension = std::string();
+            if (attachments.size() > 1) {
+                outputFilePathWithoutExtension = BasicFileInfo::pathWithoutExtension(outputFileArg.values().front());
+                outputFileExtension = BasicFileInfo::extension(outputFileArg.values().front());
+            }
+            for (const auto &attachment : attachments) {
+                auto outputFileStream = NativeFileStream();
+                outputFileStream.exceptions(ios_base::failbit | ios_base::badbit);
+                auto path = attachments.size() > 1 ? joinStrings({ outputFilePathWithoutExtension, "-", attachment.second, outputFileExtension })
+                                                   : outputFileArg.values().front();
+                try {
+                    outputFileStream.open(path, ios_base::out | ios_base::binary);
+                    attachment.first->data()->copyTo(outputFileStream);
+                    outputFileStream.flush();
+                    cout << "Value has been saved to \"" << path << "\"." << endl;
+                } catch (const std::ios_base::failure &e) {
+                    cerr << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what() << Phrases::EndFlush;
+                }
+            }
+        } else {
+            for (const auto &attachment : attachments) {
+                attachment.first->data()->copyTo(cout);
+            }
+        }
+    }
+
+    printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
 }
 
 void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Argument &prettyArg)

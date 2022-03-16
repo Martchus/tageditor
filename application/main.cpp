@@ -186,13 +186,14 @@ int main(int argc, char *argv[])
     ConfigValueArgument fieldArg("field", 'n', "specifies the field to be extracted", { "field name" });
     fieldArg.setImplicit(true);
     ConfigValueArgument attachmentArg("attachment", 'a', "specifies the attachment to be extracted", { "id=..." });
+    ConfigValueArgument indexArg("index", 'i', "specifies the value/attachment to extract by its index, e.g. 0 for the first value", { "0/1/2/..." });
     OperationArgument extractFieldArg("extract", 'e',
-        "saves the value of the specified field (eg. cover or other binary field) or attachment to the specified file or writes it to stdout if no "
+        "saves the value of the specified field (e.g. cover or other binary field) or attachment to the specified file or writes it to stdout if no "
         "output file has been specified");
-    extractFieldArg.setSubArguments({ &fieldArg, &attachmentArg, &fileArg, &outputFileArg, &verboseArg });
+    extractFieldArg.setSubArguments({ &fieldArg, &attachmentArg, &indexArg, &fileArg, &outputFileArg, &verboseArg });
     extractFieldArg.setExample(PROJECT_NAME " extract cover --output-file the-cover.jpg --file some-file.opus");
-    extractFieldArg.setCallback(std::bind(
-        Cli::extractField, std::cref(fieldArg), std::cref(attachmentArg), std::cref(fileArg), std::cref(outputFileArg), std::cref(verboseArg)));
+    extractFieldArg.setCallback(std::bind(Cli::extractField, std::cref(fieldArg), std::cref(attachmentArg), std::cref(fileArg),
+        std::cref(outputFileArg), std::cref(indexArg), std::cref(verboseArg)));
     // export to JSON
     ConfigValueArgument prettyArg("pretty", '\0', "prints with indentation and spacing");
     OperationArgument exportArg("export", 'j', "exports the tag information for the specified files to JSON");
