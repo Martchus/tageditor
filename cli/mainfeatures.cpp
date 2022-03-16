@@ -692,7 +692,12 @@ void setTagInfo(const SetTagInfoArgs &args)
                             }
                             // add text value
                             if (relevantDenotedValue->type != DenotationType::File) {
-                                convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
+                                try {
+                                    convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
+                                } catch (const ConversionException &e) {
+                                    diag.emplace_back(DiagLevel::Critical,
+                                        argsToString("Unable to parse value specified for field \"", denotedScope.field.name(), "\": ", e.what()), context);
+                                }
                                 continue;
                             }
                             // add value from file
@@ -741,7 +746,9 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     convertedValues.emplace_back(std::move(value));
                                 }
                             } catch (const TagParser::Failure &) {
-                                diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse specified file \"", path, "\"."), context);
+                                diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse specified file \"", path, "\": unable to determine MIME type"), context);
+                            } catch (const ConversionException &e) {
+                                diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse specified file \"", path, "\": ", e.what()), context);
                             } catch (const std::ios_base::failure &e) {
                                 diag.emplace_back(DiagLevel::Critical,
                                     argsToString("An IO error occurred when parsing the specified file \"", path, "\": ", e.what()), context);
