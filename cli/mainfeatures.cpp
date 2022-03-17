@@ -35,6 +35,7 @@
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/ansiescapecodes.h>
+#include <c++utilities/io/path.h>
 #include <c++utilities/io/nativefilestream.h>
 #include <c++utilities/misc/parseerror.h>
 
@@ -696,7 +697,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     convertedValues.emplace_back(relevantDenotedValue->value, TagTextEncoding::Utf8, usedEncoding);
                                 } catch (const ConversionException &e) {
                                     diag.emplace_back(DiagLevel::Critical,
-                                        argsToString("Unable to parse value specified for field \"", denotedScope.field.name(), "\": ", e.what()), context);
+                                        argsToString("Unable to parse value specified for field \"", denotedScope.field.name(), "\": ", e.what()),
+                                        context);
                                 }
                                 continue;
                             }
@@ -746,9 +748,11 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     convertedValues.emplace_back(std::move(value));
                                 }
                             } catch (const TagParser::Failure &) {
-                                diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse specified file \"", path, "\": unable to determine MIME type"), context);
+                                diag.emplace_back(DiagLevel::Critical,
+                                    argsToString("Unable to parse specified file \"", path, "\": unable to determine MIME type"), context);
                             } catch (const ConversionException &e) {
-                                diag.emplace_back(DiagLevel::Critical, argsToString("Unable to parse specified file \"", path, "\": ", e.what()), context);
+                                diag.emplace_back(
+                                    DiagLevel::Critical, argsToString("Unable to parse specified file \"", path, "\": ", e.what()), context);
                             } catch (const std::ios_base::failure &e) {
                                 diag.emplace_back(DiagLevel::Critical,
                                     argsToString("An IO error occurred when parsing the specified file \"", path, "\": ", e.what()), context);
@@ -881,7 +885,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             auto modifiedFilePath = std::filesystem::path();
             fileInfo.setSaveFilePath(currentOutputFile != noMoreOutputFiles ? string(*currentOutputFile) : string());
             if (args.preserveModificationTimeArg.isPresent()) {
-                modifiedFilePath = std::filesystem::u8path(fileInfo.saveFilePath().empty() ? fileInfo.path() : fileInfo.saveFilePath());
+                modifiedFilePath = makeNativePath(fileInfo.saveFilePath().empty() ? fileInfo.path() : fileInfo.saveFilePath());
                 modificationDate = std::filesystem::last_write_time(modifiedFilePath, modificationDateError);
             }
             try {
