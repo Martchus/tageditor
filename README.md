@@ -435,5 +435,7 @@ The dark mode introduced with Windows 10 is not supported but this can be
 Per monitor DPI awareness (v2) is not working out of the box but experimental support
 [can be enabled](https://github.com/Martchus/syncthingtray#enable-experimental-support-for-windows-per-monitor-dpi-awareness-v2).
 
-## License
+## Copyright notice and license
+Copyright © 2015-2022 Marius Kittler
+
 All code is licensed under [GPL-2-or-later](LICENSE).
