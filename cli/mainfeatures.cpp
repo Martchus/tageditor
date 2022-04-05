@@ -35,8 +35,8 @@
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/ansiescapecodes.h>
-#include <c++utilities/io/path.h>
 #include <c++utilities/io/nativefilestream.h>
+#include <c++utilities/io/path.h>
 #include <c++utilities/misc/parseerror.h>
 
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
