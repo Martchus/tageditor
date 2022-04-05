@@ -5,6 +5,7 @@
 
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
+#include <tagparser/caseinsensitivecomparer.h>
 
 #include <c++utilities/conversion/stringconversion.h>
 
@@ -128,7 +129,11 @@ TagInfo::TagInfo(const Tag &tag, RAPIDJSON_NAMESPACE::Document::AllocatorType &a
         for (const auto *tagValue : tagValues) {
             valueObjects.emplace_back(*tagValue, allocator);
         }
-        fields.insert(make_pair(FieldMapping::fieldDenotation(field), move(valueObjects)));
+        auto key = std::string(FieldMapping::fieldDenotation(field));
+        for (auto &c : key) {
+            c = static_cast<std::string::value_type>(CaseInsensitiveCharComparer::toLower(static_cast<unsigned char>(c)));
+        }
+        fields.insert(std::make_pair(std::move(key), std::move(valueObjects)));
     }
 }
 

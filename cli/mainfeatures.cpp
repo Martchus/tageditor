@@ -73,7 +73,19 @@ namespace Cli {
 #define FIELD_NAMES                                                                                                                                  \
     "title album artist genre recorddate comment bpm bps lyricist track disk part totalparts encoder\n"                                              \
     "      releasedate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"                                            \
-    "      recordlabel cover composer rating description vendor albumartist"
+    "      recordlabel cover composer rating description vendor albumartist\n"                                                                       \
+    "      subtitle leadperformer arranger conductor director assistantdirector\n"                                                                   \
+    "      subtitle leadperformer arranger conductor director assistantdirector\n"                                                                   \
+    "      directorofphotography soundengineer artdirector productiondesigner choregrapher\n"                                                        \
+    "      costumedesigner actor character writtenby screenplayby editedby producer\n"                                                               \
+    "      coproducer exectiveproducer distributedby masteredby encodedby mixedby\n"                                                                 \
+    "      remixedby productionstudio thanksto publisher mood originalmediatype\n"                                                                   \
+    "      contenttype subject keywords summary synopsis initialkey period lawrating\n"                                                              \
+    "      encodingdate taggingdate originalreleasedate digitalizationdate writingdate\n"                                                            \
+    "      purchasingdate recordinglocation compositionlocation composernationality\n"                                                               \
+    "      playcounter measure tuning isrc mcdi isbn barcode catalognumber labelcode\n"                                                              \
+    "      lccn imdb tmdb tvdb purchaseitem purchaseinfo purchaseowner purchaseprice\n"                                                              \
+    "      purchasecurrency copyright productioncopyright licnese termsofuse"
 
 #define TRACK_ATTRIBUTE_NAMES "name tracknumber enabled=yes enabled=no forced=yes forced=no default=yes default=no"
 

@@ -4901,7 +4901,347 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../application/knownfieldmodel.cpp" line="77"/>
+        <source>Subtitle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="79"/>
+        <source>Lead performer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="81"/>
+        <source>Arranger</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="83"/>
+        <source>Conductor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="85"/>
+        <source>Director</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="87"/>
+        <source>Assistant directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="89"/>
+        <source>Director of photography</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="91"/>
+        <source>Sounc engineer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="93"/>
+        <source>Art director</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="95"/>
+        <source>Production designer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="97"/>
+        <source>Choregrapher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="99"/>
+        <source>Costume designer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="101"/>
+        <source>Actor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="103"/>
+        <source>Character</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="105"/>
+        <source>Written by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="107"/>
+        <source>Screenplay by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="109"/>
+        <source>Edited by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="111"/>
+        <source>Producer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="113"/>
+        <source>Coproducer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="115"/>
+        <source>Executive producer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="117"/>
+        <source>Distributed by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="119"/>
+        <source>Mastered by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="121"/>
+        <source>Encoded by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="123"/>
+        <source>Mixed by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="125"/>
+        <source>Remixed by</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="127"/>
+        <source>Production studio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="129"/>
+        <source>Thanks to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="131"/>
+        <source>Publisher</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="133"/>
+        <source>Mood</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="135"/>
+        <source>Original media-type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="137"/>
+        <source>Content-type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="139"/>
+        <source>Subject</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="141"/>
+        <source>Keywords</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="143"/>
+        <source>Summary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../application/knownfieldmodel.cpp" line="145"/>
+        <source>Synopsis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="147"/>
+        <source>Initial key</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="149"/>
+        <source>Period</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="151"/>
+        <source>Law rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="153"/>
+        <source>Encoding date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="155"/>
+        <source>Tagging date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="157"/>
+        <source>Digitalization date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="159"/>
+        <source>Writing date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="161"/>
+        <source>Purchasing date</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="163"/>
+        <source>Recording location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="165"/>
+        <source>Composition location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="167"/>
+        <source>Composer nationality</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="169"/>
+        <source>Play counter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="171"/>
+        <source>Measure</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="173"/>
+        <source>Tuning</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="175"/>
+        <source>ISRC</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="177"/>
+        <source>MCDI</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="179"/>
+        <source>ISBN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="181"/>
+        <source>Barcode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="183"/>
+        <source>Catalog number</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="185"/>
+        <source>Label code</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="187"/>
+        <source>LCCN</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="189"/>
+        <source>IMDB-ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="191"/>
+        <source>TMDB-ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="193"/>
+        <source>TVDB-ID</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="195"/>
+        <source>Purchase item</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="197"/>
+        <source>Purchase info</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="199"/>
+        <source>Purchase owner</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="201"/>
+        <source>Purchase price</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="203"/>
+        <source>Purchase currency</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="205"/>
+        <source>Copyright</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="207"/>
+        <source>Production copyright</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="209"/>
+        <source>License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="211"/>
+        <source>Terms of use</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="348"/>
         <source>Field</source>
         <translation type="unfinished"></translation>
     </message>
