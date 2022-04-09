@@ -74,7 +74,7 @@ const char *KnownFieldModel::fieldName(KnownField field)
     case KnownField::ReleaseDate:
         return QT_TR_NOOP("Release date");
     case KnownField::Subtitle:
-        return QT_TR_NOOP("Subtitle");
+        return QT_TR_NOOP("Sub Title");
     case KnownField::LeadPerformer:
         return QT_TR_NOOP("Lead performer");
     case KnownField::Arranger:
