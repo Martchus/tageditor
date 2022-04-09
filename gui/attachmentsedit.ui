@@ -2,21 +2,10 @@
 <ui version="4.0">
  <class>QtGui::AttachmentsEdit</class>
  <widget class="QWidget" name="QtGui::AttachmentsEdit">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>682</width>
-    <height>308</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QTreeView" name="treeView"/>
-   </item>
    <item>
     <widget class="QWidget" name="buttonsWidget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
@@ -27,8 +16,7 @@
         </property>
         <property name="icon">
          <iconset theme="list-add">
-          <normaloff/>
-         </iconset>
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -62,8 +50,7 @@
         </property>
         <property name="icon">
          <iconset theme="document-revert">
-          <normaloff/>
-         </iconset>
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
@@ -74,13 +61,15 @@
         </property>
         <property name="icon">
          <iconset theme="edit-clear">
-          <normaloff/>
-         </iconset>
+          <normaloff>.</normaloff>.</iconset>
         </property>
        </widget>
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <widget class="QTreeView" name="treeView"/>
    </item>
   </layout>
  </widget>
