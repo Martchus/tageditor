@@ -557,27 +557,27 @@
 <context>
     <name>QtGui::AttachmentsEdit</name>
     <message>
-        <location filename="../gui/attachmentsedit.ui" line="14"/>
+        <location filename="../gui/attachmentsedit.ui" line="6"/>
         <source>Form</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsedit.ui" line="26"/>
+        <location filename="../gui/attachmentsedit.ui" line="15"/>
         <source>Add file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsedit.ui" line="41"/>
+        <location filename="../gui/attachmentsedit.ui" line="29"/>
         <source>Extract selected file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsedit.ui" line="61"/>
+        <location filename="../gui/attachmentsedit.ui" line="49"/>
         <source>Restore attachments</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsedit.ui" line="73"/>
+        <location filename="../gui/attachmentsedit.ui" line="60"/>
         <source>Clear attachments</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3166,11 +3166,6 @@ currently shown tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="877"/>
-        <source>The file is beeing parsed ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../gui/tageditorwidget.cpp" line="891"/>
         <source>Unable to reload the file because the current process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
@@ -3318,6 +3313,11 @@ currently shown tag.</source>
             <numerusform></numerusform>
             <numerusform></numerusform>
         </translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="877"/>
+        <source>The file is being parsed ...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="913"/>
@@ -4901,11 +4901,6 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/knownfieldmodel.cpp" line="77"/>
-        <source>Subtitle</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../application/knownfieldmodel.cpp" line="79"/>
         <source>Lead performer</source>
         <translation type="unfinished"></translation>
@@ -4923,11 +4918,6 @@ Remarks
     <message>
         <location filename="../application/knownfieldmodel.cpp" line="85"/>
         <source>Director</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../application/knownfieldmodel.cpp" line="87"/>
-        <source>Assistant directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4991,8 +4981,18 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../application/knownfieldmodel.cpp" line="77"/>
+        <source>Sub Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="87"/>
+        <source>Assistant director</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../application/knownfieldmodel.cpp" line="113"/>
-        <source>Coproducer</source>
+        <source>Co-Producer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
