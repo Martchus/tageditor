@@ -84,7 +84,7 @@ const char *KnownFieldModel::fieldName(KnownField field)
     case KnownField::Director:
         return QT_TR_NOOP("Director");
     case KnownField::AssistantDirector:
-        return QT_TR_NOOP("Assistant directory");
+        return QT_TR_NOOP("Assistant director");
     case KnownField::DirectorOfPhotography:
         return QT_TR_NOOP("Director of photography");
     case KnownField::SoundEngineer:
@@ -110,7 +110,7 @@ const char *KnownFieldModel::fieldName(KnownField field)
     case KnownField::Producer:
         return QT_TR_NOOP("Producer");
     case KnownField::Coproducer:
-        return QT_TR_NOOP("Coproducer");
+        return QT_TR_NOOP("Co-Producer");
     case KnownField::ExecutiveProducer:
         return QT_TR_NOOP("Executive producer");
     case KnownField::DistributedBy:

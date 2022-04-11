@@ -874,7 +874,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     // perform the operation concurrently
     m_ongoingFileOperation = QtConcurrent::run(startThread);
     // inform user
-    static const auto statusMsg(tr("The file is beeing parsed ..."));
+    static const auto statusMsg(tr("The file is being parsed ..."));
     m_ui->parsingNotificationWidget->setNotificationType(NotificationType::Progress);
     m_ui->parsingNotificationWidget->setText(statusMsg);
     m_ui->parsingNotificationWidget->setVisible(true); // ensure widget is visible!
