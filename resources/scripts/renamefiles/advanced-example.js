@@ -68,6 +68,10 @@ function validDirectoryName(name) {
 function tagsStripped(name) {
     return stripTags ? name.replace(/^(\[[^\]]*\]\s*)+/g, "").replace(/(\s*\[[^\]]*\])+$/g, "") : name
 }
+// strips trailing brackets
+function trailingBracketsStripped(name) {
+    return name.replace(/ \(.*\)/gi, '');
+}
 
 //
 // actual script
@@ -133,13 +137,13 @@ var fields = []
 // get the artist (preferably album artist), remove invalid characters and add it to fields array
 var artist = validFileName(tag.albumartist || tag.artist)
 if (includeArtist && !isPartOfCollection(tag) && notEmpty(artist)) {
-    fields.push(artist)
+    fields.push(trailingBracketsStripped(artist))
 }
 
 // get the album and remove invalid characters and add it to fields array
 var album = validFileName(tag.album)
 if (includeAlbum && notEmpty(tag.album)) {
-    fields.push(album)
+    fields.push(trailingBracketsStripped(album))
 }
 
 // get the track/disk position and add it to fields array
