@@ -690,6 +690,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         // skip values which scope does not match the current tag
                         if (denotedScope.isTrack() || !(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType & tagType))
                             || !(!targetSupported
+                                || (tagType == TagType::OggVorbisComment && denotedScope.tagTarget.isEmpty())
                                 || (denotedScope.exactTargetMatching ? denotedScope.tagTarget == tagTarget
                                                                      : denotedScope.tagTarget.matches(tagTarget)))) {
                             continue;
