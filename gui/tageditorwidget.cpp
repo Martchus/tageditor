@@ -590,7 +590,8 @@ void TagEditorWidget::updateTagManagementMenu()
         // add "Remove tag" and "Change target" actions
         for (Tag *tag : m_tags) {
             // don't propose removal for Vorbis comments from Voribs or FLAC streams (removing from Opus streams should be ok)
-            if (tag->type() == TagType::OggVorbisComment) {
+            const auto tagType = tag->type();
+            if (tagType == TagType::OggVorbisComment) {
                 switch (static_cast<OggVorbisComment *>(tag)->oggParams().streamFormat) {
                 case GeneralMediaFormat::Vorbis:
                 case GeneralMediaFormat::Flac:
@@ -601,7 +602,7 @@ void TagEditorWidget::updateTagManagementMenu()
 
             connect(m_removeTagMenu->addAction(QString::fromUtf8(tag->toString().c_str())), &QAction::triggered,
                 std::bind(&TagEditorWidget::removeTag, this, tag));
-            if (tag->supportsTarget()) {
+            if (tagType != TagType::OggVorbisComment && tag->supportsTarget()) {
                 connect(m_changeTargetMenu->addAction(QString::fromUtf8(tag->toString().c_str())), &QAction::triggered,
                     std::bind(&TagEditorWidget::changeTarget, this, tag));
             }
