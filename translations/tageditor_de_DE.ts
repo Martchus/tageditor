@@ -2954,7 +2954,7 @@ tagging multiple files of the same album.</source>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="132"/>
-        <location filename="../gui/tageditorwidget.cpp" line="625"/>
+        <location filename="../gui/tageditorwidget.cpp" line="626"/>
         <source>Keep previous values</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3004,7 +3004,7 @@ currently shown tag.</source>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="295"/>
-        <location filename="../gui/tageditorwidget.cpp" line="1330"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1331"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3130,159 +3130,159 @@ currently shown tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="655"/>
+        <location filename="../gui/tageditorwidget.cpp" line="656"/>
         <source>Inserted title from filename.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="729"/>
-        <location filename="../gui/tageditorwidget.cpp" line="761"/>
+        <location filename="../gui/tageditorwidget.cpp" line="730"/>
+        <location filename="../gui/tageditorwidget.cpp" line="762"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="743"/>
+        <location filename="../gui/tageditorwidget.cpp" line="744"/>
         <source>Expand all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="745"/>
+        <location filename="../gui/tageditorwidget.cpp" line="746"/>
         <source>Collapse all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="764"/>
+        <location filename="../gui/tageditorwidget.cpp" line="765"/>
         <source>Save ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="767"/>
+        <location filename="../gui/tageditorwidget.cpp" line="768"/>
         <source>Open in browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="814"/>
+        <location filename="../gui/tageditorwidget.cpp" line="815"/>
         <source>Unable to load the selected file &quot;%1&quot; because the current process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="891"/>
+        <location filename="../gui/tageditorwidget.cpp" line="892"/>
         <source>Unable to reload the file because the current process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="895"/>
+        <location filename="../gui/tageditorwidget.cpp" line="896"/>
         <source>Currently is not file opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="917"/>
+        <location filename="../gui/tageditorwidget.cpp" line="918"/>
         <source>Opening file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="930"/>
+        <location filename="../gui/tageditorwidget.cpp" line="931"/>
         <source>There is no (supported) tag assigned.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="946"/>
+        <location filename="../gui/tageditorwidget.cpp" line="947"/>
         <source>File could be parsed correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="950"/>
+        <location filename="../gui/tageditorwidget.cpp" line="951"/>
         <source>File couldn&apos;t be parsed correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="959"/>
+        <location filename="../gui/tageditorwidget.cpp" line="960"/>
         <source>There are warnings.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="963"/>
+        <location filename="../gui/tageditorwidget.cpp" line="964"/>
         <source>No write access; the file has been opened in read-only mode.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="966"/>
+        <location filename="../gui/tageditorwidget.cpp" line="967"/>
         <source>File format is not supported (an ID3 tag can be added anyways).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="970"/>
+        <location filename="../gui/tageditorwidget.cpp" line="971"/>
         <source>The file is composed of multiple segments. Dealing with such files has not been tested yet and might be broken.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1009"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1010"/>
         <source>The file %1 has been opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1029"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1030"/>
         <source>Unable to apply the entered tags to the file because the current process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1039"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1040"/>
         <source>No file has been opened, so tags can not be saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1056"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1057"/>
         <source>Saving tags ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1071"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1072"/>
         <source>Unable to delete all tags from the file because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1081"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1082"/>
         <source>No file has been opened, so no tags can be deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1085"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1086"/>
         <source>The selected file has no tag (at least no supported), so there is nothing to delete.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1090"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1091"/>
         <source>Do you really want to delete all tags from the file?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1099"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1100"/>
         <source>Don&apos;t show this message again</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1109"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1110"/>
         <source>Deletion aborted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1120"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1121"/>
         <source>Deleting all tags ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1137"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1138"/>
         <source>Unable to start saving process because there an other process hasn&apos;t finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="866"/>
-        <location filename="../gui/tageditorwidget.cpp" line="1201"/>
+        <location filename="../gui/tageditorwidget.cpp" line="867"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1202"/>
         <source>unknown error</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1260"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1261"/>
         <source>Saving has been canceled and there is/are %1 warning(s) </source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -3290,7 +3290,7 @@ currently shown tag.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1263"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1264"/>
         <source>Saving has been canceled and there is/are %1 warning(s).</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -3298,7 +3298,7 @@ currently shown tag.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1271"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1272"/>
         <source>The tags have been saved, but there is/are %1 warning(s) </source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -3306,8 +3306,8 @@ currently shown tag.</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1261"/>
-        <location filename="../gui/tageditorwidget.cpp" line="1272"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1262"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1273"/>
         <source>and %1 error(s).</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -3315,32 +3315,32 @@ currently shown tag.</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="877"/>
+        <location filename="../gui/tageditorwidget.cpp" line="878"/>
         <source>The file is being parsed ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="913"/>
+        <location filename="../gui/tageditorwidget.cpp" line="914"/>
         <source>The file could not be opened because an IO error occurred: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="919"/>
+        <location filename="../gui/tageditorwidget.cpp" line="920"/>
         <source>Tried to open file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="955"/>
+        <location filename="../gui/tageditorwidget.cpp" line="956"/>
         <source>Errors occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1265"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1266"/>
         <source>Saving tags has been canceled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1274"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1275"/>
         <source>The tags have been saved, but there is/are %1 warning(s).</source>
         <translation type="unfinished">
             <numerusform></numerusform>
@@ -3348,99 +3348,99 @@ currently shown tag.</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1279"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1280"/>
         <source>The tags have been saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1298"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1299"/>
         <source>The tags could not be saved. Checkout the info box for details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1304"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1305"/>
         <source>Saving file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1306"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1307"/>
         <source>Tried to save file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1325"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1326"/>
         <source>Automatic tag management</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1326"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1327"/>
         <source>The container format of the selected file is not supported. The file can be treated as MP3 file (an ID3 tag according to the settings will be created). This might break the file. Do you want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1329"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1330"/>
         <source>Treat file as MP3 file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1341"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1342"/>
         <source>The currently opened file changed on the disk.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1370"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1371"/>
         <source>Unable to save file information because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1374"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1375"/>
         <source>No file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1379"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1380"/>
         <source>No file information available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1388"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1389"/>
         <source>Unable to open file &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1396"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1397"/>
         <source>Unable to write to file &quot;%1&quot;.
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1411"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1412"/>
         <source>Save file information - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1413"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1414"/>
         <source>Unable to open file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="384"/>
-        <location filename="../gui/tageditorwidget.cpp" line="619"/>
+        <location filename="../gui/tageditorwidget.cpp" line="620"/>
         <source>Clear previous values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="622"/>
+        <location filename="../gui/tageditorwidget.cpp" line="623"/>
         <source>Keep previous values in same dir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1513"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1514"/>
         <source>A tag (with the selected target) already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1509"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1510"/>
         <source>The tag can not be created.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3450,32 +3450,32 @@ currently shown tag.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1299"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1300"/>
         <source>The tags could not be saved because an IO error occurred: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1536"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1537"/>
         <source>Unable to remove the tag because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1540"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1541"/>
         <source>Unable to remove the tag because no file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1600"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1601"/>
         <source>Unable to change the target because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1604"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1605"/>
         <source>Unable to change the target because no file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1608"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1609"/>
         <source>Can not change the target of the selected tag because the tag does not support targets.</source>
         <translation type="unfinished"></translation>
     </message>
