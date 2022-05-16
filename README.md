@@ -346,6 +346,9 @@ core concurrent gui network widgets declarative/script webenginewidgets/webkitwi
 Note that old Qt versions like 5.6 lack support for modern JavaScript features. To use the JavaScript-based
 renaming tool it is recommend to use at least Qt 5.12.
 
+To specify the major Qt version to use, set `QT_PACKAGE_PREFIX` (e.g. add `-DQT_PACKAGE_PREFIX:STRING=Qt6`
+to the CMake arguments).
+
 #### Select Qt module for web view and JavaScript
 * Add `-DWEBVIEW_PROVIDER:STRING=webkit/webengine/none` to the CMake arguments to use either Qt WebKit (works with
   'revived' version as well), Qt WebEngine or no web view at all. If no web view is used, the file information can only
