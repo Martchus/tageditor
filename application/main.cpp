@@ -231,5 +231,5 @@ int main(int argc, char *argv[])
         // invoke specified CLI operation via callbacks
         parser.invokeCallbacks();
     }
-    return 0;
+    return Cli::exitCode;
 }

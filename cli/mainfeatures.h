@@ -3,6 +3,9 @@
 
 #include <c++utilities/application/argumentparser.h>
 
+#define EXIT_IO_FAILURE (EXIT_FAILURE + 1)
+#define EXIT_PARSING_FAILURE (EXIT_FAILURE + 2)
+
 namespace CppUtilities {
 class Argument;
 }
@@ -49,6 +52,7 @@ struct SetTagInfoArgs {
 
 extern const char *const fieldNames;
 extern const char *const fieldNamesForSet;
+extern int exitCode;
 void applyGeneralConfig(const CppUtilities::Argument &timeSapnFormatArg);
 void printFieldNames(const CppUtilities::ArgumentOccurrence &occurrence);
 void displayFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &filesArg, const CppUtilities::Argument &verboseArg,

@@ -51,6 +51,7 @@
 #endif
 
 #include <algorithm>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <iomanip>
@@ -99,6 +100,7 @@ namespace Cli {
 
 const char *const fieldNames = FIELD_NAMES;
 const char *const fieldNamesForSet = TAG_MODIFIER " " FIELD_NAMES " " TRACK_MODIFIER " " TRACK_ATTRIBUTE_NAMES " " TARGET_MODIFIER;
+int exitCode = EXIT_SUCCESS;
 
 void printFieldNames(const ArgumentOccurrence &)
 {
@@ -146,19 +148,23 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
             cerr << Phrases::Error << "An IO error occurred when writing the file \"" << outputFileArg.values().front()
                  << "\": " << std::string_view(errorMessage.data(), static_cast<std::string_view::size_type>(errorMessage.size()))
                  << Phrases::EndFlush;
+            exitCode = EXIT_IO_FAILURE;
         }
     } catch (const TagParser::Failure &) {
         cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << inputFileArg.values().front() << "\"."
              << Phrases::EndFlush;
+        exitCode = EXIT_PARSING_FAILURE;
     } catch (const std::ios_base::failure &e) {
         cerr << Phrases::Error << "An IO error occurred when reading the file \"" << inputFileArg.values().front() << "\": " << e.what()
              << Phrases::EndFlush;
+        exitCode = EXIT_IO_FAILURE;
     }
 #else
     CPP_UTILITIES_UNUSED(inputFileArg);
     CPP_UTILITIES_UNUSED(outputFileArg);
     CPP_UTILITIES_UNUSED(validateArg);
     cerr << Phrases::Error << "Generating HTML info is only available if built with Qt support." << Phrases::EndFlush;
+    exitCode = EXIT_FAILURE;
 #endif
 }
 
@@ -169,7 +175,7 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
     // check whether files have been specified
     if (!filesArg.isPresent() || filesArg.values().empty()) {
         cerr << Phrases::Error << "No files have been specified." << Phrases::End;
-        exit(-1);
+        std::exit(EXIT_FAILURE);
     }
 
     MediaFileInfo fileInfo;
@@ -337,8 +343,10 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
 
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            exitCode = EXIT_PARSING_FAILURE;
         } catch (const std::ios_base::failure &) {
             cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\"" << Phrases::EndFlush;
+            exitCode = EXIT_IO_FAILURE;
         }
 
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
@@ -352,8 +360,8 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
 
     // check whether files have been specified
     if (!filesArg.isPresent() || filesArg.values().empty()) {
-        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
-        exit(-1);
+        std::cerr << Phrases::Error << "No files have been specified." << Phrases::End;
+        std::exit(EXIT_FAILURE);
     }
 
     // parse specified fields
@@ -400,8 +408,10 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
             }
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            exitCode = EXIT_PARSING_FAILURE;
         } catch (const std::ios_base::failure &) {
             cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            exitCode = EXIT_IO_FAILURE;
         }
         printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
         cout << endl;
@@ -466,12 +476,12 @@ void setTagInfo(const SetTagInfoArgs &args)
 
     // check whether files have been specified
     if (!args.filesArg.isPresent() || args.filesArg.values().empty()) {
-        cerr << Phrases::Error << "No files have been specified." << Phrases::EndFlush;
-        exit(-1);
+        std::cerr << Phrases::Error << "No files have been specified." << Phrases::EndFlush;
+        std::exit(EXIT_FAILURE);
     }
     if (args.outputFilesArg.isPresent() && args.outputFilesArg.values().size() != args.filesArg.values().size()) {
-        cerr << Phrases::Error << "The number of output files does not match the number of input files." << Phrases::EndFlush;
-        exit(-1);
+        std::cerr << Phrases::Error << "The number of output files does not match the number of input files." << Phrases::EndFlush;
+        std::exit(EXIT_FAILURE);
     }
 
     // get output files
@@ -487,14 +497,14 @@ void setTagInfo(const SetTagInfoArgs &args)
         && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty()) && !args.id3v1UsageArg.isPresent() && !args.id3v2UsageArg.isPresent()
         && !args.id3v2VersionArg.isPresent()) {
         if (!args.layoutOnlyArg.isPresent()) {
-            cerr << Phrases::Error << "No fields/attachments have been specified." << Phrases::End
-                 << "note: This is usually a mistake. Use --layout-only to prevent this error and apply file layout options only." << endl;
-            exit(-1);
+            std::cerr << Phrases::Error << "No fields/attachments have been specified." << Phrases::End
+                      << "note: This is usually a mistake. Use --layout-only to prevent this error and apply file layout options only." << endl;
+            std::exit(EXIT_FAILURE);
         }
     } else if (args.layoutOnlyArg.isPresent()) {
-        cerr << Phrases::Error << "Fields/attachments and --layout-only have been specified." << Phrases::End
-             << "note: Don't use --layout-only if you actually want to alter tag information or attachments." << endl;
-        exit(-1);
+        std::cerr << Phrases::Error << "Fields/attachments and --layout-only have been specified." << Phrases::End
+                  << "note: Don't use --layout-only if you actually want to alter tag information or attachments." << endl;
+        std::exit(EXIT_FAILURE);
     }
 
     auto settings = TagCreationSettings();
@@ -506,8 +516,8 @@ void setTagInfo(const SetTagInfoArgs &args)
         auto &target = targetsToRemove.emplace_back();
         for (const auto &targetDenotation : args.removeTargetArg.values(i)) {
             if (!applyTargetConfiguration(target, targetDenotation)) {
-                cerr << Phrases::Error << "The given target specification \"" << targetDenotation << "\" is invalid." << Phrases::EndFlush;
-                exit(-1);
+                std::cerr << Phrases::Error << "The given target specification \"" << targetDenotation << "\" is invalid." << Phrases::EndFlush;
+                std::exit(EXIT_FAILURE);
             }
         }
     }
@@ -521,9 +531,9 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
         } catch (const ConversionException &) {
             settings.id3v2MajorVersion = 3;
-            cerr << Phrases::Error << "The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid." << Phrases::End
-                 << "note: Valid versions are 1, 2, 3 and 4." << endl;
-            exit(-1);
+            std::cerr << Phrases::Error << "The specified ID3v2 version \"" << args.id3v2VersionArg.values().front() << "\" is invalid."
+                      << Phrases::End << "note: Valid versions are 1, 2, 3 and 4." << endl;
+            std::exit(EXIT_FAILURE);
         }
     }
 
@@ -689,8 +699,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                         const FieldScope &denotedScope = fieldDenotation.first;
                         // skip values which scope does not match the current tag
                         if (denotedScope.isTrack() || !(denotedScope.tagType == TagType::Unspecified || (denotedScope.tagType & tagType))
-                            || !(!targetSupported
-                                || (tagType == TagType::OggVorbisComment && denotedScope.tagTarget.isEmpty())
+                            || !(!targetSupported || (tagType == TagType::OggVorbisComment && denotedScope.tagTarget.isEmpty())
                                 || (denotedScope.exactTargetMatching ? denotedScope.tagTarget == tagTarget
                                                                      : denotedScope.tagTarget.matches(tagTarget)))) {
                             continue;
@@ -921,6 +930,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             } catch (const TagParser::Failure &) {
                 finalizeLog();
                 cerr << " - " << Phrases::Error << "Failed to apply changes." << Phrases::EndFlush;
+                exitCode = EXIT_PARSING_FAILURE;
             }
             if (args.preserveModificationTimeArg.isPresent()) {
                 if (!modificationDateError) {
@@ -933,10 +943,12 @@ void setTagInfo(const SetTagInfoArgs &args)
         } catch (const TagParser::Failure &) {
             finalizeLog();
             cerr << " - " << Phrases::Error << "A parsing failure occurred when reading/writing the file \"" << file << "\"." << Phrases::EndFlush;
+            exitCode = EXIT_PARSING_FAILURE;
         } catch (const std::ios_base::failure &e) {
             finalizeLog();
             cerr << " - " << Phrases::Error << "An IO error occurred when reading/writing the file \"" << file << "\": " << e.what()
                  << Phrases::EndFlush;
+            exitCode = EXIT_IO_FAILURE;
         }
 
         printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent());
@@ -962,12 +974,12 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
     }
     if (((fieldDenotations.size() != 1) || (!attachmentInfo.hasId && !attachmentInfo.name))
         && ((fieldDenotations.size() == 1) && (attachmentInfo.hasId || attachmentInfo.name))) {
-        cerr << Phrases::Error << "Exactly one field or attachment needs to be specified." << Phrases::EndFlush;
-        exit(-1);
+        std::cerr << Phrases::Error << "Exactly one field or attachment needs to be specified." << Phrases::EndFlush;
+        std::exit(EXIT_FAILURE);
     }
     if (!inputFilesArg.isPresent() || inputFilesArg.values().empty()) {
-        cerr << Phrases::Error << "No files have been specified." << Phrases::EndFlush;
-        exit(-1);
+        std::cerr << Phrases::Error << "No files have been specified." << Phrases::EndFlush;
+        std::exit(EXIT_FAILURE);
     }
 
     static constexpr auto noIndex = std::numeric_limits<std::size_t>::max();
@@ -978,8 +990,8 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                 throw ConversionException();
             }
         } catch (const ConversionException &) {
-            cerr << Phrases::Error << "Specified index is no valid unsigned integer." << Phrases::EndFlush;
-            exit(-1);
+            std::cerr << Phrases::Error << "Specified index is no valid unsigned integer." << Phrases::EndFlush;
+            std::exit(EXIT_FAILURE);
         }
     }
 
@@ -1045,8 +1057,10 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
             }
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::End;
+            exitCode = EXIT_PARSING_FAILURE;
         } catch (const std::ios_base::failure &e) {
             cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\": " << e.what() << Phrases::End;
+            exitCode = EXIT_IO_FAILURE;
         }
     }
 
@@ -1054,9 +1068,11 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
     if (!fieldDenotations.empty()) {
         if (values.empty()) {
             cerr << Phrases::Error << "None of the specified files has a (supported) " << fieldArg.values().front() << " field." << Phrases::End;
+            exitCode = exitCode != EXIT_SUCCESS ? exitCode : EXIT_FAILURE;
         } else if (index != noIndex && index >= values.size()) {
             cerr << Phrases::Error << "The specified index is out of range as the specified files/fields have only " << values.size() << " values."
                  << Phrases::End;
+            exitCode = exitCode != EXIT_SUCCESS ? exitCode : EXIT_FAILURE;
         } else if (outputFileArg.isPresent()) {
             if (index != noIndex) {
                 if (index) {
@@ -1081,6 +1097,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                     cout << "Value has been saved to \"" << path << "\"." << endl;
                 } catch (const std::ios_base::failure &e) {
                     cerr << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what() << Phrases::End;
+                    exitCode = exitCode != EXIT_SUCCESS ? exitCode : EXIT_IO_FAILURE;
                 }
             }
         } else {
@@ -1092,9 +1109,11 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
     } else {
         if (attachments.empty()) {
             cerr << Phrases::Error << "None of the specified files has a (supported) attachment with the specified ID/name." << Phrases::End;
+            exitCode = exitCode != EXIT_SUCCESS ? exitCode : EXIT_FAILURE;
         } else if (index != noIndex && index >= values.size()) {
             cerr << Phrases::Error << "The specified index is out of range as the specified files have only " << attachments.size() << " attachments."
                  << Phrases::End;
+            exitCode = exitCode != EXIT_SUCCESS ? exitCode : EXIT_FAILURE;
         } else if (outputFileArg.isPresent()) {
             if (index != noIndex) {
                 if (index) {
@@ -1119,6 +1138,7 @@ void extractField(const Argument &fieldArg, const Argument &attachmentArg, const
                     cout << "Value has been saved to \"" << path << "\"." << endl;
                 } catch (const std::ios_base::failure &e) {
                     cerr << Phrases::Error << "An IO error occurred when writing the file \"" << path << "\": " << e.what() << Phrases::EndFlush;
+                    exitCode = exitCode != EXIT_SUCCESS ? exitCode : EXIT_IO_FAILURE;
                 }
             }
         } else {
@@ -1138,8 +1158,8 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
 #ifdef TAGEDITOR_JSON_EXPORT
     // check whether files have been specified
     if (!filesArg.isPresent() || filesArg.values().empty()) {
-        cerr << Phrases::Error << "No files have been specified." << Phrases::End;
-        exit(-1);
+        std::cerr << Phrases::Error << "No files have been specified." << Phrases::End;
+        std::exit(EXIT_FAILURE);
     }
 
     RAPIDJSON_NAMESPACE::Document document(RAPIDJSON_NAMESPACE::kArrayType);
@@ -1160,8 +1180,10 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
             jsonData.emplace_back(fileInfo, document.GetAllocator());
         } catch (const TagParser::Failure &) {
             cerr << Phrases::Error << "A parsing failure occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
+            exitCode = EXIT_PARSING_FAILURE;
         } catch (const std::ios_base::failure &e) {
             cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\": " << e.what() << Phrases::EndFlush;
+            exitCode = EXIT_IO_FAILURE;
         }
     }
 
@@ -1183,6 +1205,7 @@ void exportToJson(const ArgumentOccurrence &, const Argument &filesArg, const Ar
     CPP_UTILITIES_UNUSED(filesArg);
     CPP_UTILITIES_UNUSED(prettyArg);
     cerr << Phrases::Error << "JSON export has not been enabled when building the tag editor." << Phrases::EndFlush;
+    exitCode = EXIT_FAILURE;
 #endif
 }
 

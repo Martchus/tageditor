@@ -1,5 +1,6 @@
 #include "./helper.h"
 #include "./fieldmapping.h"
+#include "./mainfeatures.h"
 
 #include <tagparser/diagnostics.h>
 #include <tagparser/id3/id3v2tag.h>
@@ -196,11 +197,15 @@ printDiagMsg:
             setStyle(cout, TextAttribute::Reset);
             break;
         case DiagLevel::Critical:
+        case DiagLevel::Fatal:
             setStyle(cout, Color::Red, ColorContext::Foreground, TextAttribute::Bold);
             setStyle(cout, TextAttribute::Reset);
             setStyle(cout, TextAttribute::Bold);
             cout << "    Error        ";
             setStyle(cout, TextAttribute::Reset);
+            if (message.level() == DiagLevel::Fatal && exitCode == EXIT_SUCCESS) {
+                exitCode = EXIT_PARSING_FAILURE;
+            }
             break;
         default:;
         }
