@@ -332,11 +332,10 @@ void CliTests::testSpecifyingNativeFieldIds()
     const char *const args1[] = { "tageditor", "set", "mkv:FOO=bar", "mp4:©foo=bar", "mp4:invalid", "vorbis:BAR=foo", "-f", mkvFile.data(),
         mp4File.data(), vorbisFile.data(), opusFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
-    CPPUNIT_ASSERT(stderr.empty());
     // FIXME: provide a way to specify raw data type
     CPPUNIT_ASSERT(testContainsSubstrings(
-        stdout, { "making MP4 tag field ©foo: It was not possible to find an appropriate raw data type id. UTF-8 will be assumed." }));
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Unable to parse denoted field ID \"invalid\": MP4 ID must be exactly 4 chars" }));
+        stderr, { "making MP4 tag field ©foo: It was not possible to find an appropriate raw data type id. UTF-8 will be assumed." }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stderr, { "Unable to parse denoted field ID \"invalid\": MP4 ID must be exactly 4 chars" }));
 
     const char *const args2[]
         = { "tageditor", "get", "mkv:FOO", "mp4:©foo", "vorbis:BAR", "generic:year", "generic:releasedate", "-f", mkvFile.data(), nullptr };
@@ -532,7 +531,7 @@ void CliTests::testEncodingOption()
         mp3File1.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(
-        stdout.find(
+        stderr.find(
             "setting tags: Can't use specified encoding \"utf8\" in ID3v2 tag (version 2.3.0) because the tag format/version doesn't support it.")
         != string::npos);
 

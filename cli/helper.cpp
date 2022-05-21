@@ -173,7 +173,7 @@ void printDiagMessages(const Diagnostics &diag, const char *head, bool beVerbose
 
 printDiagMsg:
     if (head) {
-        cout << " - " << head << endl;
+        cerr << " - " << head << endl;
     }
     for (const auto &message : diag) {
         switch (message.level()) {
@@ -181,37 +181,37 @@ printDiagMsg:
             if (!beVerbose) {
                 continue;
             }
-            cout << "    Debug        ";
+            cerr << "    Debug        ";
             break;
         case DiagLevel::Information:
             if (!beVerbose) {
                 continue;
             }
-            cout << "    Information  ";
+            cerr << "    Information  ";
             break;
         case DiagLevel::Warning:
-            setStyle(cout, Color::Yellow, ColorContext::Foreground, TextAttribute::Bold);
-            setStyle(cout, TextAttribute::Reset);
-            setStyle(cout, TextAttribute::Bold);
-            cout << "    Warning      ";
-            setStyle(cout, TextAttribute::Reset);
+            setStyle(cerr, Color::Yellow, ColorContext::Foreground, TextAttribute::Bold);
+            setStyle(cerr, TextAttribute::Reset);
+            setStyle(cerr, TextAttribute::Bold);
+            cerr << "    Warning      ";
+            setStyle(cerr, TextAttribute::Reset);
             break;
         case DiagLevel::Critical:
         case DiagLevel::Fatal:
-            setStyle(cout, Color::Red, ColorContext::Foreground, TextAttribute::Bold);
-            setStyle(cout, TextAttribute::Reset);
-            setStyle(cout, TextAttribute::Bold);
-            cout << "    Error        ";
-            setStyle(cout, TextAttribute::Reset);
+            setStyle(cerr, Color::Red, ColorContext::Foreground, TextAttribute::Bold);
+            setStyle(cerr, TextAttribute::Reset);
+            setStyle(cerr, TextAttribute::Bold);
+            cerr << "    Error        ";
+            setStyle(cerr, TextAttribute::Reset);
             if (message.level() == DiagLevel::Fatal && exitCode == EXIT_SUCCESS) {
                 exitCode = EXIT_PARSING_FAILURE;
             }
             break;
         default:;
         }
-        cout << message.creationTime().toString(DateTimeOutputFormat::TimeOnly) << "   ";
-        cout << message.context() << ": ";
-        cout << message.message() << '\n';
+        cerr << message.creationTime().toString(DateTimeOutputFormat::TimeOnly) << "   ";
+        cerr << message.context() << ": ";
+        cerr << message.message() << '\n';
     }
 }
 
