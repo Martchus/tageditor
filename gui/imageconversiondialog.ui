@@ -55,7 +55,7 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>2048</number>
+            <number>20000</number>
            </property>
            <property name="value">
             <number>512</number>
@@ -81,7 +81,7 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>2048</number>
+            <number>20000</number>
            </property>
            <property name="value">
             <number>512</number>
