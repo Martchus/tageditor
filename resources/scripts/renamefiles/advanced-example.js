@@ -2,41 +2,39 @@
 // script configuration
 
 // specifies the separator between artist, album and track number
-var separator = ", "
+const separator = ", "
 // specifies the separator between title and other fields
-var lastSeparator = " - "
+const lastSeparator = " - "
 // specifies whether the artist name should be included
-var includeArtist = true
+const includeArtist = true
 // specifies whether the album name should be included
-var includeAlbum = true
+const includeAlbum = true
 // specifies whether the title should be included
-var includeTitle = true
+const includeTitle = true
 // specifies whether tags like [foo] should be stripped from the title if deduced from file name
-var stripTags = false
+const stripTags = false
 // specifies whether the title deduced from the file name should be kept as-is
-var keepTitleFromFileName = false
+const keepTitleFromFileName = false
 // specifies whether track information should be appended (like [H.265-320p AAC-LC-2ch-eng AAC-LC-2ch-ger])
-var includeTrackInfo = false
+const includeTrackInfo = false
 // specifies the "distribution directory"
-var distDir = false                            // don't move files around
-//var distDir = "/path/to/my/music-collection" // move files to an appropriate subdirectory under this path
+const distDir = false                            // don't move files around
+//const distDir = "/path/to/my/music-collection" // move files to an appropriate subdirectory under this path
 // move tracks into subdirectories for ranges (like 0001, 0025, 0050, 0100, …) to avoid too many files within one level
-var maxTracksPerDir = false
+const maxTracksPerDir = false
 //var maxTracksPerDir = 25
 // directory used to store collections which contain songs from multiple artists
-var collectionsDir = "collections"
+const collectionsDir = "collections"
 // directory used to store miscellaneous songs by miscellaneous artists
-var miscDir = "misc"
+const miscDir = "misc"
 // directory used for miscellaneous songs by specific artist
-var miscAlbumDir = "misc"
+const miscAlbumDir = "misc"
 // condition to move files to miscDir
-var isMiscFile = function (tag) {
-    return tag.comment === "misc"
-}
+const isMiscFile = tag => tag.comment === "misc"
+// condition to move files to miscAlbumDir
+const isMiscAlbumFile = tag => tag.comment === "miscalbum"
 // condition to consider files part of a collection which contains songs from multiple artists
-var isPartOfCollection = function (tag) {
-    return tag.comment === "collection"
-}
+const isPartOfCollection = tag => tag.comment === "collection"
 
 //
 // helper functions
@@ -70,7 +68,11 @@ function tagsStripped(name) {
 }
 // strips trailing brackets
 function trailingBracketsStripped(name) {
-    return name.replace(/ \(.*\)/gi, '');
+    return name.replace(/ \(.*\)/gi, '')
+}
+// returns the first value of a semi-colon separated list
+function firstValue(list) {
+    return list !== undefined ? list.split(";")[0] : undefined
 }
 
 //
@@ -137,7 +139,7 @@ var fields = []
 // get the artist (preferably album artist), remove invalid characters and add it to fields array
 var artist = validFileName(tag.albumartist || tag.artist)
 if (includeArtist && !isPartOfCollection(tag) && notEmpty(artist)) {
-    fields.push(trailingBracketsStripped(artist))
+    fields.push(trailingBracketsStripped(firstValue(artist)))
 }
 
 // get the album and remove invalid characters and add it to fields array
@@ -147,21 +149,18 @@ if (includeAlbum && notEmpty(tag.album)) {
 }
 
 // get the track/disk position and add it to fields array
-// use the value from the tag if possible; otherwise the value deduced from the filename
+// use the value from the tag if possible; otherwise use the value deduced from the filename
 var trackPos = tag.trackPos || infoFromFileName.trackPos
-tageditor.writeLog("trackpos: " + trackPos)
+var pos = []
+// push the disk position
+if (notNull(tag.diskPos) && (!notNull(tag.diskTotal) || tag.diskTotal >= 2)) {
+    pos.push(appropriateDigitCount(tag.diskPos, tag.diskTotal || 1))
+}
+// push the track count
 if (notNull(trackPos)) {
-    var pos = []
-    // push the disk position
-    if (notNull(tag.diskPos) && notNull(tag.diskTotal) && tag.diskTotal >= 2) {
-        pos.push(appropriateDigitCount(tag.diskPos, tag.diskTotal))
-    }
-    // push the track count
-    if (notNull(tag.trackTotal)) {
-        pos.push(appropriateDigitCount(tag.trackPos, tag.trackTotal))
-    } else {
-        pos.push(appropriateDigitCount(tag.trackPos, 10))
-    }
+    pos.push(appropriateDigitCount(tag.trackPos, tag.trackTotal || 10))
+}
+if (pos.length) {
     fields.push(pos.join("-"))
 }
 
@@ -212,18 +211,16 @@ tageditor.rename(newName)
 var path = []
 if (distDir) {
     path.push(distDir)
-    var artist = validDirectoryName(tag.albumartist || tag.artist)
+    var artist = validDirectoryName(firstValue(tag.albumartist || tag.artist))
     if (isPartOfCollection(tag)) {
         path.push(collectionsDir)
-    } else if (isMiscFile(tag)) {
-        path.push(miscDir)
-    } else if (notEmpty(artist)) {
+    } else if (notEmpty(artist) && !isMiscFile(tag)) {
         path.push(artist)
     } else {
         path.push(miscDir)
     }
     var album = validDirectoryName(tag.album)
-    if (notEmpty(album)) {
+    if (notEmpty(album) && isMiscAlbum(tag)) {
         if (notEmpty(tag.year)) {
             path.push([tag.year.split("-")[0], album].join(" - "))
         } else {
