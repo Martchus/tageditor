@@ -4,6 +4,7 @@
 #include "./filesystemitem.h"
 #include "./jsincludes.h"
 
+#include "../cli/fieldmapping.h"
 #include "../misc/utility.h"
 
 #include <tagparser/abstracttrack.h>
@@ -47,44 +48,39 @@ TAGEDITOR_JS_VALUE &operator<<(TAGEDITOR_JS_VALUE &diagObject, const Diagnostics
 /// \brief Add fields and notifications from \a tag to \a tagObject.
 TAGEDITOR_JS_VALUE &operator<<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
 {
-    // add text fields
-    static const char *const fieldNames[]
-        = { "title", "artist", "albumartist", "album", "year", "comment", "genre", "encoder", "language", "description", nullptr };
-    static const KnownField fields[] = { KnownField::Title, KnownField::Artist, KnownField::AlbumArtist, KnownField::Album, KnownField::RecordDate,
-        KnownField::Comment, KnownField::Genre, KnownField::Encoder, KnownField::Language, KnownField::Description };
-    const char *const *fieldName = fieldNames;
-    const KnownField *field = fields;
-    for (; *fieldName; ++fieldName, ++field) {
-        try {
-            tagObject.setProperty(*fieldName, tagValueToQString(tag.value(*field)) TAGEDITOR_JS_READONLY);
-        } catch (const ConversionException &) {
+    for (const auto &mapping : Cli::FieldMapping::mapping()) {
+        const auto fieldName = [&] {
+            auto v = mapping.knownField == KnownField::PartNumber ? QStringLiteral("partNumber") : QString::fromUtf8(mapping.knownDenotation);
+            v.front() = v.front().toLower();
+            return v;
+        }();
+        switch (mapping.knownField) {
+        case KnownField::PartNumber:
+        case KnownField::TotalParts:
+            try {
+                tagObject.setProperty(fieldName, tag.value(mapping.knownField).toInteger() TAGEDITOR_JS_READONLY);
+            } catch (const ConversionException &) {
+            }
+            break;
+        case KnownField::TrackPosition:
+        case KnownField::DiskPosition:
+            try {
+                const auto pos = tag.value(mapping.knownField).toPositionInSet();
+                tagObject.setProperty(fieldName + QStringLiteral("Pos"), pos.position() TAGEDITOR_JS_READONLY);
+                tagObject.setProperty(fieldName + QStringLiteral("Total"), pos.total() TAGEDITOR_JS_READONLY);
+            } catch (const ConversionException &) {
+            }
+            break;
+        case KnownField::Cover:
+        case KnownField::SynchronizedLyrics:
+            break;
+        default:
+            try {
+                tagObject.setProperty(fieldName, tagValueToQString(tag.value(mapping.knownField)) TAGEDITOR_JS_READONLY);
+            } catch (const ConversionException &) {
+            }
         }
     }
-
-    // add numeric fields
-    try {
-        tagObject.setProperty("partNumber", tag.value(KnownField::PartNumber).toInteger() TAGEDITOR_JS_READONLY);
-    } catch (const ConversionException &) {
-    }
-    try {
-        tagObject.setProperty("totalParts", tag.value(KnownField::TotalParts).toInteger() TAGEDITOR_JS_READONLY);
-    } catch (const ConversionException &) {
-    }
-    PositionInSet pos;
-    try {
-        pos = tag.value(KnownField::TrackPosition).toPositionInSet();
-    } catch (const ConversionException &) {
-    }
-    tagObject.setProperty("trackPos", pos.position() TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("trackTotal", pos.total() TAGEDITOR_JS_READONLY);
-    pos = PositionInSet();
-    try {
-        pos = tag.value(KnownField::DiskPosition).toPositionInSet();
-    } catch (const ConversionException &) {
-    }
-    tagObject.setProperty("diskPos", pos.position() TAGEDITOR_JS_READONLY);
-    tagObject.setProperty("diskTotal", pos.total() TAGEDITOR_JS_READONLY);
-
     return tagObject;
 }
 
