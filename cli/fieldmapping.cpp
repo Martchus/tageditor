@@ -8,40 +8,37 @@ using namespace TagParser;
 namespace Cli {
 namespace FieldMapping {
 
-static constexpr struct {
-    const char *knownDenotation;
-    KnownField knownField;
-} fieldMapping[] = {
-    { "title", KnownField::Title },
-    { "album", KnownField::Album },
-    { "artist", KnownField::Artist },
-    { "genre", KnownField::Genre },
-    { "year", KnownField::RecordDate },
-    { "comment", KnownField::Comment },
-    { "bpm", KnownField::Bpm },
-    { "bps", KnownField::Bps },
-    { "lyricist", KnownField::Lyricist },
-    { "track", KnownField::TrackPosition },
-    { "disk", KnownField::DiskPosition },
-    { "part", KnownField::PartNumber },
-    { "totalparts", KnownField::TotalParts },
-    { "encoder", KnownField::Encoder },
-    { "recorddate", KnownField::RecordDate },
-    { "releasedate", KnownField::ReleaseDate },
-    { "performers", KnownField::Performers },
-    { "duration", KnownField::Length },
-    { "language", KnownField::Language },
-    { "encodersettings", KnownField::EncoderSettings },
-    { "lyrics", KnownField::Lyrics },
-    { "synchronizedlyrics", KnownField::SynchronizedLyrics },
-    { "grouping", KnownField::Grouping },
-    { "recordlabel", KnownField::RecordLabel },
-    { "cover", KnownField::Cover },
-    { "composer", KnownField::Composer },
-    { "rating", KnownField::Rating },
-    { "description", KnownField::Description },
-    { "vendor", KnownField::Vendor },
-    { "albumartist", KnownField::AlbumArtist },
+static constexpr auto fieldMapping = std::array<Mapping, 99>{{
+    { "Title", KnownField::Title },
+    { "Album", KnownField::Album },
+    { "Artist", KnownField::Artist },
+    { "Genre", KnownField::Genre },
+    { "Year", KnownField::RecordDate },
+    { "Comment", KnownField::Comment },
+    { "Bpm", KnownField::Bpm },
+    { "Bps", KnownField::Bps },
+    { "Lyricist", KnownField::Lyricist },
+    { "Track", KnownField::TrackPosition },
+    { "Disk", KnownField::DiskPosition },
+    { "Part", KnownField::PartNumber },
+    { "TotalParts", KnownField::TotalParts },
+    { "Encoder", KnownField::Encoder },
+    { "RecordDate", KnownField::RecordDate },
+    { "ReleaseDate", KnownField::ReleaseDate },
+    { "Performers", KnownField::Performers },
+    { "Duration", KnownField::Length },
+    { "Language", KnownField::Language },
+    { "EncoderSettings", KnownField::EncoderSettings },
+    { "Lyrics", KnownField::Lyrics },
+    { "SynchronizedLyrics", KnownField::SynchronizedLyrics },
+    { "Grouping", KnownField::Grouping },
+    { "RecordLabel", KnownField::RecordLabel },
+    { "Cover", KnownField::Cover },
+    { "Composer", KnownField::Composer },
+    { "Rating", KnownField::Rating },
+    { "Description", KnownField::Description },
+    { "Vendor", KnownField::Vendor },
+    { "AlbumArtist", KnownField::AlbumArtist },
     { "Subtitle", KnownField::Subtitle },
     { "LeadPerformer", KnownField::LeadPerformer },
     { "Arranger", KnownField::Arranger },
@@ -111,7 +108,7 @@ static constexpr struct {
     { "ProductionCopyright", KnownField::ProductionCopyright },
     { "License", KnownField::License },
     { "TermsOfUse", KnownField::TermsOfUse },
-};
+}};
 
 const char *fieldDenotation(TagParser::KnownField knownField)
 {
@@ -143,6 +140,11 @@ TagParser::KnownField knownField(const char *fieldDenotation, std::size_t fieldD
         }
     }
     return KnownField::Invalid;
+}
+
+const std::array<Mapping, 99> &mapping()
+{
+    return fieldMapping;
 }
 
 } // namespace FieldMapping
