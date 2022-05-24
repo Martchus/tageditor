@@ -25,11 +25,12 @@ if (!fileInfo.hasAudioTracks && !fileInfo.hasVideoTracks) {
 const fieldsToInclude = [tag.albumartist || tag.artist, tag.album, tag.trackPos || infoFromFileName.trackPos, tag.title || infoFromFileName.title]
 let newName = ""
 for (let field of fieldsToInclude) {
+    field = field.toString()
     if (typeof field === "number" && tag.trackTotal) {
-        field = field.toString().padStart(tag.trackTotal.toString().length, "0")
+        field = field.padStart(tag.trackTotal.toString().length, "0")
     }
     if (field && field.length !== 0) {
-        newName = newName.concat(newName.length === 0 ? "" : " - ", field)
+        newName = newName.concat(newName.length === 0 ? "" : " - ", field.toString().replace(/[\/\\]/gi, " - ").replace(/[<>?!*|:\"\n\f\r]/gi, ""))
     }
 }
 newName = newName.concat(".", fileInfo.suitableSuffix || fileInfo.currentSuffix)
