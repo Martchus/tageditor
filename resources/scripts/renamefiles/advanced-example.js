@@ -193,7 +193,10 @@ if (includeTrackInfo && tracks.length > 0) {
 
 // append an appropriate suffix
 var suffix = ""
-if (notEmpty(fileInfo.suitableSuffix)) {
+if (notEmpty(keepSuffix)) {
+    // keep suffix as-is
+    suffix = keepSuffix
+} else if (notEmpty(fileInfo.suitableSuffix)) {
     // get a suitable suffix from the file info object if available
     suffix = fileInfo.suitableSuffix
 } else if (notEmpty(fileInfo.currentSuffix)) {
