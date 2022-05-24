@@ -220,7 +220,7 @@ if (distDir) {
         path.push(miscDir)
     }
     var album = validDirectoryName(tag.album)
-    if (notEmpty(album) && isMiscAlbum(tag)) {
+    if (notEmpty(album) && !isMiscAlbumFile(tag)) {
         if (notEmpty(tag.year)) {
             path.push([tag.year.split("-")[0], album].join(" - "))
         } else {
