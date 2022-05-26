@@ -8,10 +8,11 @@ JavaScriptHighlighter::JavaScriptHighlighter(QTextDocument *parent)
     HighlightingRule rule;
 
     m_keywordFormat.setFontWeight(QFont::Bold);
-    static const QStringList keywordPatterns{ QStringLiteral("\\bvar\\b"), QStringLiteral("\\bArray\\b"), QStringLiteral("\\bfunction\\b"),
-        QStringLiteral("\\breturn\\b"), QStringLiteral("\\barguments\\b"), QStringLiteral("\\bif\\b"), QStringLiteral("\\belse\\b"),
-        QStringLiteral("\\bfor\\b"), QStringLiteral("\\bswitch\\b"), QStringLiteral("\\bcase\\b"), QStringLiteral("\\bbreak\\b"),
-        QStringLiteral("\\bwhile\\b"), QStringLiteral("\\bundefined\\b"), QStringLiteral("\\continue\\b") };
+    static const QStringList keywordPatterns{ QStringLiteral("\\bvar\\b"), QStringLiteral("\\blet\\b"), QStringLiteral("\\bconst\\b"),
+        QStringLiteral("\\bArray\\b"), QStringLiteral("\\bfunction\\b"), QStringLiteral("\\breturn\\b"), QStringLiteral("\\barguments\\b"),
+        QStringLiteral("\\bif\\b"), QStringLiteral("\\belse\\b"), QStringLiteral("\\bfor\\b"), QStringLiteral("\\bswitch\\b"),
+        QStringLiteral("\\bcase\\b"), QStringLiteral("\\bbreak\\b"), QStringLiteral("\\bwhile\\b"), QStringLiteral("\\bundefined\\b"),
+        QStringLiteral("\\bnull\\b"), QStringLiteral("\\bcontinue\\b"), QStringLiteral("\\bfalse\\b"), QStringLiteral("\\btrue\\b") };
     for (const auto &pattern : keywordPatterns) {
         rule.pattern = QRegularExpression(pattern);
         rule.pattern.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
