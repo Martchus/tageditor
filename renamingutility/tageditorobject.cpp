@@ -51,7 +51,7 @@ TAGEDITOR_JS_VALUE &operator<<(TAGEDITOR_JS_VALUE &tagObject, const Tag &tag)
     for (const auto &mapping : Cli::FieldMapping::mapping()) {
         const auto fieldName = [&] {
             auto v = mapping.knownField == KnownField::PartNumber ? QStringLiteral("partNumber") : QString::fromUtf8(mapping.knownDenotation);
-            v.front() = v.front().toLower();
+            v[0] = v[0].toLower();
             return v;
         }();
         switch (mapping.knownField) {
