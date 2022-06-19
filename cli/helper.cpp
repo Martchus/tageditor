@@ -263,12 +263,15 @@ static void printFieldName(std::string_view fieldName)
 
 static void printTagValue(const TagValue &value)
 {
-    try {
-        cout << value.toString(TagTextEncoding::Utf8);
-    } catch (const ConversionException &) {
-        // handle case when value can not be displayed as string
+    switch (value.type()) {
+    case TagDataType::Binary:
+    case TagDataType::Picture: {
         const auto type = !value.mimeType().empty() ? std::string_view(value.mimeType()) : std::string_view("data");
-        cout << "can't display " << type << " as string (use --extract)";
+        std::cout << "can't display " << type << " as string (use --extract)";
+        break;
+    }
+    default:
+        std::cout << value.toDisplayString();
     }
     cout << '\n';
 }
