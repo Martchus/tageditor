@@ -217,6 +217,9 @@ bool TagFieldEdit::canApply(KnownField field) const
     return false;
 }
 
+/*!
+ * \brief Sets whether the tag field edit is locked to keep the current value when switching files.
+ */
 void TagFieldEdit::setLocked(bool locked)
 {
     if (locked == m_isLocked) {

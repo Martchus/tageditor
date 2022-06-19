@@ -109,26 +109,31 @@ private:
     bool m_autoCorrectionApplied;
 };
 
+/// \brief Returns the currently assigned tags.
 inline const QList<TagParser::Tag *> &TagFieldEdit::tags() const
 {
     return *m_tags;
 }
 
+/// \brief Returns the currently assigned field.
 inline TagParser::KnownField TagFieldEdit::field() const
 {
     return m_field;
 }
 
+/// \brief Returns whether the tag field edit is locked to keep the current value when switching files.
 inline bool TagFieldEdit::isLocked() const
 {
     return m_isLocked;
 }
 
+/// \brief Toggles whether the tag field edit is locked to keep the current value when switching files.
 inline void TagFieldEdit::toggleLocked()
 {
     setLocked(!isLocked());
 }
 
+/// \brief Returns whether auto correction has been applied.
 inline bool TagFieldEdit::hasAutoCorrectionBeenApplied() const
 {
     return m_autoCorrectionApplied;
