@@ -123,6 +123,7 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
     case TagDataType::Text:
     case TagDataType::TimeSpan:
     case TagDataType::DateTime:
+    case TagDataType::Popularity:
         switch (m_field) {
         case KnownField::Genre:
             if (m_comboBox) {
@@ -248,9 +249,9 @@ void TagFieldEdit::setCoverButtonsHidden(bool hideCoverButtons)
  */
 TagDataType TagFieldEdit::determineDataType()
 {
-    TagDataType proposedDataType = TagDataType::Undefined;
-    for (const Tag *const tag : tags()) {
-        TagDataType type = tag->proposedDataType(m_field);
+    auto proposedDataType = TagDataType::Undefined;
+    for (const auto *const tag : tags()) {
+        auto type = tag->proposedDataType(m_field);
         if (proposedDataType == TagDataType::Undefined) {
             proposedDataType = type;
         } else if ((proposedDataType == TagDataType::PositionInSet && type == TagDataType::Integer)
@@ -285,6 +286,7 @@ void TagFieldEdit::setupUi()
     case TagDataType::Text:
     case TagDataType::TimeSpan:
     case TagDataType::DateTime:
+    case TagDataType::Popularity:
         switch (m_field) {
         case KnownField::Genre:
             setupGenreComboBox();
@@ -866,13 +868,13 @@ void TagFieldEdit::clear()
  */
 void TagFieldEdit::apply()
 {
-    for (Tag *const tag : *m_tags) {
+    for (auto *const tag : *m_tags) {
         if (m_dataType == TagDataType::Picture) {
             if (m_pictureSelection) {
                 m_pictureSelection->apply();
             }
         } else {
-            TagTextEncoding encoding = Settings::values().tagPocessing.preferredEncoding;
+            auto encoding = Settings::values().tagPocessing.preferredEncoding;
             if (!tag->canEncodingBeUsed(encoding)) {
                 encoding = tag->proposedTextEncoding();
             }
