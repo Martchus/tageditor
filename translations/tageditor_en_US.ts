@@ -2785,10 +2785,10 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <source>%1 error(s) occured.</source>
+        <source>%1 error(s) occurred.</source>
         <translation type="vanished">
-            <numerusform>%1 error occured.</numerusform>
-            <numerusform>%1 errors occured.</numerusform>
+            <numerusform>%1 error occurred.</numerusform>
+            <numerusform>%1 errors occurred.</numerusform>
         </translation>
     </message>
     <message numerus="yes">
@@ -2877,10 +2877,10 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <source>%1 error(s) occured</source>
+        <source>%1 error(s) occurred</source>
         <translation type="vanished">
-            <numerusform>%1 error occured</numerusform>
-            <numerusform>%1 errors occured</numerusform>
+            <numerusform>%1 error occurred</numerusform>
+            <numerusform>%1 errors occurred</numerusform>
         </translation>
     </message>
     <message>
