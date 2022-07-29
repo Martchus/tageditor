@@ -1357,11 +1357,23 @@ void TagEditorWidget::closeFile()
     }
 
     // close file
-    m_fileInfo.close();
+    auto errorMsg = QString();
+    try {
+        m_fileInfo.close();
+    } catch (const std::ios_base::failure &e) {
+        auto msgBox = new QMessageBox(this);
+        msgBox->setIcon(QMessageBox::Critical);
+        msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+        msgBox->setWindowTitle(tr("Closing file - ") + QCoreApplication::applicationName());
+        msgBox->setText(errorMsg = tr("Unable to close file: %1").arg(e.what()));
+        msgBox->setInformativeText(tr("Tried to close file: ") + m_currentPath);
+        msgBox->show();
+    }
+
     // remove current path from file watcher
     m_fileWatcher->removePath(m_currentPath);
     // update ui
-    emit statusMessage("The file has been closed.");
+    emit statusMessage(errorMsg.isEmpty() ? tr("The file has been closed.") : errorMsg);
     updateFileStatusStatus();
 }
 
