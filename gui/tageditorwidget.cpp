@@ -42,6 +42,7 @@
 #include <QFileSystemWatcher>
 #include <QGuiApplication>
 #include <QHeaderView>
+#include <QInputDialog>
 #include <QKeyEvent>
 #include <QMenu>
 #include <QMessageBox>
@@ -147,6 +148,7 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     connect(m_ui->deleteTagsButton, &QPushButton::clicked, this, &TagEditorWidget::deleteAllTagsAndSave);
     connect(m_ui->nextButton, &QPushButton::clicked, this, &TagEditorWidget::saveAndShowNextFile);
     connect(m_ui->closeButton, &QPushButton::clicked, this, &TagEditorWidget::closeFile);
+    connect(m_ui->renamePushButton, &QPushButton::clicked, this, &TagEditorWidget::renameFile);
 
     //  misc
     connect(m_ui->abortButton, &QPushButton::clicked, [this] {
@@ -487,11 +489,12 @@ void TagEditorWidget::updateFileStatusStatus()
     const bool showDocumentTitle = opened && m_fileInfo.container() && m_fileInfo.container()->supportsTitle();
     m_ui->docTitleLabel->setVisible(showDocumentTitle);
     m_ui->docTitleWidget->setVisible(showDocumentTitle);
-    // buttons and actions to save, delete, close
+    // buttons and actions to save, delete, close and rename
     m_ui->saveButton->setEnabled(opened);
     m_ui->nextButton->setEnabled(opened);
     m_ui->deleteTagsButton->setEnabled(hasTag);
     m_ui->buttonsWidget->setEnabled(opened);
+    m_ui->renamePushButton->setEnabled(opened);
     // clear and restore buttons
     m_ui->clearEntriesPushButton->setEnabled(hasTag);
     m_ui->restoreEntriesPushButton->setEnabled(hasTag);
@@ -1374,6 +1377,63 @@ void TagEditorWidget::closeFile()
     m_fileWatcher->removePath(m_currentPath);
     // update ui
     emit statusMessage(errorMsg.isEmpty() ? tr("The file has been closed.") : errorMsg);
+    updateFileStatusStatus();
+}
+
+void QtGui::TagEditorWidget::renameFile()
+{
+    if (isFileOperationOngoing()) {
+        emit statusMessage(tr("Unable to rename the file because the current process hasn't been finished yet."));
+        return;
+    }
+    if (m_currentPath.isEmpty() || m_fileName.isEmpty() || !m_fileInfo.isOpen()) {
+        return;
+    }
+    static const auto windowTitle = tr("Renaming file - ") + QCoreApplication::applicationName();
+    const auto newFileName = QInputDialog::getText(this, windowTitle, tr("New file name:"), QLineEdit::Normal, m_fileName);
+    if (newFileName.isEmpty()) {
+        return;
+    }
+
+    auto errorMsg = QString();
+    try {
+        // remove watcher, close file
+        m_fileWatcher->removePath(m_currentPath);
+        m_fileInfo.stream().close();
+
+        // rename file
+        auto oldPath = std::filesystem::path(makeNativePath(m_currentPath.toStdString()));
+        auto newPath = oldPath.parent_path();
+        newPath.append(makeNativePath(newFileName.toStdString()));
+        std::filesystem::rename(oldPath, newPath);
+
+        // open again with write access
+        m_fileInfo.reportPathChanged(newPath.u8string());
+        try {
+            m_fileInfo.stream().open(m_fileInfo.path().data(), ios_base::in | ios_base::out | ios_base::binary);
+        } catch (const std::ios_base::failure &) {
+            // try to open read-only if opening with write access failed
+            m_fileInfo.stream().open(m_fileInfo.path().data(), ios_base::in | ios_base::binary);
+        }
+        m_currentPath = QString::fromStdString(m_fileInfo.path());
+        m_fileName = QString::fromStdString(m_fileInfo.fileName());
+        m_ui->fileNameLabel->setText(m_fileName);
+        emit currentPathChanged(m_currentPath);
+
+    } catch (const std::runtime_error &e) {
+        auto msgBox = new QMessageBox(this);
+        msgBox->setIcon(QMessageBox::Critical);
+        msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+        msgBox->setWindowTitle(windowTitle);
+        msgBox->setText(errorMsg = tr("Unable to rename file: %1").arg(e.what()));
+        msgBox->setInformativeText(tr("Tried to rename file: ") + m_currentPath);
+        msgBox->show();
+    }
+
+    // add new current path to file watcher
+    m_fileWatcher->addPath(m_currentPath);
+    // update ui
+    emit statusMessage(errorMsg.isEmpty() ? tr("The file has been renamed.") : errorMsg);
     updateFileStatusStatus();
 }
 

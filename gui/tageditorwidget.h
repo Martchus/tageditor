@@ -73,6 +73,7 @@ public Q_SLOTS:
     bool applyEntriesAndSaveChangings();
     bool deleteAllTagsAndSave();
     void closeFile();
+    void renameFile();
     void saveFileInfo();
     void openFileInfoInBrowser();
     // misc

@@ -126,6 +126,7 @@ set(REQUIRED_ICONS
     document-open
     edit-clear
     edit-copy
+    edit-rename
     emblem-error
     emblem-warning
     emblem-information
