@@ -1352,7 +1352,7 @@ void TagEditorWidget::fileChangedOnDisk(const QString &path)
 void TagEditorWidget::closeFile()
 {
     if (isFileOperationOngoing()) {
-        emit statusMessage("Unable to close the file because the current process hasn't been finished yet.");
+        emit statusMessage(tr("Unable to close the file because the current process hasn't been finished yet."));
         return;
     }
 
@@ -1509,11 +1509,11 @@ void TagEditorWidget::addParsingNotificationLine(const QString &line)
 void TagEditorWidget::addTag(const function<TagParser::Tag *(TagParser::MediaFileInfo &)> &createTag)
 {
     if (isFileOperationOngoing()) {
-        emit statusMessage("Unable to add a tag because the current process hasn't been finished yet.");
+        emit statusMessage(tr("Unable to add a tag because the current process hasn't been finished yet."));
         return;
     }
     if (!m_fileInfo.isOpen()) {
-        emit statusMessage("Unable to add a tag because no file is opened.");
+        emit statusMessage(tr("Unable to add a tag because no file is opened."));
         return;
     }
 
