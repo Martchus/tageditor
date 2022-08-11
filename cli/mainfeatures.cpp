@@ -782,8 +782,10 @@ void setTagInfo(const SetTagInfoArgs &args)
                         }
                         // finally set the values
                         try {
-                            if (!convertedValues.empty() || convertedId3v2CoverValues.empty()) {
-                                denotedScope.field.setValues(tag, tagType, convertedValues);
+                            if ((!convertedValues.empty() || convertedId3v2CoverValues.empty())
+                                && !denotedScope.field.setValues(tag, tagType, convertedValues)) {
+                                diag.emplace_back(DiagLevel::Critical,
+                                    argsToString("Unable set field \"", denotedScope.field.name(), "\": setting field is not supported"), context);
                             }
                         } catch (const ConversionException &e) {
                             diag.emplace_back(DiagLevel::Critical,
