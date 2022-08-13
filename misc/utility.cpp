@@ -57,16 +57,14 @@ QString tagValueToQString(const TagValue &value)
         return dataToQString(value.dataPointer(), value.dataSize(), value.dataEncoding());
     case TagDataType::Integer:
         return QString::number(value.toInteger());
-    case TagDataType::StandardGenreIndex:
-    case TagDataType::TimeSpan:
-    case TagDataType::DateTime:
-    case TagDataType::PositionInSet:
-    case TagDataType::Popularity:
-    case TagDataType::DateTimeExpression:
-        return QString::fromStdString(value.toString());
+    case TagDataType::UnsignedInteger:
+        return QString::number(value.toUnsignedInteger());
+    case TagDataType::Binary:
+    case TagDataType::Picture:
+        return QString();
     default:;
     }
-    return QString();
+    return QString::fromStdString(value.toString());
 }
 
 QString dataToQString(const char *data, size_t dataSize, TagTextEncoding encoding)

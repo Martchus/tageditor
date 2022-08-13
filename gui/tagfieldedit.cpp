@@ -120,11 +120,25 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
 {
     TagValue value;
     switch (m_dataType) {
-    case TagDataType::Text:
-    case TagDataType::TimeSpan:
-    case TagDataType::DateTime:
-    case TagDataType::Popularity:
-    case TagDataType::DateTimeExpression:
+    case TagDataType::Integer:
+        if (m_spinBoxes.first && m_spinBoxes.first->value()) {
+            value.assignInteger(m_spinBoxes.first->value());
+        }
+        break;
+    case TagDataType::PositionInSet:
+        if (m_spinBoxes.first && m_spinBoxes.second) {
+            value.assignPosition(PositionInSet(m_spinBoxes.first->value(), m_spinBoxes.second->value()));
+        }
+        break;
+    case TagDataType::StandardGenreIndex:
+        if (m_comboBox) {
+            value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
+        }
+        break;
+    case TagDataType::Binary:
+    case TagDataType::Picture:
+        break;
+    default:
         switch (m_field) {
         case KnownField::Genre:
             if (m_comboBox) {
@@ -142,22 +156,7 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
             }
         }
         break;
-    case TagDataType::Integer:
-        if (m_spinBoxes.first && m_spinBoxes.first->value()) {
-            value.assignInteger(m_spinBoxes.first->value());
-        }
-        break;
-    case TagDataType::PositionInSet:
-        if (m_spinBoxes.first && m_spinBoxes.second) {
-            value.assignPosition(PositionInSet(m_spinBoxes.first->value(), m_spinBoxes.second->value()));
-        }
-        break;
-    case TagDataType::StandardGenreIndex:
-        if (m_comboBox) {
-            value.assignText(Utility::qstringToString(m_comboBox->currentText(), encoding), encoding);
-        }
-        break;
-    default:;
+        ;
     }
     // setup description line edit
     if (m_descriptionLineEdit && m_descriptionLineEdit->isEnabled() && includeDescription) {
@@ -284,22 +283,6 @@ void TagFieldEdit::setupUi()
     m_widgets.clear();
     // setup widgets
     switch (m_dataType) {
-    case TagDataType::Text:
-    case TagDataType::TimeSpan:
-    case TagDataType::DateTime:
-    case TagDataType::Popularity:
-    case TagDataType::DateTimeExpression:
-        switch (m_field) {
-        case KnownField::Genre:
-            setupGenreComboBox();
-            break;
-        case KnownField::Lyrics:
-            setupPlainTextEdit();
-            break;
-        default:
-            setupLineEdit();
-        }
-        break;
     case TagDataType::Picture:
         setupPictureSelection();
         break;
@@ -316,7 +299,17 @@ void TagFieldEdit::setupUi()
         setupFileSelection();
         break;
     default:
-        setupTypeNotSupportedLabel();
+        switch (m_field) {
+        case KnownField::Genre:
+            setupGenreComboBox();
+            break;
+        case KnownField::Lyrics:
+            setupPlainTextEdit();
+            break;
+        default:
+            setupLineEdit();
+        }
+        break;
     }
     if (m_dataType != TagDataType::Picture && hasDescription()) { // setup description line edit
         setupDescriptionLineEdit();
