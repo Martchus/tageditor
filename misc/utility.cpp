@@ -62,6 +62,7 @@ QString tagValueToQString(const TagValue &value)
     case TagDataType::DateTime:
     case TagDataType::PositionInSet:
     case TagDataType::Popularity:
+    case TagDataType::DateTimeExpression:
         return QString::fromStdString(value.toString());
     default:;
     }

@@ -124,6 +124,7 @@ TagValue TagFieldEdit::value(TagTextEncoding encoding, bool includeDescription) 
     case TagDataType::TimeSpan:
     case TagDataType::DateTime:
     case TagDataType::Popularity:
+    case TagDataType::DateTimeExpression:
         switch (m_field) {
         case KnownField::Genre:
             if (m_comboBox) {
@@ -287,6 +288,7 @@ void TagFieldEdit::setupUi()
     case TagDataType::TimeSpan:
     case TagDataType::DateTime:
     case TagDataType::Popularity:
+    case TagDataType::DateTimeExpression:
         switch (m_field) {
         case KnownField::Genre:
             setupGenreComboBox();
