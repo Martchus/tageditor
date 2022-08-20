@@ -195,7 +195,7 @@ if (WIDGETS_GUI OR QUICK_GUI)
     set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES
         "${CONFIGURATION_PACKAGE_SUFFIX}"
         CACHE STRING "sets the suffix for qtutilities")
-    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} 6.3.0 REQUIRED)
+    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} 6.8.0 REQUIRED)
     use_qt_utilities()
 endif ()
 

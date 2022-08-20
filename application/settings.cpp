@@ -8,6 +8,8 @@
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tag.h>
 
+#include <qtutilities/resources/resources.h>
+
 #include <QApplication>
 #include <QFile>
 #include <QSettings>
@@ -45,13 +47,9 @@ Settings &values()
 
 void restore()
 {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QStringLiteral(PROJECT_NAME));
-    // move old config to new location
-    const QString oldConfig
-        = QSettings(QSettings::IniFormat, QSettings::UserScope, QApplication::organizationName(), QApplication::applicationName()).fileName();
-    QFile::rename(oldConfig, settings.fileName()) || QFile::remove(oldConfig);
-    settings.sync();
-    Settings &v = values();
+    auto s = QtUtilities::getSettings(QStringLiteral(PROJECT_NAME));
+    auto &settings = *s;
+    auto &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
     switch (settings.value(QStringLiteral("adoptfields"), static_cast<int>(v.editor.adoptFields)).toInt()) {
@@ -221,8 +219,9 @@ void restore()
 
 void save()
 {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, QStringLiteral(PROJECT_NAME));
-    const Settings &v = values();
+    auto s = QtUtilities::getSettings(QStringLiteral(PROJECT_NAME));
+    auto &settings = *s;
+    const auto &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
     settings.setValue(QStringLiteral("adoptfields"), static_cast<int>(v.editor.adoptFields));
