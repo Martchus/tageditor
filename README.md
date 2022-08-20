@@ -103,6 +103,9 @@ See the release section on GitHub.
     * there is a [package in the platypus repository](https://git.exherbo.org/summer/packages/media-sound/tageditor)
 * Gentoo
     * there is a [package in perfect7gentleman's repository](https://github.com/perfect7gentleman/pg_overlay)
+* Void Linux
+    * available as package `tageditor` from the
+      [official repositories](https://voidlinux.org/packages/?q=tageditor)
 * Other GNU/Linux systems
     * for generic, self-contained binaries checkout the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
         * Requires glibc>=2.26, OpenGL and libX11
