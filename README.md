@@ -374,7 +374,7 @@ JSON export. To enable it, add `-DENABLE_JSON_EXPORT` to the CMake arguments.
 When enabled, the following additional dependencies are required (only at build-time): rapidjson, reflective-rapidjson and llvm/clang
 
 ### Building this straight
-0. Install (preferably the latest version of) the CGG toolchain or Clang, the required Qt modules,
+0. Install (preferably the latest version of) the GCC toolchain or Clang, the required Qt modules,
    [iso-codes](https://salsa.debian.org/iso-codes-team/iso-codes), iconv, zlib, CMake and Ninja.
 1. Get the sources of additional dependencies and the tag editor itself.
    For the latest version from Git clone the following repositories:
