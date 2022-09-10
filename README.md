@@ -449,3 +449,8 @@ Per monitor DPI awareness (v2) is not working out of the box but experimental su
 Copyright © 2015-2022 Marius Kittler
 
 All code is licensed under [GPL-2-or-later](LICENSE).
+
+## Attribution for 3rd party content
+* The program icon is based on icons taken from the [KDE/Breeze](https://invent.kde.org/frameworks/breeze-icons) project.
+* Other icons found in this repository are taken from the [KDE/Breeze](https://invent.kde.org/frameworks/breeze-icons) project
+  (without modification).
