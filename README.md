@@ -343,11 +343,12 @@ To avoid building c++utilities/tagparser/qtutilities separately, follow the inst
 can be passed to CMake to influence the build.
 
 ### Building with Qt GUI
-The Qt GUI is enabled by default. The following Qt modules are required (version 5.6 or higher):
+The Qt GUI is enabled by default. The following Qt modules are required (only the latest Qt 5 and Qt 6 version
+tested):
 core concurrent gui network widgets declarative/script webenginewidgets/webkitwidgets
 
-Note that old Qt versions like 5.6 lack support for modern JavaScript features. To use the JavaScript-based
-renaming tool it is recommend to use at least Qt 5.12.
+Note that old Qt versions lack support for modern JavaScript features. To use the JavaScript-based renaming tool
+it is recommend to use at least Qt 5.12.
 
 To specify the major Qt version to use, set `QT_PACKAGE_PREFIX` (e.g. add `-DQT_PACKAGE_PREFIX:STRING=Qt6`
 to the CMake arguments).
