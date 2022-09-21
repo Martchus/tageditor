@@ -102,7 +102,7 @@ See the release section on GitHub.
 * Exherbo
     * there is a [package in the platypus repository](https://git.exherbo.org/summer/packages/media-sound/tageditor)
 * Gentoo
-    * there is a [package in perfect7gentleman's repository](https://github.com/perfect7gentleman/pg_overlay)
+    * there is a [package in perfect7gentleman's repository](https://gitlab.com/Perfect_Gentleman/PG_Overlay)
 * Void Linux
     * available as package `tageditor` from the
       [official repositories](https://voidlinux.org/packages/?q=tageditor)
