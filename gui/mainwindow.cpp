@@ -370,7 +370,7 @@ void MainWindow::showAboutDlg()
     if (!m_aboutDlg) {
         m_aboutDlg = new AboutDialog(this, QString(),
             QStringLiteral("<p>Developed by " APP_AUTHOR
-                           "<br>Program icon baseed on icons from <a href=\"https://invent.kde.org/frameworks/breeze-icons\">KDE/Breeze</a> "
+                           "<br>Program icon based on icons from <a href=\"https://invent.kde.org/frameworks/breeze-icons\">KDE/Breeze</a> "
                            "project (copyright © 2014 Uri Herrera <uri_herrera@nitrux.in> and others, see the according "
                            "<a href=\"" APP_URL "/blob/master/LICENSE.LESSER\">LGPL-3.0 license</a>)"
                            "<br>Fallback icons from KDE/Breeze as well</p>"),
