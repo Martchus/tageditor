@@ -76,7 +76,6 @@ namespace Cli {
     "      releasedate performers duration language encodersettings lyrics synchronizedlyrics grouping\n"                                            \
     "      recordlabel cover composer rating description vendor albumartist\n"                                                                       \
     "      subtitle leadperformer arranger conductor director assistantdirector\n"                                                                   \
-    "      subtitle leadperformer arranger conductor director assistantdirector\n"                                                                   \
     "      directorofphotography soundengineer artdirector productiondesigner choregrapher\n"                                                        \
     "      costumedesigner actor character writtenby screenplayby editedby producer\n"                                                               \
     "      coproducer exectiveproducer distributedby masteredby encodedby mixedby\n"                                                                 \
@@ -86,7 +85,7 @@ namespace Cli {
     "      purchasingdate recordinglocation compositionlocation composernationality\n"                                                               \
     "      playcounter measure tuning isrc mcdi isbn barcode catalognumber labelcode\n"                                                              \
     "      lccn imdb tmdb tvdb purchaseitem purchaseinfo purchaseowner purchaseprice\n"                                                              \
-    "      purchasecurrency copyright productioncopyright licnese termsofuse"
+    "      purchasecurrency copyright productioncopyright license termsofuse"
 
 #define TRACK_ATTRIBUTE_NAMES "name tracknumber enabled=yes enabled=no forced=yes forced=no default=yes default=no"
 
