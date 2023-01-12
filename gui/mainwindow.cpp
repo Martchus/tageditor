@@ -186,18 +186,38 @@ bool MainWindow::isLayoutLocked() const
  */
 void MainWindow::setLayoutLocked(bool locked)
 {
-    if (locked != isLayoutLocked()) {
-        if (locked) {
-            m_ui->fileSelectionDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
-            m_ui->dbQueryDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
-            m_ui->lockLayout->setText(tr("Unlock layout"));
-            m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("unlock")));
-        } else {
-            m_ui->fileSelectionDockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
-            m_ui->dbQueryDockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
-            m_ui->lockLayout->setText(tr("Lock layout"));
-            m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("lock")));
+    // lock layout if not already locked
+    const auto change = locked != isLayoutLocked();
+    if (locked) {
+        if (!change) {
+            return;
         }
+        m_ui->fileSelectionDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+        m_ui->dbQueryDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
+        m_ui->lockLayout->setText(tr("Unlock layout"));
+        m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("unlock")));
+        return;
+    }
+
+    // unlock layout using different features depending on the platform
+#if defined(Q_OS_WINDOWS) || defined(Q_OS_MAC)
+    constexpr auto features = QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable;
+#else
+    auto features = static_cast<QDockWidget::DockWidgetFeatures>(QDockWidget::DockWidgetMovable);
+    if (QGuiApplication::platformName().compare(QLatin1String("wayland"), Qt::CaseInsensitive)) {
+        // enable floating windows only on non-Wayland platforms as one can never put a floating window back under Wayland
+        features |= QDockWidget::DockWidgetFloatable;
+    } else {
+        // ensure currently floating windows (e.g. from the last X11 session) aren't floating anymore under Wayland
+        m_ui->fileSelectionDockWidget->setFloating(false);
+        m_ui->dbQueryDockWidget->setFloating(false);
+    }
+#endif
+    m_ui->fileSelectionDockWidget->setFeatures(features);
+    m_ui->dbQueryDockWidget->setFeatures(features | QDockWidget::DockWidgetClosable);
+    if (change) {
+        m_ui->lockLayout->setText(tr("Lock layout"));
+        m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("lock")));
     }
 }
 
