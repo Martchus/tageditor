@@ -370,7 +370,7 @@ To build without GUI, add the following parameters to the CMake call:
 
 ### JSON export
 As a small demo for [Reflective RapidJSON](https://github.com/Martchus/reflective-rapidjson), the tag editor features an optional
-JSON export. To enable it, add `-DENABLE_JSON_EXPORT` to the CMake arguments.
+JSON export. To enable it, add `-DENABLE_JSON_EXPORT=ON` to the CMake arguments.
 
 When enabled, the following additional dependencies are required (only at build-time): rapidjson, reflective-rapidjson and llvm/clang
 
