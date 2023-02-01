@@ -14,7 +14,10 @@
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/io/ansiescapecodes.h>
 
+#if !defined(PLATFORM_WINDOWS) || defined(PLATFORM_MINGW)
+// for write(STDOUT_FILENO, data, size) - not sure what to use with MSVC
 #include <unistd.h>
+#endif
 
 #include <csignal>
 #include <cstring>
@@ -116,13 +119,17 @@ void InterruptHandler::handler(int signum)
     // finalize log and print warning, prevent using std::cout which could lead to undefined behaviour
     if (!logLineFinalized) {
         logLineFinalized = true;
+#if !defined(PLATFORM_WINDOWS) || defined(PLATFORM_MINGW)
         write(STDOUT_FILENO, "\n", 1);
+#endif
     }
+#if !defined(PLATFORM_WINDOWS) || defined(PLATFORM_MINGW)
     if (EscapeCodes::enabled) {
         write(STDOUT_FILENO, "\e[1;33mWarning:\e[0m \e[1mSignal received, trying to abort ongoing process ...\e[0m\n", 82);
     } else {
         write(STDOUT_FILENO, "Warning: Signal received, trying to abort ongoing process ...\n", 63);
     }
+#endif
 
     // call custom handler
     s_handler();
