@@ -2257,7 +2257,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="223"/>
+        <location filename="../gui/mainwindow.cpp" line="219"/>
         <source>Lock layout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2267,37 +2267,37 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="201"/>
+        <location filename="../gui/mainwindow.cpp" line="197"/>
         <source>Unlock layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="253"/>
+        <location filename="../gui/mainwindow.cpp" line="249"/>
         <source>Unable to close while the file operation is still ongoing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="364"/>
+        <location filename="../gui/mainwindow.cpp" line="360"/>
         <source>No file opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="401"/>
+        <location filename="../gui/mainwindow.cpp" line="397"/>
         <source>A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="531"/>
+        <location filename="../gui/mainwindow.cpp" line="527"/>
         <source>Unable to show the next file because it can&apos;t be found anymore.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="541"/>
+        <location filename="../gui/mainwindow.cpp" line="537"/>
         <source>Open file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="553"/>
+        <location filename="../gui/mainwindow.cpp" line="549"/>
         <source>Save changes as - </source>
         <translation type="unfinished"></translation>
     </message>
