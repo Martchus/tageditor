@@ -19,14 +19,13 @@ language, bitrate, duration, size, timestamps, sampling frequency, FPS and other
 It also allows to inspect and validate the element structure of MP4 and Matroska files.
 
 ## Backup/temporary files
-Sometimes the tag editor has to rewrite the entire file in order to apply changes. With the default settings this
-will happen most of the times.
+Sometimes the tag editor has to rewrite the entire file in order to apply changes. This leads to the creation
+of a temporary file. With the GUI's default settings this is even enforced to be conservative **as the temporary files
+also serve as a backup** in case something goes wrong, e.g. your computer crashes while saving or a bug within the tag
+editor breaks particularly structured files. When using the CLI it is therefore also recommend to use `--force-rewrite`.
 
-The next section describes how to tweak settings to avoid this at the cost of having some padding within the files
-and/or storing tags at the end of the file. **Note that temporary files also serve as a backup** in case something
-goes wrong, e.g. your computer crashes while saving or a bug within the tag editor breaks particularly structured files.
-To be safe it might therefore even be desirable to enforce the creation of a temporary file. That is also possible to
-configure within the GUI and the CLI option `--force-rewrite`.
+The next section describes how to tweak settings to avoid rewriting at the cost of having *no* backup, having some
+padding within the files and/or storing tags at the end of the file.
 
 Nevertheless, it will not always be possible to avoid rewriting a file in all cases anyways. You can configure a
 directory for temporary files within the GUI settings or the CLI option `--temp-dir`. Then you can easily clean up all
@@ -64,18 +63,27 @@ tageditor set --index-pos front --force
 Padding allows adding additional tag information without rewriting the entire file or appending the tag. Usage of
 padding can be configured:
 - minimum/maximum padding: The file is rewritten if the padding would fall below/exceed the specified limits.
-- preferred padding: If the file needs to be rewritten the preferred padding is used.
+- preferred padding: If the file is rewritten the preferred padding is used.
 
-Default value for minimum and maximum padding is zero (in the CLI and GUI). This leads to the fact that
-the Tag Editor will almost always have to rewrite the entire file to apply changes. To prevent this, set
-at least the maximum padding to a higher value.
+It is also possible to force rewriting the entire file to enforce the preferred padding is used.
 
-However, it is also possible to force rewriting the entire file.
-
-The relevant CLI options are `--min-padding`, `--max-padding` and `--force-rewrite`.
+The relevant CLI options are `--min-padding`, `--max-padding`, `--preferred-padding` and `--force-rewrite`.
 
 Taking advantage of padding is currently not supported when dealing with Ogg streams (it is supported when
 dealing with raw FLAC streams).
+
+### Avoid rewriting files
+As explained in the "Backup/temporary files" section, this is not a good idea as the temporary file that is created
+when rewriting the entire file also serves as backup. However, if you nevertheless want to avoid rewriting the file as
+much as possible, set the following in the GUI's "File layout" settings:
+
+* "Force rewrite…" option: unchecked
+* "Use preferred position…" options: unchecked
+* Minimum padding: 0
+* Maximum padding: 429496729 (simply a very high number)
+
+When using the CLI, you just need to add `--max-padding 429496729` to the CLI arguments (and avoid any of the other
+arguments mentioned in previous sections).
 
 ## Download
 ### Source
