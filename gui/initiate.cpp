@@ -13,12 +13,26 @@
 #include <qtutilities/settingsdialog/qtsettings.h>
 
 #include <QApplication>
+#include <QMessageBox>
 
 ENABLE_QT_RESOURCES_OF_STATIC_DEPENDENCIES
 
 using namespace CppUtilities;
 
 namespace QtGui {
+
+static void showSettingsError(const QString &settingsError)
+{
+    if (!settingsError.isEmpty()) {
+        QMessageBox::critical(nullptr, QCoreApplication::applicationName(), settingsError);
+    }
+}
+
+static void saveSettings()
+{
+    Settings::save();
+    showSettingsError(Settings::values().error);
+}
 
 int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs, const QString &path, bool launchRenamingUtility)
 {
@@ -27,12 +41,14 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     Settings::restore();
 
     // apply settings specified via command line args after the settings chosen in the GUI to give the CLI options precedence
-    Settings::values().qt.apply();
-    qtConfigArgs.applySettings(Settings::values().qt.hasCustomFont());
+    auto &settings = Settings::values();
+    settings.qt.apply();
+    qtConfigArgs.applySettings(settings.qt.hasCustomFont());
 
     LOAD_QT_TRANSLATIONS;
 
-    QObject::connect(&application, &QCoreApplication::aboutToQuit, &Settings::save);
+    showSettingsError(settings.error);
+    QObject::connect(&application, &QCoreApplication::aboutToQuit, &saveSettings);
 
     if (launchRenamingUtility) {
         RenameFilesDialog window;

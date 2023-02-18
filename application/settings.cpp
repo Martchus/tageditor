@@ -50,6 +50,7 @@ void restore()
     auto s = QtUtilities::getSettings(QStringLiteral(PROJECT_NAME));
     auto &settings = *s;
     auto &v = values();
+    v.error = QtUtilities::errorMessageForSettings(settings);
 
     settings.beginGroup(QStringLiteral("editor"));
     switch (settings.value(QStringLiteral("adoptfields"), static_cast<int>(v.editor.adoptFields)).toInt()) {
@@ -221,7 +222,7 @@ void save()
 {
     auto s = QtUtilities::getSettings(QStringLiteral(PROJECT_NAME));
     auto &settings = *s;
-    const auto &v = values();
+    auto &v = values();
 
     settings.beginGroup(QStringLiteral("editor"));
     settings.setValue(QStringLiteral("adoptfields"), static_cast<int>(v.editor.adoptFields));
@@ -311,6 +312,9 @@ void save()
     settings.endGroup();
 
     v.qt.save(settings);
+
+    settings.sync();
+    v.error = QtUtilities::errorMessageForSettings(settings);
 }
 
 } // namespace Settings

@@ -109,6 +109,7 @@ struct RenamingUtility {
 };
 
 struct Settings {
+    QString error;
     Editor editor;
     FileBrowser fileBrowser;
     TagProcessing tagPocessing;
