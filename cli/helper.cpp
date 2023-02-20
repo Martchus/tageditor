@@ -628,7 +628,7 @@ FieldDenotations parseFieldDenotations(const Argument &fieldsArg, bool readOnly)
                 }
             }
             scope.allTracks = allTracks;
-            scope.trackIds = move(trackIds);
+            scope.trackIds = std::move(trackIds);
             continue;
         }
 

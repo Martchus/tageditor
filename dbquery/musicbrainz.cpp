@@ -34,7 +34,7 @@ template <> struct hash<QString> {
 namespace QtGui {
 
 MusicBrainzResultsModel::MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply)
-    : HttpResultsModel(move(initialSongDescription), reply)
+    : HttpResultsModel(std::move(initialSongDescription), reply)
 {
 }
 
@@ -95,7 +95,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
 
     // parse XML tree
     QXmlStreamReader xmlReader(data);
-    // clang-format off
+// clang-format off
     #include <qtutilities/misc/xmlparsermacros.h>
     children {
         iftag("metadata") {
@@ -184,7 +184,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                                 }
                                                 else_skip
                                             }
-                                            releasesByRecording[currentDescription.songId].emplace_back(move(releaseInfo));
+                                            releasesByRecording[currentDescription.songId].emplace_back(std::move(releaseInfo));
                                         }
                                         else_skip
                                     }
@@ -206,7 +206,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                 }
                                 else_skip
                             }
-                            recordings.emplace_back(move(currentDescription));
+                            recordings.emplace_back(std::move(currentDescription));
                         }
                         else_skip
                     }
@@ -246,7 +246,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
             if (!release.year.isEmpty()) {
                 releaseSpecificRecording.year = release.year;
             }
-            recordingsByRelease[release.year % QChar('-') % release.albumId].emplace_back(move(releaseSpecificRecording));
+            recordingsByRelease[release.year % QChar('-') % release.albumId].emplace_back(std::move(releaseSpecificRecording));
         }
     }
     // -> sort recordings within each release by track number and add recordings to results
@@ -259,7 +259,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
             return recording1.track < recording2.track;
         });
         for (auto &recording : recordingsOfRelease) {
-            m_results << move(recording);
+            m_results << std::move(recording);
         }
     }
 
@@ -307,7 +307,7 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
     // make request
     QNetworkRequest request(url);
     request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("Mozilla/5.0 (X11; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0"));
-    return new MusicBrainzResultsModel(move(songDescription), Utility::networkAccessManager().get(request));
+    return new MusicBrainzResultsModel(std::move(songDescription), Utility::networkAccessManager().get(request));
 }
 
 QNetworkReply *queryCoverArtArchive(const QString &albumId)

@@ -25,7 +25,7 @@ static QUrl makeItPersonalApiUrl()
 }
 
 MakeItPersonalResultsModel::MakeItPersonalResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply)
-    : HttpResultsModel(move(initialSongDescription), reply)
+    : HttpResultsModel(std::move(initialSongDescription), reply)
 {
 }
 
@@ -46,7 +46,7 @@ void MakeItPersonalResultsModel::parseInitialResults(const QByteArray &data)
     desc.artistId = m_initialDescription.artist;
     desc.lyrics = QString::fromUtf8(data).trimmed();
     if (desc.lyrics != QLatin1String("Sorry, We don't have lyrics for this song yet.")) {
-        m_results << move(desc);
+        m_results << std::move(desc);
     }
 
     // promote changes
@@ -63,7 +63,7 @@ QueryResultsModel *queryMakeItPersonal(SongDescription &&songDescription)
     url.setQuery(query);
 
     // make request
-    return new MakeItPersonalResultsModel(move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
+    return new MakeItPersonalResultsModel(std::move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
 }
 
 } // namespace QtGui

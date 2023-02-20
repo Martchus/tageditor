@@ -36,7 +36,7 @@ static void lazyInitializeLyricsWikiaSongId(SongDescription &desc)
 }
 
 LyricsWikiaResultsModel::LyricsWikiaResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply)
-    : HttpResultsModel(move(initialSongDescription), reply)
+    : HttpResultsModel(std::move(initialSongDescription), reply)
 {
 }
 
@@ -158,7 +158,7 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
                                         song.album = album;
                                         song.year = year;
                                         song.totalTracks = songs.size();
-                                        m_results << move(song);
+                                        m_results << std::move(song);
                                     }
                                 }
                             }
@@ -433,7 +433,7 @@ QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription)
     // be done manually when parsing results.
 
     // make request
-    return new LyricsWikiaResultsModel(move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
+    return new LyricsWikiaResultsModel(std::move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
 }
 
 } // namespace QtGui

@@ -149,7 +149,7 @@ FilteredFileSystemItemModel *RenamingEngine::previewModel()
 void RenamingEngine::processPreviewGenerated()
 {
     finalizeTaskCompletion();
-    setRootItem(move(m_newlyGeneratedRootItem));
+    setRootItem(std::move(m_newlyGeneratedRootItem));
 }
 
 void RenamingEngine::processChangingsApplied()
@@ -181,7 +181,7 @@ void RenamingEngine::finalizeTaskCompletion()
 inline void RenamingEngine::setRootItem(unique_ptr<FileSystemItem> &&rootItem)
 {
     updateModel(rootItem.get());
-    m_rootItem = move(rootItem);
+    m_rootItem = std::move(rootItem);
 }
 
 void RenamingEngine::updateModel(FileSystemItem *rootItem)
