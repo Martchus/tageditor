@@ -304,7 +304,7 @@ void TagEdit::setupUi()
     // there are tags assigned
     // setup editing controls
     TagFieldEdit *edit = nullptr;
-    int rowOverall = 0, rowLeft = 0, rowRight = 0;
+    auto rowLeft = 0, rowRight = 0;
     for (const auto &item : Settings::values().editor.fields.items()) {
         const auto field = static_cast<KnownField>(item.id().toInt());
         if (!item.isChecked() || !hasField(field)) {
@@ -372,7 +372,6 @@ void TagEdit::setupUi()
         }
         // update the current position
         // note: The position is required to keep the order of Settings::fieldModel().fields().
-        ++rowOverall;
         switch (field) {
         case KnownField::Cover:
         case KnownField::Lyrics:
