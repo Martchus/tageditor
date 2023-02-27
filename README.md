@@ -391,17 +391,13 @@ When enabled, the following additional dependencies are required (only at build-
    For the latest version from Git clone the following repositories:
    ```
    cd "$SOURCES"
-   git clone -c core.symlinks=true https://github.com/Martchus/cpp-utilities.git c++utilities
-   git clone -c core.symlinks=true https://github.com/Martchus/tagparser.git
-   git clone -c core.symlinks=true https://github.com/Martchus/qtutilities.git                  # only required for Qt GUI
-   git clone -c core.symlinks=true https://github.com/Martchus/reflective-rapidjson.git         # only required for JSON export
-   git clone -c core.symlinks=true https://github.com/Martchus/tageditor.git
-   git clone -c core.symlinks=true https://github.com/Martchus/subdirs.git
+   git clone https://github.com/Martchus/cpp-utilities.git c++utilities
+   git clone https://github.com/Martchus/tagparser.git
+   git clone https://github.com/Martchus/qtutilities.git                  # only required for Qt GUI
+   git clone https://github.com/Martchus/reflective-rapidjson.git         # only required for JSON export
+   git clone https://github.com/Martchus/tageditor.git
+   git clone https://github.com/Martchus/subdirs.git
    ```
-   Note that `-c core.symlinks=true` is only required under Windows to handle symlinks correctly.
-   This requires a recent Git version and a filesystem which supports symlinks (NTFS works).
-   If you run into "not found" errors on symlink creation use `git reset --hard` within the repository to
-   fix this.
 2. Configure the build
    ```
    cd "$BUILD_DIR"
