@@ -1408,7 +1408,7 @@ void QtGui::TagEditorWidget::renameFile()
         std::filesystem::rename(oldPath, newPath);
 
         // open again with write access
-        m_fileInfo.reportPathChanged(newPath.u8string());
+        m_fileInfo.reportPathChanged(extractNativePath(newPath.native()));
         try {
             m_fileInfo.stream().open(m_fileInfo.path().data(), ios_base::in | ios_base::out | ios_base::binary);
         } catch (const std::ios_base::failure &) {
