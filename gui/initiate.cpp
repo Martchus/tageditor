@@ -42,6 +42,7 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
 
     // apply settings specified via command line args after the settings chosen in the GUI to give the CLI options precedence
     auto &settings = Settings::values();
+    settings.qt.disableNotices();
     settings.qt.apply();
     qtConfigArgs.applySettings(settings.qt.hasCustomFont());
 

@@ -680,8 +680,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     setWindowIcon(QIcon::fromTheme(
         QStringLiteral("preferences-other"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/preferences-other.svg"))));
 
-    // some settings could be applied without restarting the application, good idea?
-    //connect(this, &Dialogs::SettingsDialog::applied, bind(&Dialogs::QtSettings::apply, &Settings::qtSettings()));
+    connect(this, &SettingsDialog::applied, std::bind(&QtSettings::apply, &::Settings::values().qt));
 }
 
 SettingsDialog::~SettingsDialog()
