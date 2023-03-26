@@ -520,7 +520,7 @@ void PicturePreviewSelection::extractSelected()
         QMessageBox::warning(this, QCoreApplication::applicationName(), tr("Unable to open output file."));
         return;
     }
-    if (value.dataSize() <= numeric_limits<qint64>::max() && file.write(value.dataPointer(), static_cast<qint64>(value.dataSize())) > 0) {
+    if (value.dataSize() <= static_cast<std::size_t>(numeric_limits<qint64>::max()) && file.write(value.dataPointer(), static_cast<qint64>(value.dataSize())) > 0) {
         QMessageBox::information(this, QCoreApplication::applicationName(), tr("The cover has extracted."));
     } else {
         QMessageBox::warning(this, QCoreApplication::applicationName(), tr("Unable to write to output file."));
