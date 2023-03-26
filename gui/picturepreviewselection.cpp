@@ -601,8 +601,8 @@ void PicturePreviewSelection::convertSelected()
         m_imageConversionDialog = new QDialog(this);
         m_imageConversionUI = make_unique<Ui::ImageConversionDialog>();
         m_imageConversionUI->setupUi(m_imageConversionDialog);
-#ifdef Q_OS_WIN32
-        m_imageConversionDialog->setStyleSheet(dialogStyle());
+#ifdef Q_OS_WINDOWS
+        m_imageConversionDialog->setStyleSheet(dialogStyleForPalette(palette()));
 #endif
         m_imageConversionUI->formatComboBox->addItems({ tr("JPEG"), tr("PNG") });
         m_imageConversionUI->aspectRatioComboBox->addItems({ tr("Ignore"), tr("Keep"), tr("Keep by expanding") });
@@ -636,6 +636,22 @@ void PicturePreviewSelection::convertSelected()
 void PicturePreviewSelection::setCoverButtonsHidden(bool hideCoverButtons)
 {
     m_ui->coverButtonsWidget->setHidden(hideCoverButtons);
+}
+
+bool PicturePreviewSelection::event(QEvent *event)
+{
+    const auto res = QWidget::event(event);
+#ifdef Q_OS_WINDOWS
+    switch (event->type()) {
+    case QEvent::PaletteChange:
+        if (m_imageConversionDialog) {
+            m_imageConversionDialog->setStyleSheet(dialogStyleForPalette(palette()));
+        }
+        break;
+    default:;
+    }
+#endif
+    return res;
 }
 
 void PicturePreviewSelection::changeEvent(QEvent *event)

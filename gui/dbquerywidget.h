@@ -49,6 +49,7 @@ public Q_SLOTS:
     void clearSearchCriteria();
 
 private Q_SLOTS:
+    void updateStyleSheet();
     void showResults();
     void setStatus(bool aborted);
     void fileStatusChanged(bool opened, bool hasTags);
@@ -65,6 +66,7 @@ private Q_SLOTS:
     void showLyricsFromIndex(const QModelIndex &index);
 
 protected:
+    bool event(QEvent *event) override;
     bool eventFilter(QObject *obj, QEvent *event) override;
 
 private:

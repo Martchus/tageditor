@@ -68,6 +68,7 @@ Q_SIGNALS:
     void pictureChanged();
 
 protected:
+    bool event(QEvent *event) override;
     void changeEvent(QEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
     void dragEnterEvent(QDragEnterEvent *event) override;

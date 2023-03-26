@@ -76,11 +76,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     // setup UI
     m_ui->setupUi(this);
-#ifdef Q_OS_WIN32
-    setStyleSheet(dialogStyle() + QStringLiteral("#tagEditorWidget { color: palette(text); background-color: palette(base); }"));
-#else
-    setStyleSheet(dialogStyle());
-#endif
+    updateStyleSheet();
 
     // restore geometry and state
     const auto &settings = Settings::values();
@@ -243,6 +239,9 @@ bool MainWindow::event(QEvent *event)
 {
     auto &settings = Settings::values();
     switch (event->type()) {
+    case QEvent::PaletteChange:
+        updateStyleSheet();
+        break;
     case QEvent::Close:
         if (m_ui->tagEditorWidget->isFileOperationOngoing()) {
             event->ignore();
@@ -346,6 +345,18 @@ void MainWindow::handleCurrentPathChanged(const QString &newPath)
     m_internalFileSelection = false;
     // ensure this is the active window
     activateWindow();
+}
+
+/*!
+ * \brief Updates the style sheet.
+ */
+void MainWindow::updateStyleSheet()
+{
+#ifdef Q_OS_WINDOWS
+    setStyleSheet(dialogStyleForPalette(palette()) + QStringLiteral("#tagEditorWidget { color: palette(text); background-color: palette(base); }"));
+#else
+    setStyleSheet(dialogStyleForPalette(palette()));
+#endif
 }
 
 /*!

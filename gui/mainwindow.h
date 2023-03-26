@@ -67,6 +67,7 @@ private Q_SLOTS:
     void showSaveAsDlg();
     void handleFileStatusChange(bool opened, bool hasTag);
     void handleCurrentPathChanged(const QString &newPath);
+    void updateStyleSheet();
 
     // settings
     void showNewWindow();

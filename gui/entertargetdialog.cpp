@@ -68,10 +68,7 @@ EnterTargetDialog::EnterTargetDialog(QWidget *parent)
 {
     // setup UI
     m_ui->setupUi(this);
-    // apply style sheets
-#ifdef Q_OS_WIN32
-    setStyleSheet(dialogStyle());
-#endif
+    updateStyleSheet();
     // setup views
     m_ui->tracksListView->setModel(m_tracksModel);
     m_ui->chaptersListView->setModel(m_chaptersModel);
@@ -91,7 +88,14 @@ EnterTargetDialog::~EnterTargetDialog()
 void EnterTargetDialog::updateLevelNamePlaceholderText(int i)
 {
     m_ui->levelNameLineEdit->setPlaceholderText(qstringFromStdStringView(
-        i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : std::string_view()));
+                                                    i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : std::string_view()));
+}
+
+void EnterTargetDialog::updateStyleSheet()
+{
+#ifdef Q_OS_WINDOWS
+    setStyleSheet(dialogStyleForPalette(palette()));
+#endif
 }
 
 TagParser::TagTarget EnterTargetDialog::target() const
@@ -139,6 +143,18 @@ void EnterTargetDialog::setTarget(const TagTarget &target, const MediaFileInfo *
         // add attachment IDs
         addIds(m_attachmentsModel, target.attachments());
     }
+}
+
+bool EnterTargetDialog::event(QEvent *event)
+{
+    const auto res = QDialog::event(event);
+    switch (event->type()) {
+    case QEvent::PaletteChange:
+        updateStyleSheet();
+        break;
+    default:;
+    }
+    return res;
 }
 
 } // namespace QtGui

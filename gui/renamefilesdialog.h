@@ -52,6 +52,7 @@ private Q_SLOTS:
     void abortClose();
     void toggleScriptSource();
     void setScriptModified(bool scriptModified);
+    void updateStyleSheet();
 
 private:
     std::unique_ptr<Ui::RenameFilesDialog> m_ui;

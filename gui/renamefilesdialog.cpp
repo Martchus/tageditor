@@ -37,9 +37,7 @@ RenameFilesDialog::RenameFilesDialog(QWidget *parent)
 {
     setAttribute(Qt::WA_QuitOnClose, false);
     m_ui->setupUi(this);
-#ifdef Q_OS_WIN32
-    setStyleSheet(dialogStyle() + QStringLiteral("QSplitter:handle { background-color: palette(base); }"));
-#endif
+    updateStyleSheet();
     // setup javascript editor and script file selection
     m_ui->javaScriptPlainTextEdit->setFont(QFontDatabase::systemFont(QFontDatabase::FixedFont));
     m_highlighter = new JavaScriptHighlighter(m_ui->javaScriptPlainTextEdit->document());
@@ -114,6 +112,9 @@ bool RenameFilesDialog::event(QEvent *event)
 {
     auto &settings = Settings::values().renamingUtility;
     switch (event->type()) {
+    case QEvent::PaletteChange:
+        updateStyleSheet();
+        break;
     case QEvent::Close:
         // save settings
         settings.scriptSource = m_ui->sourceFileStackedWidget->currentIndex();
@@ -400,6 +401,13 @@ void RenameFilesDialog::toggleScriptSource()
 void RenameFilesDialog::setScriptModified(bool scriptModified)
 {
     m_scriptModified = scriptModified;
+}
+
+void RenameFilesDialog::updateStyleSheet()
+{
+#ifdef Q_OS_WINDOWS
+    setStyleSheet(dialogStyleForPalette(palette()) + QStringLiteral("QSplitter:handle { background-color: palette(base); }"));
+#endif
 }
 
 } // namespace QtGui

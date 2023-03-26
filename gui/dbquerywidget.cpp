@@ -49,11 +49,7 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     , m_menu(new QMenu(parent))
 {
     m_ui->setupUi(this);
-#ifdef Q_OS_WIN32
-    setStyleSheet(dialogStyle());
-#else
-    setStyleSheet(QStringLiteral("QGroupBox { color: palette(text); background-color: palette(base); }"));
-#endif
+    updateStyleSheet();
 
     m_ui->notificationLabel->setText(tr("Search hasn't been started"));
     m_ui->notificationLabel->setContext(tr("MusicBrainz/LyricsWikia notifications"));
@@ -714,12 +710,33 @@ void DbQueryWidget::showLyricsFromIndex(const QModelIndex &index)
     }
 }
 
+bool DbQueryWidget::event(QEvent *event)
+{
+    const auto res = QWidget::event(event);
+    switch (event->type()) {
+    case QEvent::PaletteChange:
+        updateStyleSheet();
+        break;
+    default:;
+    }
+    return res;
+}
+
 void DbQueryWidget::clearSearchCriteria()
 {
     m_ui->titleLineEdit->clear();
     m_ui->albumLineEdit->clear();
     m_ui->artistLineEdit->clear();
     m_ui->trackSpinBox->setValue(0);
+}
+
+void DbQueryWidget::updateStyleSheet()
+{
+#ifdef Q_OS_WINDOWS
+    setStyleSheet(dialogStyleForPalette(palette()));
+#else
+    setStyleSheet(QStringLiteral("QGroupBox { color: palette(text); background-color: palette(base); }"));
+#endif
 }
 
 bool DbQueryWidget::eventFilter(QObject *obj, QEvent *event)

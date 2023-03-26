@@ -33,8 +33,12 @@ public:
     TagParser::TagTarget target() const;
     void setTarget(const TagParser::TagTarget &target, const TagParser::MediaFileInfo *file = nullptr);
 
+protected:
+    bool event(QEvent *event) override;
+
 private Q_SLOTS:
     void updateLevelNamePlaceholderText(int i);
+    void updateStyleSheet();
 
 private:
     std::unique_ptr<Ui::EnterTargetDialog> m_ui;
