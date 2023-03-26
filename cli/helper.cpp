@@ -125,7 +125,7 @@ void InterruptHandler::handler(int signum)
     }
 #if !defined(PLATFORM_WINDOWS) || defined(PLATFORM_MINGW)
     if (EscapeCodes::enabled) {
-        write(STDOUT_FILENO, "\e[1;33mWarning:\e[0m \e[1mSignal received, trying to abort ongoing process ...\e[0m\n", 82);
+        write(STDOUT_FILENO, "\033[1;33mWarning:\033[0m \033[1mSignal received, trying to abort ongoing process ...\033[0m\n", 82);
     } else {
         write(STDOUT_FILENO, "Warning: Signal received, trying to abort ongoing process ...\n", 63);
     }

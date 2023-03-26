@@ -262,7 +262,7 @@ void CliTests::testModifyingCover()
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT_MESSAGE("covers added",
         testContainsSubstrings(stdout,
-            { " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n", "    Lyrics            I\nam\nno\nsong\nwriter\n",
+            { " - \033[1mID3v2 tag (version 2.3.0)\033[0m\n", "    Lyrics            I\nam\nno\nsong\nwriter\n",
                 "    Cover (other)     can't display image/png as string (use --extract)\n"
                 "    Cover (front-cover) can't display image/png as string (use --extract)\n"
                 "      description:    foo\n"
@@ -278,7 +278,7 @@ void CliTests::testModifyingCover()
     CPPUNIT_ASSERT_MESSAGE("covers not altered",
         testContainsSubstrings(stdout,
             {
-                " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
+                " - \033[1mID3v2 tag (version 2.3.0)\033[0m\n",
                 "    Cover (other)     can't display image/png as string (use --extract)\n"
                 "    Cover (front-cover) can't display image/png as string (use --extract)\n"
                 "      description:    foo\n"
@@ -296,7 +296,7 @@ void CliTests::testModifyingCover()
     CPPUNIT_ASSERT_MESSAGE("other covers not altered",
         testContainsSubstrings(stdout,
             {
-                " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n",
+                " - \033[1mID3v2 tag (version 2.3.0)\033[0m\n",
                 "    Cover (other)     can't display image/png as string (use --extract)\n"
                 "    Cover (back-cover) can't display image/png as string (use --extract)\n",
             }));
@@ -427,7 +427,7 @@ void CliTests::testId3SpecificOptions()
     const char *const args1[] = { "tageditor", "get", "-f", mp3File1.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mID3v1 tag\e[0m\n"
+        { " - \033[1mID3v1 tag\033[0m\n"
           "    Title             Cohesion\n"
           "    Album             Double Nickels On The Dime\n"
           "    Artist            Minutemen\n"
@@ -435,7 +435,7 @@ void CliTests::testId3SpecificOptions()
           "    Comment           ExactAudioCopy v0.95b4\n"
           "    Track             4\n"
           "    Record date       1984\n",
-            " - \e[1mID3v2 tag (version 2.3.0)\e[0m\n"
+            " - \033[1mID3v2 tag (version 2.3.0)\033[0m\n"
             "    Title             Cohesion\n"
             "    Album             Double Nickels On The Dime\n"
             "    Artist            Minutemen\n"
@@ -451,7 +451,7 @@ void CliTests::testId3SpecificOptions()
     TESTUTILS_ASSERT_EXEC(args2);
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mID3v2 tag (version 2.4.0)\e[0m\n"
+        { " - \033[1mID3v2 tag (version 2.4.0)\033[0m\n"
           "    Title             Cohesion\n"
           "    Album             Double Nickels On The Dime\n"
           "    Artist            Minutemen\n"
@@ -469,7 +469,7 @@ void CliTests::testId3SpecificOptions()
     CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mID3v1 tag\e[0m\n"
+        { " - \033[1mID3v1 tag\033[0m\n"
           "    Title             Cohesion\n"
           "    Album             Dóuble Nickels On The Dime\n"
           "    Artist            Minutemen\n"
@@ -477,7 +477,7 @@ void CliTests::testId3SpecificOptions()
           "    Comment           ExactAudioCopy v0.95b4\n"
           "    Track             5\n"
           "    Record date       1984\n",
-            " - \e[1mID3v2 tag (version 2.2.0)\e[0m\n"
+            " - \033[1mID3v2 tag (version 2.2.0)\033[0m\n"
             "    Title             Cohesion\n"
             "    Album             Dóuble Nickels On The Dime\n"
             "    Artist            Minutemen\n"
@@ -577,28 +577,28 @@ void CliTests::testMultipleFiles()
     TESTUTILS_ASSERT_EXEC(args2);
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+        { " - \033[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\033[0m\n"
           "    Title             MKV testfiles\n"
           "    Comment           Matroska Validation File1, basic MPEG4.2 and MP3 with only SimpleBlock\n"
           "    Total parts       3\n"
           "    Release date      2010\n"
-          " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+          " - \033[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\033[0m\n"
           "    Title             test1\n"
           "    Part              1",
-            " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+            " - \033[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\033[0m\n"
             "    Title             MKV testfiles\n"
             "    Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC\n"
             "    Total parts       3\n"
             "    Release date      2010\n"
-            " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+            " - \033[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\033[0m\n"
             "    Title             test2\n"
             "    Part              2",
-            " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+            " - \033[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\033[0m\n"
             "    Title             MKV testfiles\n"
             "    Comment           Matroska Validation File 3, header stripping on the video track and no SimpleBlock\n"
             "    Total parts       3\n"
             "    Release date      2010",
-            " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+            " - \033[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\033[0m\n"
             "    Title             test3\n"
             "    Part              3" }));
 
@@ -636,9 +636,9 @@ void CliTests::testOutputFile()
     const char *const args3[] = { "tageditor", "get", "-f", "/tmp/test1.mkv", "/tmp/test2.mkv", nullptr };
     TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+        { " - \033[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\033[0m\n"
           "    Title             test1\n",
-            " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+            " - \033[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\033[0m\n"
             "    Title             test2\n" }));
 
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1.data()));
@@ -667,7 +667,7 @@ void CliTests::testBackupDir()
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         {
-            " - \e[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\e[0m\n"
+            " - \033[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\033[0m\n"
             "    Title             test1\n",
         }));
 
@@ -814,7 +814,7 @@ void CliTests::testDisplayingInfo()
     const char *const args1[] = { "tageditor", "info", "-f", mkvFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mContainer format: Matroska\e[0m\n"
+        { " - \033[1mContainer format: Matroska\033[0m\n"
           "    Size                          20.16 MiB\n"
           "    Mime-type                     video/x-matroska\n"
           "    Duration                      47 s 509 ms\n"
@@ -826,7 +826,7 @@ void CliTests::testDisplayingInfo()
           "    Document version              2\n"
           "    Tag position                  before data\n"
           "    Index position                before data\n",
-            " - \e[1mTracks: H.264-Main@L3.1-576p / AAC-LC-2ch\e[0m\n"
+            " - \033[1mTracks: H.264-Main@L3.1-576p / AAC-LC-2ch\033[0m\n"
             "    ID                            1863976627\n"
             "    Type                          Video\n"
             "    Format                        Advanced Video Coding Main Profile\n"
@@ -846,7 +846,7 @@ void CliTests::testDisplayingInfo()
     const char *const args2[] = { "tageditor", "info", "-f", mp4File.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mContainer format: MPEG-4 Part 14\e[0m\n"
+        { " - \033[1mContainer format: MPEG-4 Part 14\033[0m\n"
           "    Size                          898.34 KiB\n"
           "    Mime-type                     audio/mp4\n"
           "    Duration                      3 min\n"
@@ -854,7 +854,7 @@ void CliTests::testDisplayingInfo()
           "    Document type                 mp42\n"
           "    Creation time                 2014-12-10 16:22:41\n"
           "    Modification time             2014-12-10 16:22:41\n",
-            " - \e[1mTracks: HE-AAC-2ch\e[0m\n"
+            " - \033[1mTracks: HE-AAC-2ch\033[0m\n"
             "    ID                            1\n"
             "    Name                          soun\n"
             "    Type                          Audio\n"
@@ -894,7 +894,7 @@ void CliTests::testSettingTrackMetaData()
     TESTUTILS_ASSERT_EXEC(args1);
     TESTUTILS_ASSERT_EXEC(args2);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mContainer format: Matroska\e[0m\n"
+        { " - \033[1mContainer format: Matroska\033[0m\n"
           "    Size                          20.16 MiB\n"
           "    Mime-type                     video/x-matroska\n"
           "    Duration                      47 s 509 ms\n"
@@ -906,7 +906,7 @@ void CliTests::testSettingTrackMetaData()
           "    Document version              2\n"
           "    Tag position                  before data\n"
           "    Index position                before data\n",
-            " - \e[1mTracks: H.264-Main@L3.1-576p / AAC-LC-2ch-ger\e[0m\n"
+            " - \033[1mTracks: H.264-Main@L3.1-576p / AAC-LC-2ch-ger\033[0m\n"
             "    ID                            1863976627\n"
             "    Name                          video track\n"
             "    Type                          Video\n"
@@ -926,7 +926,7 @@ void CliTests::testSettingTrackMetaData()
             "    Labeled as                    default, forced" }));
     TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\e[0m\n"
+        { " - \033[1mMatroska tag targeting \"level 50 'album, opera, concert, movie, episode'\"\033[0m\n"
           "    Title             title of tag\n"
           "    Artist            setting tag value again\n"
           "    Comment           Matroska Validation File 2, 100,000 timecode scale, odd aspect ratio, and CRC-32. Codecs are AVC and AAC\n"
@@ -935,7 +935,7 @@ void CliTests::testSettingTrackMetaData()
     const char *const args4[] = { "tageditor", "info", "-f", mp4File.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args4);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
-        { " - \e[1mContainer format: MPEG-4 Part 14\e[0m\n"
+        { " - \033[1mContainer format: MPEG-4 Part 14\033[0m\n"
           "    Size                          898.49 KiB\n"
           "    Mime-type                     audio/mp4\n"
           "    Duration                      3 min\n"
@@ -943,7 +943,7 @@ void CliTests::testSettingTrackMetaData()
           "    Document type                 mp42\n"
           "    Creation time                 2014-12-10 16:22:41\n"
           "    Modification time             2014-12-10 16:22:41\n",
-            " - \e[1mTracks: HE-AAC-2ch-eng\e[0m\n"
+            " - \033[1mTracks: HE-AAC-2ch-eng\033[0m\n"
             "    ID                            1\n"
             "    Name                          sbr and ps\n"
             "    Type                          Audio\n"
@@ -1058,7 +1058,7 @@ void CliTests::testFileLayoutOptions()
 
     const char *const args5[] = { "tageditor", "get", "-f", mp4File2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args5);
-    CPPUNIT_ASSERT(stdout.find(" - \e[1mMP4/iTunes tag\e[0m\n"
+    CPPUNIT_ASSERT(stdout.find(" - \033[1mMP4/iTunes tag\033[0m\n"
                                "    Title             You Shook Me All Night Long\n"
                                "    Album             Who Made Who\n"
                                "    Artist            ACDC\n"
