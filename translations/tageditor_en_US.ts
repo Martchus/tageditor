@@ -690,92 +690,92 @@
 <context>
     <name>QtGui::DbQueryWidget</name>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="58"/>
+        <location filename="../gui/dbquerywidget.cpp" line="54"/>
         <source>Search hasn&apos;t been started</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="59"/>
+        <location filename="../gui/dbquerywidget.cpp" line="55"/>
         <source>MusicBrainz/LyricsWikia notifications</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="79"/>
+        <location filename="../gui/dbquerywidget.cpp" line="75"/>
         <source>New search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="81"/>
+        <location filename="../gui/dbquerywidget.cpp" line="77"/>
         <source>Query MusicBrainz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="85"/>
+        <location filename="../gui/dbquerywidget.cpp" line="81"/>
         <source>Query LyricsWikia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="89"/>
+        <location filename="../gui/dbquerywidget.cpp" line="85"/>
         <source>Query makeitpersonal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="94"/>
+        <location filename="../gui/dbquerywidget.cpp" line="90"/>
         <source>Use present data as search criteria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="98"/>
+        <location filename="../gui/dbquerywidget.cpp" line="94"/>
         <source>Start new query automatically when inserting search criteria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="101"/>
+        <location filename="../gui/dbquerywidget.cpp" line="97"/>
         <source>Clear search criteria</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="188"/>
+        <location filename="../gui/dbquerywidget.cpp" line="184"/>
         <source>Insufficient search criteria supplied - at least title, album or artist must be specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="198"/>
+        <location filename="../gui/dbquerywidget.cpp" line="194"/>
         <source>Retrieving meta data from MusicBrainz ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="212"/>
+        <location filename="../gui/dbquerywidget.cpp" line="208"/>
         <source>Insufficient search criteria supplied - artist is mandatory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="222"/>
+        <location filename="../gui/dbquerywidget.cpp" line="218"/>
         <source>Retrieving meta data from LyricsWikia ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="236"/>
+        <location filename="../gui/dbquerywidget.cpp" line="232"/>
         <source>Insufficient search criteria supplied - artist and title are mandatory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="246"/>
+        <location filename="../gui/dbquerywidget.cpp" line="242"/>
         <source>Retrieving lyrics from makeitpersonal ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="269"/>
+        <location filename="../gui/dbquerywidget.cpp" line="265"/>
         <source>Aborted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="284"/>
+        <location filename="../gui/dbquerywidget.cpp" line="280"/>
         <source>No results available</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/dbquerywidget.cpp" line="286"/>
+        <location filename="../gui/dbquerywidget.cpp" line="282"/>
         <source>%1 result(s) available</source>
         <translation>
             <numerusform>%1 result available</numerusform>
@@ -783,77 +783,77 @@
         </translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="441"/>
+        <location filename="../gui/dbquerywidget.cpp" line="437"/>
         <source>Inserted search result row %1 (with title &quot;%2&quot;, album &quot;%3&quot; and artist &quot;%4&quot;).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="504"/>
+        <location filename="../gui/dbquerywidget.cpp" line="500"/>
         <source>Retrieving cover art to be applied ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="527"/>
+        <location filename="../gui/dbquerywidget.cpp" line="523"/>
         <source>Retrieving lyrics to be applied ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="557"/>
+        <location filename="../gui/dbquerywidget.cpp" line="553"/>
         <source>Use selected row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="562"/>
+        <location filename="../gui/dbquerywidget.cpp" line="558"/>
         <source>Copy value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="565"/>
+        <location filename="../gui/dbquerywidget.cpp" line="561"/>
         <source>Refresh results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="569"/>
+        <location filename="../gui/dbquerywidget.cpp" line="565"/>
         <source>Show cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="571"/>
+        <location filename="../gui/dbquerywidget.cpp" line="567"/>
         <source>Show lyrics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="573"/>
+        <location filename="../gui/dbquerywidget.cpp" line="569"/>
         <source>Show in browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="624"/>
+        <location filename="../gui/dbquerywidget.cpp" line="620"/>
         <source>Retrieving cover art ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="648"/>
+        <location filename="../gui/dbquerywidget.cpp" line="644"/>
         <source>Retrieving lyrics ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="661"/>
+        <location filename="../gui/dbquerywidget.cpp" line="657"/>
         <source>No web URL available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="665"/>
+        <location filename="../gui/dbquerywidget.cpp" line="661"/>
         <source>Unable to open URL: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="673"/>
+        <location filename="../gui/dbquerywidget.cpp" line="669"/>
         <source>Cover - %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="698"/>
+        <location filename="../gui/dbquerywidget.cpp" line="694"/>
         <source>Lyrics - %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2257,7 +2257,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="219"/>
+        <location filename="../gui/mainwindow.cpp" line="215"/>
         <source>Lock layout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2267,37 +2267,37 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="197"/>
+        <location filename="../gui/mainwindow.cpp" line="193"/>
         <source>Unlock layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="249"/>
+        <location filename="../gui/mainwindow.cpp" line="248"/>
         <source>Unable to close while the file operation is still ongoing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="360"/>
+        <location filename="../gui/mainwindow.cpp" line="371"/>
         <source>No file opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="397"/>
+        <location filename="../gui/mainwindow.cpp" line="408"/>
         <source>A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="527"/>
+        <location filename="../gui/mainwindow.cpp" line="538"/>
         <source>Unable to show the next file because it can&apos;t be found anymore.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="537"/>
+        <location filename="../gui/mainwindow.cpp" line="548"/>
         <source>Open file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="549"/>
+        <location filename="../gui/mainwindow.cpp" line="560"/>
         <source>Save changes as - </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2381,7 +2381,7 @@ another position would prevent rewriting the entire file</source>
     </message>
     <message>
         <location filename="../gui/picturepreviewselection.ui" line="149"/>
-        <location filename="../gui/picturepreviewselection.cpp" line="779"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="795"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2542,7 +2542,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="837"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="853"/>
         <source>Resize/convert assigned image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2612,7 +2612,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="788"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="804"/>
         <source>The attached image can&apos;t be found.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2662,32 +2662,32 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="777"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="793"/>
         <source>No image (of the selected type) attached.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="799"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="815"/>
         <source>Unable to display attached image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="808"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="824"/>
         <source>Change</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="823"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="839"/>
         <source>Paste from clipboard as JPEG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="827"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="843"/>
         <source>Paste from clipboard as PNG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="834"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="850"/>
         <source>Change MIME-type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2754,7 +2754,7 @@ another position would prevent rewriting the entire file</source>
         <translation></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="214"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="215"/>
         <source>%1 files/directories processed</source>
         <translation>
             <numerusform>%1 file/directory processed</numerusform>
@@ -2762,7 +2762,7 @@ another position would prevent rewriting the entire file</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="217"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="218"/>
         <source>%1 error(s) occurred</source>
         <translation type="unfinished">
             <numerusform>%1 error occurred</numerusform>
@@ -2770,23 +2770,23 @@ another position would prevent rewriting the entire file</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="228"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="229"/>
         <source>Preview has been generated.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="233"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="234"/>
         <source>No files and directories have been found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="238"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="239"/>
         <source>Generation of preview has been aborted prematurely.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="242"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="260"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="243"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="261"/>
         <source>%1 error(s) occurred.</source>
         <translation>
             <numerusform>%1 error occurred.</numerusform>
@@ -2794,8 +2794,8 @@ another position would prevent rewriting the entire file</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/renamefilesdialog.cpp" line="229"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="253"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="230"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="254"/>
         <source>%1 files/directories have been processed.</source>
         <translation>
             <numerusform>%1 file/directory has been processed.</numerusform>
@@ -2803,104 +2803,104 @@ another position would prevent rewriting the entire file</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="58"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="56"/>
         <source>File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="59"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="57"/>
         <source>Paste from clipboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="60"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="58"/>
         <source>Simple example</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="61"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="59"/>
         <source>Advanced example</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="154"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="155"/>
         <source>There is no external script file is selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="161"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="162"/>
         <source>Unable to open external script file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="167"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="168"/>
         <source>Generating preview ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="169"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="204"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="170"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="205"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="177"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="178"/>
         <source>The script is not valid.
 Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="179"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="180"/>
         <source>An error occurred when parsing the script: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="187"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="188"/>
         <source>The script is empty.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="192"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="193"/>
         <source>The selected directory doesn&apos;t exist.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="202"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="203"/>
         <source>Applying changings ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="252"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="253"/>
         <source>Changins applied.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="256"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="257"/>
         <source>Applying has been aborted prematurely.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="326"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="327"/>
         <source>Unable to open script file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="332"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="333"/>
         <source>Select script</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="351"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="352"/>
         <source>Clipboard contains no text.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="372"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="373"/>
         <source>Expand all</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="373"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="374"/>
         <source>Collapse all</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2971,8 +2971,8 @@ Error in line %1: %3</source>
     </message>
     <message>
         <location filename="../gui/renamefilesdialog.ui" line="705"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="224"/>
-        <location filename="../gui/renamefilesdialog.cpp" line="249"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="225"/>
+        <location filename="../gui/renamefilesdialog.cpp" line="250"/>
         <source>Close</source>
         <translation type="unfinished"></translation>
     </message>
