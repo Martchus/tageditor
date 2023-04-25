@@ -2381,7 +2381,7 @@ another position would prevent rewriting the entire file</source>
     </message>
     <message>
         <location filename="../gui/picturepreviewselection.ui" line="149"/>
-        <location filename="../gui/picturepreviewselection.cpp" line="795"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="796"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2522,7 +2522,7 @@ another position would prevent rewriting the entire file</source>
     </message>
     <message>
         <location filename="../gui/picturepreviewselection.cpp" line="428"/>
-        <location filename="../gui/picturepreviewselection.cpp" line="577"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="578"/>
         <source>Enter/confirm MIME type</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2542,7 +2542,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="853"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="854"/>
         <source>Resize/convert assigned image</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2567,7 +2567,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="553"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="554"/>
         <source>Cover - %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2597,12 +2597,12 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="524"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="525"/>
         <source>The cover has extracted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="526"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="527"/>
         <source>Unable to write to output file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2612,82 +2612,82 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="804"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="805"/>
         <source>The attached image can&apos;t be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="554"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="555"/>
         <source>Cover - %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="539"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="540"/>
         <source>There is no image attached.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="578"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="579"/>
         <source>Confirm or enter the MIME type of the selected file. This merely changes the &lt;i&gt;assumed&lt;/i&gt; format. &lt;i&gt;No&lt;/i&gt; image format conversion done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="607"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="608"/>
         <source>JPEG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="607"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="608"/>
         <source>PNG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="608"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="609"/>
         <source>Ignore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="608"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="609"/>
         <source>Keep</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="608"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="609"/>
         <source>Keep by expanding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="623"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="624"/>
         <source>Unable to scale image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="793"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="794"/>
         <source>No image (of the selected type) attached.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="815"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="816"/>
         <source>Unable to display attached image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="824"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="825"/>
         <source>Change</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="839"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="840"/>
         <source>Paste from clipboard as JPEG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="843"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="844"/>
         <source>Paste from clipboard as PNG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="850"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="851"/>
         <source>Change MIME-type</source>
         <translation type="unfinished"></translation>
     </message>
