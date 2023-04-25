@@ -13,9 +13,10 @@ class Argument;
 namespace Cli {
 
 struct SetTagInfoArgs {
-    SetTagInfoArgs(CppUtilities::Argument &filesArg, CppUtilities::Argument &verboseArg);
+    SetTagInfoArgs(CppUtilities::Argument &filesArg, CppUtilities::Argument &verboseArg, CppUtilities::Argument &pedanticArg);
     CppUtilities::Argument &filesArg;
     CppUtilities::Argument &verboseArg;
+    CppUtilities::Argument &pedanticArg;
     CppUtilities::ConfigValueArgument quietArg;
     CppUtilities::ConfigValueArgument docTitleArg;
     CppUtilities::ConfigValueArgument removeOtherFieldsArg;
@@ -56,11 +57,11 @@ extern int exitCode;
 void applyGeneralConfig(const CppUtilities::Argument &timeSapnFormatArg);
 void printFieldNames(const CppUtilities::ArgumentOccurrence &occurrence);
 void displayFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &filesArg, const CppUtilities::Argument &verboseArg,
-    const CppUtilities::Argument &validateArg);
+    const CppUtilities::Argument &pedanticArg, const CppUtilities::Argument &validateArg);
 void generateFileInfo(const CppUtilities::ArgumentOccurrence &, const CppUtilities::Argument &inputFileArg,
     const CppUtilities::Argument &outputFileArg, const CppUtilities::Argument &validateArg);
 void displayTagInfo(const CppUtilities::Argument &fieldsArg, const CppUtilities::Argument &showUnsupportedArg, const CppUtilities::Argument &filesArg,
-    const CppUtilities::Argument &verboseArg);
+    const CppUtilities::Argument &verboseArg, const CppUtilities::Argument &pedanticArg);
 void setTagInfo(const Cli::SetTagInfoArgs &args);
 void extractField(const CppUtilities::Argument &fieldArg, const CppUtilities::Argument &attachmentArg, const CppUtilities::Argument &inputFilesArg,
     const CppUtilities::Argument &outputFileArg, const CppUtilities::Argument &indexArg, const CppUtilities::Argument &verboseArg);

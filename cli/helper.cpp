@@ -160,40 +160,58 @@ string incremented(const string &str, unsigned int toIncrement)
     return res;
 }
 
-void printDiagMessages(const Diagnostics &diag, const char *head, bool beVerbose)
+void printDiagMessages(const Diagnostics &diag, const char *head, bool beVerbose, const CppUtilities::Argument *pedanticArg)
 {
     if (diag.empty()) {
         return;
     }
-    if (!beVerbose) {
-        for (const auto &message : diag) {
-            switch (message.level()) {
-            case DiagLevel::Debug:
-            case DiagLevel::Information:
-                break;
-            default:
-                goto printDiagMsg;
-            }
+
+    // set exit code to failure if there are diag messages considered bad enough
+    auto minLevel = beVerbose ? DiagLevel::Information : DiagLevel::Warning;
+    auto badExitLevel = DiagLevel::Fatal;
+    if (pedanticArg && pedanticArg->isPresent()) {
+        const auto &values = pedanticArg->values();
+        if (values.empty() || values.front() == "error"sv || values.front() == "critical"sv) {
+            badExitLevel = DiagLevel::Critical;
+        } else if (values.front() == "warning"sv) {
+            badExitLevel = DiagLevel::Warning;
+        } else if (values.front() == "info"sv) {
+            badExitLevel = minLevel = DiagLevel::Information;
+        } else {
+            badExitLevel = minLevel = DiagLevel::Debug;
         }
-        return;
     }
 
-printDiagMsg:
+    // set exit code if there are severe enough messages and check whether there's something to print
+    auto hasAnythingToPrint = false;
+    for (const auto &message : diag) {
+        if (message.level() >= badExitLevel) {
+            exitCode = EXIT_PARSING_FAILURE;
+        }
+        if (message.level() >= minLevel) {
+            hasAnythingToPrint = true;
+        }
+        if (exitCode != EXIT_SUCCESS && hasAnythingToPrint) {
+            break;
+        }
+    }
+
+    // print diag messages if there's anything to print
+    if (!hasAnythingToPrint) {
+        return;
+    }
     if (head) {
         cerr << " - " << head << endl;
     }
     for (const auto &message : diag) {
+        if (message.level() < minLevel) {
+            continue;
+        }
         switch (message.level()) {
         case DiagLevel::Debug:
-            if (!beVerbose) {
-                continue;
-            }
             cerr << "    Debug        ";
             break;
         case DiagLevel::Information:
-            if (!beVerbose) {
-                continue;
-            }
             cerr << "    Information  ";
             break;
         case DiagLevel::Warning:
@@ -210,9 +228,6 @@ printDiagMsg:
             setStyle(cerr, TextAttribute::Bold);
             cerr << "    Error        ";
             setStyle(cerr, TextAttribute::Reset);
-            if (message.level() == DiagLevel::Fatal && exitCode == EXIT_SUCCESS) {
-                exitCode = EXIT_PARSING_FAILURE;
-            }
             break;
         default:;
         }

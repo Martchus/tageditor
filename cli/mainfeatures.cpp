@@ -167,7 +167,8 @@ void generateFileInfo(const ArgumentOccurrence &, const Argument &inputFileArg, 
 #endif
 }
 
-void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const Argument &verboseArg, const Argument &validateArg)
+void displayFileInfo(
+    const ArgumentOccurrence &, const Argument &filesArg, const Argument &verboseArg, const Argument &pedanticArg, const Argument &validateArg)
 {
     CMD_UTILS_START_CONSOLE;
 
@@ -348,12 +349,13 @@ void displayFileInfo(const ArgumentOccurrence &, const Argument &filesArg, const
             exitCode = EXIT_IO_FAILURE;
         }
 
-        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
+        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent(), &pedanticArg);
         cout << endl;
     }
 }
 
-void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedArg, const Argument &filesArg, const Argument &verboseArg)
+void displayTagInfo(
+    const Argument &fieldsArg, const Argument &showUnsupportedArg, const Argument &filesArg, const Argument &verboseArg, const Argument &pedanticArg)
 {
     CMD_UTILS_START_CONSOLE;
 
@@ -412,7 +414,7 @@ void displayTagInfo(const Argument &fieldsArg, const Argument &showUnsupportedAr
             cerr << Phrases::Error << "An IO error occurred when reading the file \"" << file << "\"." << Phrases::EndFlush;
             exitCode = EXIT_IO_FAILURE;
         }
-        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent());
+        printDiagMessages(diag, "Diagnostic messages:", verboseArg.isPresent(), &pedanticArg);
         cout << endl;
     }
 }
@@ -952,7 +954,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             exitCode = EXIT_IO_FAILURE;
         }
 
-        printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent());
+        printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent(), &args.pedanticArg);
 
         // continue with next file
         ++fileIndex;

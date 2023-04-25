@@ -29,9 +29,10 @@ using namespace QtUtilities;
 
 namespace Cli {
 
-SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg)
+SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argument &pedanticArg)
     : filesArg(filesArg)
     , verboseArg(verboseArg)
+    , pedanticArg(pedanticArg)
     , quietArg("quiet", 'q', "suppress printing progress information")
     , docTitleArg("doc-title", 'd', "specifies the document title (has no affect if not supported by the container)",
           { "title of first segment", "title of second segment" })
@@ -152,6 +153,13 @@ int main(int argc, char *argv[])
     timeSpanFormatArg.setPreDefinedCompletionValues("measures colons seconds");
     // verbose option
     ConfigValueArgument verboseArg("verbose", 'v', "be verbose, print debug and info messages");
+    // pedantic options
+    ConfigValueArgument pedanticArg("pedantic", '\0',
+        "return non-zero exit code if a non-fatal problem has been encountered that is at least as severe as the specified severity (or critical if "
+        "none specified)",
+        { "critical/warning/info/debug" });
+    pedanticArg.setRequiredValueCount(Argument::varValueCount);
+    pedanticArg.setPreDefinedCompletionValues("error warning info debug");
     // input/output file/files
     ConfigValueArgument fileArg("file", 'f', "specifies the path of the file to be opened", { "path" });
     ConfigValueArgument defaultFileArg(fileArg);
@@ -167,8 +175,9 @@ int main(int argc, char *argv[])
     ConfigValueArgument validateArg(
         "validate", 'c', "validates the file integrity as accurately as possible; the structure of the file will be parsed completely");
     OperationArgument displayFileInfoArg("info", 'i', "displays general file information", PROJECT_NAME " info -f /some/dir/*.m4a");
-    displayFileInfoArg.setCallback(std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg), std::cref(validateArg)));
-    displayFileInfoArg.setSubArguments({ &filesArg, &validateArg, &verboseArg });
+    displayFileInfoArg.setCallback(
+        std::bind(Cli::displayFileInfo, _1, std::cref(filesArg), std::cref(verboseArg), std::cref(pedanticArg), std::cref(validateArg)));
+    displayFileInfoArg.setSubArguments({ &filesArg, &validateArg, &verboseArg, &pedanticArg });
     // display tag info
     ConfigValueArgument fieldsArg("fields", 'n', "specifies the field names to be displayed", { "title", "album", "artist", "trackpos" });
     fieldsArg.setRequiredValueCount(Argument::varValueCount);
@@ -177,11 +186,11 @@ int main(int argc, char *argv[])
     OperationArgument displayTagInfoArg("get", 'g', "displays the values of all specified tag fields (displays all fields if none specified)",
         PROJECT_NAME " get title album artist -f /some/dir/*.m4a");
     ConfigValueArgument showUnsupportedArg("show-unsupported", 'u', "shows unsupported fields (has only effect when no field names specified)");
-    displayTagInfoArg.setCallback(
-        std::bind(Cli::displayTagInfo, std::cref(fieldsArg), std::cref(showUnsupportedArg), std::cref(filesArg), std::cref(verboseArg)));
-    displayTagInfoArg.setSubArguments({ &fieldsArg, &showUnsupportedArg, &filesArg, &verboseArg });
+    displayTagInfoArg.setCallback(std::bind(Cli::displayTagInfo, std::cref(fieldsArg), std::cref(showUnsupportedArg), std::cref(filesArg),
+        std::cref(verboseArg), std::cref(pedanticArg)));
+    displayTagInfoArg.setSubArguments({ &fieldsArg, &showUnsupportedArg, &filesArg, &verboseArg, &pedanticArg });
     // set tag info
-    Cli::SetTagInfoArgs setTagInfoArgs(filesArg, verboseArg);
+    Cli::SetTagInfoArgs setTagInfoArgs(filesArg, verboseArg, pedanticArg);
     // extract cover
     ConfigValueArgument fieldArg("field", 'n', "specifies the field to be extracted", { "field name" });
     fieldArg.setImplicit(true);

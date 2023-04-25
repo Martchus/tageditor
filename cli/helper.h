@@ -258,7 +258,8 @@ constexpr bool isDigit(char c)
 
 std::string incremented(const std::string &str, unsigned int toIncrement = 1);
 
-void printDiagMessages(const TagParser::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false);
+void printDiagMessages(
+    const TagParser::Diagnostics &diag, const char *head = nullptr, bool beVerbose = false, const CppUtilities::Argument *pedanticArg = nullptr);
 void printProperty(const char *propName, std::string_view value, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
 void printProperty(const char *propName, ElementPosition elementPosition, const char *suffix = nullptr, CppUtilities::Indentation indentation = 4);
 
