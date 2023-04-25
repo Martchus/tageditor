@@ -88,7 +88,7 @@ EnterTargetDialog::~EnterTargetDialog()
 void EnterTargetDialog::updateLevelNamePlaceholderText(int i)
 {
     m_ui->levelNameLineEdit->setPlaceholderText(qstringFromStdStringView(
-                                                    i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : std::string_view()));
+        i >= 0 ? tagTargetLevelName(containerTargetLevel(m_currentContainerFormat, static_cast<std::uint32_t>(i))) : std::string_view()));
 }
 
 void EnterTargetDialog::updateStyleSheet()
