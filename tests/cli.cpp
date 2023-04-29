@@ -1,3 +1,5 @@
+#include "../cli/mainfeatures.h"
+
 #include "resources/config.h"
 
 #include <c++utilities/conversion/stringbuilder.h>
@@ -809,9 +811,9 @@ void CliTests::testDisplayingInfo()
     cout << "\nDisplaying general file info" << endl;
     string stdout, stderr;
 
-    // test Matroska file
-    const string mkvFile(testFilePath("matroska_wave1/test2.mkv"));
-    const char *const args1[] = { "tageditor", "info", "-f", mkvFile.data(), nullptr };
+    // test valid Matroska file
+    const auto mkvFile1 = testFilePath("matroska_wave1/test2.mkv");
+    const char *const args1[] = { "tageditor", "info", "--pedantic", "-f", mkvFile1.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \033[1mContainer format: Matroska\033[0m\n"
@@ -841,10 +843,48 @@ void CliTests::testDisplayingInfo()
             "    Channel config                2 channels: front-left, front-right\n"
             "    Sampling frequency            48000 Hz" }));
 
+    // test broken Matroska file
+    const auto mkvFile2 = testFilePath("matroska_wave1/test4.mkv");
+    const char *const args2[] = { "tageditor", "--no-color", "info", "--validate", "--pedantic", "-f", mkvFile2.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC_EXIT_STATUS(args2, EXIT_PARSING_FAILURE);
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout,
+        {
+            " - Container format: Matroska\n"
+            "    Size                          20.33 MiB\n"
+            "    Mime-type                     video/x-matroska\n"
+            "    Document type                 matroska\n"
+            "    Read version                  1\n"
+            "    Version                       1\n"
+            "    Document read version         1\n"
+            "    Document version              1\n",
+            " - Tracks: Theora-720p / Vorbis-2ch\n"
+            "    ID                            1368622492\n"
+            "    Type                          Video\n"
+            "    Format                        Theora\n"
+            "    Raw format ID                 V_THEORA\n"
+            "    FPS                           24\n"
+            "    Pixel size                    width: 1280, height: 720\n"
+            "    Display size                  width: 1280, height: 720\n"
+            "    Labeled as                    default",
+            "    ID                            3171450505\n"
+            "    Type                          Audio\n"
+            "    Format                        Vorbis\n"
+            "    Raw format ID                 A_VORBIS\n"
+            "    Channel count                 2\n"
+            "    Sampling frequency            48000 Hz\n"
+            "    Labeled as                    default\n",
+        }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stderr,
+        {
+            " - Diagnostic messages:\n",
+            "parsing EBML element header: EBML ID length at 35 is not supported, trying to skip.",
+            "parsing header of EBML element 0x1549A966 \"segment info\" at 169: 134 bytes have been skipped",
+        }));
+
     // test MP4 file with AAC track using SBR and PS extensions
-    const string mp4File(testFilePath("mtx-test-data/aac/he-aacv2-ps.m4a"));
-    const char *const args2[] = { "tageditor", "info", "-f", mp4File.data(), nullptr };
-    TESTUTILS_ASSERT_EXEC(args2);
+    const auto mp4File1 = testFilePath("mtx-test-data/aac/he-aacv2-ps.m4a");
+    const char *const args3[] = { "tageditor", "info", "-f", mp4File1.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \033[1mContainer format: MPEG-4 Part 14\033[0m\n"
           "    Size                          898.34 KiB\n"
