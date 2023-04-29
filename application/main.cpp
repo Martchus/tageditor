@@ -147,8 +147,6 @@ int main(int argc, char *argv[])
     CMD_UTILS_CONVERT_ARGS_TO_UTF8;
     SET_APPLICATION_INFO;
     QT_CONFIG_ARGUMENTS qtConfigArgs;
-    HelpArgument helpArg(parser);
-    NoColorArgument noColorArg;
     ConfigValueArgument timeSpanFormatArg("time-span-format", '\0', "specifies the output format for time spans", { "measures/colons/seconds" });
     timeSpanFormatArg.setPreDefinedCompletionValues("measures colons seconds");
     // verbose option
@@ -219,7 +217,7 @@ int main(int argc, char *argv[])
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&defaultFileArg);
     qtConfigArgs.qtWidgetsGuiArg().addSubArgument(&renamingUtilityArg);
     parser.setMainArguments({ &qtConfigArgs.qtWidgetsGuiArg(), &printFieldNamesArg, &displayFileInfoArg, &displayTagInfoArg,
-        &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &exportArg, &genInfoArg, &timeSpanFormatArg, &noColorArg, &helpArg });
+        &setTagInfoArgs.setTagInfoArg, &extractFieldArg, &exportArg, &genInfoArg, &timeSpanFormatArg, &parser.noColorArg(), &parser.helpArg() });
     // parse given arguments
     parser.parseArgs(argc, argv, ParseArgumentBehavior::CheckConstraints | ParseArgumentBehavior::ExitOnFailure);
 
