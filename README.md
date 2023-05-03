@@ -451,8 +451,9 @@ The following caveats apply to Windows' default terminal emulator `cmd.exe`. I r
 
 ---
 
-The dark mode introduced with Windows 10 is not supported but this can be
-[worked around](https://github.com/Martchus/syncthingtray#workaround-missing-support-for-windows-10-dark-mode).
+The dark mode introduced with Windows 10 is not affecting traditional desktop applications but
+[can be enabled](https://github.com/Martchus/syncthingtray#tweak-gui-settings-for-dark-mode-under-windows)
+by selecting the Fusion style.
 
 ---
 
