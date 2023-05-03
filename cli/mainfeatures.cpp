@@ -789,7 +789,9 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 && !denotedScope.field.setValues(tag, tagType, convertedValues)
                                 && (tagType != TagType::Id3v1Tag || !willWriteAnId3v2Tag)) {
                                 diag.emplace_back(DiagLevel::Critical,
-                                    argsToString("Unable set field \"", denotedScope.field.name(), "\": setting field is not supported"), context);
+                                    argsToString(
+                                        "Unable set field \"", denotedScope.field.name(), "\": field is not supported for ", tag->typeName()),
+                                    context);
                             }
                         } catch (const ConversionException &e) {
                             diag.emplace_back(DiagLevel::Critical,
