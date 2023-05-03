@@ -135,7 +135,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
         &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
         &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
         &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg,
-        &verboseArg, &quietArg, &outputFilesArg });
+        &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli
