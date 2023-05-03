@@ -259,7 +259,7 @@ void CliTests::testModifyingCover()
     const auto lyrics = "lyrics>=" + lyricsFile;
     const char *const args1[] = { "tageditor", "get", "-f", mp3File1.data(), nullptr };
     const char *const args2[] = { "tageditor", "set", otherCover.data(), frontCover0.data(), frontCover1.data(), backCover0.data(), lyrics.data(),
-        "-f", mp3File1.data(), nullptr };
+        "--pedantic", "-f", mp3File1.data(), nullptr };
     CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
     CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
     CPPUNIT_ASSERT_MESSAGE("covers added",

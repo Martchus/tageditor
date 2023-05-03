@@ -675,6 +675,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                 diag.emplace_back(DiagLevel::Critical, "Can not create appropriate tags for file.", context);
             } else {
                 // iterate through all tags
+                const auto willWriteAnId3v2Tag = fileInfo.hasId3v2Tag();
                 for (auto *tag : tags) {
                     // clear current values if option is present
                     if (args.removeOtherFieldsArg.isPresent()) {
@@ -781,10 +782,12 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     argsToString("An IO error occurred when parsing the specified file \"", path, "\": ", e.what()), context);
                             }
                         }
-                        // finally set the values
+                        // finally set/clear the values
                         try {
+                            // add error if field is not supported unless it is just ID3v1 and we are writing an ID3v2 tag as well
                             if ((!convertedValues.empty() || convertedId3v2CoverValues.empty())
-                                && !denotedScope.field.setValues(tag, tagType, convertedValues)) {
+                                && !denotedScope.field.setValues(tag, tagType, convertedValues)
+                                && (tagType != TagType::Id3v1Tag || !willWriteAnId3v2Tag)) {
                                 diag.emplace_back(DiagLevel::Critical,
                                     argsToString("Unable set field \"", denotedScope.field.name(), "\": setting field is not supported"), context);
                             }
