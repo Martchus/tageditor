@@ -260,8 +260,8 @@ void CliTests::testModifyingCover()
     const char *const args1[] = { "tageditor", "get", "-f", mp3File1.data(), nullptr };
     const char *const args2[] = { "tageditor", "set", otherCover.data(), frontCover0.data(), frontCover1.data(), backCover0.data(), lyrics.data(),
         "--pedantic", "-f", mp3File1.data(), nullptr };
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args2, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args2);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT_MESSAGE("covers added",
         testContainsSubstrings(stdout,
             { " - \033[1mID3v2 tag (version 2.3.0)\033[0m\n", "    Lyrics            I\nam\nno\nsong\nwriter\n",
@@ -275,8 +275,8 @@ void CliTests::testModifyingCover()
 
     // test whether empty trailing ":" does *not* affect all descriptions
     const char *const args3[] = { "tageditor", "set", "cover0=:front-cover:", "-f", mp3File1.data(), nullptr };
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args3);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT_MESSAGE("covers not altered",
         testContainsSubstrings(stdout,
             {
@@ -292,8 +292,8 @@ void CliTests::testModifyingCover()
 
     // remove all front covers by omitting trailing ":"
     const char *const args4[] = { "tageditor", "set", "cover0=:front-cover", "-f", mp3File1.data(), nullptr };
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args4, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args4);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("front covers removed", std::string::npos, stdout.find("front-cover"));
     CPPUNIT_ASSERT_MESSAGE("other covers not altered",
         testContainsSubstrings(stdout,
@@ -306,8 +306,8 @@ void CliTests::testModifyingCover()
 
     // remove all covers
     const char *const args5[] = { "tageditor", "set", "cover0=", "-f", mp3File1.data(), nullptr };
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args5, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args5);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("All covers removed", std::string::npos, stdout.find("Cover"));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp3File1Backup.data()));
 
@@ -468,8 +468,8 @@ void CliTests::testId3SpecificOptions()
     // convert remaining ID3v2 tag to version 2, add an ID3v1 tag again and set a field with unicode char by the way
     const char *const args3[] = { "tageditor", "set", "album=Dóuble Nickels On The Dime", "track=5/10", "disk=2/3", "duration=1:45:15",
         "--id3v1-usage", "always", "--id3v2-version", "2", "--id3-init-on-create", "-f", mp3File1.data(), nullptr };
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args3, stdout, stderr));
-    CPPUNIT_ASSERT_EQUAL(0, execApp(args1, stdout, stderr));
+    TESTUTILS_ASSERT_EXEC(args3);
+    TESTUTILS_ASSERT_EXEC(args1);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \033[1mID3v1 tag\033[0m\n"
           "    Title             Cohesion\n"
