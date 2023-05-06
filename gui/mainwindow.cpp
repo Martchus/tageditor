@@ -162,7 +162,7 @@ QString MainWindow::currentDirectory() const
 
 /*!
  * \brief Sets the directory the file browser is showing.
- * If a file is specified the file will be opended.
+ * If a file is specified the file will be opened.
  */
 void MainWindow::setCurrentDirectory(const QString &path)
 {
