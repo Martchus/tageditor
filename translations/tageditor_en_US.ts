@@ -978,7 +978,7 @@
     </message>
     <message>
         <location filename="../gui/editorautocorrectionoptionpage.ui" line="15"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto correction/completion will be applied when showing the selected tag fields after &lt;span style=&quot; font-style:italic;&quot;&gt;loading&lt;/span&gt; a file but &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; before saving. So the tag values you see when opening a file are already corrected. However, when clicking the save button the tags are stored as they are with no further correction applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto correction/completion will be applied when showing the selected tag fields after &lt;span style=&quot; font-style:italic;&quot;&gt;loading&lt;/span&gt; a file but &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; before saving. This means the tag values you see when opening a file are already corrected. This also means when clicking the &amp;quot;Save&amp;quot; button the tags are saved as they are shown in the editor at this point with no further correction applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1032,8 +1032,8 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/editorautocorrectionoptionpage.ui" line="105"/>
-        <source>Fields</source>
+        <location filename="../gui/editorautocorrectionoptionpage.ui" line="102"/>
+        <source>Fields to apply the auto correction on</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1041,7 +1041,7 @@
     <name>QtGui::EditorDbQueryOptionsPage</name>
     <message>
         <location filename="../gui/editordbqueryoptionpage.ui" line="6"/>
-        <source>MusicBrainz</source>
+        <source>Metadata search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4717,7 +4717,7 @@ currently shown tag.</source>
     </message>
     <message>
         <location filename="../gui/tagprocessinggeneraloptionpage.ui" line="109"/>
-        <source>If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually (eg. adding an ID3 tag if none is present yet) and settings like ID3 usage have no effect.</source>
+        <source>If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually (e.g. adding an ID3 tag if none is present yet) and the settings for ID3 usage and targets have no effect.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
