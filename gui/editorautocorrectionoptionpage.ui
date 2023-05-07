@@ -97,32 +97,52 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="fieldsLabel">
-     <property name="styleSheet">
-      <string notr="true">font-weight: bold;</string>
-     </property>
-     <property name="text">
+    <widget class="QGroupBox" name="fieldsGroupBox">
+     <property name="title">
       <string>Fields to apply the auto correction on</string>
      </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QListView" name="fieldsListView">
-     <property name="showDropIndicator" stdset="0">
-      <bool>true</bool>
-     </property>
-     <property name="flow">
-      <enum>QListView::LeftToRight</enum>
-     </property>
-     <property name="isWrapping" stdset="0">
-      <bool>true</bool>
-     </property>
-     <property name="spacing">
-      <number>3</number>
-     </property>
-     <property name="wordWrap">
-      <bool>true</bool>
-     </property>
+     <layout class="QVBoxLayout" name="fieldsVerticalLayout">
+      <property name="leftMargin">
+       <number>1</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>1</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QListView" name="fieldsListView">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="lineWidth">
+         <number>0</number>
+        </property>
+        <property name="showDropIndicator" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="flow">
+         <enum>QListView::LeftToRight</enum>
+        </property>
+        <property name="isWrapping" stdset="0">
+         <bool>true</bool>
+        </property>
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>
