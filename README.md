@@ -144,10 +144,13 @@ The basic workflow is quite simple:
 You can set the behaviour of the editor to keep previous values, so you don't have to enter
 information like album name or artist for all files in an album again and again.
 
-Note that the GUI does *not* support setting multiple values of the same field (besides covers of
+#### Limitations
+The GUI does *not* support setting multiple values of the same field (besides covers of
 different types). If a file already contains fields with multiple values, the additional values
-are discarded. Use the CLI if support for multiple values per field is required but note that not
-all tag formats support this anyways.
+are discarded. Use the CLI if support for multiple values per field is required. Not all tag formats
+support this anyways, though.
+
+The GUI does *not* support batch processing. I recommend using the CLI for this.
 
 #### Screenshots
 ##### Main window under Openbox/qt5ct with Breeze theme/icons
@@ -202,6 +205,9 @@ tageditor <operation> [options]
 ```
 Checkout the available operations and options with `--help`. For a list of all available field names, track
 attribute names and modifier, use the CLI option `--print-field-names`.
+
+Note that Windows users must use `tageditor-cli.exe` instead of `tageditor.exe` or use Mintty as terminal.
+Checkout the "Windows-specific issues" section for details.
 
 #### Examples
 Here are some Bash examples which illustrate getting and setting tag information:
@@ -330,6 +336,19 @@ Here are some Bash examples which illustrate getting and setting tag information
     - This is only supported by the tag formats ID3v2 and Vorbis Comment. The type and description are ignored
       when dealing with a different format.
 
+##### Further useful commands
+* Let the tag editor return with a non-zero exit code even if only non-fatal problems have been encountered
+    * when saving a file:  
+      ```
+      tageditor set ... --pedantic warning -f ...
+      ```  
+    * when printing technical information to validate the structure of a file:  
+      ```
+      tageditor info  --pedantic warning --validate -f ...
+      ```  
+        - This is especially useful for MP4 and Matroska files where the tag editor will be able to emit
+          warnings and critical messages when those files are truncated or have a broken index.
+
 ## Text encoding / unicode support
 1. It is possible to set the preferred encoding used *within* the tags via CLI option ``--encoding``
    and in the GUI settings.
@@ -441,13 +460,15 @@ When enabled, the following additional dependencies are required (only at build-
 * More TODOs and bugs are tracked in the [issue section at GitHub](https://github.com/Martchus/tageditor/issues).
 
 ### Windows-specific issues
-The following caveats apply to Windows' default terminal emulator `cmd.exe`. I recommend to use Mintty (e.g. via MSYS2) instead.
+The following caveats can be worked around by using the CLI-wrapper instead of the main executable. This is the
+file that ends with `-cli.exe`. Alternatively you may use Mintty (e.g. via MSYS2) which is also not affected by
+those issues:
 
-* The console's codepage is set to UTF-8 to ensure point *3.* of the "Text encoding" section is handled correctly. Use
-  `set ENABLE_CP_UTF8=0` if this is not wanted.
-* To enable console output for Tag Editor which is built as a GUI application it is attaching to the parent
-  processes' console. However, this prevents redirections to work. If redirections are needed, use
-  `set ENABLE_CONSOLE=0` to disable that behavior.
+* The console's codepage is set to UTF-8 to ensure point *3.* of the "Text encoding" section is handled correctly.
+  This may not work well under older Windows versions. Use `set ENABLE_CP_UTF8=0` if this is not wanted.
+* The main application is built as a GUI application. To nevertheless enable console output it is attaching to the
+  parent processes' console. However, this prevents redirections to work in most cases. If redirections are needed,
+  use `set ENABLE_CONSOLE=0` to disable that behavior.
 
 ---
 
