@@ -12,7 +12,7 @@
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto correction/completion will be applied when showing the selected tag fields after &lt;span style=&quot; font-style:italic;&quot;&gt;loading&lt;/span&gt; a file but &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; before saving. So the tag values you see when opening a file are already corrected. However, when clicking the save button the tags are stored as they are with no further correction applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto correction/completion will be applied when showing the selected tag fields after &lt;span style=&quot; font-style:italic;&quot;&gt;loading&lt;/span&gt; a file but &lt;span style=&quot; font-style:italic;&quot;&gt;not&lt;/span&gt; before saving. This means the tag values you see when opening a file are already corrected. This also means when clicking the &amp;quot;Save&amp;quot; button the tags are saved as they are shown in the editor at this point with no further correction applied.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="wordWrap">
       <bool>true</bool>
@@ -102,7 +102,7 @@
       <string notr="true">font-weight: bold;</string>
      </property>
      <property name="text">
-      <string>Fields</string>
+      <string>Fields to apply the auto correction on</string>
      </property>
     </widget>
    </item>

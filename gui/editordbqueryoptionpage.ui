@@ -3,7 +3,7 @@
  <class>QtGui::EditorDbQueryOptionsPage</class>
  <widget class="QWidget" name="QtGui::EditorDbQueryOptionsPage">
   <property name="windowTitle">
-   <string>MusicBrainz</string>
+   <string>Metadata search</string>
   </property>
   <property name="styleSheet">
    <string notr="true">QGroupBox { font-weight: bold };</string>

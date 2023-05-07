@@ -106,7 +106,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually (eg. adding an ID3 tag if none is present yet) and settings like ID3 usage have no effect.</string>
+         <string>If enabled, appropriate tags will be created and removed according to the settings automatically when opening a file. Otherwise you have to do this manually (e.g. adding an ID3 tag if none is present yet) and the settings for ID3 usage and targets have no effect.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -157,7 +157,7 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="unsupportedButtonGroup"/>
   <buttongroup name="preferredTextEncodingButtonGroup"/>
+  <buttongroup name="unsupportedButtonGroup"/>
  </buttongroups>
 </ui>
