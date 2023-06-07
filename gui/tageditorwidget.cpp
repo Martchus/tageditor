@@ -1380,7 +1380,7 @@ void TagEditorWidget::closeFile()
     updateFileStatusStatus();
 }
 
-void QtGui::TagEditorWidget::renameFile()
+void TagEditorWidget::renameFile()
 {
     if (isFileOperationOngoing()) {
         emit statusMessage(tr("Unable to rename the file because the current process hasn't been finished yet."));
