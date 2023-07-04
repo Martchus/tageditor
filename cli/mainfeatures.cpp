@@ -6,6 +6,13 @@
 #endif
 
 #include "../application/knownfieldmodel.h"
+
+// includes for JavaScript support of set operation
+#ifdef TAGEDITOR_USE_JSENGINE
+#include "./mediafileinfoobject.h"
+#endif
+
+// includes for generating HTML info
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 #include "../misc/htmlinfo.h"
 #include "../misc/utility.h"
@@ -39,6 +46,16 @@
 #include <c++utilities/io/path.h>
 #include <c++utilities/misc/parseerror.h>
 
+// includes for JavaScript support of set operation
+#ifdef TAGEDITOR_USE_JSENGINE
+#include <QCoreApplication>
+#include <QFile>
+#include <QJSValue>
+#include <QQmlEngine>
+#include <QTextStream>
+#endif
+
+// includes for generating HTML info
 #if defined(TAGEDITOR_GUI_QTWIDGETS) || defined(TAGEDITOR_GUI_QTQUICK)
 #include <QDir>
 #include <qtutilities/misc/conversion.h>
@@ -471,6 +488,110 @@ template <class TagType> static void setId3v2CoverValues(TagType *tag, std::vect
     }
 }
 
+#ifdef TAGEDITOR_USE_JSENGINE
+class JavaScriptProcessor {
+public:
+    explicit JavaScriptProcessor(const SetTagInfoArgs &args);
+    JavaScriptProcessor(const JavaScriptProcessor &) = delete;
+
+    QJSValue callMain(MediaFileInfo &mediaFileInfo, Diagnostics &diag);
+
+private:
+    static void addWarnings(Diagnostics &diag, const std::string &context, const QList<QQmlError> &warnings);
+
+    int argc;
+    QCoreApplication app;
+    Diagnostics diag;
+    QQmlEngine engine; // not using QJSEngine as otherwise XMLHttpRequest is not available
+    QJSValue module, main;
+    UtilityObject *utility;
+};
+
+/*!
+ * \brief Initializes JavaScript processing for the specified \a args.
+ * \remarks
+ * - Comes with its own QCoreApplication. Only for use within the CLI parts of the app!
+ * - Exits the app on fatal errors.
+ * - Logs status/problems directly in accordance with other parts of the CLI.
+ */
+JavaScriptProcessor::JavaScriptProcessor(const SetTagInfoArgs &args)
+    : argc(0)
+    , app(argc, nullptr)
+    , utility(new UtilityObject(&engine))
+{
+    // print status message
+    const auto jsPath = args.jsArg.firstValue();
+    if (!jsPath) {
+        return;
+    }
+    if (!args.quietArg.isPresent()) {
+        std::cout << TextAttribute::Bold << "Loading JavaScript file \"" << jsPath << "\" ..." << Phrases::EndFlush;
+    }
+
+    // print warnings later via the usual helper function for consistent formatting
+    engine.setOutputWarningsToStandardError(false);
+    QObject::connect(&engine, &QQmlEngine::warnings, &engine,
+        [this, context = std::string("loading JavaScript")](const auto &warnings) { addWarnings(diag, context, warnings); });
+
+    // assign utility object and load specified JavaScript file as module
+    engine.globalObject().setProperty(QStringLiteral("utility"), engine.newQObject(utility));
+    module = engine.importModule(QString::fromUtf8(jsPath));
+    if (module.isError()) {
+        std::cerr << Phrases::Error << "Unable to load the specified JavaScript file \"" << jsPath << "\":" << Phrases::End;
+        std::cerr << "Uncaught exception at line " << module.property(QStringLiteral("lineNumber")).toInt() << ':' << ' '
+                  << module.toString().toStdString() << '\n';
+        std::exit(EXIT_FAILURE);
+    }
+    main = module.property(QStringLiteral("main"));
+    if (!main.isCallable()) {
+        std::cerr << Phrases::Error << "The specified JavaScript file \"" << jsPath << "\" does not export a main() function." << Phrases::End;
+        std::exit(EXIT_FAILURE);
+    }
+
+    // print warnings
+    printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent(), &args.pedanticArg);
+    diag.clear();
+}
+
+/*!
+ * \brief Calls the JavaScript's main() function for the specified \a mediaFileInfo populating \a diag.
+ * \returns Returns what the main() function has returned.
+ */
+QJSValue JavaScriptProcessor::callMain(MediaFileInfo &mediaFileInfo, Diagnostics &diag)
+{
+    auto fileInfoObject = MediaFileInfoObject(mediaFileInfo, diag, &engine);
+    auto fileInfoObjectValue = engine.newQObject(&fileInfoObject);
+    auto context = argsToString("executing JavaScript for ", mediaFileInfo.fileName());
+    utility->setDiag(&context, &diag);
+    QObject::connect(
+        &engine, &QQmlEngine::warnings, &fileInfoObject, [&diag, &context](const auto &warnings) { addWarnings(diag, context, warnings); });
+    diag.emplace_back(DiagLevel::Information, "entering main() function", context);
+    auto res = main.call(QJSValueList({ fileInfoObjectValue }));
+    if (res.isError()) {
+        diag.emplace_back(DiagLevel::Fatal,
+            argsToString(res.toString().toStdString(), " at line ", res.property(QStringLiteral("lineNumber")).toInt(), '.'), context);
+    } else if (!res.isUndefined()) {
+        diag.emplace_back(DiagLevel::Information, argsToString("done with return value: ", res.toString().toStdString()), context);
+    } else {
+        diag.emplace_back(DiagLevel::Debug, "done without return value", context);
+    }
+    return res;
+}
+
+/*!
+ * \brief Adds the \a warnings to the specified \a diag object with the specified \a context.
+ */
+void JavaScriptProcessor::addWarnings(Diagnostics &diag, const string &context, const QList<QQmlError> &warnings)
+{
+    for (const auto &warning : warnings) {
+        diag.emplace_back(DiagLevel::Warning, warning.toString().toStdString(), context);
+    }
+}
+#endif
+
+/*!
+ * \brief Implements the "set"-operation of the CLI.
+ */
 void setTagInfo(const SetTagInfoArgs &args)
 {
     CMD_UTILS_START_CONSOLE;
@@ -496,7 +617,7 @@ void setTagInfo(const SetTagInfoArgs &args)
         && (!args.updateAttachmentArg.isPresent() || args.updateAttachmentArg.values().empty())
         && (!args.removeAttachmentArg.isPresent() || args.removeAttachmentArg.values().empty())
         && (!args.docTitleArg.isPresent() || args.docTitleArg.values().empty()) && !args.id3v1UsageArg.isPresent() && !args.id3v2UsageArg.isPresent()
-        && !args.id3v2VersionArg.isPresent()) {
+        && !args.id3v2VersionArg.isPresent() && !args.jsArg.isPresent()) {
         if (!args.layoutOnlyArg.isPresent()) {
             std::cerr << Phrases::Error << "No fields/attachments have been specified." << Phrases::End
                       << "note: This is usually a mistake. Use --layout-only to prevent this error and apply file layout options only." << endl;
@@ -556,12 +677,13 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
 
     // parse other settings
-    const TagTextEncoding denotedEncoding = parseEncodingDenotation(args.encodingArg, TagTextEncoding::Utf8);
+    const auto denotedEncoding = parseEncodingDenotation(args.encodingArg, TagTextEncoding::Utf8);
     settings.id3v1usage = parseUsageDenotation(args.id3v1UsageArg, TagUsage::KeepExisting);
     settings.id3v2usage = parseUsageDenotation(args.id3v2UsageArg, TagUsage::Always);
 
     // setup media file info
-    MediaFileInfo fileInfo;
+    auto fileInfo = MediaFileInfo();
+    auto tags = std::vector<Tag *>();
     fileInfo.setMinPadding(parseUInt64(args.minPaddingArg, 0));
     fileInfo.setMaxPadding(parseUInt64(args.maxPaddingArg, 0));
     fileInfo.setPreferredPadding(parseUInt64(args.prefPaddingArg, 0));
@@ -577,10 +699,27 @@ void setTagInfo(const SetTagInfoArgs &args)
         fileInfo.setBackupDirectory(std::string(args.backupDirArg.values().front()));
     }
 
+    // initialize JavaScript processing if --java-script argument is present
+#ifdef TAGEDITOR_USE_JSENGINE
+    auto js = args.jsArg.isPresent() ? std::make_unique<JavaScriptProcessor>(args) : std::unique_ptr<JavaScriptProcessor>();
+#else
+    if (args.jsArg.isPresent()) {
+        std::cerr << Phrases::Error << "A JavaScript has been specified but support for this has been disabled at compile-time." << Phrases::EndFlush;
+        std::exit(EXIT_FAILURE);
+    }
+#endif
+
     // iterate through all specified files
     const auto quiet = args.quietArg.isPresent();
     auto fileIndex = 0u;
     static auto context = std::string("setting tags");
+    const auto continueWithNextFile = [&](Diagnostics &diag) {
+        printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent(), &args.pedanticArg);
+        ++fileIndex;
+        if (currentOutputFile != noMoreOutputFiles) {
+            ++currentOutputFile;
+        }
+    };
     for (const char *file : args.filesArg.values()) {
         auto diag = Diagnostics();
         auto parsingProgress = AbortableProgressFeedback(); // FIXME: actually use the progress object
@@ -595,16 +734,36 @@ void setTagInfo(const SetTagInfoArgs &args)
             fileInfo.parseTracks(diag, parsingProgress);
             fileInfo.parseAttachments(diag, parsingProgress);
 
+            // process tag fields via the specified JavaScript
+#ifdef TAGEDITOR_USE_JSENGINE
+            if (js) {
+                const auto res = js->callMain(fileInfo, diag);
+                if (res.isError() || diag.has(DiagLevel::Fatal)) {
+                    if (!quiet) {
+                        std::cout << " - Skipping file due to fatal error when executing JavaScript.\n";
+                    }
+                    continueWithNextFile(diag);
+                    continue;
+                }
+                if (!res.isUndefined() && !res.toBool()) {
+                    if (!quiet) {
+                        std::cout << " - Skipping file because JavaScript returned a falsy value other than undefined.\n";
+                    }
+                    continueWithNextFile(diag);
+                    continue;
+                }
+            }
+#endif
+
             // remove tags with the specified targets
-            auto tags = std::vector<Tag *>();
             if (!targetsToRemove.empty()) {
+                tags.clear();
                 fileInfo.tags(tags);
                 for (auto *const tag : tags) {
                     if (find(targetsToRemove.cbegin(), targetsToRemove.cend(), tag->target()) != targetsToRemove.cend()) {
                         fileInfo.removeTag(tag);
                     }
                 }
-                tags.clear();
             }
 
             // select the relevant values for the current file index
@@ -670,6 +829,7 @@ void setTagInfo(const SetTagInfoArgs &args)
             }
 
             // alter tags
+            tags.clear();
             fileInfo.tags(tags);
             if (tags.empty()) {
                 diag.emplace_back(DiagLevel::Critical, "Can not create appropriate tags for file.", context);
@@ -958,14 +1118,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                  << Phrases::EndFlush;
             exitCode = EXIT_IO_FAILURE;
         }
-
-        printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent(), &args.pedanticArg);
-
-        // continue with next file
-        ++fileIndex;
-        if (currentOutputFile != noMoreOutputFiles) {
-            ++currentOutputFile;
-        }
+        continueWithNextFile(diag);
     }
 }
 
@@ -1221,4 +1374,5 @@ void applyGeneralConfig(const Argument &timeSapnFormatArg)
 {
     timeSpanOutputFormat = parseTimeSpanOutputFormat(timeSapnFormatArg, TimeSpanOutputFormat::WithMeasures);
 }
+
 } // namespace Cli

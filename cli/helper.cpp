@@ -222,17 +222,25 @@ void printDiagMessages(const Diagnostics &diag, const char *head, bool beVerbose
             setStyle(cerr, TextAttribute::Reset);
             break;
         case DiagLevel::Critical:
-        case DiagLevel::Fatal:
             setStyle(cerr, Color::Red, ColorContext::Foreground, TextAttribute::Bold);
             setStyle(cerr, TextAttribute::Reset);
             setStyle(cerr, TextAttribute::Bold);
             cerr << "    Error        ";
             setStyle(cerr, TextAttribute::Reset);
             break;
+        case DiagLevel::Fatal:
+            setStyle(cerr, Color::Red, ColorContext::Foreground, TextAttribute::Bold);
+            setStyle(cerr, TextAttribute::Reset);
+            setStyle(cerr, TextAttribute::Bold);
+            cerr << "    Fatal        ";
+            setStyle(cerr, TextAttribute::Reset);
+            break;
         default:;
         }
         cerr << message.creationTime().toString(DateTimeOutputFormat::TimeOnly) << "   ";
-        cerr << message.context() << ": ";
+        if (!message.context().empty()) {
+            cerr << message.context() << ": ";
+        }
         cerr << message.message() << '\n';
     }
 }

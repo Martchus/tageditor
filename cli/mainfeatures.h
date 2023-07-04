@@ -48,6 +48,7 @@ struct SetTagInfoArgs {
     CppUtilities::ConfigValueArgument backupDirArg;
     CppUtilities::ConfigValueArgument layoutOnlyArg;
     CppUtilities::ConfigValueArgument preserveModificationTimeArg;
+    CppUtilities::ConfigValueArgument jsArg;
     CppUtilities::OperationArgument setTagInfoArg;
 };
 

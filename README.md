@@ -344,6 +344,38 @@ Here are some Bash examples which illustrate getting and setting tag information
     - This is only supported by the tag formats ID3v2 and Vorbis Comment. The type and description are ignored
       when dealing with a different format.
 
+* Sets fields by running a script to compute changes dynamically:
+  ```
+  tageditor set --pedantic debug --java-script path/to/script.js -f foo.mp3
+  ```
+
+    - This feature is still experimental. The script API is still very limited and subject to change.
+    - The script needs to be ECMAScript as supported by the Qt framework.
+    - This feature requires the tag editor to be configured with Qt QML as JavaScript provider at
+      compile time. Checkout the build instructions under "Building with Qt GUI" for details.
+    - It needs to export a `main()` function. This function gets executed for every file and passed
+      and object representing this file as first argument.
+    - The option `--pedantic debug` is not required but useful for debugging.
+    - Checkout the file `testfiles/set-tags.js` directory in this repository for a basic example.
+    - Common tag fields are exposed as object properties as shown in the mentioned example.
+        - Only properties for fields that are supported by the tag are added to the "fields" object.
+        - Adding properties of unsupported fields manually does not work; those will just be ignored.
+        - The content of fields that are absent in the tag is set to `undefined`. You may also set
+          the content of fields to `undefined` to delete them (`null` works as well).
+        - The content of binary fields is exposed as `ArrayBuffer`. Use must also use an `ArrayBuffer`
+          to set the value of binary fields such as the cover.
+        - The content of other fields is mostly exposed as `String` or `Number`. Use must also use
+          these types to set the value of those fields. The string-representation of the assigned
+          content will then be converted automatically to what's needed internally.
+    - The `utility` object exposes useful methods, e.g. for logging and controlling the event loop.
+    - Checkout the file `testfiles/http.js` in this repository for an example of using XHR and
+      controlling the event loop.
+    - The script is executed before any other modifications are applied. So if you also specify
+      values as usual (via `--values`) then these values override values changes by the script.
+    - The script runs so far before tags are added/removed (according to options like
+      `--id3v1-usage`). This may change in future versions. A JavaScript API to deal with such
+      changes still needs to be implemented.
+
 ##### Further useful commands
 * Let the tag editor return with a non-zero exit code even if only non-fatal problems have been encountered
     * when saving a file:  

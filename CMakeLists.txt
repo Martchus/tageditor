@@ -115,6 +115,7 @@ set(WIDGETS_UI_FILES
 
 set(TEST_HEADER_FILES)
 set(TEST_SRC_FILES tests/cli.cpp)
+set(EXCLUDED_FILES cli/mediafileinfoobject.h cli/mediafileinfoobject.cpp)
 
 set(TS_FILES translations/${META_PROJECT_NAME}_de_DE.ts translations/${META_PROJECT_NAME}_en_US.ts)
 
@@ -234,13 +235,21 @@ endif ()
 # add Qt modules which can not be detected automatically
 list(APPEND ADDITIONAL_QT_MODULES Concurrent Network)
 
-# include modules to apply configuration
+# configure usage of Qt
 if (WIDGETS_GUI OR QUICK_GUI)
     include(QtGuiConfig)
     include(QtJsProviderConfig)
     include(QtWebViewProviderConfig)
     include(QtConfig)
 endif ()
+
+# configure JavaScript processing for the CLI
+if (JS_PROVIDER STREQUAL Qml)
+    list(APPEND HEADER_FILES cli/mediafileinfoobject.h)
+    list(APPEND SRC_FILES cli/mediafileinfoobject.cpp)
+endif ()
+
+# include modules to apply configuration
 include(WindowsResources)
 include(TestTarget)
 include(AppTarget)

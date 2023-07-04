@@ -83,6 +83,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , backupDirArg("temp-dir", '\0', "specifies the directory for temporary/backup files", { "path" })
     , layoutOnlyArg("layout-only", 'l', "confirms layout-only changes")
     , preserveModificationTimeArg("preserve-modification-time", '\0', "preserves the file's modification time")
+    , jsArg("java-script", 'j', "modifies tag fields via the specified JavaScript", { "path" })
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setRequiredValueCount(Argument::varValueCount);
@@ -120,6 +121,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     valuesArg.setPreDefinedCompletionValues(Cli::fieldNamesForSet);
     valuesArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     outputFilesArg.setRequiredValueCount(Argument::varValueCount);
+    jsArg.setValueCompletionBehavior(ValueCompletionBehavior::Files);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setExample(PROJECT_NAME
         " set title=\"Title of \"{1st,2nd,3rd}\" file\" title=\"Title of \"{4..16}\"th file\" album=\"The Album\" -f /some/dir/*.m4a\n" PROJECT_NAME
@@ -135,7 +137,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
         &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
         &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
         &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg,
-        &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
+        &jsArg, &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli
