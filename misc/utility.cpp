@@ -165,10 +165,10 @@ QString elementPositionToQString(ElementPosition elementPosition)
 
 QString formatName(const QString &str, bool underscoreToWhitespace)
 {
-    QString res;
+    auto res = QString();
     res.reserve(str.size());
-    bool whitespace = true;
-    for (int i = 0, size = str.size(); i != size; ++i) {
+    auto whitespace = true;
+    for (auto i = QString::size_type(), size = str.size(); i != size; ++i) {
         const QChar current = str.at(i);
         if (current.isSpace() || current == QChar('(') || current == QChar('[')) {
             whitespace = true;
@@ -228,7 +228,7 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
 {
     title = fileName.trimmed();
     trackNumber = 0;
-    int lastPoint = title.lastIndexOf(QChar('.'));
+    auto lastPoint = title.lastIndexOf(QChar('.'));
     if (lastPoint > 0) {
         title.truncate(lastPoint);
     } else if (lastPoint == 0) {
@@ -236,13 +236,13 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber)
     }
     static const QLatin1String delims[] = { QLatin1String(" - "), QLatin1String(", "), QLatin1String("-"), QLatin1String(" ") };
     for (const auto &delim : delims) {
-        int lastDelimIndex = 0;
-        int delimIndex = title.indexOf(delim);
+        auto lastDelimIndex = QString::size_type();
+        auto delimIndex = title.indexOf(delim);
         while (delimIndex > lastDelimIndex) {
             bool ok = false;
             trackNumber = QtUtilities::midRef(title, lastDelimIndex, delimIndex - lastDelimIndex).toInt(&ok);
             if (ok) {
-                int titleStart = delimIndex + delim.size();
+                auto titleStart = delimIndex + delim.size();
                 for (const auto &delim2 : delims) {
                     if (QtUtilities::midRef(title, titleStart).startsWith(delim2)) {
                         titleStart += delim2.size();

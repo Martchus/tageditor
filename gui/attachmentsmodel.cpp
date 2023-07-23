@@ -1,5 +1,7 @@
 #include "./attachmentsmodel.h"
 
+#include "../misc/utility.h"
+
 #include <tagparser/abstractattachment.h>
 
 #include <c++utilities/conversion/stringconversion.h>
@@ -233,7 +235,7 @@ int AttachmentsModel::rowCount(const QModelIndex &parent) const
     if (parent.isValid()) {
         return 0;
     } else {
-        return m_attachments.size();
+        return Utility::containerSizeToInt(m_attachments.size());
     }
 }
 
@@ -251,7 +253,7 @@ void AttachmentsModel::revert()
     for (auto &item : m_attachments) {
         item.revert();
     }
-    emit dataChanged(index(0, 0), index(m_attachments.size() - 1, 0), QVector<int>() << Qt::CheckStateRole);
+    emit dataChanged(index(0, 0), index(Utility::containerSizeToInt(m_attachments.size()) - 1, 0), QVector<int>() << Qt::CheckStateRole);
 }
 
 bool AttachmentsModel::submit()
@@ -268,7 +270,7 @@ void AttachmentsModel::repealSelection()
         for (auto &item : m_attachments) {
             item.setActivated(false);
         }
-        emit dataChanged(index(0, 0), index(m_attachments.size() - 1, 0), QVector<int>() << Qt::CheckStateRole);
+        emit dataChanged(index(0, 0), index(Utility::containerSizeToInt(m_attachments.size()) - 1, 0), QVector<int>() << Qt::CheckStateRole);
     }
 }
 
@@ -283,7 +285,7 @@ AbstractAttachment *AttachmentsModel::attachment(const QModelIndex &index)
 void AttachmentsModel::addAttachment(int row, AbstractAttachment *attachment, bool activated, const QString &location)
 {
     if (row < 0 || row > m_attachments.size()) {
-        row = m_attachments.size();
+        row = Utility::containerSizeToInt(m_attachments.size());
     }
     beginInsertRows(QModelIndex(), row, row);
     m_attachments.insert(row, AttachmentItem(attachment, activated, location));

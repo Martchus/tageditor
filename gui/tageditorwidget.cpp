@@ -362,14 +362,14 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
     // add/update TagEdit widgets
     if (m_tags.size()) {
         // create a lists of the targets and tags
-        QList<TagTarget> targets;
-        QList<QList<Tag *>> tagsByTarget;
-        for (Tag *tag : m_tags) {
-            const TagTarget &target = tag->target();
-            int index = targets.indexOf(target);
+        auto targets = QList<TagTarget>();
+        auto tagsByTarget = QList<QList<Tag *>>();
+        for (auto *const tag : m_tags) {
+            const auto &target = tag->target();
+            auto index = targets.indexOf(target);
             if (index < 0) {
                 targets << target;
-                tagsByTarget << (QList<Tag *>() << tag);
+                tagsByTarget << QList<Tag *>({tag});
             } else {
                 tagsByTarget[index] << tag;
             }
@@ -379,7 +379,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
         switch (Settings::values().editor.multipleTagHandling) {
         case Settings::MultipleTagHandling::SingleEditorPerTarget:
             // iterate through all targets in both cases
-            for (int targetIndex = 0, targetCount = targets.size(); targetIndex < targetCount; ++targetIndex) {
+            for (auto targetIndex = QList<TagTarget>::size_type(), targetCount = targets.size(); targetIndex < targetCount; ++targetIndex) {
                 fetchNextEdit();
                 edit->setTags(tagsByTarget.at(targetIndex), updateUi); // set all tags with the same target to a single edit
                 if (!hasAutoCorrectionBeenApplied) {
@@ -390,7 +390,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
             break;
         case Settings::MultipleTagHandling::SeparateEditors:
             // iterate through all targets in both cases
-            for (int targetIndex = 0, targetCount = targets.size(); targetIndex < targetCount; ++targetIndex) {
+            for (auto targetIndex = QList<TagTarget>::size_type(), targetCount = targets.size(); targetIndex < targetCount; ++targetIndex) {
                 for (Tag *tag : tagsByTarget.at(targetIndex)) {
                     fetchNextEdit();
                     edit->setTag(tag, updateUi); // use a separate edit for each tag

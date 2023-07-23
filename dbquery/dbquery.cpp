@@ -189,7 +189,7 @@ QVariant QueryResultsModel::headerData(int section, Qt::Orientation orientation,
 
 int QueryResultsModel::rowCount(const QModelIndex &parent) const
 {
-    return parent.isValid() ? 0 : m_results.size();
+    return parent.isValid() ? 0 : Utility::containerSizeToInt(m_results.size());
 }
 
 int QueryResultsModel::columnCount(const QModelIndex &parent) const

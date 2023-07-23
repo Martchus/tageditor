@@ -1,6 +1,8 @@
 #ifndef FILESYSTEMITEM_H
 #define FILESYSTEMITEM_H
 
+#include "../misc/utility.h"
+
 #include <QList>
 #include <QString>
 
@@ -188,7 +190,7 @@ inline void FileSystemItem::setCheckable(bool checkable)
 
 inline int FileSystemItem::row() const
 {
-    return m_parent ? m_parent->children().indexOf(const_cast<FileSystemItem *>(this)) : -1;
+    return m_parent ? Utility::containerSizeToInt(m_parent->children().indexOf(const_cast<FileSystemItem *>(this))) : -1;
 }
 
 } // namespace RenamingUtility

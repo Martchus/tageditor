@@ -294,7 +294,7 @@ void RenamingEngine::applyChangings(FileSystemItem *parentItem)
             applyChangings(item);
         }
     }
-    m_itemsProcessed += parentItem->children().size();
+    m_itemsProcessed += Utility::containerSizeToInt(parentItem->children().size());
     emit progress(m_itemsProcessed, m_errorsOccured);
 }
 

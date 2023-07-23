@@ -2,6 +2,7 @@
 
 #include "../application/settings.h"
 #include "../misc/networkaccessmanager.h"
+#include "../misc/utility.h"
 
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
@@ -141,7 +142,7 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
                                         iftag("item") {
                                             songs << SongDescription();
                                             songs.back().title = text;
-                                            songs.back().track = songs.size();
+                                            songs.back().track = Utility::containerSizeToInt(songs.size());
                                         }
                                         else_skip
                                     }
@@ -157,7 +158,7 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
                                         && (!m_initialDescription.track || m_initialDescription.track == song.track)) {
                                         song.album = album;
                                         song.year = year;
-                                        song.totalTracks = songs.size();
+                                        song.totalTracks = Utility::containerSizeToInt(songs.size());
                                         m_results << std::move(song);
                                     }
                                 }
@@ -376,14 +377,14 @@ void LyricsWikiaResultsModel::parseAlbumDetailsAndFetchCover(int row, const QByt
     SongDescription &assocDesc = m_results[row];
 
     // convert data to QString
-    const QString html(data);
+    const auto html = QString(data);
 
     // parse cover URL from HTML
-    const int coverDivStart = html.indexOf(QLatin1String("<div class=\"plainlinks\" style=\"clear:right; float:right;")) + 56;
+    const auto coverDivStart = html.indexOf(QLatin1String("<div class=\"plainlinks\" style=\"clear:right; float:right;")) + 56;
     if (coverDivStart > 56) {
-        const int coverHrefStart = html.indexOf(QLatin1String("href=\""), coverDivStart) + 6;
+        const auto coverHrefStart = html.indexOf(QLatin1String("href=\""), coverDivStart) + 6;
         if (coverHrefStart > coverDivStart + 6) {
-            const int coverHrefEnd = html.indexOf(QLatin1String("\""), coverHrefStart);
+            const auto coverHrefEnd = html.indexOf(QLatin1String("\""), coverHrefStart);
             if (coverHrefEnd > 0) {
                 assocDesc.coverUrl = html.mid(coverHrefStart, coverHrefEnd - coverHrefStart);
             }

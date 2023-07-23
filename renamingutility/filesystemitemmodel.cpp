@@ -1,6 +1,8 @@
 #include "./filesystemitemmodel.h"
 #include "./filesystemitem.h"
 
+#include "../misc/utility.h"
+
 #include <QApplication>
 #include <QBrush>
 #include <QFont>
@@ -232,7 +234,7 @@ QModelIndex FileSystemItemModel::counterpart(const QModelIndex &index, int colum
 int FileSystemItemModel::rowCount(const QModelIndex &parent) const
 {
     if (const auto *const parentItem = (parent.isValid() ? reinterpret_cast<FileSystemItem *>(parent.internalPointer()) : m_rootItem)) {
-        return parentItem->children().size();
+        return Utility::containerSizeToInt(parentItem->children().size());
     } else {
         return 0;
     }

@@ -1,5 +1,7 @@
 #include "./javascripthighlighter.h"
 
+#include "../misc/utility.h"
+
 namespace QtGui {
 
 JavaScriptHighlighter::JavaScriptHighlighter(QTextDocument *parent)
@@ -55,8 +57,8 @@ void JavaScriptHighlighter::highlightBlock(const QString &text)
         const auto &expression(rule.pattern);
         auto match = expression.match(text);
         while (match.hasMatch()) {
-            const auto index = match.capturedStart();
-            const auto length = match.capturedLength();
+            const auto index = Utility::containerSizeToInt(match.capturedStart());
+            const auto length = Utility::containerSizeToInt(match.capturedLength());
             setFormat(index, length, rule.format);
             match = expression.match(text, index + length);
         }
@@ -65,21 +67,21 @@ void JavaScriptHighlighter::highlightBlock(const QString &text)
 
     auto startIndex = 0;
     if (previousBlockState() != 1) {
-        startIndex = m_commentStartExpression.match(text).capturedStart();
+        startIndex = Utility::containerSizeToInt(m_commentStartExpression.match(text).capturedStart());
     }
 
     while (startIndex >= 0) {
         const auto endMatch = m_commentEndExpression.match(text, startIndex);
-        const auto endIndex = endMatch.capturedStart();
+        const auto endIndex = Utility::containerSizeToInt(endMatch.capturedStart());
         const auto commentLength = [&] {
             if (endIndex >= 0) {
-                return endIndex - startIndex + endMatch.capturedLength();
+                return endIndex - startIndex + Utility::containerSizeToInt(endMatch.capturedLength());
             }
             setCurrentBlockState(1);
-            return text.length() - startIndex;
+            return Utility::containerSizeToInt(text.length()) - startIndex;
         }();
         setFormat(startIndex, commentLength, m_multiLineCommentFormat);
-        startIndex = m_commentStartExpression.match(text, startIndex + commentLength).capturedStart();
+        startIndex = Utility::containerSizeToInt(m_commentStartExpression.match(text, startIndex + commentLength).capturedStart());
     }
 }
 

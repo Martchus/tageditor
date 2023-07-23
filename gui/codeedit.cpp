@@ -1,5 +1,7 @@
 #include "./codeedit.h"
 
+#include "../misc/utility.h"
+
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 
@@ -49,7 +51,7 @@ void CodeEdit::handleReturn(QKeyEvent *)
     if (index < line.size() && line.at(index) == QChar('}')) {
         if (index > 0) {
             int beg = index;
-            index -= m_indentation.size();
+            index -= Utility::containerSizeToInt(m_indentation.size());
             cursor.select(QTextCursor::BlockUnderCursor);
             cursor.deleteChar();
             cursor.insertBlock();

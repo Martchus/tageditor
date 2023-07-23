@@ -279,7 +279,7 @@ void DbQueryWidget::showResults()
         if (m_model->results().isEmpty()) {
             m_ui->notificationLabel->setText(tr("No results available"));
         } else {
-            m_ui->notificationLabel->setText(tr("%1 result(s) available", nullptr, m_model->results().size()).arg(m_model->results().size()));
+            m_ui->notificationLabel->setText(tr("%1 result(s) available", nullptr, Utility::containerSizeToInt(m_model->results().size())).arg(m_model->results().size()));
         }
     } else {
         m_ui->notificationLabel->setNotificationType(NotificationType::Critical);

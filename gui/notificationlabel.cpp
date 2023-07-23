@@ -191,9 +191,9 @@ void NotificationLabel::applyMaxLineCount()
         return;
     }
 
-    int newStart = 0;
+    auto newStart = QString::size_type();
     for (; m_currentLineCount > m_maxLineCount; --m_currentLineCount) {
-        const int nextBullet = m_text.indexOf(s_bulletLine, newStart);
+        const auto nextBullet = m_text.indexOf(s_bulletLine, newStart);
         if (nextBullet < 0) {
             break;
         }

@@ -4,6 +4,10 @@
 #include <tagparser/tagvalue.h>
 
 #include <QString>
+#include <QStringList>
+
+#include <type_traits>
+#include <limits>
 
 QT_FORWARD_DECLARE_CLASS(QDir)
 QT_FORWARD_DECLARE_CLASS(QAbstractItemModel)
@@ -33,6 +37,15 @@ void printModelIndex(const QModelIndex &index, QString &res, int level);
 constexpr int sizeToInt(std::size_t size)
 {
     return size > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : static_cast<int>(size);
+}
+
+constexpr int containerSizeToInt(typename QStringList::size_type size)
+{
+    if constexpr (std::is_same_v<decltype(size), int>) {
+        return size;
+    } else {
+        return size > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : static_cast<int>(size);
+    }
 }
 
 constexpr int trQuandity(quint64 quandity)
