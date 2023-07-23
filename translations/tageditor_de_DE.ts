@@ -4,12 +4,12 @@
 <context>
     <name>AttachmentItem</name>
     <message>
-        <location filename="../gui/attachmentsmodel.cpp" line="23"/>
+        <location filename="../gui/attachmentsmodel.cpp" line="25"/>
         <source>n/a</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsmodel.cpp" line="26"/>
+        <location filename="../gui/attachmentsmodel.cpp" line="28"/>
         <source>currently attached</source>
         <translation type="unfinished"></translation>
     </message>
@@ -620,27 +620,27 @@
 <context>
     <name>QtGui::AttachmentsModel</name>
     <message>
-        <location filename="../gui/attachmentsmodel.cpp" line="211"/>
+        <location filename="../gui/attachmentsmodel.cpp" line="213"/>
         <source>Name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsmodel.cpp" line="213"/>
+        <location filename="../gui/attachmentsmodel.cpp" line="215"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsmodel.cpp" line="215"/>
+        <location filename="../gui/attachmentsmodel.cpp" line="217"/>
         <source>MIME-type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsmodel.cpp" line="217"/>
+        <location filename="../gui/attachmentsmodel.cpp" line="219"/>
         <source>Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/attachmentsmodel.cpp" line="219"/>
+        <location filename="../gui/attachmentsmodel.cpp" line="221"/>
         <source>Location</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1962,43 +1962,43 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::LyricsWikiaResultsModel</name>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="60"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="61"/>
         <source>Unable to fetch cover: Album ID unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="102"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="103"/>
         <source>Unable to fetch lyrics: Artist or title is unknown.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="238"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="239"/>
         <source>Internal error: context for song details reply invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="282"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="283"/>
         <source>Unable to parse song details: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="294"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="295"/>
         <source>Song details requested for %1/%2 do not contain URL for Wiki page or do not match requested song; using self-crafted link instead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="325"/>
-        <location filename="../dbquery/lyricswikia.cpp" line="371"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="326"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="372"/>
         <source>Internal error: context for LyricsWikia page reply invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="337"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="338"/>
         <source>Song details requested for %1/%2 do not contain lyrics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/lyricswikia.cpp" line="395"/>
+        <location filename="../dbquery/lyricswikia.cpp" line="396"/>
         <source>Album details requested for %1/%2 do not contain cover</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4680,17 +4680,17 @@ Remarks
         <translation></translation>
     </message>
     <message>
-        <location filename="../renamingutility/filesystemitemmodel.cpp" line="158"/>
+        <location filename="../renamingutility/filesystemitemmodel.cpp" line="160"/>
         <source>Current name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../renamingutility/filesystemitemmodel.cpp" line="160"/>
+        <location filename="../renamingutility/filesystemitemmodel.cpp" line="162"/>
         <source>New name</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../renamingutility/filesystemitemmodel.cpp" line="162"/>
+        <location filename="../renamingutility/filesystemitemmodel.cpp" line="164"/>
         <source>Note</source>
         <translation type="unfinished"></translation>
     </message>
