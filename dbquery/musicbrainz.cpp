@@ -95,7 +95,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
 
     // parse XML tree
     QXmlStreamReader xmlReader(data);
-// clang-format off
+    // clang-format off
     #include <qtutilities/misc/xmlparsermacros.h>
     children {
         iftag("metadata") {

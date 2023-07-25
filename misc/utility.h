@@ -6,8 +6,8 @@
 #include <QString>
 #include <QStringList>
 
-#include <type_traits>
 #include <limits>
+#include <type_traits>
 
 QT_FORWARD_DECLARE_CLASS(QDir)
 QT_FORWARD_DECLARE_CLASS(QAbstractItemModel)

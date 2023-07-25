@@ -369,7 +369,7 @@ void TagEditorWidget::updateTagEditsAndAttachmentEdits(bool updateUi, PreviousVa
             auto index = targets.indexOf(target);
             if (index < 0) {
                 targets << target;
-                tagsByTarget << QList<Tag *>({tag});
+                tagsByTarget << QList<Tag *>({ tag });
             } else {
                 tagsByTarget[index] << tag;
             }
