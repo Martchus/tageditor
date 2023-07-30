@@ -1,6 +1,15 @@
 #ifndef CLI_MEDIA_FILE_INFO_OBJECT_H
 #define CLI_MEDIA_FILE_INFO_OBJECT_H
 
+#include <QtGlobal>
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+QT_BEGIN_NAMESPACE
+namespace TagParser {
+enum class KnownField : unsigned int;
+}
+uint qHash(const TagParser::KnownField key, uint seed = 0) noexcept;
+#endif
+
 #include <QJSValue>
 #include <QObject>
 

@@ -26,6 +26,16 @@
 
 #include <iostream>
 #include <limits>
+#include <type_traits>
+
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+QT_BEGIN_NAMESPACE
+uint qHash(const TagParser::KnownField key, uint seed) noexcept
+{
+    return ::qHash(static_cast<std::underlying_type_t<TagParser::KnownField>>(key), seed);
+}
+QT_END_NAMESPACE
+#endif
 
 namespace Cli {
 
@@ -95,9 +105,16 @@ QString UtilityObject::fixUmlauts(const QString &str) const
 
 TagValueObject::TagValueObject(const TagParser::TagValue &value, QJSEngine *engine, QObject *parent)
     : QObject(parent)
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
     , m_type(QString::fromUtf8(TagParser::tagDataTypeString(value.type())))
+#endif
     , m_initial(true)
 {
+#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+    const auto type = TagParser::tagDataTypeString(value.type());
+    m_type = QString::fromUtf8(type.data(), type.size());
+#endif
+
     switch (value.type()) {
     case TagParser::TagDataType::Undefined:
         break;
