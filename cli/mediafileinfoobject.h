@@ -3,11 +3,12 @@
 
 #include <QtGlobal>
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-QT_BEGIN_NAMESPACE
 namespace TagParser {
 enum class KnownField : unsigned int;
 }
+QT_BEGIN_NAMESPACE
 uint qHash(const TagParser::KnownField key, uint seed = 0) noexcept;
+QT_END_NAMESPACE
 #endif
 
 #include <QJSValue>
