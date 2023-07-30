@@ -14,13 +14,20 @@ export function main(file) {
     return false;
 }
 
+const mainTextFields = ["title", "artist", "album"];
+const personalFields = ["comment", "rating"];
+
+function isString(value) {
+    return typeof(value) === "string" || value instanceof String;
+}
+
 function changeTagFields(tag) {
-    // log supported fields
+    // log tag type and supported fields
     const fields = tag.fields;
     utility.diag("debug", tag.type, "tag");
     utility.diag("debug", Object.keys(fields).join(", "), "supported fields");
 
-    // log tag type and fields for debugging purposes
+    // log fields for debugging purposes
     for (const [key, value] of Object.entries(fields)) {
         const content = value.content;
         if (content !== undefined && content != null && !(content instanceof ArrayBuffer)) {
@@ -28,9 +35,22 @@ function changeTagFields(tag) {
         }
     }
 
-    // change some fields
-    fields.title.content = "foo";
-    fields.artist.content = "bar";
+    // apply fixes to main text fields
+    for (const key of mainTextFields) {
+        for (const value of fields[key]) {
+            if (isString(value.content)) {
+                value.content = value.content.trim();
+                value.content = utility.fixUmlauts(value.content);
+                value.content = utility.formatName(value.content);
+            }
+        }
+    }
+
+    // ensure personal fields are cleared
+    for (const key of personalFields) {
+        fields[key] = [];
+    }
+
+    // set some other fields
     fields.track.content = "4/17";
-    fields.comment.clear();
 }

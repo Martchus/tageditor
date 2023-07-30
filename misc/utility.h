@@ -34,9 +34,9 @@ void parseFileName(const QString &fileName, QString &title, int &trackNumber);
 QString printModel(QAbstractItemModel *model);
 void printModelIndex(const QModelIndex &index, QString &res, int level);
 
-constexpr int sizeToInt(std::size_t size)
+template <typename IntType = int> constexpr IntType sizeToInt(std::size_t size)
 {
-    return size > std::numeric_limits<int>::max() ? std::numeric_limits<int>::max() : static_cast<int>(size);
+    return size > std::numeric_limits<IntType>::max() ? std::numeric_limits<IntType>::max() : static_cast<IntType>(size);
 }
 
 constexpr int containerSizeToInt(typename QStringList::size_type size)

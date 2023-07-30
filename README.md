@@ -360,8 +360,8 @@ Here are some Bash examples which illustrate getting and setting tag information
     - Common tag fields are exposed as object properties as shown in the mentioned example.
         - Only properties for fields that are supported by the tag are added to the "fields" object.
         - Adding properties of unsupported fields manually does not work; those will just be ignored.
-        - The content of fields that are absent in the tag is set to `undefined`. You may also set
-          the content of fields to `undefined` to delete them (`null` works as well).
+        - The property for fields that are absent in the tag have an empty array assigned. You may
+          also assign an empty array to fields to delete them.
         - The content of binary fields is exposed as `ArrayBuffer`. Use must also use an `ArrayBuffer`
           to set the value of binary fields such as the cover.
         - The content of other fields is mostly exposed as `String` or `Number`. Use must also use
