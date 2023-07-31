@@ -52,5 +52,5 @@ function changeTagFields(tag) {
     }
 
     // set some other fields
-    fields.track.content = "4/17";
+    fields.track = "4/17";
 }

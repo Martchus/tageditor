@@ -103,6 +103,42 @@ QString UtilityObject::fixUmlauts(const QString &str) const
     return Utility::fixUmlauts(str);
 }
 
+PositionInSetObject::PositionInSetObject(TagParser::PositionInSet value, QJSEngine *engine, QObject *parent)
+    : QObject(parent)
+    , m_v(value)
+{
+    Q_UNUSED(engine)
+}
+
+PositionInSetObject::~PositionInSetObject()
+{
+}
+
+qint32 PositionInSetObject::position() const
+{
+    return m_v.position();
+}
+
+void PositionInSetObject::setPosition(qint32 position)
+{
+    m_v.setPosition(position);
+}
+
+qint32 PositionInSetObject::total() const
+{
+    return m_v.total();
+}
+
+void PositionInSetObject::setTotal(qint32 total)
+{
+    return m_v.setTotal(total);
+}
+
+QString PositionInSetObject::toString() const
+{
+    return QString::fromStdString(m_v.toString());
+}
+
 TagValueObject::TagValueObject(const TagParser::TagValue &value, QJSEngine *engine, QObject *parent)
     : QObject(parent)
 #if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
@@ -119,7 +155,6 @@ TagValueObject::TagValueObject(const TagParser::TagValue &value, QJSEngine *engi
     case TagParser::TagDataType::Undefined:
         break;
     case TagParser::TagDataType::Text:
-    case TagParser::TagDataType::PositionInSet:
     case TagParser::TagDataType::Popularity:
     case TagParser::TagDataType::DateTime:
     case TagParser::TagDataType::DateTimeExpression:
@@ -139,6 +174,9 @@ TagValueObject::TagValueObject(const TagParser::TagValue &value, QJSEngine *engi
     case TagParser::TagDataType::Binary:
     case TagParser::TagDataType::Picture:
         m_content = engine->toScriptValue(QByteArray(value.dataPointer(), Utility::sizeToInt(value.dataSize())));
+        break;
+    case TagParser::TagDataType::PositionInSet:
+        m_content = engine->newQObject(new PositionInSetObject(value.toPositionInSet(), engine, this));
         break;
     default:
         m_content = QJSValue::NullValue;
@@ -199,6 +237,11 @@ void TagValueObject::restore()
 void TagValueObject::clear()
 {
     setContent(QJSValue());
+}
+
+QString TagValueObject::toString() const
+{
+    return m_content.toString();
 }
 
 TagObject::TagObject(TagParser::Tag &tag, TagParser::Diagnostics &diag, QJSEngine *engine, QObject *parent)
@@ -280,34 +323,44 @@ void TagObject::applyChanges()
         }
         auto propertyValue = m_fields.property(propertyName);
         if (!propertyValue.isArray()) {
-            m_engine->throwError(QJSValue::TypeError, QStringLiteral("non-array assigned to field ") + propertyName);
-            goto end;
+            auto array = m_engine->newArray(1);
+            array.setProperty(0, propertyValue);
+            propertyValue = std::move(array);
         }
         const auto size = propertyValue.property(QStringLiteral("length")).toUInt();
+        const auto initialValues = m_tag.values(field);
         auto values = std::vector<TagParser::TagValue>();
         values.reserve(size);
         for (auto i = quint32(); i != size; ++i) {
-            const auto *const tagValueObj = qobject_cast<const TagValueObject *>(propertyValue.property(i).toQObject());
+            const auto arrayElement = propertyValue.property(i);
+            if (arrayElement.isUndefined() || arrayElement.isNull()) {
+                continue;
+            }
+            auto *tagValueObj = qobject_cast<TagValueObject *>(arrayElement.toQObject());
             if (!tagValueObj) {
-                m_engine->throwError(QJSValue::TypeError, QStringLiteral("invalid value present in value-array of field ") + propertyName);
-                goto end;
+                tagValueObj = new TagValueObject(i < initialValues.size() ? *initialValues[i] : TagParser::TagValue(), m_engine, this);
+                tagValueObj->setContent(arrayElement);
+                propertyValue.setProperty(i, m_engine->newQObject(tagValueObj));
             }
             if (tagValueObj->isInitial()) {
+                if (i < initialValues.size()) {
+                    values.emplace_back(*initialValues[i]);
+                }
                 continue;
             }
             const auto &value = values.emplace_back(tagValueObj->toTagValue(encoding));
             m_diag.emplace_back(TagParser::DiagLevel::Debug,
-                value.isNull() ? CppUtilities::argsToString(" - delete ", propertyName.toStdString(), '[', i, ']')
-                               : (tagValueObj->initialContent().isNull() ? CppUtilities::argsToString(
-                                      " - set ", propertyName.toStdString(), '[', i, "] to '", tagValueObj->content().toString().toStdString(), '\'')
-                                                                         : CppUtilities::argsToString(" - change ", propertyName.toStdString(), '[',
-                                                                             i, "] from '", tagValueObj->initialContent().toString().toStdString(),
-                                                                             "' to '", tagValueObj->content().toString().toStdString(), '\'')),
+                value.isNull()
+                    ? CppUtilities::argsToString(" - delete ", propertyName.toStdString(), '[', i, ']')
+                    : (tagValueObj->initialContent().isUndefined() ? CppUtilities::argsToString(
+                           " - set ", propertyName.toStdString(), '[', i, "] to '", tagValueObj->content().toString().toStdString(), '\'')
+                                                                   : CppUtilities::argsToString(" - change ", propertyName.toStdString(), '[', i,
+                                                                       "] from '", tagValueObj->initialContent().toString().toStdString(), "' to '",
+                                                                       tagValueObj->content().toString().toStdString(), '\'')),
                 std::string());
         }
         m_tag.setValues(field, values);
     }
-end:;
 }
 
 MediaFileInfoObject::MediaFileInfoObject(TagParser::MediaFileInfo &mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine, QObject *parent)

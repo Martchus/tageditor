@@ -1,6 +1,8 @@
 #ifndef CLI_MEDIA_FILE_INFO_OBJECT_H
 #define CLI_MEDIA_FILE_INFO_OBJECT_H
 
+#include <tagparser/positioninset.h>
+
 #include <QtGlobal>
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 namespace TagParser {
@@ -59,6 +61,30 @@ inline void UtilityObject::setDiag(const std::string *context, TagParser::Diagno
 }
 
 /*!
+ * \brief The PositionInSetObject class wraps a TagParser::PositionInSet for use within QML.
+ */
+class PositionInSetObject : public QObject {
+    Q_OBJECT
+    Q_PROPERTY(qint32 position READ position WRITE setPosition)
+    Q_PROPERTY(qint32 total READ total WRITE setTotal)
+
+public:
+    explicit PositionInSetObject(TagParser::PositionInSet value, QJSEngine *engine, QObject *parent);
+    ~PositionInSetObject() override;
+
+    qint32 position() const;
+    void setPosition(qint32 position);
+    qint32 total() const;
+    void setTotal(qint32 total);
+
+public Q_SLOTS:
+    QString toString() const;
+
+private:
+    TagParser::PositionInSet m_v;
+};
+
+/*!
  * \brief The TagValueObject class wraps a TagParser::TagValue for use within QML.
  */
 class TagValueObject : public QObject {
@@ -82,6 +108,7 @@ public:
 public Q_SLOTS:
     void restore();
     void clear();
+    QString toString() const;
 
 private:
     QString m_type;
