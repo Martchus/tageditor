@@ -19,6 +19,7 @@
 #include <qtutilities/misc/compat.h>
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QHash>
 #include <QJSEngine>
 #include <QJSValueIterator>
@@ -49,6 +50,7 @@ constexpr auto nativeUtf16Encoding = TagParser::TagTextEncoding::
 
 UtilityObject::UtilityObject(QJSEngine *engine)
     : QObject(engine)
+    , m_engine(engine)
     , m_context(nullptr)
     , m_diag(nullptr)
 {
@@ -88,9 +90,30 @@ void UtilityObject::exit(int retcode)
     QCoreApplication::exit(retcode);
 }
 
-QString UtilityObject::readEnvironmentVariable(const QString &variable, const QString &defaultValue) const
+QJSValue UtilityObject::readEnvironmentVariable(const QString &variable, const QJSValue &defaultValue) const
 {
-    return qEnvironmentVariable(variable.toUtf8().data(), defaultValue);
+    const auto variableUtf8 = variable.toUtf8();
+    if (qEnvironmentVariableIsSet(variableUtf8.data())) {
+        return QJSValue(qEnvironmentVariable(variableUtf8.data()));
+    } else {
+        return QJSValue(defaultValue);
+    }
+}
+
+QJSValue UtilityObject::readDirectory(const QString &path)
+{
+    auto dir = QDir(path);
+    return dir.exists() ? m_engine->toScriptValue(dir.entryList(QDir::NoDotAndDotDot, QDir::Name)) : QJSValue();
+}
+
+QJSValue UtilityObject::readFile(const QString &path)
+{
+    if (auto file = QFile(path); file.open(QFile::ReadOnly)) {
+        if (auto data = file.readAll(); file.error() != QFile::NoError) {
+            return m_engine->toScriptValue(std::move(data));
+        }
+    }
+    return QJSValue();
 }
 
 QString UtilityObject::formatName(const QString &str) const

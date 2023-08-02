@@ -43,13 +43,19 @@ public:
 public Q_SLOTS:
     void log(const QString &message);
     void diag(const QString &level, const QString &message, const QString &context = QString());
+
     int exec();
     void exit(int retcode);
-    QString readEnvironmentVariable(const QString &variable, const QString &defaultValue = QString()) const;
+
+    QJSValue readEnvironmentVariable(const QString &variable, const QJSValue &defaultValue = QJSValue()) const;
+    QJSValue readDirectory(const QString &path);
+    QJSValue readFile(const QString &path);
+
     QString formatName(const QString &str) const;
     QString fixUmlauts(const QString &str) const;
 
 private:
+    QJSEngine *m_engine;
     const std::string *m_context;
     TagParser::Diagnostics *m_diag;
 };
