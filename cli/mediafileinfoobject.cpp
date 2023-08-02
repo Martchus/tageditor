@@ -171,7 +171,7 @@ TagValueObject::TagValueObject(const TagParser::TagValue &value, QJSEngine *engi
 {
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
     const auto type = TagParser::tagDataTypeString(value.type());
-    m_type = QString::fromUtf8(type.data(), type.size());
+    m_type = QString::fromUtf8(type.data(), Utility::sizeToInt(type.size()));
 #endif
 
     switch (value.type()) {
