@@ -408,6 +408,17 @@ QString MediaFileInfoObject::currentName() const
     return QString::fromStdString(m_f.fileName());
 }
 
+QString MediaFileInfoObject::savePath() const
+{
+    return QtUtilities::fromNativeFileName(m_f.saveFilePath());
+}
+
+void MediaFileInfoObject::setSavePath(const QString &path)
+{
+    const auto nativePath = QtUtilities::toNativeFileName(path);
+    m_f.setSaveFilePath(std::string_view(nativePath.data(), static_cast<std::size_t>(nativePath.size())));
+}
+
 QList<Cli::TagObject *> &MediaFileInfoObject::tags()
 {
     if (!m_tags.isEmpty()) {

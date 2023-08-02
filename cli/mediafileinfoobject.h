@@ -164,6 +164,7 @@ class MediaFileInfoObject : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString currentPath READ currentPath)
     Q_PROPERTY(QString currentName READ currentName)
+    Q_PROPERTY(QString savePath READ savePath WRITE setSavePath)
     Q_PROPERTY(QList<TagObject *> tags READ tags)
 
 public:
@@ -173,6 +174,8 @@ public:
     TagParser::MediaFileInfo &fileInfo();
     QString currentPath() const;
     QString currentName() const;
+    QString savePath() const;
+    void setSavePath(const QString &path);
     QList<TagObject *> &tags();
 
 public Q_SLOTS:
