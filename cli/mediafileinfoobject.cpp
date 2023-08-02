@@ -2,6 +2,7 @@
 #include "./fieldmapping.h"
 
 #include "../application/knownfieldmodel.h"
+#include "../dbquery/dbquery.h"
 #include "../misc/utility.h"
 
 #include <tagparser/abstracttrack.h>
@@ -124,6 +125,33 @@ QString UtilityObject::formatName(const QString &str) const
 QString UtilityObject::fixUmlauts(const QString &str) const
 {
     return Utility::fixUmlauts(str);
+}
+
+QJSValue UtilityObject::queryMusicBrainz(const QJSValue &songDescription)
+{
+    return m_engine->newQObject(QtGui::queryMusicBrainz(makeSongDescription(songDescription)));
+}
+
+QJSValue UtilityObject::queryLyricsWikia(const QJSValue &songDescription)
+{
+    return m_engine->newQObject(QtGui::queryLyricsWikia(makeSongDescription(songDescription)));
+}
+
+QJSValue UtilityObject::queryMakeItPersonal(const QJSValue &songDescription)
+{
+    return m_engine->newQObject(QtGui::queryMakeItPersonal(makeSongDescription(songDescription)));
+}
+
+QtGui::SongDescription UtilityObject::makeSongDescription(const QJSValue &obj)
+{
+    auto desc = QtGui::SongDescription(obj.property(QStringLiteral("songId")).toString());
+    desc.title = obj.property(QStringLiteral("title")).toString();
+    desc.album = obj.property(QStringLiteral("album")).toString();
+    desc.albumId = obj.property(QStringLiteral("albumId")).toString();
+    desc.artist = obj.property(QStringLiteral("artist")).toString();
+    desc.artistId = obj.property(QStringLiteral("artistId")).toString();
+    desc.year = obj.property(QStringLiteral("year")).toString();
+    return desc;
 }
 
 PositionInSetObject::PositionInSetObject(TagParser::PositionInSet value, QJSEngine *engine, QObject *parent)

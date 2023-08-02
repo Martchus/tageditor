@@ -27,6 +27,10 @@ enum class KnownField : unsigned int;
 enum class TagTextEncoding : unsigned int;
 } // namespace TagParser
 
+namespace QtGui {
+struct SongDescription;
+}
+
 namespace Cli {
 
 /*!
@@ -54,7 +58,13 @@ public Q_SLOTS:
     QString formatName(const QString &str) const;
     QString fixUmlauts(const QString &str) const;
 
+    QJSValue queryMusicBrainz(const QJSValue &songDescription);
+    QJSValue queryLyricsWikia(const QJSValue &songDescription);
+    QJSValue queryMakeItPersonal(const QJSValue &songDescription);
+
 private:
+    static QtGui::SongDescription makeSongDescription(const QJSValue &obj);
+
     QJSEngine *m_engine;
     const std::string *m_context;
     TagParser::Diagnostics *m_diag;
