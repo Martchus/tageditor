@@ -370,11 +370,11 @@ Here are some Bash examples which illustrate getting and setting tag information
     - The `utility` object exposes useful methods, e.g. for logging and controlling the event loop.
     - Checkout the file `testfiles/http.js` in this repository for an example of using XHR and
       controlling the event loop.
+    - The script runs after tags are added/removed (according to options like `--id3v1-usage`).
+      So the tags present during script execution don't necessarily represent tags that are actually
+      already present in the file.
     - The script is executed before any other modifications are applied. So if you also specify
-      values as usual (via `--values`) then these values override values changes by the script.
-    - The script runs so far before tags are added/removed (according to options like
-      `--id3v1-usage`). This may change in future versions. A JavaScript API to deal with such
-      changes still needs to be implemented.
+      values as usual (via `--values`) then these values override values changed by the script.
 
 ##### Further useful commands
 * Let the tag editor return with a non-zero exit code even if only non-fatal problems have been encountered

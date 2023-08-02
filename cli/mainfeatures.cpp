@@ -734,27 +734,6 @@ void setTagInfo(const SetTagInfoArgs &args)
             fileInfo.parseTracks(diag, parsingProgress);
             fileInfo.parseAttachments(diag, parsingProgress);
 
-            // process tag fields via the specified JavaScript
-#ifdef TAGEDITOR_USE_JSENGINE
-            if (js) {
-                const auto res = js->callMain(fileInfo, diag);
-                if (res.isError() || diag.has(DiagLevel::Fatal)) {
-                    if (!quiet) {
-                        std::cout << " - Skipping file due to fatal error when executing JavaScript.\n";
-                    }
-                    continueWithNextFile(diag);
-                    continue;
-                }
-                if (!res.isUndefined() && !res.toBool()) {
-                    if (!quiet) {
-                        std::cout << " - Skipping file because JavaScript returned a falsy value other than undefined.\n";
-                    }
-                    continueWithNextFile(diag);
-                    continue;
-                }
-            }
-#endif
-
             // remove tags with the specified targets
             if (!targetsToRemove.empty()) {
                 tags.clear();
@@ -827,6 +806,27 @@ void setTagInfo(const SetTagInfoArgs &args)
                     diag.emplace_back(DiagLevel::Warning, "Setting the document title is not supported for the file.", context);
                 }
             }
+
+            // process tag fields via the specified JavaScript
+#ifdef TAGEDITOR_USE_JSENGINE
+            if (js) {
+                const auto res = js->callMain(fileInfo, diag);
+                if (res.isError() || diag.has(DiagLevel::Fatal)) {
+                    if (!quiet) {
+                        std::cout << " - Skipping file due to fatal error when executing JavaScript.\n";
+                    }
+                    continueWithNextFile(diag);
+                    continue;
+                }
+                if (!res.isUndefined() && !res.toBool()) {
+                    if (!quiet) {
+                        std::cout << " - Skipping file because JavaScript returned a falsy value other than undefined.\n";
+                    }
+                    continueWithNextFile(diag);
+                    continue;
+                }
+            }
+#endif
 
             // alter tags
             tags.clear();
