@@ -284,6 +284,20 @@ QString TagObject::type() const
     return Utility::qstr(m_tag.typeName());
 }
 
+QJSValue TagObject::target() const
+{
+    const auto &target = m_tag.target();
+    auto obj = m_engine->newObject();
+    obj.setProperty(QStringLiteral("level"), m_engine->toScriptValue(target.level()));
+    obj.setProperty(QStringLiteral("levelName"), QJSValue(QString::fromStdString(target.levelName())));
+    obj.setProperty(QStringLiteral("tracks"), m_engine->toScriptValue(QList<std::uint64_t>(target.tracks().cbegin(), target.tracks().cend())));
+    obj.setProperty(QStringLiteral("chapters"), m_engine->toScriptValue(QList<std::uint64_t>(target.chapters().cbegin(), target.chapters().cend())));
+    obj.setProperty(QStringLiteral("editions"), m_engine->toScriptValue(QList<std::uint64_t>(target.editions().cbegin(), target.editions().cend())));
+    obj.setProperty(
+        QStringLiteral("attachments"), m_engine->toScriptValue(QList<std::uint64_t>(target.attachments().cbegin(), target.attachments().cend())));
+    return obj;
+}
+
 QString TagObject::propertyNameForField(TagParser::KnownField field)
 {
     static const auto reverseMapping = [] {

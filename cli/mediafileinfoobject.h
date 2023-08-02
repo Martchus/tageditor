@@ -129,6 +129,7 @@ private:
 class TagObject : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString type READ type)
+    Q_PROPERTY(QJSValue target READ target)
     Q_PROPERTY(QJSValue fields READ fields)
 
 public:
@@ -137,6 +138,7 @@ public:
 
     TagParser::Tag &tag();
     QString type() const;
+    QJSValue target() const;
     QJSValue &fields();
 
 public Q_SLOTS:
