@@ -4,7 +4,7 @@ import * as http from "http.js"
 export function main(file) {
     // iterate though all tags of the file to change fields in all of them
     for (const tag of file.tags) {
-        changeTagFields(tag);
+        changeTagFields(file, tag);
     }
 
     // submit changes from the JavaScript-context to the tag editor application; does not save changes to disk yet
@@ -21,7 +21,7 @@ function isString(value) {
     return typeof(value) === "string" || value instanceof String;
 }
 
-function changeTagFields(tag) {
+function changeTagFields(file, tag) {
     // log tag type and supported fields
     const fields = tag.fields;
     utility.diag("debug", tag.type, "tag");
@@ -51,6 +51,21 @@ function changeTagFields(tag) {
         fields[key] = [];
     }
 
-    // set some other fields
-    fields.track = "4/17";
+    // set total number of tracks if not already assigned using the number of files in directory
+    const track = fields.track;
+    if (track.find(value => !value.content.total) !== undefined) {
+        const extension = file.extension;
+        const dirItems = utility.readDirectory(file.containingDirectory) || [];
+        const total = dirItems.filter(fileName => fileName.endsWith(extension)).length;
+        if (total) {
+            for (const value of track) {
+                value.content.total |= total;
+            }
+        }
+    }
+
+    // assume the number of disks is always one for now
+    if (!fields.disk.length) {
+        fields.disk = "1/1";
+    }
 }
