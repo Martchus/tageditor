@@ -440,14 +440,24 @@ MediaFileInfoObject::~MediaFileInfoObject()
 {
 }
 
-QString MediaFileInfoObject::currentPath() const
+QString MediaFileInfoObject::path() const
 {
     return QString::fromStdString(m_f.path());
 }
 
-QString MediaFileInfoObject::currentName() const
+QString MediaFileInfoObject::name() const
 {
     return QString::fromStdString(m_f.fileName());
+}
+
+QString MediaFileInfoObject::extension() const
+{
+    return QString::fromStdString(m_f.extension());
+}
+
+QString MediaFileInfoObject::containingDirectory() const
+{
+    return QString::fromStdString(m_f.containingDirectory());
 }
 
 QString MediaFileInfoObject::savePath() const

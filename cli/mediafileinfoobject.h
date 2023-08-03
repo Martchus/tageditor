@@ -174,8 +174,10 @@ inline TagParser::Tag &TagObject::tag()
  */
 class MediaFileInfoObject : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString currentPath READ currentPath)
-    Q_PROPERTY(QString currentName READ currentName)
+    Q_PROPERTY(QString path READ path)
+    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QString extension READ extension)
+    Q_PROPERTY(QString containingDirectory READ containingDirectory)
     Q_PROPERTY(QString savePath READ savePath WRITE setSavePath)
     Q_PROPERTY(QList<TagObject *> tags READ tags)
 
@@ -184,8 +186,10 @@ public:
     ~MediaFileInfoObject() override;
 
     TagParser::MediaFileInfo &fileInfo();
-    QString currentPath() const;
-    QString currentName() const;
+    QString path() const;
+    QString name() const;
+    QString extension() const;
+    QString containingDirectory() const;
     QString savePath() const;
     void setSavePath(const QString &path);
     QList<TagObject *> &tags();
