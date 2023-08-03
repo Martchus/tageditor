@@ -76,6 +76,8 @@ inline void UtilityObject::setDiag(const std::string *context, TagParser::Diagno
     m_diag = diag;
 }
 
+class TagValueObject;
+
 /*!
  * \brief The PositionInSetObject class wraps a TagParser::PositionInSet for use within QML.
  */
@@ -85,7 +87,8 @@ class PositionInSetObject : public QObject {
     Q_PROPERTY(qint32 total READ total WRITE setTotal)
 
 public:
-    explicit PositionInSetObject(TagParser::PositionInSet value, QJSEngine *engine, QObject *parent);
+    explicit PositionInSetObject(TagParser::PositionInSet value, TagValueObject *relatedValue, QJSEngine *engine, QObject *parent);
+    explicit PositionInSetObject(const PositionInSetObject &other);
     ~PositionInSetObject() override;
 
     qint32 position() const;
@@ -98,6 +101,7 @@ public Q_SLOTS:
 
 private:
     TagParser::PositionInSet m_v;
+    TagValueObject *m_relatedValue;
 };
 
 /*!
@@ -117,6 +121,7 @@ public:
     const QString &type() const;
     const QJSValue &content() const;
     void setContent(const QJSValue &content);
+    void setContentFromTagValue(const TagParser::TagValue &value);
     const QJSValue &initialContent() const;
     bool isInitial() const;
     TagParser::TagValue toTagValue(TagParser::TagTextEncoding encoding) const;
@@ -125,8 +130,10 @@ public Q_SLOTS:
     void restore();
     void clear();
     QString toString() const;
+    void flagChange();
 
 private:
+    QJSEngine *m_engine;
     QString m_type;
     QJSValue m_content;
     QJSValue m_initialContent;

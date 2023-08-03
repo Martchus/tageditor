@@ -154,11 +154,19 @@ QtGui::SongDescription UtilityObject::makeSongDescription(const QJSValue &obj)
     return desc;
 }
 
-PositionInSetObject::PositionInSetObject(TagParser::PositionInSet value, QJSEngine *engine, QObject *parent)
+PositionInSetObject::PositionInSetObject(TagParser::PositionInSet value, TagValueObject *relatedValue, QJSEngine *engine, QObject *parent)
     : QObject(parent)
     , m_v(value)
+    , m_relatedValue(relatedValue)
 {
     Q_UNUSED(engine)
+}
+
+PositionInSetObject::PositionInSetObject(const PositionInSetObject &other)
+    : QObject(other.parent())
+    , m_v(other.m_v)
+    , m_relatedValue(nullptr)
+{
 }
 
 PositionInSetObject::~PositionInSetObject()
@@ -172,6 +180,9 @@ qint32 PositionInSetObject::position() const
 
 void PositionInSetObject::setPosition(qint32 position)
 {
+    if (m_relatedValue) {
+        m_relatedValue->flagChange();
+    }
     m_v.setPosition(position);
 }
 
@@ -182,7 +193,10 @@ qint32 PositionInSetObject::total() const
 
 void PositionInSetObject::setTotal(qint32 total)
 {
-    return m_v.setTotal(total);
+    if (m_relatedValue) {
+        m_relatedValue->flagChange();
+    }
+    m_v.setTotal(total);
 }
 
 QString PositionInSetObject::toString() const
@@ -192,46 +206,10 @@ QString PositionInSetObject::toString() const
 
 TagValueObject::TagValueObject(const TagParser::TagValue &value, QJSEngine *engine, QObject *parent)
     : QObject(parent)
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
-    , m_type(QString::fromUtf8(TagParser::tagDataTypeString(value.type())))
-#endif
+    , m_engine(engine)
     , m_initial(true)
 {
-#if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
-    const auto type = TagParser::tagDataTypeString(value.type());
-    m_type = QString::fromUtf8(type.data(), Utility::sizeToInt(type.size()));
-#endif
-
-    switch (value.type()) {
-    case TagParser::TagDataType::Undefined:
-        break;
-    case TagParser::TagDataType::Text:
-    case TagParser::TagDataType::Popularity:
-    case TagParser::TagDataType::DateTime:
-    case TagParser::TagDataType::DateTimeExpression:
-    case TagParser::TagDataType::TimeSpan:
-        m_content = Utility::tagValueToQString(value);
-        break;
-    case TagParser::TagDataType::Integer:
-        m_content = value.toInteger();
-        break;
-    case TagParser::TagDataType::UnsignedInteger:
-        if (auto v = value.toUnsignedInteger(); v < std::numeric_limits<uint>::max()) {
-            m_content = QJSValue(static_cast<uint>(v));
-        } else {
-            m_content = QString::number(v);
-        }
-        break;
-    case TagParser::TagDataType::Binary:
-    case TagParser::TagDataType::Picture:
-        m_content = engine->toScriptValue(QByteArray(value.dataPointer(), Utility::sizeToInt(value.dataSize())));
-        break;
-    case TagParser::TagDataType::PositionInSet:
-        m_content = engine->newQObject(new PositionInSetObject(value.toPositionInSet(), engine, this));
-        break;
-    default:
-        m_content = QJSValue::NullValue;
-    }
+    setContentFromTagValue(value);
 }
 
 TagValueObject::~TagValueObject()
@@ -255,11 +233,45 @@ const QJSValue &TagValueObject::initialContent() const
 
 void TagValueObject::setContent(const QJSValue &content)
 {
-    if (m_initial) {
-        m_initialContent = m_content;
-        m_initial = false;
-    }
+    flagChange();
     m_content = content;
+}
+
+void TagValueObject::setContentFromTagValue(const TagParser::TagValue &value)
+{
+    const auto type = TagParser::tagDataTypeString(value.type());
+    m_type = QString::fromUtf8(type.data(), Utility::sizeToInt(type.size()));
+
+    switch (value.type()) {
+    case TagParser::TagDataType::Undefined:
+        break;
+    case TagParser::TagDataType::Text:
+    case TagParser::TagDataType::Popularity:
+    case TagParser::TagDataType::DateTime:
+    case TagParser::TagDataType::DateTimeExpression:
+    case TagParser::TagDataType::TimeSpan:
+        m_content = Utility::tagValueToQString(value);
+        break;
+    case TagParser::TagDataType::Integer:
+        m_content = value.toInteger();
+        break;
+    case TagParser::TagDataType::UnsignedInteger:
+        if (auto v = value.toUnsignedInteger(); v < std::numeric_limits<uint>::max()) {
+            m_content = QJSValue(static_cast<uint>(v));
+        } else {
+            m_content = QString::number(v);
+        }
+        break;
+    case TagParser::TagDataType::Binary:
+    case TagParser::TagDataType::Picture:
+        m_content = m_engine->toScriptValue(QByteArray(value.dataPointer(), Utility::sizeToInt(value.dataSize())));
+        break;
+    case TagParser::TagDataType::PositionInSet:
+        m_content = m_engine->newQObject(new PositionInSetObject(value.toPositionInSet(), this, m_engine, this));
+        break;
+    default:
+        m_content = QJSValue::NullValue;
+    }
 }
 
 bool TagValueObject::isInitial() const
@@ -275,6 +287,18 @@ TagParser::TagValue TagValueObject::toTagValue(TagParser::TagTextEncoding encodi
     const auto str = m_content.toString();
     return TagParser::TagValue(reinterpret_cast<const char *>(str.utf16()), static_cast<std::size_t>(str.size()) * (sizeof(ushort) / sizeof(char)),
         nativeUtf16Encoding, encoding);
+}
+
+void TagValueObject::flagChange()
+{
+    if (m_initial) {
+        if (const auto *const positionInSet = qobject_cast<const PositionInSetObject *>(m_content.toQObject())) {
+            m_initialContent = m_engine->newQObject(new PositionInSetObject(*positionInSet));
+        } else {
+            m_initialContent = m_content;
+        }
+        m_initial = false;
+    }
 }
 
 void TagValueObject::restore()
