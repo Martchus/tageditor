@@ -104,7 +104,7 @@ QJSValue UtilityObject::readEnvironmentVariable(const QString &variable, const Q
 QJSValue UtilityObject::readDirectory(const QString &path)
 {
     auto dir = QDir(path);
-    return dir.exists() ? m_engine->toScriptValue(dir.entryList(QDir::NoDotAndDotDot, QDir::Name)) : QJSValue();
+    return dir.exists() ? m_engine->toScriptValue(dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot, QDir::Name)) : QJSValue();
 }
 
 QJSValue UtilityObject::readFile(const QString &path)
