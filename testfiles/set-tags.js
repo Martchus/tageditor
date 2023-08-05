@@ -1,5 +1,4 @@
-// import another module as an example how imports work
-import * as http from "http.js"
+import * as metadatasearch from "metadatasearch.js"
 
 export function main(file) {
     // iterate though all tags of the file to change fields in all of them
@@ -19,11 +18,6 @@ const personalFields = ["comment", "rating"];
 
 function isString(value) {
     return typeof(value) === "string" || value instanceof String;
-}
-
-function waitFor(signal) {
-    signal.connect(() => { utility.exit(); });
-    utility.exec();
 }
 
 function logTagInfo(file, tag) {
@@ -84,17 +78,9 @@ function addLyrics(file, tag) {
     }
     const firstTitle = fields.title?.[0]?.content;
     const firstArtist = fields.artist?.[0]?.content;
-    if (!firstTitle || !firstArtist) {
-        return;
+    if (firstTitle && firstArtist) {
+        fields.lyrics = metadatasearch.queryLyrics({title: firstTitle, artist: firstArtist});
     }
-    const lyricsModel = utility.queryMakeItPersonal({title: firstTitle, artist: firstArtist});
-    if (!lyricsModel.areResultsAvailable) {
-        waitFor(lyricsModel.resultsAvailable);
-    }
-    if (!lyricsModel.fetchLyrics(lyricsModel.index(0, 0))) {
-        waitFor(lyricsModel.lyricsAvailable);
-    }
-    fields.lyrics = lyricsModel.lyricsValue(lyricsModel.index(0, 0));
 }
 
 function addMiscFields(file, tag) {
