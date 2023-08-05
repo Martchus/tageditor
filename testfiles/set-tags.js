@@ -21,7 +21,12 @@ function isString(value) {
     return typeof(value) === "string" || value instanceof String;
 }
 
-function changeTagFields(file, tag) {
+function waitFor(signal) {
+    signal.connect(() => { utility.exit(); });
+    utility.exec();
+}
+
+function logTagInfo(file, tag) {
     // log tag type and supported fields
     const fields = tag.fields;
     utility.diag("debug", tag.type, "tag");
@@ -34,8 +39,10 @@ function changeTagFields(file, tag) {
             utility.diag("debug", content, key + " (" + value.type + ")");
         }
     }
+}
 
-    // apply fixes to main text fields
+function applyFixesToMainFields(file, tag) {
+    const fields = tag.fields;
     for (const key of mainTextFields) {
         for (const value of fields[key]) {
             if (isString(value.content)) {
@@ -45,27 +52,64 @@ function changeTagFields(file, tag) {
             }
         }
     }
+}
 
-    // ensure personal fields are cleared
+function clearPersonalFields(file, tag) {
+    const fields = tag.fields;
     for (const key of personalFields) {
         fields[key] = [];
     }
+}
 
-    // set total number of tracks if not already assigned using the number of files in directory
-    const track = fields.track;
-    if (track.find(value => !value.content.total) !== undefined) {
-        const extension = file.extension;
-        const dirItems = utility.readDirectory(file.containingDirectory) || [];
-        const total = dirItems.filter(fileName => fileName.endsWith(extension)).length;
-        if (total) {
-            for (const value of track) {
-                value.content.total |= total;
-            }
-        }
+function addTotalNumberOfTracks(file, tag) {
+    const track = tag.fields.track;
+    if (track.find(value => !value.content.total) === undefined) {
+        return; // skip if already assigned
     }
+    const extension = file.extension;
+    const dirItems = utility.readDirectory(file.containingDirectory) || [];
+    const total = dirItems.filter(fileName => fileName.endsWith(extension)).length;
+    if (!total) {
+        return;
+    }
+    for (const value of track) {
+        value.content.total |= total;
+    }
+}
 
+function addLyrics(file, tag) {
+    const fields = tag.fields;
+    if (fields.lyrics.length) {
+        return; // skip if already assigned
+    }
+    const firstTitle = fields.title?.[0]?.content;
+    const firstArtist = fields.artist?.[0]?.content;
+    if (!firstTitle || !firstArtist) {
+        return;
+    }
+    const lyricsModel = utility.queryMakeItPersonal({title: firstTitle, artist: firstArtist});
+    if (!lyricsModel.areResultsAvailable) {
+        waitFor(lyricsModel.resultsAvailable);
+    }
+    if (!lyricsModel.fetchLyrics(lyricsModel.index(0, 0))) {
+        waitFor(lyricsModel.lyricsAvailable);
+    }
+    fields.lyrics = lyricsModel.lyricsValue(lyricsModel.index(0, 0));
+}
+
+function addMiscFields(file, tag) {
     // assume the number of disks is always one for now
+    const fields = tag.fields;
     if (!fields.disk.length) {
         fields.disk = "1/1";
     }
+}
+
+function changeTagFields(file, tag) {
+    logTagInfo(file, tag);
+    applyFixesToMainFields(file, tag);
+    clearPersonalFields(file, tag);
+    addTotalNumberOfTracks(file, tag);
+    addMiscFields(file, tag);
+    addLyrics(file, tag);
 }

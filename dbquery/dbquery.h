@@ -42,6 +42,9 @@ struct SongDescription {
 
 class QueryResultsModel : public QAbstractTableModel {
     Q_OBJECT
+    Q_PROPERTY(QStringList errorList READ errorList)
+    Q_PROPERTY(bool areResultsAvailable READ areResultsAvailable)
+    Q_PROPERTY(bool isFetchingCover READ isFetchingCover)
 
 public:
     enum Column {
@@ -68,11 +71,13 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     const QByteArray *cover(const QModelIndex &index) const;
-    virtual bool fetchCover(const QModelIndex &index);
+    Q_INVOKABLE QByteArray coverValue(const QModelIndex &index) const;
+    Q_INVOKABLE virtual bool fetchCover(const QModelIndex &index);
     const QString *lyrics(const QModelIndex &index) const;
-    virtual bool fetchLyrics(const QModelIndex &index);
-    virtual void abort();
-    virtual QUrl webUrl(const QModelIndex &index);
+    Q_INVOKABLE QString lyricsValue(const QModelIndex &index) const;
+    Q_INVOKABLE virtual bool fetchLyrics(const QModelIndex &index);
+    Q_INVOKABLE virtual void abort();
+    Q_INVOKABLE virtual QUrl webUrl(const QModelIndex &index);
 
 Q_SIGNALS:
     void resultsAvailable();

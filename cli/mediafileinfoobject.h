@@ -49,7 +49,7 @@ public Q_SLOTS:
     void diag(const QString &level, const QString &message, const QString &context = QString());
 
     int exec();
-    void exit(int retcode);
+    void exit(int retcode = 0);
 
     QJSValue readEnvironmentVariable(const QString &variable, const QJSValue &defaultValue = QJSValue()) const;
     QJSValue readDirectory(const QString &path);

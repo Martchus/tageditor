@@ -209,6 +209,14 @@ const QByteArray *QueryResultsModel::cover(const QModelIndex &index) const
     return nullptr;
 }
 
+QByteArray QueryResultsModel::coverValue(const QModelIndex &index) const
+{
+    if (const auto *c = cover(index)) {
+        return *c;
+    }
+    return QByteArray();
+}
+
 /*!
  * \brief Fetches the cover the specified \a index.
  * \returns
@@ -238,6 +246,14 @@ const QString *QueryResultsModel::lyrics(const QModelIndex &index) const
         return &lyrics;
     }
     return nullptr;
+}
+
+QString QueryResultsModel::lyricsValue(const QModelIndex &index) const
+{
+    if (const auto *l = lyrics(index)) {
+        return *l;
+    }
+    return QString();
 }
 
 /*!
