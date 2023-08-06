@@ -142,6 +142,11 @@ QJSValue UtilityObject::queryMakeItPersonal(const QJSValue &songDescription)
     return m_engine->newQObject(QtGui::queryMakeItPersonal(makeSongDescription(songDescription)));
 }
 
+QJSValue UtilityObject::queryTekstowo(const QJSValue &songDescription)
+{
+    return m_engine->newQObject(QtGui::queryTekstowo(makeSongDescription(songDescription)));
+}
+
 QtGui::SongDescription UtilityObject::makeSongDescription(const QJSValue &obj)
 {
     auto desc = QtGui::SongDescription(obj.property(QStringLiteral("songId")).toString());

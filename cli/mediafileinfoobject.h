@@ -61,6 +61,7 @@ public Q_SLOTS:
     QJSValue queryMusicBrainz(const QJSValue &songDescription);
     QJSValue queryLyricsWikia(const QJSValue &songDescription);
     QJSValue queryMakeItPersonal(const QJSValue &songDescription);
+    QJSValue queryTekstowo(const QJSValue &songDescription);
 
 private:
     static QtGui::SongDescription makeSongDescription(const QJSValue &obj);

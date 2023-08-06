@@ -1,12 +1,12 @@
-import * as http from "http.js"
+const cache = {};
 
 function waitFor(signal) {
     signal.connect(() => { utility.exit(); });
     utility.exec();
 }
 
-function queryMakeItPersonal(searchCriteria) {
-    const lyricsModel = utility.queryMakeItPersonal(searchCriteria);
+function queryProvider(provider, searchCriteria) {
+    const lyricsModel = utility["query" + provider](searchCriteria);
     if (!lyricsModel.areResultsAvailable) {
         waitFor(lyricsModel.resultsAvailable);
     }
@@ -20,8 +20,21 @@ function queryMakeItPersonal(searchCriteria) {
     return lyrics;
 }
 
+function queryProviders(providers, searchCriteria) {
+    for (const provider of providers) {
+        const res = queryProvider(provider, searchCriteria);
+        if (res) {
+            return res;
+        }
+    }
+}
+
 export function queryLyrics(searchCriteria) {
-    return queryMakeItPersonal(searchCriteria);
+    const cacheKey = searchCriteria.title + "_" + searchCriteria.artist;
+    const cachedValue = cache[cacheKey];
+    return cachedValue
+        ? cachedValue
+        : cache[cacheKey] = queryProviders(["Tekstowo", "MakeItPersonal"], searchCriteria);
 }
 
 

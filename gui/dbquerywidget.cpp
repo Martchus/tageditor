@@ -7,6 +7,7 @@
 #include "../dbquery/dbquery.h"
 #include "../misc/utility.h"
 
+#include "resources/config.h"
 #include "ui_dbquerywidget.h"
 
 #include <tagparser/tag.h>
@@ -47,6 +48,13 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     , m_coverIndex(-1)
     , m_lyricsIndex(-1)
     , m_menu(new QMenu(parent))
+    , m_insertPresentDataAction(nullptr)
+    , m_searchMusicBrainzAction(nullptr)
+    , m_searchLyricsWikiaAction(nullptr)
+    , m_searchMakeItPersonalAction(nullptr)
+    , m_searchTekstowoAction(nullptr)
+    , m_lastSearchAction(nullptr)
+    , m_refreshAutomaticallyAction(nullptr)
 {
     m_ui->setupUi(this);
     updateStyleSheet();
@@ -72,20 +80,27 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
 
     // setup menu
     const auto searchIcon = QIcon::fromTheme(QStringLiteral("search"));
+    const auto enableLegacyProvider = qEnvironmentVariableIntValue(PROJECT_VARNAME_UPPER "_ENABLE_LEGACY_METADATA_PROVIDERS");
     m_menu->setTitle(tr("New search"));
     m_menu->setIcon(searchIcon);
     m_searchMusicBrainzAction = m_lastSearchAction = m_menu->addAction(tr("Query MusicBrainz"));
     m_searchMusicBrainzAction->setIcon(searchIcon);
     m_searchMusicBrainzAction->setShortcut(QKeySequence(Qt::CTRL, Qt::Key_M));
     connect(m_searchMusicBrainzAction, &QAction::triggered, this, &DbQueryWidget::searchMusicBrainz);
-    m_searchLyricsWikiaAction = m_menu->addAction(tr("Query LyricsWikia"));
-    m_searchLyricsWikiaAction->setIcon(searchIcon);
-    m_searchLyricsWikiaAction->setShortcut(QKeySequence(Qt::CTRL, Qt::Key_L));
-    connect(m_searchLyricsWikiaAction, &QAction::triggered, this, &DbQueryWidget::searchLyricsWikia);
-    m_searchMakeItPersonalAction = m_menu->addAction(tr("Query makeitpersonal"));
-    m_searchMakeItPersonalAction->setIcon(searchIcon);
-    m_searchMakeItPersonalAction->setShortcut(QKeySequence(Qt::CTRL, Qt::Key_K));
-    connect(m_searchMakeItPersonalAction, &QAction::triggered, this, &DbQueryWidget::searchMakeItPersonal);
+    if (enableLegacyProvider) {
+        m_searchLyricsWikiaAction = m_menu->addAction(tr("Query LyricsWikia"));
+        m_searchLyricsWikiaAction->setIcon(searchIcon);
+        m_searchLyricsWikiaAction->setShortcut(QKeySequence(Qt::CTRL, Qt::Key_L));
+        connect(m_searchLyricsWikiaAction, &QAction::triggered, this, &DbQueryWidget::searchLyricsWikia);
+        m_searchMakeItPersonalAction = m_menu->addAction(tr("Query makeitpersonal"));
+        m_searchMakeItPersonalAction->setIcon(searchIcon);
+        m_searchMakeItPersonalAction->setShortcut(QKeySequence(Qt::CTRL, Qt::Key_K));
+        connect(m_searchMakeItPersonalAction, &QAction::triggered, this, &DbQueryWidget::searchMakeItPersonal);
+    }
+    m_searchTekstowoAction = m_menu->addAction(tr("Query Tekstowo"));
+    m_searchTekstowoAction->setIcon(searchIcon);
+    m_searchTekstowoAction->setShortcut(QKeySequence(Qt::CTRL, Qt::Key_T));
+    connect(m_searchTekstowoAction, &QAction::triggered, this, &DbQueryWidget::searchTekstowo);
     m_menu->addSeparator();
     m_insertPresentDataAction = m_menu->addAction(tr("Use present data as search criteria"));
     m_insertPresentDataAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-copy")));
@@ -150,7 +165,7 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpec
         m_ui->titleLineEdit->setText(newTitle);
         somethingChanged = true;
     }
-    if (m_lastSearchAction != m_searchMakeItPersonalAction) {
+    if (m_lastSearchAction != m_searchTekstowoAction && m_lastSearchAction != m_searchMakeItPersonalAction) {
         const auto newTrackNumber = tagEdit->trackNumber();
         if (m_ui->trackSpinBox->value() != newTrackNumber) {
             m_ui->trackSpinBox->setValue(newTrackNumber);
@@ -246,6 +261,30 @@ void DbQueryWidget::searchMakeItPersonal()
     useQueryResults(queryMakeItPersonal(currentSongDescription()));
 }
 
+void DbQueryWidget::searchTekstowo()
+{
+    m_lastSearchAction = m_searchMakeItPersonalAction;
+
+    // check whether enough search terms are supplied
+    if (m_ui->artistLineEdit->text().isEmpty() || m_ui->titleLineEdit->text().isEmpty()) {
+        m_ui->notificationLabel->setNotificationType(NotificationType::Critical);
+        m_ui->notificationLabel->setText(tr("Insufficient search criteria supplied - artist and title are mandatory"));
+        return;
+    }
+
+    // delete current model
+    m_ui->resultsTreeView->setModel(nullptr);
+    delete m_model;
+
+    // show status
+    m_ui->notificationLabel->setNotificationType(NotificationType::Progress);
+    m_ui->notificationLabel->setText(tr("Retrieving lyrics from Tekstowo ..."));
+    setStatus(false);
+
+    // do actual query
+    useQueryResults(queryTekstowo(currentSongDescription()));
+}
+
 void DbQueryWidget::abortSearch()
 {
     if (!m_model) {
@@ -331,7 +370,9 @@ void DbQueryWidget::setStatus(bool aborted)
 {
     m_ui->abortPushButton->setVisible(!aborted);
     m_searchMusicBrainzAction->setEnabled(aborted);
-    m_searchLyricsWikiaAction->setEnabled(aborted);
+    if (m_searchLyricsWikiaAction) {
+        m_searchLyricsWikiaAction->setEnabled(aborted);
+    }
     m_ui->applyPushButton->setVisible(aborted);
 }
 

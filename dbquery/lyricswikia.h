@@ -11,7 +11,7 @@ class LyricsWikiaResultsModel : public HttpResultsModel {
     Q_OBJECT
 
 public:
-    LyricsWikiaResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
+    explicit LyricsWikiaResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
     bool fetchCover(const QModelIndex &index) override;
     bool fetchLyrics(const QModelIndex &index) override;
     QUrl webUrl(const QModelIndex &index) override;

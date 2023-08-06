@@ -15,7 +15,7 @@ private:
     enum What { MusicBrainzMetaData, CoverArt };
 
 public:
-    MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
+    explicit MusicBrainzResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
     bool fetchCover(const QModelIndex &index) override;
     QUrl webUrl(const QModelIndex &index) override;
 

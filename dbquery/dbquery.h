@@ -22,7 +22,7 @@ TAGEDITOR_ENUM_CLASS KnownField : unsigned int;
 namespace QtGui {
 
 struct SongDescription {
-    SongDescription(const QString &songId = QString());
+    explicit SongDescription(const QString &songId = QString());
 
     QString songId;
     QString title;
@@ -85,7 +85,7 @@ Q_SIGNALS:
     void lyricsAvailable(const QModelIndex &index);
 
 protected:
-    QueryResultsModel(QObject *parent = nullptr);
+    explicit QueryResultsModel(QObject *parent = nullptr);
     void setResultsAvailable(bool resultsAvailable);
     void setFetchingCover(bool fetchingCover);
 
@@ -124,7 +124,7 @@ public:
     void abort() override;
 
 protected:
-    HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
+    explicit HttpResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
     template <class Object, class Function> void addReply(QNetworkReply *reply, Object object, Function handler);
     template <class Function> void addReply(QNetworkReply *reply, Function handler);
     virtual void parseInitialResults(const QByteArray &data) = 0;
@@ -135,17 +135,20 @@ protected:
 
 private Q_SLOTS:
     void handleInitialReplyFinished();
+#ifdef CPP_UTILITIES_DEBUG_BUILD
+    void logReply(QNetworkReply *reply);
+#endif
 
 protected:
     QList<QNetworkReply *> m_replies;
-    const SongDescription m_initialDescription;
+    SongDescription m_initialDescription;
 };
 
 template <class Object, class Function> inline void HttpResultsModel::addReply(QNetworkReply *reply, Object object, Function handler)
 {
     (m_replies << reply), connect(reply, &QNetworkReply::finished, object, handler);
 #ifdef CPP_UTILITIES_DEBUG_BUILD
-    std::cerr << "HTTP query: " << reply->url().toString().toUtf8().data() << std::endl;
+    logReply(reply);
 #endif
 }
 
@@ -157,7 +160,7 @@ template <class Function> inline void HttpResultsModel::addReply(QNetworkReply *
 {
     (m_replies << reply), connect(reply, &QNetworkReply::finished, handler);
 #ifdef CPP_UTILITIES_DEBUG_BUILD
-    std::cerr << "HTTP query: " << reply->url().toString().toUtf8().data() << std::endl;
+    logReply(reply);
 #endif
 }
 
@@ -165,6 +168,7 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription);
 QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription);
 QNetworkReply *queryCoverArtArchive(const QString &albumId);
 QueryResultsModel *queryMakeItPersonal(SongDescription &&songDescription);
+QueryResultsModel *queryTekstowo(SongDescription &&songDescription);
 
 } // namespace QtGui
 

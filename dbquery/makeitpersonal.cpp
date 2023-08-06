@@ -37,32 +37,25 @@ bool MakeItPersonalResultsModel::fetchLyrics(const QModelIndex &index)
 
 void MakeItPersonalResultsModel::parseInitialResults(const QByteArray &data)
 {
-    // prepare parsing meta data
     beginResetModel();
     m_results.clear();
-
-    SongDescription desc = m_initialDescription;
+    auto desc = m_initialDescription;
     desc.songId = m_initialDescription.artist + m_initialDescription.title;
     desc.artistId = m_initialDescription.artist;
     desc.lyrics = QString::fromUtf8(data).trimmed();
     if (desc.lyrics != QLatin1String("Sorry, We don't have lyrics for this song yet.")) {
         m_results << std::move(desc);
     }
-
-    // promote changes
     endResetModel();
 }
 
 QueryResultsModel *queryMakeItPersonal(SongDescription &&songDescription)
 {
-    // compose URL
-    QUrlQuery query;
+    auto query = QUrlQuery();
     query.addQueryItem(QStringLiteral("artist"), songDescription.artist);
     query.addQueryItem(QStringLiteral("title"), songDescription.title);
-    QUrl url(makeItPersonalApiUrl());
+    auto url = makeItPersonalApiUrl();
     url.setQuery(query);
-
-    // make request
     return new MakeItPersonalResultsModel(std::move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
 }
 

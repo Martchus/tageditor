@@ -100,6 +100,7 @@ struct DbQuery {
     QString coverArtArchiveUrl;
     QString lyricsWikiaUrl;
     QString makeItPersonalUrl;
+    QString tekstowoUrl;
 };
 
 struct RenamingUtility {

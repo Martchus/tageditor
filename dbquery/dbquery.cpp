@@ -3,6 +3,8 @@
 #include "../misc/networkaccessmanager.h"
 #include "../misc/utility.h"
 
+#include "resources/config.h"
+
 #include <tagparser/signature.h>
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>
@@ -25,7 +27,7 @@ SongDescription::SongDescription(const QString &songId)
 }
 
 std::list<QString> QueryResultsModel::s_coverNames = std::list<QString>();
-map<QString, QByteArray> QueryResultsModel::s_coverData = map<QString, QByteArray>();
+std::map<QString, QByteArray> QueryResultsModel::s_coverData = std::map<QString, QByteArray>();
 
 QueryResultsModel::QueryResultsModel(QObject *parent)
     : QAbstractTableModel(parent)
@@ -104,7 +106,7 @@ QVariant QueryResultsModel::data(const QModelIndex &index, int role) const
     if (!index.isValid() || index.row() >= m_results.size()) {
         return QVariant();
     }
-    const SongDescription &res = m_results.at(index.row());
+    const auto &res = m_results.at(index.row());
     switch (role) {
     case Qt::DisplayRole:
         switch (index.column()) {
@@ -146,7 +148,7 @@ QVariant QueryResultsModel::data(const QModelIndex &index, int role) const
 
 Qt::ItemFlags QueryResultsModel::flags(const QModelIndex &index) const
 {
-    Qt::ItemFlags flags = Qt::ItemNeverHasChildren | Qt::ItemIsSelectable | Qt::ItemIsEnabled;
+    auto flags = Qt::ItemFlags(Qt::ItemNeverHasChildren | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     if (index.isValid()) {
         flags |= Qt::ItemIsUserCheckable;
     }
@@ -311,6 +313,16 @@ void HttpResultsModel::handleInitialReplyFinished()
     setResultsAvailable(true); // update status, emit resultsAvailable()
 }
 
+#ifdef CPP_UTILITIES_DEBUG_BUILD
+void HttpResultsModel::logReply(QNetworkReply *reply)
+{
+    static const auto enableQueryLogging = qEnvironmentVariableIntValue(PROJECT_VARNAME_UPPER "_ENABLE_QUERY_LOGGING");
+    if (enableQueryLogging) {
+        std::cerr << "HTTP query: " << reply->url().toString().toUtf8().data() << std::endl;
+    }
+}
+#endif
+
 QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByteArray &data, bool alwaysFollowRedirection)
 {
     // delete reply (later)
@@ -328,8 +340,10 @@ QNetworkReply *HttpResultsModel::evaluateReplyResults(QNetworkReply *reply, QByt
             m_errorList << tr("Server replied no data.");
         }
 #ifdef CPP_UTILITIES_DEBUG_BUILD
-        cerr << "Results from HTTP query:" << endl;
-        cerr << data.data() << endl;
+        static const auto enableQueryLogging = qEnvironmentVariableIntValue(PROJECT_VARNAME_UPPER "_ENABLE_QUERY_LOGGING");
+        if (enableQueryLogging) {
+            std::cerr << "Results from HTTP query:\n" << data.data() << '\n';
+        }
 #endif
         return nullptr;
     }
@@ -366,7 +380,7 @@ void HttpResultsModel::abort()
 
 void HttpResultsModel::handleCoverReplyFinished(QNetworkReply *reply, const QString &albumId, int row)
 {
-    QByteArray data;
+    auto data = QByteArray();
     if (auto *const newReply = evaluateReplyResults(reply, data, true)) {
         addReply(newReply, bind(&HttpResultsModel::handleCoverReplyFinished, this, newReply, albumId, row));
         return;

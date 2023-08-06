@@ -39,6 +39,7 @@ public Q_SLOTS:
     void searchMusicBrainz();
     void searchLyricsWikia();
     void searchMakeItPersonal();
+    void searchTekstowo();
     void abortSearch();
     void applySelectedResults();
     void applySpecifiedResults(const QModelIndex &modelIndex);
@@ -82,6 +83,7 @@ private:
     QAction *m_searchMusicBrainzAction;
     QAction *m_searchLyricsWikiaAction;
     QAction *m_searchMakeItPersonalAction;
+    QAction *m_searchTekstowoAction;
     QAction *m_lastSearchAction;
     QAction *m_refreshAutomaticallyAction;
     QPoint m_contextMenuPos;

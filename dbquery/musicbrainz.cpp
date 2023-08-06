@@ -40,15 +40,12 @@ MusicBrainzResultsModel::MusicBrainzResultsModel(SongDescription &&initialSongDe
 
 bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
 {
-    // FIXME: avoid code duplication with lyricswikia.cpp
-
-    // find song description
     if (index.parent().isValid() || index.row() >= m_results.size()) {
         return true;
     }
-    SongDescription &desc = m_results[index.row()];
 
     // skip if cover is already available
+    auto &desc = m_results[index.row()];
     if (!desc.cover.isEmpty()) {
         return true;
     }
@@ -84,17 +81,16 @@ QUrl MusicBrainzResultsModel::webUrl(const QModelIndex &index)
 
 void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
 {
-    // prepare parsing MusicBrainz meta data
     beginResetModel();
     m_results.clear();
 
     // store all song information (called recordings by MusicBrainz)
-    vector<SongDescription> recordings;
+    auto recordings = std::vector<SongDescription>();
     // store all albums/collections (called releases by MusicBrainz) for a song
-    unordered_map<QString, vector<SongDescription>> releasesByRecording;
+    auto releasesByRecording = std::unordered_map<QString, std::vector<SongDescription>>();
 
     // parse XML tree
-    QXmlStreamReader xmlReader(data);
+    auto xmlReader = QXmlStreamReader(data);
     // clang-format off
     #include <qtutilities/misc/xmlparsermacros.h>
     children {
@@ -103,7 +99,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                 iftag("recording-list") {
                     children {
                         iftag("recording") {
-                            SongDescription currentDescription(attribute("id").toString());
+                            auto currentDescription = SongDescription(attribute("id").toString());
                             children {
                                 iftag("title") {
                                     currentDescription.title = text;
@@ -130,7 +126,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
                                 } eliftag("release-list") {
                                     children {
                                         iftag("release") {
-                                            SongDescription releaseInfo;
+                                            auto releaseInfo = SongDescription();
                                             releaseInfo.albumId = attribute("id").toString();
                                             children {
                                                 iftag("title") {
@@ -220,7 +216,7 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
 
     // populate results
     // -> create a song for each recording/release combination and group those songs by their releases sorted ascendingly from oldest to latest
-    map<QString, vector<SongDescription>> recordingsByRelease;
+    auto recordingsByRelease = std::map<QString, std::vector<SongDescription>>();
     for (const auto &recording : recordings) {
         const auto &releases = releasesByRecording[recording.songId];
         for (const auto &release : releases) {
@@ -272,7 +268,6 @@ void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)
         m_errorList << xmlReader.errorString();
     }
 
-    // promote changes
     endResetModel();
 }
 // clang-format on
@@ -281,8 +276,7 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
 {
     static const auto defaultMusicBrainzUrl(QStringLiteral("https://musicbrainz.org/ws/2/recording/"));
 
-    // compose parts
-    QStringList parts;
+    auto parts = QStringList();
     parts.reserve(4);
     if (!songDescription.title.isEmpty()) {
         parts << QChar('\"') % songDescription.title % QChar('\"');
@@ -297,15 +291,12 @@ QueryResultsModel *queryMusicBrainz(SongDescription &&songDescription)
         parts << QStringLiteral("number:") + QString::number(songDescription.track);
     }
 
-    // compose URL
     const auto &musicBrainzUrl = Settings::values().dbQuery.musicBrainzUrl;
-    QUrl url(musicBrainzUrl.isEmpty() ? defaultMusicBrainzUrl : (musicBrainzUrl + QStringLiteral("/recording/")));
-    QUrlQuery query;
+    auto url = QUrl(musicBrainzUrl.isEmpty() ? defaultMusicBrainzUrl : (musicBrainzUrl + QStringLiteral("/recording/")));
+    auto query = QUrlQuery();
     query.addQueryItem(QStringLiteral("query"), parts.join(QStringLiteral(" AND ")));
     url.setQuery(query);
-
-    // make request
-    QNetworkRequest request(url);
+    auto request = QNetworkRequest(url);
     request.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("Mozilla/5.0 (X11; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0"));
     return new MusicBrainzResultsModel(std::move(songDescription), Utility::networkAccessManager().get(request));
 }

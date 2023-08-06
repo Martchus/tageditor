@@ -52,6 +52,7 @@ set(WIDGETS_HEADER_FILES
     dbquery/musicbrainz.h
     dbquery/makeitpersonal.h
     dbquery/lyricswikia.h
+    dbquery/tekstowo.h
     gui/dbquerywidget.h
     misc/networkaccessmanager.h
     renamingutility/filesystemitem.h
@@ -82,6 +83,7 @@ set(WIDGETS_SRC_FILES
     dbquery/musicbrainz.cpp
     dbquery/makeitpersonal.cpp
     dbquery/lyricswikia.cpp
+    dbquery/tekstowo.cpp
     gui/dbquerywidget.cpp
     misc/networkaccessmanager.cpp
     renamingutility/filesystemitem.cpp

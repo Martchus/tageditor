@@ -11,7 +11,7 @@ class MakeItPersonalResultsModel : public HttpResultsModel {
     Q_OBJECT
 
 public:
-    MakeItPersonalResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
+    explicit MakeItPersonalResultsModel(SongDescription &&initialSongDescription, QNetworkReply *reply);
     bool fetchLyrics(const QModelIndex &index) override;
 
 protected:

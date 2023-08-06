@@ -206,6 +206,7 @@ void restore()
     v.dbQuery.musicBrainzUrl = settings.value(QStringLiteral("musicbrainzurl")).toString();
     v.dbQuery.lyricsWikiaUrl = settings.value(QStringLiteral("lyricwikiurl")).toString();
     v.dbQuery.makeItPersonalUrl = settings.value(QStringLiteral("makeitpersonalurl")).toString();
+    v.dbQuery.tekstowoUrl = settings.value(QStringLiteral("tekstowourl")).toString();
     v.dbQuery.coverArtArchiveUrl = settings.value(QStringLiteral("coverartarchiveurl")).toString();
     settings.endGroup();
 
@@ -302,6 +303,7 @@ void save()
     settings.setValue(QStringLiteral("musicbrainzurl"), v.dbQuery.musicBrainzUrl);
     settings.setValue(QStringLiteral("lyricwikiurl"), v.dbQuery.lyricsWikiaUrl);
     settings.setValue(QStringLiteral("makeitpersonalurl"), v.dbQuery.makeItPersonalUrl);
+    settings.setValue(QStringLiteral("tekstowourl"), v.dbQuery.tekstowoUrl);
     settings.setValue(QStringLiteral("coverartarchiveurl"), v.dbQuery.coverArtArchiveUrl);
     settings.endGroup();
 

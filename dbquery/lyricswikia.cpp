@@ -19,7 +19,7 @@ using namespace Utility;
 
 namespace QtGui {
 
-static const QString defaultLyricsWikiaUrl(QStringLiteral("https://lyrics.fandom.com"));
+static const auto defaultLyricsWikiaUrl = QStringLiteral("https://lyrics.fandom.com");
 
 static QUrl lyricsWikiaApiUrl()
 {
@@ -43,15 +43,12 @@ LyricsWikiaResultsModel::LyricsWikiaResultsModel(SongDescription &&initialSongDe
 
 bool LyricsWikiaResultsModel::fetchCover(const QModelIndex &index)
 {
-    // FIXME: avoid code duplication with musicbrainz.cpp
-
-    // find song description
     if (index.parent().isValid() || index.row() >= m_results.size()) {
         return true;
     }
-    SongDescription &desc = m_results[index.row()];
 
     // skip if cover is already available
+    auto &desc = m_results[index.row()];
     if (!desc.cover.isEmpty()) {
         return true;
     }
@@ -87,13 +84,12 @@ bool LyricsWikiaResultsModel::fetchCover(const QModelIndex &index)
 
 bool LyricsWikiaResultsModel::fetchLyrics(const QModelIndex &index)
 {
-    // find song description
     if (index.parent().isValid() || index.row() >= m_results.size()) {
         return true;
     }
-    SongDescription &desc = m_results[index.row()];
 
     // skip if lyrics already present
+    auto &desc = m_results[index.row()];
     if (!desc.lyrics.isEmpty()) {
         return true;
     }
@@ -113,25 +109,24 @@ bool LyricsWikiaResultsModel::fetchLyrics(const QModelIndex &index)
 
 void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
 {
-    // prepare parsing LyricsWikia meta data
     beginResetModel();
     m_results.clear();
-    QXmlStreamReader xmlReader(data);
 
     // parse XML tree
+    auto xmlReader = QXmlStreamReader(data);
     // clang-format off
 #include <qtutilities/misc/xmlparsermacros.h>
     children {
         iftag("getArtistResponse") {
-            QString artist;
+            auto artist = QString();
             children {
                 iftag("artist") {
                     artist = text;
                 } eliftag("albums") {
                     children {
                         iftag("albumResult") {
-                            QString album, year;
-                            QList<SongDescription> songs;
+                            auto album = QString(), year = QString();
+                            auto songs = QList<SongDescription>();
                             children {
                                 iftag("album") {
                                     album = text;
@@ -169,7 +164,7 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
                 }
                 else_skip
             }
-            for (SongDescription &song : m_results) {
+            for (auto &song : m_results) {
                 // set the arist which is the same for all results
                 song.artist = artist;
                 // set the album ID (album is identified by its artist, year and name)
@@ -191,14 +186,13 @@ void LyricsWikiaResultsModel::parseInitialResults(const QByteArray &data)
         m_errorList << xmlReader.errorString();
     }
 
-    // promote changes
     endResetModel();
 }
 
 QNetworkReply *LyricsWikiaResultsModel::requestSongDetails(const SongDescription &songDescription)
 {
     // compose URL
-    QUrlQuery query;
+    auto query = QUrlQuery();
     query.addQueryItem(QStringLiteral("func"), QStringLiteral("getSong"));
     query.addQueryItem(QStringLiteral("action"), QStringLiteral("lyrics"));
     query.addQueryItem(QStringLiteral("fmt"), QStringLiteral("xml"));
@@ -209,22 +203,21 @@ QNetworkReply *LyricsWikiaResultsModel::requestSongDetails(const SongDescription
         // specifying album seems to have no effect but also doesn't hurt
         query.addQueryItem(QStringLiteral("album"), songDescription.album);
     }
-    QUrl url(lyricsWikiaApiUrl());
+    auto url = lyricsWikiaApiUrl();
     url.setQuery(query);
-
     return Utility::networkAccessManager().get(QNetworkRequest(url));
 }
 
 QNetworkReply *LyricsWikiaResultsModel::requestAlbumDetails(const SongDescription &songDescription)
 {
-    QUrl url(lyricsWikiaApiUrl());
+    auto url = lyricsWikiaApiUrl();
     url.setPath(QStringLiteral("/wiki/") + songDescription.albumId);
     return Utility::networkAccessManager().get(QNetworkRequest(url));
 }
 
 void LyricsWikiaResultsModel::handleSongDetailsFinished(QNetworkReply *reply, int row)
 {
-    QByteArray data;
+    auto data = QByteArray();
     if (auto *newReply = evaluateReplyResults(reply, data, true)) {
         addReply(newReply, bind(&LyricsWikiaResultsModel::handleSongDetailsFinished, this, newReply, row));
     } else if (!data.isEmpty()) {
@@ -234,23 +227,21 @@ void LyricsWikiaResultsModel::handleSongDetailsFinished(QNetworkReply *reply, in
 
 void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
 {
-    // find associated result/desc
     if (row >= m_results.size()) {
         m_errorList << tr("Internal error: context for song details reply invalid");
         setResultsAvailable(true);
         return;
     }
-    SongDescription &assocDesc = m_results[row];
-
-    QUrl parsedUrl;
 
     // parse XML tree
+    auto &assocDesc = m_results[row];
+    auto parsedUrl = QUrl();
+    auto xmlReader = QXmlStreamReader(data);
     // clang-format off
-    QXmlStreamReader xmlReader(data);
 #include <qtutilities/misc/xmlparsermacros.h>
     children {
         iftag("LyricsResult") {
-            SongDescription parsedDesc;
+            auto parsedDesc = SongDescription();
             children {
                 iftag("artist") {
                     parsedDesc.artist = text;
@@ -297,7 +288,7 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
                            .arg(assocDesc.artist, assocDesc.title);
     }
     // -> do not use parsed URL "as-is" in any case to avoid unintended requests
-    QUrl requestUrl(lyricsWikiaApiUrl());
+    auto requestUrl = lyricsWikiaApiUrl();
     requestUrl.setPath(parsedUrl.path());
     // -> initialize the actual request
     auto *const reply = Utility::networkAccessManager().get(QNetworkRequest(requestUrl));
@@ -306,7 +297,7 @@ void LyricsWikiaResultsModel::parseSongDetails(int row, const QByteArray &data)
 
 void LyricsWikiaResultsModel::handleLyricsReplyFinished(QNetworkReply *reply, int row)
 {
-    QByteArray data;
+    auto data = QByteArray();
     if (auto *newReply = evaluateReplyResults(reply, data, true)) {
         addReply(newReply, bind(&LyricsWikiaResultsModel::handleLyricsReplyFinished, this, newReply, row));
         return;
@@ -321,18 +312,15 @@ void LyricsWikiaResultsModel::handleLyricsReplyFinished(QNetworkReply *reply, in
 
 void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data)
 {
-    // find associated result/desc
     if (row >= m_results.size()) {
         m_errorList << tr("Internal error: context for LyricsWikia page reply invalid");
         setResultsAvailable(true);
         return;
     }
-    SongDescription &assocDesc = m_results[row];
-
-    // convert data to QString
-    const QString html(data);
 
     // parse lyrics from HTML
+    auto &assocDesc = m_results[row];
+    const auto html = QString(data);
     const auto lyricsStart = html.indexOf(QLatin1String("<div class='lyricbox'>"));
     if (lyricsStart < 0) {
         m_errorList << tr("Song details requested for %1/%2 do not contain lyrics").arg(assocDesc.artist, assocDesc.title);
@@ -340,7 +328,7 @@ void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data
         return;
     }
     const auto lyricsEnd = html.indexOf(QLatin1String("<div class='lyricsbreak'></div>"), lyricsStart);
-    QTextDocument textDoc;
+    auto textDoc = QTextDocument();
     textDoc.setHtml(html.mid(lyricsStart, (lyricsEnd > lyricsStart) ? (lyricsEnd - lyricsStart) : -1));
     assocDesc.lyrics = textDoc.toPlainText();
 
@@ -350,7 +338,7 @@ void LyricsWikiaResultsModel::parseLyricsResults(int row, const QByteArray &data
 
 void LyricsWikiaResultsModel::handleAlbumDetailsReplyFinished(QNetworkReply *reply, int row)
 {
-    QByteArray data;
+    auto data = QByteArray();
     if (auto *newReply = evaluateReplyResults(reply, data, true)) {
         addReply(newReply, bind(&LyricsWikiaResultsModel::handleAlbumDetailsReplyFinished, this, newReply, row));
     } else {
@@ -367,19 +355,16 @@ void LyricsWikiaResultsModel::parseAlbumDetailsAndFetchCover(int row, const QByt
         return;
     }
 
-    // find associated result/desc
     if (row >= m_results.size()) {
         m_errorList << tr("Internal error: context for LyricsWikia page reply invalid");
         setFetchingCover(false);
         setResultsAvailable(true);
         return;
     }
-    SongDescription &assocDesc = m_results[row];
-
-    // convert data to QString
-    const auto html = QString(data);
 
     // parse cover URL from HTML
+    auto &assocDesc = m_results[row];
+    const auto html = QString(data);
     const auto coverDivStart = html.indexOf(QLatin1String("<div class=\"plainlinks\" style=\"clear:right; float:right;")) + 56;
     if (coverDivStart > 56) {
         const auto coverHrefStart = html.indexOf(QLatin1String("href=\""), coverDivStart) + 6;
@@ -410,31 +395,28 @@ QUrl LyricsWikiaResultsModel::webUrl(const QModelIndex &index)
         return QUrl();
     }
 
-    SongDescription &desc = m_results[index.row()];
+    auto &desc = m_results[index.row()];
     lazyInitializeLyricsWikiaSongId(desc);
 
     // return URL
-    QUrl url(lyricsWikiaApiUrl());
+    auto url = lyricsWikiaApiUrl();
     url.setPath(QStringLiteral("/wiki/") + desc.songId);
     return url;
 }
 
 QueryResultsModel *queryLyricsWikia(SongDescription &&songDescription)
 {
-    // compose URL
-    QUrlQuery query;
+    auto query = QUrlQuery();
     query.addQueryItem(QStringLiteral("func"), QStringLiteral("getArtist"));
     query.addQueryItem(QStringLiteral("fmt"), QStringLiteral("xml"));
     query.addQueryItem(QStringLiteral("fixXML"), QString());
     query.addQueryItem(QStringLiteral("artist"), songDescription.artist);
-    QUrl url(lyricsWikiaApiUrl());
+    auto url = lyricsWikiaApiUrl();
     url.setQuery(query);
+    return new LyricsWikiaResultsModel(std::move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
 
     // NOTE: Only getArtist seems to work, so artist must be specified and filtering must
     // be done manually when parsing results.
-
-    // make request
-    return new LyricsWikiaResultsModel(std::move(songDescription), Utility::networkAccessManager().get(QNetworkRequest(url)));
 }
 
 } // namespace QtGui
