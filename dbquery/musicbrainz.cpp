@@ -40,7 +40,7 @@ MusicBrainzResultsModel::MusicBrainzResultsModel(SongDescription &&initialSongDe
 
 bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
 {
-    if (index.parent().isValid() || index.row() >= m_results.size()) {
+    if (index.parent().isValid() || !index.isValid() || index.row() >= m_results.size()) {
         return true;
     }
 
@@ -73,10 +73,10 @@ bool MusicBrainzResultsModel::fetchCover(const QModelIndex &index)
 
 QUrl MusicBrainzResultsModel::webUrl(const QModelIndex &index)
 {
-    if (index.parent().isValid() || index.row() >= results().size()) {
+    if (index.parent().isValid() || !index.isValid() || index.row() >= m_results.size()) {
         return QUrl();
     }
-    return QUrl(QStringLiteral("https://musicbrainz.org/recording/") + results().at(index.row()).songId);
+    return QUrl(QStringLiteral("https://musicbrainz.org/recording/") + m_results.at(index.row()).songId);
 }
 
 void MusicBrainzResultsModel::parseInitialResults(const QByteArray &data)

@@ -43,7 +43,7 @@ LyricsWikiaResultsModel::LyricsWikiaResultsModel(SongDescription &&initialSongDe
 
 bool LyricsWikiaResultsModel::fetchCover(const QModelIndex &index)
 {
-    if (index.parent().isValid() || index.row() >= m_results.size()) {
+    if (index.parent().isValid() || !index.isValid() || index.row() >= m_results.size()) {
         return true;
     }
 
@@ -84,7 +84,7 @@ bool LyricsWikiaResultsModel::fetchCover(const QModelIndex &index)
 
 bool LyricsWikiaResultsModel::fetchLyrics(const QModelIndex &index)
 {
-    if (index.parent().isValid() || index.row() >= m_results.size()) {
+    if (index.parent().isValid() || !index.isValid() || index.row() >= m_results.size()) {
         return true;
     }
 
@@ -391,7 +391,7 @@ void LyricsWikiaResultsModel::parseAlbumDetailsAndFetchCover(int row, const QByt
 
 QUrl LyricsWikiaResultsModel::webUrl(const QModelIndex &index)
 {
-    if (index.parent().isValid() || index.row() >= results().size()) {
+    if (index.parent().isValid() || !index.isValid() || index.row() >= m_results.size()) {
         return QUrl();
     }
 
