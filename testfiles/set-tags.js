@@ -87,6 +87,18 @@ function addLyrics(file, tag) {
     }
 }
 
+function addCover(file, tag) {
+    const fields = tag.fields;
+    if (fields.cover.length) {
+        return; // skip if already assigned
+    }
+    const firstAlbum = fields.album?.[0]?.content?.replace(/ \(.*\)/, '');
+    const firstArtist = fields.artist?.[0]?.content;
+    if (firstAlbum && firstArtist) {
+        fields.cover = metadatasearch.queryCover({album: firstAlbum, artist: firstArtist});
+    }
+}
+
 function addMiscFields(file, tag) {
     // assume the number of disks is always one for now
     const fields = tag.fields;
@@ -102,4 +114,5 @@ function changeTagFields(file, tag) {
     addTotalNumberOfTracks(file, tag);
     addMiscFields(file, tag);
     addLyrics(file, tag);
+    addCover(file, tag);
 }

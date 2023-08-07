@@ -54,6 +54,17 @@ const std::vector<std::string_view> &id3v2CoverTypeNames();
 CoverType id3v2CoverType(std::string_view coverName);
 std::string_view id3v2CoverName(CoverType coverType);
 
+template <class TagType>
+bool fieldPredicate(CoverType coverType, std::optional<std::string_view> description,
+    const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
+{
+    const auto &[fieldId, field] = pair;
+    const auto typeMatches
+        = field.isTypeInfoAssigned() ? (field.typeInfo() == static_cast<typename TagType::FieldType::TypeInfoType>(coverType)) : (coverType == 0);
+    const auto descMatches = !description.has_value() || field.value().description() == description.value();
+    return typeMatches && descMatches;
+}
+
 class FieldId {
     friend struct std::hash<FieldId>;
 

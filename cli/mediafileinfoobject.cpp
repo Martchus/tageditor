@@ -1,5 +1,6 @@
 #include "./mediafileinfoobject.h"
 #include "./fieldmapping.h"
+#include "./helper.h"
 
 #include "../application/knownfieldmodel.h"
 #include "../dbquery/dbquery.h"
@@ -7,10 +8,13 @@
 
 #include <tagparser/abstracttrack.h>
 #include <tagparser/exceptions.h>
+#include <tagparser/id3/id3v2tag.h>
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/progressfeedback.h>
+#include <tagparser/signature.h>
 #include <tagparser/tag.h>
 #include <tagparser/tagvalue.h>
+#include <tagparser/vorbis/vorbiscomment.h>
 
 #include <qtutilities/misc/conversion.h>
 
@@ -19,9 +23,12 @@
 
 #include <qtutilities/misc/compat.h>
 
+#include <QBuffer>
+#include <QByteArray>
 #include <QCoreApplication>
 #include <QDir>
 #include <QHash>
+#include <QImage>
 #include <QJSEngine>
 #include <QJSValueIterator>
 #include <QRegularExpression>
@@ -145,6 +152,24 @@ QJSValue UtilityObject::queryMakeItPersonal(const QJSValue &songDescription)
 QJSValue UtilityObject::queryTekstowo(const QJSValue &songDescription)
 {
     return m_engine->newQObject(QtGui::queryTekstowo(makeSongDescription(songDescription)));
+}
+
+QByteArray UtilityObject::convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format)
+{
+    auto image = QImage::fromData(imageData);
+    if (image.isNull()) {
+        return imageData;
+    }
+    if (!maxSize.isNull() && (image.width() > maxSize.width() || image.height() > maxSize.height())) {
+        image = image.scaled(maxSize.width(), maxSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        if (image.isNull()) {
+            return imageData;
+        }
+    }
+    auto newData = QByteArray();
+    auto buffer = QBuffer(&newData);
+    auto res = buffer.open(QIODevice::WriteOnly) && image.save(&buffer, format.isEmpty() ? "JPEG" : format.toUtf8().data());
+    return res ? newData : imageData;
 }
 
 static QString propertyString(const QJSValue &obj, const QString &propertyName)
@@ -293,12 +318,21 @@ bool TagValueObject::isInitial() const
 
 TagParser::TagValue TagValueObject::toTagValue(TagParser::TagTextEncoding encoding) const
 {
+    auto res = TagParser::TagValue();
     if (m_content.isUndefined() || m_content.isNull()) {
-        return TagParser::TagValue();
+        return res;
     }
-    const auto str = m_content.toString();
-    return TagParser::TagValue(reinterpret_cast<const char *>(str.utf16()), static_cast<std::size_t>(str.size()) * (sizeof(ushort) / sizeof(char)),
-        nativeUtf16Encoding, encoding);
+    if (const auto variant = m_content.toVariant(); variant.userType() == QMetaType::QByteArray) {
+        const auto bytes = variant.toByteArray();
+        const auto container = TagParser::parseSignature(bytes.data(), static_cast<std::size_t>(bytes.size()));
+        res.assignData(bytes.data(), static_cast<std::size_t>(bytes.size()), TagParser::TagDataType::Binary);
+        res.setMimeType(TagParser::containerMimeType(container));
+    } else {
+        const auto str = m_content.toString();
+        res.assignText(reinterpret_cast<const char *>(str.utf16()), static_cast<std::size_t>(str.size()) * (sizeof(ushort) / sizeof(char)),
+            nativeUtf16Encoding, encoding);
+    }
+    return res;
 }
 
 void TagValueObject::flagChange()
@@ -415,6 +449,40 @@ QJSValue &TagObject::fields()
     return m_fields;
 }
 
+/// \brief Sets the first of the specified \a values as front-cover with no description replacing any existing cover values.
+template <class TagType> static void setId3v2CoverValues(TagType *tag, std::vector<TagParser::TagValue> &&values)
+{
+    auto &fields = tag->fields();
+    const auto id = tag->fieldId(TagParser::KnownField::Cover);
+    const auto range = fields.equal_range(id);
+    const auto first = range.first;
+
+    constexpr auto coverType = CoverType(3); // assume front cover
+    constexpr auto description = std::optional<std::string_view>(); // assume no description
+
+    for (auto &tagValue : values) {
+        // check whether there is already a tag value with the current type and description
+        auto pair = std::find_if(first, range.second, std::bind(&fieldPredicate<TagType>, coverType, description, std::placeholders::_1));
+        if (pair != range.second) {
+            // there is already a tag value with the current type and description
+            // -> update this value
+            pair->second.setValue(tagValue);
+            // check whether there are more values with the current type and description
+            while ((pair = std::find_if(++pair, range.second, std::bind(&fieldPredicate<TagType>, coverType, description, std::placeholders::_1)))
+                != range.second) {
+                // -> remove these values as we only support one value of a type/description in the same tag
+                pair->second.setValue(TagParser::TagValue());
+            }
+        } else if (!tagValue.isEmpty()) {
+            using FieldType = typename TagType::FieldType;
+            auto newField = FieldType(id, tagValue);
+            newField.setTypeInfo(static_cast<typename FieldType::TypeInfoType>(coverType));
+            fields.insert(std::pair(id, std::move(newField)));
+        }
+        break; // allow only setting one value for now
+    }
+}
+
 void TagObject::applyChanges()
 {
     auto context = !m_tag.target().isEmpty() || m_tag.type() == TagParser::TagType::MatroskaTag
@@ -460,7 +528,7 @@ void TagObject::applyChanges()
                 }
                 continue;
             }
-            const auto &value = values.emplace_back(tagValueObj->toTagValue(encoding));
+            auto &value = values.emplace_back(tagValueObj->toTagValue(encoding));
             m_diag.emplace_back(TagParser::DiagLevel::Debug,
                 value.isNull()
                     ? CppUtilities::argsToString(" - delete ", propertyName.toStdString(), '[', i, ']')
@@ -473,6 +541,18 @@ void TagObject::applyChanges()
                                     : CppUtilities::argsToString(" - change ", propertyName.toStdString(), '[', i, "] from '",
                                         printJsValue(tagValueObj->initialContent()), "' to '", printJsValue(tagValueObj->content()), '\''))),
                 std::string());
+        }
+        // assign cover values of ID3v2/VorbisComment tags as front-cover with no description
+        if (field == TagParser::KnownField::Cover && !values.empty()) {
+            switch (m_tag.type()) {
+            case TagParser::TagType::Id3v2Tag:
+                setId3v2CoverValues(static_cast<TagParser::Id3v2Tag *>(&m_tag), std::move(values));
+                continue;
+            case TagParser::TagType::VorbisComment:
+                setId3v2CoverValues(static_cast<TagParser::VorbisComment *>(&m_tag), std::move(values));
+                continue;
+            default:;
+            }
         }
         m_tag.setValues(field, values);
     }

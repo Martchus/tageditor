@@ -448,17 +448,6 @@ struct Id3v2Cover {
     std::optional<std::string_view> description;
 };
 
-template <class TagType>
-bool fieldPredicate(CoverType coverType, std::optional<std::string_view> description,
-    const std::pair<typename TagType::IdentifierType, typename TagType::FieldType> &pair)
-{
-    const auto &[fieldId, field] = pair;
-    const auto typeMatches
-        = field.isTypeInfoAssigned() ? (field.typeInfo() == static_cast<typename TagType::FieldType::TypeInfoType>(coverType)) : (coverType == 0);
-    const auto descMatches = !description.has_value() || field.value().description() == description.value();
-    return typeMatches && descMatches;
-}
-
 template <class TagType> static void setId3v2CoverValues(TagType *tag, std::vector<Id3v2Cover> &&values)
 {
     auto &fields = tag->fields();
