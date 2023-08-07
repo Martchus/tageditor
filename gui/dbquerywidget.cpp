@@ -130,19 +130,18 @@ DbQueryWidget::~DbQueryWidget()
     values().dbQuery.override = m_ui->overrideCheckBox->isChecked();
 }
 
-void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpecific)
+void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
 {
     if (!tagEdit) {
         return;
     }
 
-    bool somethingChanged = false;
-
-    // be always song-specific when querying makeitpersonal
-    songSpecific = m_lastSearchAction == m_searchMakeItPersonalAction;
+    auto somethingChanged = false;
+    auto lyricsCentricProvider
+        = (m_lastSearchAction == m_searchTekstowoAction) || (m_searchMakeItPersonalAction && m_lastSearchAction == m_searchMakeItPersonalAction);
 
     // set album and artist
-    if (m_lastSearchAction != m_searchMakeItPersonalAction) {
+    if (!lyricsCentricProvider) {
         const auto newAlbum = tagValueToQString(tagEdit->value(KnownField::Album));
         if (m_ui->albumLineEdit->text() != newAlbum) {
             m_ui->albumLineEdit->setText(newAlbum);
@@ -155,20 +154,10 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpec
         somethingChanged = true;
     }
 
-    if (!songSpecific) {
-        return;
-    }
-
     // set title and track number
-    const auto newTitle = tagValueToQString(tagEdit->value(KnownField::Title));
-    if (m_ui->titleLineEdit->text() != newTitle) {
-        m_ui->titleLineEdit->setText(newTitle);
-        somethingChanged = true;
-    }
-    if (m_lastSearchAction != m_searchTekstowoAction && m_lastSearchAction != m_searchMakeItPersonalAction) {
-        const auto newTrackNumber = tagEdit->trackNumber();
-        if (m_ui->trackSpinBox->value() != newTrackNumber) {
-            m_ui->trackSpinBox->setValue(newTrackNumber);
+    if (lyricsCentricProvider) {
+        if (const auto newTitle = tagValueToQString(tagEdit->value(KnownField::Title)); m_ui->titleLineEdit->text() != newTitle) {
+            m_ui->titleLineEdit->setText(newTitle);
             somethingChanged = true;
         }
     }
@@ -263,7 +252,7 @@ void DbQueryWidget::searchMakeItPersonal()
 
 void DbQueryWidget::searchTekstowo()
 {
-    m_lastSearchAction = m_searchMakeItPersonalAction;
+    m_lastSearchAction = m_searchTekstowoAction;
 
     // check whether enough search terms are supplied
     if (m_ui->artistLineEdit->text().isEmpty() || m_ui->titleLineEdit->text().isEmpty()) {

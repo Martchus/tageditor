@@ -31,7 +31,7 @@ public:
     explicit DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent = nullptr);
     ~DbQueryWidget() override;
 
-    void insertSearchTermsFromTagEdit(TagEdit *tagEdit, bool songSpecific = false);
+    void insertSearchTermsFromTagEdit(TagEdit *tagEdit);
     SongDescription currentSongDescription() const;
     void applyResults(TagEdit *tagEdit, const QModelIndex &resultIndex);
 
