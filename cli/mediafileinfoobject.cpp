@@ -147,15 +147,22 @@ QJSValue UtilityObject::queryTekstowo(const QJSValue &songDescription)
     return m_engine->newQObject(QtGui::queryTekstowo(makeSongDescription(songDescription)));
 }
 
+static QString propertyString(const QJSValue &obj, const QString &propertyName)
+{
+    const auto val = obj.property(propertyName);
+    return val.isUndefined() || val.isNull() ? QString() : val.toString();
+}
+
 QtGui::SongDescription UtilityObject::makeSongDescription(const QJSValue &obj)
 {
-    auto desc = QtGui::SongDescription(obj.property(QStringLiteral("songId")).toString());
-    desc.title = obj.property(QStringLiteral("title")).toString();
-    desc.album = obj.property(QStringLiteral("album")).toString();
-    desc.albumId = obj.property(QStringLiteral("albumId")).toString();
-    desc.artist = obj.property(QStringLiteral("artist")).toString();
-    desc.artistId = obj.property(QStringLiteral("artistId")).toString();
-    desc.year = obj.property(QStringLiteral("year")).toString();
+    auto desc = QtGui::SongDescription();
+    desc.songId = propertyString(obj, QStringLiteral("songId"));
+    desc.title = propertyString(obj, QStringLiteral("title"));
+    desc.album = propertyString(obj, QStringLiteral("album"));
+    desc.albumId = propertyString(obj, QStringLiteral("albumId"));
+    desc.artist = propertyString(obj, QStringLiteral("artist"));
+    desc.artistId = propertyString(obj, QStringLiteral("artistId"));
+    desc.year = propertyString(obj, QStringLiteral("year"));
     return desc;
 }
 
