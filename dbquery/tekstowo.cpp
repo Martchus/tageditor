@@ -70,7 +70,14 @@ void TekstowoResultsModel::parseInitialResults(const QByteArray &data)
         index = linkEnd + 4;
         auto linkText = QTextDocumentFragment::fromHtml(QString::fromUtf8(data.begin() + linkStart, linkEnd + 3 - linkStart)).toPlainText().trimmed();
         auto titleStart = linkText.indexOf(QLatin1String(" - "));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
         auto &songDetails = dropLast ? m_results.back() : m_results.emplace_back();
+#else
+        if (!dropLast) {
+            m_results.append(SongDescription());
+        }
+        auto &songDetails = m_results.back();
+#endif
         songDetails.songId = QTextDocumentFragment::fromHtml(QString::fromUtf8(data.begin() + hrefStart, hrefEnd - hrefStart)).toPlainText();
         if (titleStart > -1) {
             songDetails.artist = linkText.mid(0, titleStart);
