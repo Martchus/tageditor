@@ -349,14 +349,16 @@ Here are some Bash examples which illustrate getting and setting tag information
   tageditor set --pedantic debug --java-script path/to/script.js -f foo.mp3
   ```
 
-    - This feature is still experimental. The script API is still very limited and subject to change.
+    - This feature is still experimental. The script API is still subject to change.
     - The script needs to be ECMAScript as supported by the Qt framework.
     - This feature requires the tag editor to be configured with Qt QML as JavaScript provider at
       compile time. Checkout the build instructions under "Building with Qt GUI" for details.
-    - It needs to export a `main()` function. This function gets executed for every file and passed
-      and object representing this file as first argument.
-    - The option `--pedantic debug` is not required but useful for debugging.
-    - Checkout the file `testfiles/set-tags.js` directory in this repository for a basic example.
+    - The script needs to export a `main()` function. This function gets executed for every file and
+      passed an object representing this file as first argument.
+    - Checkout the file `testfiles/set-tags.js` directory in this repository for an example that
+      applies basic fixes and tries to fetch lyrics and cover art.
+    - The option `--pedantic debug` is not required but useful for debugging. You may also add
+      `--script-settings dryRun=1` and use that setting within the script as shown in the example.
     - Common tag fields are exposed as object properties as shown in the mentioned example.
         - Only properties for fields that are supported by the tag are added to the "fields" object.
         - Adding properties of unsupported fields manually does not work; those will just be ignored.
@@ -364,9 +366,9 @@ Here are some Bash examples which illustrate getting and setting tag information
           also assign an empty array to fields to delete them.
         - The content of binary fields is exposed as `ArrayBuffer`. Use must also use an `ArrayBuffer`
           to set the value of binary fields such as the cover.
-        - The content of other fields is mostly exposed as `String` or `Number`. Use must also use
-          these types to set the value of those fields. The string-representation of the assigned
-          content will then be converted automatically to what's needed internally.
+        - The content of other fields is mostly exposed as `String` or `Number`. You must also use
+          one of those types to set the value of those fields. The string-representation of the
+          assigned content will then be converted automatically to what's needed internally.
     - The `utility` object exposes useful methods, e.g. for logging and controlling the event loop.
     - Checkout the file `testfiles/http.js` in this repository for an example of using XHR and
       controlling the event loop.

@@ -13,7 +13,7 @@ export function main(file) {
     return !isTruthy(settings.dryRun);
 }
 
-const mainTextFields = ["title", "artist", "album"];
+const mainTextFields = ["title", "artist", "album", "genre"];
 const personalFields = ["comment", "rating"];
 
 function isString(value) {
@@ -105,6 +105,12 @@ function addMiscFields(file, tag) {
     if (!fields.disk.length) {
         fields.disk = "1/1";
     }
+    const dir = file.containingDirectory.toLowerCase();
+    if (dir.includes("bootleg")) {
+        fields.comment = "bootleg";
+    } else if (dir.includes("singles")) {
+        fields.comment = "single";
+    }
 }
 
 function changeTagFields(file, tag) {
@@ -114,5 +120,5 @@ function changeTagFields(file, tag) {
     addTotalNumberOfTracks(file, tag);
     addMiscFields(file, tag);
     addLyrics(file, tag);
-    addCover(file, tag);
+    //addCover(file, tag);
 }
