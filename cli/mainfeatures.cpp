@@ -548,6 +548,19 @@ JavaScriptProcessor::JavaScriptProcessor(const SetTagInfoArgs &args)
         std::exit(EXIT_FAILURE);
     }
 
+    // assign settings specified via CLI argument
+    auto settings = engine.newObject();
+    if (args.jsSettingsArg.isPresent()) {
+        for (const auto *const setting : args.jsSettingsArg.values()) {
+            if (const auto *const value = std::strchr(setting, '=')) {
+                settings.setProperty(QString::fromUtf8(setting, value - setting), QJSValue(QString::fromUtf8(value + 1)));
+            } else {
+                settings.setProperty(QString::fromUtf8(setting), QJSValue());
+            }
+        }
+    }
+    engine.globalObject().setProperty(QStringLiteral("settings"), settings);
+
     // print warnings
     printDiagMessages(diag, "Diagnostic messages:", args.verboseArg.isPresent(), &args.pedanticArg);
     diag.clear();

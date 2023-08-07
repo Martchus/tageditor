@@ -84,6 +84,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , layoutOnlyArg("layout-only", 'l', "confirms layout-only changes")
     , preserveModificationTimeArg("preserve-modification-time", '\0', "preserves the file's modification time")
     , jsArg("java-script", 'j', "modifies tag fields via the specified JavaScript", { "path" })
+    , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --java-script", { "key=value" })
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setRequiredValueCount(Argument::varValueCount);
@@ -122,6 +123,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     valuesArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     outputFilesArg.setRequiredValueCount(Argument::varValueCount);
     jsArg.setValueCompletionBehavior(ValueCompletionBehavior::Files);
+    jsSettingsArg.setValueCompletionBehavior(ValueCompletionBehavior::AppendEquationSign);
+    jsSettingsArg.setRequiredValueCount(Argument::varValueCount);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setExample(PROJECT_NAME
         " set title=\"Title of \"{1st,2nd,3rd}\" file\" title=\"Title of \"{4..16}\"th file\" album=\"The Album\" -f /some/dir/*.m4a\n" PROJECT_NAME
@@ -137,7 +140,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
         &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
         &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
         &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg,
-        &jsArg, &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
+        &jsArg, &jsSettingsArg, &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli

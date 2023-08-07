@@ -10,7 +10,7 @@ export function main(file) {
     file.applyChanges();
 
     // return a falsy value to skip the file after all
-    return false;
+    return !isTruthy(settings.dryRun);
 }
 
 const mainTextFields = ["title", "artist", "album"];
@@ -18,6 +18,10 @@ const personalFields = ["comment", "rating"];
 
 function isString(value) {
     return typeof(value) === "string" || value instanceof String;
+}
+
+function isTruthy(value) {
+    return value && value !== "false" && value !== "0";
 }
 
 function logTagInfo(file, tag) {
