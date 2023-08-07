@@ -373,6 +373,17 @@ QString TagObject::propertyNameForField(TagParser::KnownField field)
     return reverseMapping.value(field, QString());
 }
 
+std::string TagObject::printJsValue(const QJSValue &value)
+{
+    const auto str = value.toString();
+    for (const auto c : str) {
+        if (!c.isPrint()) {
+            return "[binary]";
+        }
+    }
+    return str.toStdString();
+}
+
 QJSValue &TagObject::fields()
 {
     if (!m_fields.isUndefined()) {
@@ -446,11 +457,14 @@ void TagObject::applyChanges()
             m_diag.emplace_back(TagParser::DiagLevel::Debug,
                 value.isNull()
                     ? CppUtilities::argsToString(" - delete ", propertyName.toStdString(), '[', i, ']')
-                    : (tagValueObj->initialContent().isUndefined() ? CppUtilities::argsToString(
-                           " - set ", propertyName.toStdString(), '[', i, "] to '", tagValueObj->content().toString().toStdString(), '\'')
-                                                                   : CppUtilities::argsToString(" - change ", propertyName.toStdString(), '[', i,
-                                                                       "] from '", tagValueObj->initialContent().toString().toStdString(), "' to '",
-                                                                       tagValueObj->content().toString().toStdString(), '\'')),
+                    : (tagValueObj->initialContent().isUndefined()
+                            ? CppUtilities::argsToString(
+                                " - set ", propertyName.toStdString(), '[', i, "] to '", printJsValue(tagValueObj->content()), '\'')
+                            : ((tagValueObj->content().equals(tagValueObj->initialContent()))
+                                    ? CppUtilities::argsToString(" - set ", propertyName.toStdString(), '[', i, "] to '",
+                                        printJsValue(tagValueObj->content()), "\' (no change)")
+                                    : CppUtilities::argsToString(" - change ", propertyName.toStdString(), '[', i, "] from '",
+                                        printJsValue(tagValueObj->initialContent()), "' to '", printJsValue(tagValueObj->content()), '\''))),
                 std::string());
         }
         m_tag.setValues(field, values);

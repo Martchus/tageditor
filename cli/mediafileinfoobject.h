@@ -164,6 +164,7 @@ public Q_SLOTS:
 
 private:
     static QString propertyNameForField(TagParser::KnownField field);
+    std::string printJsValue(const QJSValue &value);
 
     TagParser::Tag &m_tag;
     TagParser::Diagnostics &m_diag;
