@@ -32,7 +32,7 @@ TekstowoResultsModel::TekstowoResultsModel(SongDescription &&initialSongDescript
 
 bool TekstowoResultsModel::fetchLyrics(const QModelIndex &index)
 {
-    if ((index.parent().isValid() || !index.isValid() || index.row() >= m_results.size()) || m_results[index.row()].lyrics.isEmpty()) {
+    if ((index.parent().isValid() || !index.isValid() || index.row() >= m_results.size()) || !m_results[index.row()].lyrics.isEmpty()) {
         return true;
     }
     const auto url = webUrl(index);
