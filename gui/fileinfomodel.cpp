@@ -340,6 +340,13 @@ void FileInfoModel::updateCache()
         containerHelper.appendRow(tr("Document read version"), container->doctypeReadVersion());
         containerHelper.appendRow(tr("Tag position"), Utility::elementPositionToQString(container->determineTagPosition(diag)));
         containerHelper.appendRow(tr("Index position"), Utility::elementPositionToQString(container->determineIndexPosition(diag)));
+        const auto *const constContainer = container;
+        if (const auto &muxingApps = constContainer->muxingApplications(); !muxingApps.empty()) {
+            containerHelper.appendRow(tr("Muxing application"), qstr(joinStrings(muxingApps, ", ")));
+        }
+        if (const auto &writingApps = constContainer->writingApplications(); !writingApps.empty()) {
+            containerHelper.appendRow(tr("Writing application"), qstr(joinStrings(writingApps, ", ")));
+        }
     }
     containerHelper.appendRow(tr("Padding size"), m_file->paddingSize());
 

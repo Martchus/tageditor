@@ -958,6 +958,13 @@ public:
                 }
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Tag position"), container->determineTagPosition(m_diagReparsing));
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Index position"), container->determineIndexPosition(m_diagReparsing));
+                const auto *const constContainer = container;
+                if (const auto &muxingApps = constContainer->muxingApplications(); !muxingApps.empty()) {
+                    rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Muxing application"), qstr(joinStrings(muxingApps, ", ")));
+                }
+                if (const auto &writingApps = constContainer->writingApplications(); !writingApps.empty()) {
+                    rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Writing application"), qstr(joinStrings(writingApps, ", ")));
+                }
             }
             if (m_file.paddingSize()) {
                 rowMaker.mkRow(QCoreApplication::translate("HtmlInfo", "Padding size"),

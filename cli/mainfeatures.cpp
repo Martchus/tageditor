@@ -221,7 +221,7 @@ void displayFileInfo(
                 printProperty("Duration", duration);
                 printProperty("Overall avg. bitrate", bitrateToString(fileInfo.overallAverageBitrate()));
             }
-            if (const auto container = fileInfo.container()) {
+            if (const auto *const container = fileInfo.container()) {
                 size_t segmentIndex = 0;
                 for (const auto &title : container->titles()) {
                     if (segmentIndex) {
@@ -240,6 +240,12 @@ void displayFileInfo(
                 printProperty("Modification time", container->modificationTime());
                 printProperty("Tag position", container->determineTagPosition(diag));
                 printProperty("Index position", container->determineIndexPosition(diag));
+                if (const auto &muxingApps = container->muxingApplications(); !muxingApps.empty()) {
+                    printProperty("Muxing application", joinStrings(muxingApps, ", "));
+                }
+                if (const auto &writingApps = container->writingApplications(); !writingApps.empty()) {
+                    printProperty("Writing application", joinStrings(writingApps, ", "));
+                }
             }
             if (fileInfo.paddingSize()) {
                 printProperty("Padding", dataSizeToString(fileInfo.paddingSize()));
