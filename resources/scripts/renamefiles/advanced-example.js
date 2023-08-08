@@ -214,6 +214,11 @@ tageditor.rename(newName)
 var path = []
 if (distDir) {
     path.push(distDir)
+    if (tag.comment.includes("bootleg")) {
+        path.push("bootlegs");
+    } else if (tag.comment.includes("single")) {
+        path.push("singles");
+    }
     var artist = validDirectoryName(firstValue(tag.albumartist || tag.artist))
     if (isPartOfCollection(tag)) {
         path.push(collectionsDir)
