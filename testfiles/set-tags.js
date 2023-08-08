@@ -45,8 +45,12 @@ function applyFixesToMainFields(file, tag) {
         for (const value of fields[key]) {
             if (isString(value.content)) {
                 value.content = value.content.trim();
-                value.content = utility.fixUmlauts(value.content);
-                value.content = utility.formatName(value.content);
+                if (isTruthy(settings.fixUmlauts)) {
+                    value.content = utility.fixUmlauts(value.content);
+                }
+                if (isTruthy(settings.formatNames)) {
+                    value.content = utility.formatName(value.content);
+                }
             }
         }
     }
@@ -115,10 +119,16 @@ function addMiscFields(file, tag) {
 
 function changeTagFields(file, tag) {
     logTagInfo(file, tag);
+
+    // change/add various fields; these values can still be overridden by specifying fields normally as CLI args
     applyFixesToMainFields(file, tag);
     clearPersonalFields(file, tag);
     addTotalNumberOfTracks(file, tag);
     addMiscFields(file, tag);
-    addLyrics(file, tag);
-    //addCover(file, tag);
+    if (isTruthy(settings.addLyrics)) {
+        addLyrics(file, tag);
+    }
+    if (isTruthy(settings.addCover)) {
+        addCover(file, tag);
+    }
 }
