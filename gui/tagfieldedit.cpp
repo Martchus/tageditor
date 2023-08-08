@@ -81,6 +81,14 @@ TagFieldEdit::TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::Known
     updateValue();
 }
 
+TagFieldEdit::~TagFieldEdit()
+{
+    // delete those actions before entering base class destructors as we connect signal handlers when those actions are
+    // destructed and calling those handlers is gonna break otherwise
+    delete m_lockAction;
+    delete m_restoreAction;
+}
+
 /*!
  * \brief Assigns the specified \a tags and sets the specified \a fields using the given \a previousValueHandling.
  *

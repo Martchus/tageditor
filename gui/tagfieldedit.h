@@ -39,6 +39,7 @@ class TagFieldEdit : public QWidget {
 
 public:
     explicit TagFieldEdit(const QList<TagParser::Tag *> &tags, TagParser::KnownField field, QWidget *parent = nullptr);
+    ~TagFieldEdit() override;
 
     const QList<TagParser::Tag *> &tags() const;
     TagParser::KnownField field() const;
