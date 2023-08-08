@@ -163,7 +163,7 @@ void DbQueryWidget::insertSearchTermsFromTagEdit(TagEdit *tagEdit)
     }
 
     // refresh automatically if enabled and something has changed
-    if (somethingChanged && m_refreshAutomaticallyAction->isChecked()) {
+    if (somethingChanged && m_refreshAutomaticallyAction && m_refreshAutomaticallyAction->isChecked()) {
         m_lastSearchAction->trigger();
     }
 }
