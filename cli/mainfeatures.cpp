@@ -901,8 +901,14 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 continue;
                             }
                             // add value from file
-                            const auto parts = splitStringSimple<std::vector<std::string_view>>(relevantDenotedValue->value, ":", 3);
-                            const auto path = parts.empty() ? std::string_view() : parts.front();
+                            const auto denotedValue = relevantDenotedValue->value;
+                            const auto firstPartIsDriveLetter = denotedValue.size() >= 2 && denotedValue[1] == ':' ? 1u : 0u;
+                            const auto maxParts = std::size_t(3u + firstPartIsDriveLetter);
+                            const auto parts = splitStringSimple<std::vector<std::string_view>>(denotedValue, ":", static_cast<int>(maxParts));
+                            const auto path = parts.empty()
+                                ? std::string_view()
+                                : (firstPartIsDriveLetter ? std::string_view(denotedValue.data(), parts[0].size() + parts[1].size() + 1)
+                                                          : parts.front());
                             const auto fieldType = denotedScope.field.knownFieldForTag(tag, tagType);
                             const auto dataType = fieldType == KnownField::Cover ? TagDataType::Picture : TagDataType::Text;
                             try {
@@ -921,25 +927,26 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     value.setMimeType(coverFileInfo.mimeType());
                                 }
                                 auto description = std::optional<std::string_view>();
-                                if (parts.size() > 2) {
-                                    value.setDescription(parts[2], TagTextEncoding::Utf8);
-                                    description = parts[2];
+                                if (parts.size() > 2u + firstPartIsDriveLetter) {
+                                    description = parts[2 + firstPartIsDriveLetter];
+                                    value.setDescription(description.value(), TagTextEncoding::Utf8);
                                 }
-                                if (parts.size() > 1 && fieldType == KnownField::Cover
+                                if (parts.size() > 1u + firstPartIsDriveLetter && fieldType == KnownField::Cover
                                     && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment)) {
-                                    const auto coverType = id3v2CoverType(parts[1]);
+                                    const auto typeSpec = parts[1 + firstPartIsDriveLetter];
+                                    const auto coverType = id3v2CoverType(typeSpec);
                                     if (coverType == invalidCoverType) {
                                         diag.emplace_back(DiagLevel::Warning,
-                                            argsToString("Specified cover type \"", parts[1], "\" is invalid. Ignoring the specified field/value."),
+                                            argsToString("Specified cover type \"", typeSpec, "\" is invalid. Ignoring the specified field/value."),
                                             context);
                                     } else {
                                         convertedId3v2CoverValues.emplace_back(std::move(value), coverType, description);
                                     }
                                 } else {
-                                    if (parts.size() > 1) {
+                                    if (parts.size() > 1u + firstPartIsDriveLetter) {
                                         diag.emplace_back(
                                             tag->type() == TagType::Id3v1Tag && fileInfo.hasId3v2Tag() ? DiagLevel::Information : DiagLevel::Warning,
-                                            argsToString("Ignoring cover type \"", parts[1], "\" for ", tag->typeName(),
+                                            argsToString("Ignoring cover type \"", parts[1 + firstPartIsDriveLetter], "\" for ", tag->typeName(),
                                                 ". It is only supported by the cover field and the tag formats ID3v2 and Vorbis Comment."),
                                             context);
                                     }
