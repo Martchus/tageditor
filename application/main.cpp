@@ -83,6 +83,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , backupDirArg("temp-dir", '\0', "specifies the directory for temporary/backup files", { "path" })
     , layoutOnlyArg("layout-only", 'l', "confirms layout-only changes")
     , preserveModificationTimeArg("preserve-modification-time", '\0', "preserves the file's modification time")
+    , preserveMuxingAppArg("preserve-muxing-app", '\0', "preserves the file's muxing app meta-data value")
+    , preserveWritingAppArg("preserve-writing-app", '\0', "preserves the file's writing app meta-data value")
     , jsArg("java-script", 'j', "modifies tag fields via the specified JavaScript", { "path" })
     , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --java-script", { "key=value" })
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
@@ -140,7 +142,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
         &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
         &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
         &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg,
-        &jsArg, &jsSettingsArg, &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
+        &preserveMuxingAppArg, &preserveWritingAppArg, &jsArg, &jsSettingsArg, &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli

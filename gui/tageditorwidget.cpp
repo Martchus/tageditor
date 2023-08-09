@@ -1155,7 +1155,8 @@ bool TagEditorWidget::startSaving()
     m_fileWatcher->removePath(m_currentPath);
     // use current configuration
     const auto &settings = Settings::values();
-    const auto &fileLayoutSettings = settings.tagPocessing.fileLayout;
+    const auto &generalSettings = settings.tagPocessing;
+    const auto &fileLayoutSettings = generalSettings.fileLayout;
     m_fileInfo.setForceRewrite(fileLayoutSettings.forceRewrite);
     m_fileInfo.setTagPosition(fileLayoutSettings.preferredTagPosition);
     m_fileInfo.setForceTagPosition(fileLayoutSettings.forceTagPosition);
@@ -1165,6 +1166,12 @@ bool TagEditorWidget::startSaving()
     m_fileInfo.setMaxPadding(fileLayoutSettings.maxPadding);
     m_fileInfo.setPreferredPadding(fileLayoutSettings.preferredPadding);
     m_fileInfo.setBackupDirectory(settings.editor.backupDirectory);
+    if (generalSettings.preserveMuxingApp) {
+        m_fileInfo.setFileHandlingFlags(m_fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::PreserveMuxingApplication);
+    }
+    if (generalSettings.preserveWritingApp) {
+        m_fileInfo.setFileHandlingFlags(m_fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::PreserveWritingApplication);
+    }
     const auto startThread = [this, preserveModificationTime = settings.tagPocessing.preserveModificationTime] {
         // define functions to show the saving progress and to actually applying the changes
         auto showPercentage([this](AbortableProgressFeedback &progress) {

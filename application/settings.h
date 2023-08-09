@@ -80,6 +80,8 @@ struct TagProcessing {
     UnsupportedFieldHandling unsupportedFieldHandling = UnsupportedFieldHandling::Ignore;
     bool autoTagManagement = true;
     bool preserveModificationTime = false;
+    bool preserveMuxingApp = false;
+    bool preserveWritingApp = false;
     TagParser::TagCreationSettings creationSettings;
     FileLayout fileLayout;
 };

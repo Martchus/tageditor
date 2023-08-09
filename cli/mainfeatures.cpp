@@ -701,6 +701,12 @@ void setTagInfo(const SetTagInfoArgs &args)
     fileInfo.setForceIndexPosition(args.forceIndexPosArg.isPresent());
     fileInfo.setForceRewrite(args.forceRewriteArg.isPresent());
     fileInfo.setWritingApplication(APP_NAME " v" APP_VERSION);
+    if (args.preserveMuxingAppArg.isPresent()) {
+        fileInfo.setFileHandlingFlags(fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::PreserveMuxingApplication);
+    }
+    if (args.preserveWritingAppArg.isPresent()) {
+        fileInfo.setFileHandlingFlags(fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::PreserveWritingApplication);
+    }
 
     // set backup path
     if (args.backupDirArg.isPresent()) {

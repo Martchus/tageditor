@@ -358,6 +358,8 @@ bool TagProcessingGeneralOptionPage::apply()
         }
         settings.autoTagManagement = ui()->autoTagManagementCheckBox->isChecked();
         settings.preserveModificationTime = ui()->preserveModificationTimeCheckBox->isChecked();
+        settings.preserveMuxingApp = ui()->preserveMuxingAppCheckBox->isChecked();
+        settings.preserveWritingApp = ui()->preserveWritingAppCheckBox->isChecked();
     }
     return true;
 }
@@ -393,6 +395,8 @@ void TagProcessingGeneralOptionPage::reset()
         }
         ui()->autoTagManagementCheckBox->setChecked(settings.autoTagManagement);
         ui()->preserveModificationTimeCheckBox->setChecked(settings.preserveModificationTime);
+        ui()->preserveMuxingAppCheckBox->setChecked(settings.preserveMuxingApp);
+        ui()->preserveWritingAppCheckBox->setChecked(settings.preserveWritingApp);
     }
 }
 
