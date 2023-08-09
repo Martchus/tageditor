@@ -117,7 +117,7 @@ set(WIDGETS_UI_FILES
 
 set(TEST_HEADER_FILES)
 set(TEST_SRC_FILES tests/cli.cpp)
-set(EXCLUDED_FILES cli/mediafileinfoobject.h cli/mediafileinfoobject.cpp)
+set(EXCLUDED_FILES cli/scriptapi.h cli/scriptapi.cpp)
 
 set(TS_FILES translations/${META_PROJECT_NAME}_de_DE.ts translations/${META_PROJECT_NAME}_en_US.ts)
 
@@ -247,8 +247,8 @@ endif ()
 
 # configure JavaScript processing for the CLI
 if (JS_PROVIDER STREQUAL Qml)
-    list(APPEND HEADER_FILES cli/mediafileinfoobject.h)
-    list(APPEND SRC_FILES cli/mediafileinfoobject.cpp)
+    list(APPEND HEADER_FILES cli/scriptapi.h)
+    list(APPEND SRC_FILES cli/scriptapi.cpp)
 endif ()
 
 # include modules to apply configuration

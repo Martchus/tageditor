@@ -9,7 +9,7 @@
 
 // includes for JavaScript support of set operation
 #ifdef TAGEDITOR_USE_JSENGINE
-#include "./mediafileinfoobject.h"
+#include "./scriptapi.h"
 #endif
 
 // includes for generating HTML info

@@ -1,5 +1,5 @@
-#ifndef CLI_MEDIA_FILE_INFO_OBJECT_H
-#define CLI_MEDIA_FILE_INFO_OBJECT_H
+#ifndef CLI_SCRIPT_API_H
+#define CLI_SCRIPT_API_H
 
 #include <tagparser/positioninset.h>
 
@@ -222,4 +222,4 @@ inline TagParser::MediaFileInfo &MediaFileInfoObject::fileInfo()
 
 } // namespace Cli
 
-#endif // CLI_MEDIA_FILE_INFO_OBJECT_H
+#endif // CLI_SCRIPT_API_H

@@ -1,4 +1,4 @@
-#include "./mediafileinfoobject.h"
+#include "./scriptapi.h"
 #include "./fieldmapping.h"
 #include "./helper.h"
 
