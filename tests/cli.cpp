@@ -38,6 +38,13 @@ using namespace CppUtilities;
 #include <fstream>
 #include <iostream>
 
+#ifdef stdout
+#undef stdout
+#endif
+#ifdef stderr
+#undef stderr
+#endif
+
 using namespace std;
 using namespace CppUtilities::Literals;
 using namespace TagParser;
@@ -50,7 +57,7 @@ enum class TagStatus { Original, TestMetaDataPresent, Removed };
  */
 class CliTests : public TestFixture {
     CPPUNIT_TEST_SUITE(CliTests);
-#ifdef PLATFORM_UNIX
+#if defined(PLATFORM_UNIX) || defined(CPP_UTILITIES_HAS_EXEC_APP)
     CPPUNIT_TEST(testBasicReading);
     CPPUNIT_TEST(testBasicWriting);
     CPPUNIT_TEST(testModifyingCover);
@@ -76,7 +83,7 @@ public:
     void setUp() override;
     void tearDown() override;
 
-#ifdef PLATFORM_UNIX
+#if defined(PLATFORM_UNIX) || defined(CPP_UTILITIES_HAS_EXEC_APP)
     void testBasicReading();
     void testBasicWriting();
     void testModifyingCover();
@@ -110,17 +117,34 @@ void CliTests::tearDown()
 {
 }
 
-#ifdef PLATFORM_UNIX
+#if defined(PLATFORM_UNIX) || defined(CPP_UTILITIES_HAS_EXEC_APP)
 template <typename StringType, bool negateErrorCond = false>
 bool testContainsSubstrings(const StringType &str, std::initializer_list<const typename StringType::value_type *> substrings)
 {
-    vector<const typename StringType::value_type *> failedSubstrings;
-    typename StringType::size_type currentPos = 0;
+#if defined(PLATFORM_WINDOWS)
+    auto substringsWindows = std::vector<std::string>();
+    substringsWindows.reserve(substrings.size());
+    for (const auto *const substring : substrings) {
+        findAndReplace(substringsWindows.emplace_back(substring), "\n", "\r\n");
+    }
+#endif
+    auto failedSubstrings = std::vector<const typename StringType::value_type *>();
+    auto currentPos = typename StringType::size_type();
+#if defined(PLATFORM_WINDOWS)
+    auto currentSubstr = substrings.begin();
+    for (const auto &substr : substringsWindows) {
+        if ((currentPos = str.find(substr, currentPos)) == StringType::npos) {
+            failedSubstrings.emplace_back(*currentSubstr);
+        }
+        currentPos += substr.size();
+        ++currentSubstr;
+#else
     for (const auto *substr : substrings) {
         if ((currentPos = str.find(substr, currentPos)) == StringType::npos) {
             failedSubstrings.emplace_back(substr);
         }
         currentPos += std::strlen(substr);
+#endif
     }
 
     bool res = failedSubstrings.empty();
