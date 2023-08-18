@@ -15,6 +15,7 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <filesystem>
 
 namespace CppUtilities {
 
@@ -642,13 +643,16 @@ void CliTests::testMultipleFiles()
  */
 void CliTests::testOutputFile()
 {
-    cout << "\nReading and writing multiple files at once with output files specified" << endl;
-    string stdout, stderr;
-    const string mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
-    const string mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
+    std::cout << "\nReading and writing multiple files at once with output files specified" << std::endl;
+    auto stdout = std::string(), stderr = std::string();
+    const auto mkvFile1(workingCopyPath("matroska_wave1/test1.mkv"));
+    const auto mkvFile2(workingCopyPath("matroska_wave1/test2.mkv"));
+    const auto tempDir = std::filesystem::temp_directory_path();
+    const auto tempFile1 = (tempDir / "test1.mkv").string();
+    const auto tempFile2 = (tempDir / "test2.mkv").string();
 
     const char *const args1[] = { "tageditor", "set", "target-level=30", "title=test1", "title=test2", "-f", mkvFile1.data(), mkvFile2.data(), "-o",
-        "/tmp/test1.mkv", "/tmp/test2.mkv", nullptr };
+                                 tempFile1.data(), tempFile2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
 
     // original files have not been modified
@@ -659,7 +663,7 @@ void CliTests::testOutputFile()
     CPPUNIT_ASSERT(stdout.find("Title             test2") == string::npos);
 
     // specified output files contain new titles
-    const char *const args3[] = { "tageditor", "get", "-f", "/tmp/test1.mkv", "/tmp/test2.mkv", nullptr };
+    const char *const args3[] = { "tageditor", "get", "-f", tempFile1.data(), tempFile2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args3);
     CPPUNIT_ASSERT(testContainsSubstrings(stdout,
         { " - \033[1mMatroska tag targeting \"level 30 'track, song, chapter'\"\033[0m\n"
@@ -669,8 +673,8 @@ void CliTests::testOutputFile()
 
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile2.data()));
-    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/test1.mkv"));
-    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/test2.mkv"));
+    CPPUNIT_ASSERT_EQUAL(0, remove(tempFile1.data()));
+    CPPUNIT_ASSERT_EQUAL(0, remove(tempFile2.data()));
 }
 
 /*!
