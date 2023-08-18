@@ -1130,7 +1130,8 @@ void CliTests::testFileLayoutOptions()
 
     const char *const args5[] = { "tageditor", "get", "-f", mp4File2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args5);
-    CPPUNIT_ASSERT(stdout.find(" - \033[1mMP4/iTunes tag\033[0m\n"
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
+                               " - \033[1mMP4/iTunes tag\033[0m\n"
                                "    Title             You Shook Me All Night Long\n"
                                "    Album             Who Made Who\n"
                                "    Artist            ACDC\n"
@@ -1138,8 +1139,7 @@ void CliTests::testFileLayoutOptions()
                                "    Track             2/9\n"
                                "    Encoder           Nero AAC codec / 1.5.3.0, remuxed with Lavf57.56.100\n"
                                "    Record date       1986\n"
-                               "    Encoder settings  ndaudio 1.5.3.0 / -q 0.34")
-        != string::npos);
+                               "    Encoder settings  ndaudio 1.5.3.0 / -q 0.34" }));
     remove((mp4File2 + ".bak").data());
 
     const char *const args6[] = { "tageditor", "set", "--index-pos", "front", "--force", "--layout-only", "-f", mp4File2.data(), nullptr };
