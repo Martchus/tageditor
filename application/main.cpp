@@ -85,8 +85,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , preserveModificationTimeArg("preserve-modification-time", '\0', "preserves the file's modification time")
     , preserveMuxingAppArg("preserve-muxing-app", '\0', "preserves the file's muxing app meta-data value")
     , preserveWritingAppArg("preserve-writing-app", '\0', "preserves the file's writing app meta-data value")
-    , jsArg("java-script", 'j', "modifies tag fields via the specified JavaScript", { "path" })
-    , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --java-script", { "key=value" })
+    , jsArg("script", 'j', "modifies tag fields via the specified JavaScript", { "path" })
+    , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --script", { "key=value" })
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setRequiredValueCount(Argument::varValueCount);

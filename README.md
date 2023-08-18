@@ -346,7 +346,7 @@ Here are some Bash examples which illustrate getting and setting tag information
 
 * Sets fields by running a script to compute changes dynamically:
   ```
-  tageditor set --pedantic debug --java-script path/to/script.js -f foo.mp3
+  tageditor set --pedantic debug --script path/to/script.js -f foo.mp3
   ```
 
     - This feature is still experimental. The script API is still subject to change.
