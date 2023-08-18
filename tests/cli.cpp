@@ -806,19 +806,20 @@ void CliTests::testHandlingAttachments()
     CPPUNIT_ASSERT_EQUAL(0, remove(mkvFile1Backup.data()));
 
     // extract assigned attachment again
+    const auto tmpFile = (std::filesystem::temp_directory_path() / "extracted.mkv").string();
     const char *const args4[]
-        = { "tageditor", "extract", "--attachment", "name=test2.mkv", "-f", mkvFile1.data(), "-o", "/tmp/extracted.mkv", nullptr };
+        = { "tageditor", "extract", "--attachment", "name=test2.mkv", "-f", mkvFile1.data(), "-o", tmpFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args4);
     fstream origFile, extFile;
     origFile.exceptions(ios_base::failbit | ios_base::badbit), extFile.exceptions(ios_base::failbit | ios_base::badbit);
-    origFile.open(mkvFile2.data() + 5, ios_base::in | ios_base::binary), extFile.open("/tmp/extracted.mkv", ios_base::in | ios_base::binary);
+    origFile.open(mkvFile2.data() + 5, ios_base::in | ios_base::binary), extFile.open(tmpFile.data(), ios_base::in | ios_base::binary);
     origFile.seekg(0, ios_base::end), extFile.seekg(0, ios_base::end);
     std::int64_t origFileSize = origFile.tellg(), extFileSize = extFile.tellg();
     CPPUNIT_ASSERT_EQUAL(origFileSize, extFileSize);
     for (origFile.seekg(0), extFile.seekg(0); origFileSize > 0; --origFileSize) {
         CPPUNIT_ASSERT_EQUAL(origFile.get(), extFile.get());
     }
-    remove("/tmp/extracted.mkv");
+    remove(tmpFile.data());
 
     // remove assigned attachment
     const char *const args5[] = { "tageditor", "set", "--remove-attachment", "name=test2.mkv", "-f", mkvFile1.data(), nullptr };
