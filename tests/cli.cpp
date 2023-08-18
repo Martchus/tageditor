@@ -1044,16 +1044,17 @@ void CliTests::testSettingTrackMetaData()
  */
 void CliTests::testExtraction()
 {
-    cout << "\nExtraction" << endl;
-    string stdout, stderr;
-    const string mp4File1(testFilePath("mtx-test-data/alac/othertest-itunes.m4a"));
+    std::cout << "\nExtraction" << std::endl;
+    auto stdout = std::string(), stderr = std::string();
+    const auto mp4File1 = testFilePath("mtx-test-data/alac/othertest-itunes.m4a");
+    const auto tempFile = (std::filesystem::temp_directory_path() / "extracted.jpeg").string();
 
     // test extraction of cover
-    const char *const args1[] = { "tageditor", "extract", "cover", "-f", mp4File1.data(), "-o", "/tmp/extracted.jpeg", nullptr };
+    const char *const args1[] = { "tageditor", "extract", "cover", "-f", mp4File1.data(), "-o", tempFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
-    Diagnostics diag;
-    AbortableProgressFeedback progress;
-    MediaFileInfo extractedInfo("/tmp/extracted.jpeg"sv);
+    auto diag = Diagnostics();
+    auto progress = AbortableProgressFeedback();
+    auto extractedInfo = MediaFileInfo(tempFile);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat(diag, progress);
     CPPUNIT_ASSERT_EQUAL(static_cast<std::uint64_t>(22771), extractedInfo.size());
@@ -1061,17 +1062,19 @@ void CliTests::testExtraction()
     extractedInfo.invalidate();
 
     // test assignment of cover by the way
-    const string mp4File2(workingCopyPath("mtx-test-data/aac/he-aacv2-ps.m4a"));
-    const char *const args2[] = { "tageditor", "set", "cover=/tmp/extracted.jpeg", "-f", mp4File2.data(), nullptr };
+    const auto mp4File2 = workingCopyPath("mtx-test-data/aac/he-aacv2-ps.m4a");
+    const auto coverArg = argsToString("cover=", tempFile);
+    const char *const args2[] = { "tageditor", "set", coverArg.data(), "-f", mp4File2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args2);
-    const char *const args3[] = { "tageditor", "extract", "cover", "-f", mp4File2.data(), "-o", "/tmp/extracted.jpeg", nullptr };
-    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
+    const char *const args3[] = { "tageditor", "extract", "cover", "-f", mp4File2.data(), "-o", tempFile.data(), nullptr };
+    CPPUNIT_ASSERT_EQUAL(0, remove(tempFile.data()));
     TESTUTILS_ASSERT_EXEC(args3);
     extractedInfo.open(true);
     extractedInfo.parseContainerFormat(diag, progress);
     CPPUNIT_ASSERT_EQUAL(static_cast<std::uint64_t>(22771), extractedInfo.size());
     CPPUNIT_ASSERT(ContainerFormat::Jpeg == extractedInfo.containerFormat());
-    CPPUNIT_ASSERT_EQUAL(0, remove("/tmp/extracted.jpeg"));
+    extractedInfo.close();
+    CPPUNIT_ASSERT_EQUAL(0, remove(tempFile.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove(mp4File2.data()));
     CPPUNIT_ASSERT_EQUAL(0, remove((mp4File2 + ".bak").data()));
     CPPUNIT_ASSERT_EQUAL(Diagnostics(), diag);
