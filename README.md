@@ -355,14 +355,14 @@ Here are some Bash examples which illustrate getting and setting tag information
       compile time. Checkout the build instructions under "Building with Qt GUI" for details.
     - The script needs to export a `main()` function. This function gets executed for every file and
       passed an object representing this file as first argument.
-    - Checkout the file `testfiles/set-tags.js` directory in this repository for an example that
-      applies basic fixes and tries to fetch lyrics and cover art.
+    - Checkout the file `testfiles/set-tags.js` in this repository for an example that applies basic
+      fixes and tries to fetch lyrics and cover art.
     - The option `--pedantic debug` is not required but useful for debugging. You may also add
       `--script-settings dryRun=1` and use that setting within the script as shown in the example.
     - Common tag fields are exposed as object properties as shown in the mentioned example.
         - Only properties for fields that are supported by the tag are added to the "fields" object.
         - Adding properties of unsupported fields manually does not work; those will just be ignored.
-        - The property for fields that are absent in the tag have an empty array assigned. You may
+        - The properties for fields that are absent in the tag have an empty array assigned. You may
           also assign an empty array to fields to delete them.
         - The content of binary fields is exposed as `ArrayBuffer`. Use must also use an `ArrayBuffer`
           to set the value of binary fields such as the cover.
@@ -376,7 +376,8 @@ Here are some Bash examples which illustrate getting and setting tag information
       So the tags present during script execution don't necessarily represent tags that are actually
       already present in the file.
     - The script is executed before any other modifications are applied. So if you also specify
-      values as usual (via `--values`) then these values override values changed by the script.
+      values as usual (via `--values`) then these values have precedence over values set by the
+      script.
 
 ##### Further useful commands
 * Let the tag editor return with a non-zero exit code even if only non-fatal problems have been encountered
