@@ -654,7 +654,7 @@ void CliTests::testOutputFile()
     const auto tempFile2 = (tempDir / "test2.mkv").string();
 
     const char *const args1[] = { "tageditor", "set", "target-level=30", "title=test1", "title=test2", "-f", mkvFile1.data(), mkvFile2.data(), "-o",
-                                 tempFile1.data(), tempFile2.data(), nullptr };
+        tempFile1.data(), tempFile2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args1);
 
     // original files have not been modified
@@ -809,8 +809,7 @@ void CliTests::testHandlingAttachments()
 
     // extract assigned attachment again
     const auto tmpFile = (std::filesystem::temp_directory_path() / "extracted.mkv").string();
-    const char *const args4[]
-        = { "tageditor", "extract", "--attachment", "name=test2.mkv", "-f", mkvFile1.data(), "-o", tmpFile.data(), nullptr };
+    const char *const args4[] = { "tageditor", "extract", "--attachment", "name=test2.mkv", "-f", mkvFile1.data(), "-o", tmpFile.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args4);
     fstream origFile, extFile;
     origFile.exceptions(ios_base::failbit | ios_base::badbit), extFile.exceptions(ios_base::failbit | ios_base::badbit);
@@ -1132,16 +1131,16 @@ void CliTests::testFileLayoutOptions()
 
     const char *const args5[] = { "tageditor", "get", "-f", mp4File2.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args5);
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, {
-                               " - \033[1mMP4/iTunes tag\033[0m\n"
-                               "    Title             You Shook Me All Night Long\n"
-                               "    Album             Who Made Who\n"
-                               "    Artist            ACDC\n"
-                               "    Genre             Rock\n"
-                               "    Track             2/9\n"
-                               "    Encoder           Nero AAC codec / 1.5.3.0, remuxed with Lavf57.56.100\n"
-                               "    Record date       1986\n"
-                               "    Encoder settings  ndaudio 1.5.3.0 / -q 0.34" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout,
+        { " - \033[1mMP4/iTunes tag\033[0m\n"
+          "    Title             You Shook Me All Night Long\n"
+          "    Album             Who Made Who\n"
+          "    Artist            ACDC\n"
+          "    Genre             Rock\n"
+          "    Track             2/9\n"
+          "    Encoder           Nero AAC codec / 1.5.3.0, remuxed with Lavf57.56.100\n"
+          "    Record date       1986\n"
+          "    Encoder settings  ndaudio 1.5.3.0 / -q 0.34" }));
     remove((mp4File2 + ".bak").data());
 
     const char *const args6[] = { "tageditor", "set", "--index-pos", "front", "--force", "--layout-only", "-f", mp4File2.data(), nullptr };
@@ -1191,37 +1190,27 @@ void CliTests::testScriptProcessing()
 
     const auto file = workingCopyPath("mtx-test-data/alac/othertest-itunes.m4a");
     const auto script = testFilePath("script-processing-test.js");
-    const char *args[] = { "tageditor", "set", "--pedantic", "debug", "--script", script.data(), "--script-settings", "set:title=foo", "set:artist=bar",
-                                 "dryRun=false", "-f", file.data(), nullptr };
+    const char *args[] = { "tageditor", "set", "--pedantic", "debug", "--script", script.data(), "--script-settings", "set:title=foo",
+        "set:artist=bar", "dryRun=false", "-f", file.data(), nullptr };
     TESTUTILS_ASSERT_EXEC_EXIT_STATUS(args, EXIT_PARSING_FAILURE);
-    CPPUNIT_ASSERT(testContainsSubstrings(stderr, { "executing JavaScript for othertest-itunes.m4a: entering main() function",
-                                                    "settings: set:title, set:artist, dryRun",
-                                                    "tag: MP4/iTunes tag",
-                                                    "supported fields: album, albumArtist, arranger, ", "soundEngineer, title, track",
-                                                    "MP4/iTunes tag: applying changes",
-                                                    " - change title[0] from 'Sad Song' to 'foo'",
-                                                    " - change artist[0] from 'Oasis' to 'bar'",
-                                                    "executing JavaScript for othertest-itunes.m4a: done with return value: true",
-                                                    "Changes are about to be applied"
-                                                  }));
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Loading JavaScript file", script.data(),
-                                                    "Setting tag information for", file.data(),
-                                                    "Changes have been applied."
-                                                  }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stderr,
+        { "executing JavaScript for othertest-itunes.m4a: entering main() function", "settings: set:title, set:artist, dryRun", "tag: MP4/iTunes tag",
+            "supported fields: album, albumArtist, arranger, ", "soundEngineer, title, track", "MP4/iTunes tag: applying changes",
+            " - change title[0] from 'Sad Song' to 'foo'", " - change artist[0] from 'Oasis' to 'bar'",
+            "executing JavaScript for othertest-itunes.m4a: done with return value: true", "Changes are about to be applied" }));
+    CPPUNIT_ASSERT(testContainsSubstrings(
+        stdout, { "Loading JavaScript file", script.data(), "Setting tag information for", file.data(), "Changes have been applied." }));
 
     args[9] = "dryRun=true";
     TESTUTILS_ASSERT_EXEC_EXIT_STATUS(args, EXIT_PARSING_FAILURE);
-    CPPUNIT_ASSERT(testContainsSubstrings(stderr, { "executing JavaScript for othertest-itunes.m4a: entering main() function",
-                                                    "MP4/iTunes tag: applying changes",
-                                                    " - set title[0] to 'foo' (no change)",
-                                                    " - set artist[0] to 'bar' (no change)",
-                                                    "executing JavaScript for othertest-itunes.m4a: done with return value: false"
-                                                  }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stderr,
+        { "executing JavaScript for othertest-itunes.m4a: entering main() function", "MP4/iTunes tag: applying changes",
+            " - set title[0] to 'foo' (no change)", " - set artist[0] to 'bar' (no change)",
+            "executing JavaScript for othertest-itunes.m4a: done with return value: false" }));
     CPPUNIT_ASSERT_EQUAL(std::string::npos, stderr.find("Changes are about to be applied"));
-    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Loading JavaScript file", script.data(),
-                                                    "Setting tag information for", file.data(),
-                                                    " - Skipping file because JavaScript returned a falsy value other than undefined."
-                                                  }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout,
+        { "Loading JavaScript file", script.data(), "Setting tag information for", file.data(),
+            " - Skipping file because JavaScript returned a falsy value other than undefined." }));
 #endif
 }
 
