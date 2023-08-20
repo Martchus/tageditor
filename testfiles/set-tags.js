@@ -1,3 +1,4 @@
+import * as helpers from "helpers.js"
 import * as metadatasearch from "metadatasearch.js"
 
 export function main(file) {
@@ -10,45 +11,22 @@ export function main(file) {
     file.applyChanges();
 
     // return a falsy value to skip the file after all
-    return !isTruthy(settings.dryRun);
+    return !helpers.isTruthy(settings.dryRun);
 }
 
 const mainTextFields = ["title", "artist", "album", "genre"];
 const personalFields = ["comment", "rating"];
 
-function isString(value) {
-    return typeof(value) === "string" || value instanceof String;
-}
-
-function isTruthy(value) {
-    return value && value !== "false" && value !== "0";
-}
-
-function logTagInfo(file, tag) {
-    // log tag type and supported fields
-    const fields = tag.fields;
-    utility.diag("debug", tag.type, "tag");
-    utility.diag("debug", Object.keys(fields).join(", "), "supported fields");
-
-    // log fields for debugging purposes
-    for (const [key, value] of Object.entries(fields)) {
-        const content = value.content;
-        if (content !== undefined && content != null && !(content instanceof ArrayBuffer)) {
-            utility.diag("debug", content, key + " (" + value.type + ")");
-        }
-    }
-}
-
 function applyFixesToMainFields(file, tag) {
     const fields = tag.fields;
     for (const key of mainTextFields) {
         for (const value of fields[key]) {
-            if (isString(value.content)) {
+            if (helpers.isString(value.content)) {
                 value.content = value.content.trim();
-                if (isTruthy(settings.fixUmlauts)) {
+                if (helpers.isTruthy(settings.fixUmlauts)) {
                     value.content = utility.fixUmlauts(value.content);
                 }
-                if (isTruthy(settings.formatNames)) {
+                if (helpers.isTruthy(settings.formatNames)) {
                     value.content = utility.formatName(value.content);
                 }
             }
@@ -118,17 +96,17 @@ function addMiscFields(file, tag) {
 }
 
 function changeTagFields(file, tag) {
-    logTagInfo(file, tag);
+    helpers.logTagInfo(file, tag);
 
     // change/add various fields; these values can still be overridden by specifying fields normally as CLI args
     applyFixesToMainFields(file, tag);
     clearPersonalFields(file, tag);
     addTotalNumberOfTracks(file, tag);
     addMiscFields(file, tag);
-    if (isTruthy(settings.addLyrics)) {
+    if (helpers.isTruthy(settings.addLyrics)) {
         addLyrics(file, tag);
     }
-    if (isTruthy(settings.addCover)) {
+    if (helpers.isTruthy(settings.addCover)) {
         addCover(file, tag);
     }
 }

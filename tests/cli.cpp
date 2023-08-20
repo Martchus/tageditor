@@ -77,6 +77,7 @@ class CliTests : public TestFixture {
     CPPUNIT_TEST(testReadingAndWritingDocumentTitle);
     CPPUNIT_TEST(testFileLayoutOptions);
     CPPUNIT_TEST(testJsonExport);
+    CPPUNIT_TEST(testScriptProcessing);
 #endif
     CPPUNIT_TEST_SUITE_END();
 
@@ -103,6 +104,7 @@ public:
     void testReadingAndWritingDocumentTitle();
     void testFileLayoutOptions();
     void testJsonExport();
+    void testScriptProcessing();
 #endif
 
 private:
@@ -1176,4 +1178,51 @@ void CliTests::testJsonExport()
 #endif // TAGEDITOR_JSON_EXPORT
 }
 
-#endif // PLATFORM_UNIX
+/*!
+ * \brief Tests the --script parameter of the set operation.
+ */
+void CliTests::testScriptProcessing()
+{
+#ifndef TAGEDITOR_USE_JSENGINE
+    std::cout << "\nSkipping script processing (feature not enabled)" << std::endl;
+#else
+    std::cout << "\nScript processing" << endl;
+    auto stdout = std::string(), stderr = std::string();
+
+    const auto file = workingCopyPath("mtx-test-data/alac/othertest-itunes.m4a");
+    const auto script = testFilePath("script-processing-test.js");
+    const char *args[] = { "tageditor", "set", "--pedantic", "debug", "--script", script.data(), "--script-settings", "set:title=foo", "set:artist=bar",
+                                 "dryRun=false", "-f", file.data(), nullptr };
+    TESTUTILS_ASSERT_EXEC_EXIT_STATUS(args, EXIT_PARSING_FAILURE);
+    CPPUNIT_ASSERT(testContainsSubstrings(stderr, { "executing JavaScript for othertest-itunes.m4a: entering main() function",
+                                                    "settings: set:title, set:artist, dryRun",
+                                                    "tag: MP4/iTunes tag",
+                                                    "supported fields: album, albumArtist, arranger, ", "soundEngineer, title, track",
+                                                    "MP4/iTunes tag: applying changes",
+                                                    " - change title[0] from 'Sad Song' to 'foo'",
+                                                    " - change artist[0] from 'Oasis' to 'bar'",
+                                                    "executing JavaScript for othertest-itunes.m4a: done with return value: true",
+                                                    "Changes are about to be applied"
+                                                  }));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Loading JavaScript file", script.data(),
+                                                    "Setting tag information for", file.data(),
+                                                    "Changes have been applied."
+                                                  }));
+
+    args[9] = "dryRun=true";
+    TESTUTILS_ASSERT_EXEC_EXIT_STATUS(args, EXIT_PARSING_FAILURE);
+    CPPUNIT_ASSERT(testContainsSubstrings(stderr, { "executing JavaScript for othertest-itunes.m4a: entering main() function",
+                                                    "MP4/iTunes tag: applying changes",
+                                                    " - set title[0] to 'foo' (no change)",
+                                                    " - set artist[0] to 'bar' (no change)",
+                                                    "executing JavaScript for othertest-itunes.m4a: done with return value: false"
+                                                  }));
+    CPPUNIT_ASSERT_EQUAL(std::string::npos, stderr.find("Changes are about to be applied"));
+    CPPUNIT_ASSERT(testContainsSubstrings(stdout, { "Loading JavaScript file", script.data(),
+                                                    "Setting tag information for", file.data(),
+                                                    " - Skipping file because JavaScript returned a falsy value other than undefined."
+                                                  }));
+#endif
+}
+
+#endif // defined(PLATFORM_UNIX) || defined(CPP_UTILITIES_HAS_EXEC_APP)
