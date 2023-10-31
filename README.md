@@ -93,6 +93,19 @@ much as possible, set the following in the GUI's "File layout" settings:
 When using the CLI, you just need to add `--max-padding 429496729` to the CLI arguments (and avoid any of the other
 arguments mentioned in previous sections).
 
+### Improve performance
+Editing big files (especially Matroska files) can take some time. To improve the performance, put the index at the
+end of the file (CLI option `--index-pos back`) because then the size of the index will never have to be recalculated.
+Also follow the advice from the "Backup/temporary files" section to force rewriting and to put the temporary directory
+on the same filesystem as the file you are editing. Forcing a rewrite can improve the performance because then the tag
+editor will not even try to see whether it could be avoided and can thus skip computations that can take a notable
+time for big Matroska files.
+
+Of course being able to avoid a rewrite would still be more optimal. Checkout the previous section how for to achieve
+that. To improve performance further when avoiding a rewrite, put the tag at the end (CLI option `--tag-pos back`).
+Then the tag editor will not even try to put tags at the front and can thus skip a few computations. (Avoiding a
+rewrite is still not a good idea in general.)
+
 ## Download
 ### Source
 See the release section on GitHub.
