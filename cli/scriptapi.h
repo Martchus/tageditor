@@ -193,7 +193,8 @@ class MediaFileInfoObject : public QObject {
     Q_PROPERTY(QList<TagObject *> tags READ tags)
 
 public:
-    explicit MediaFileInfoObject(TagParser::MediaFileInfo &mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine, QObject *parent = nullptr);
+    explicit MediaFileInfoObject(
+        TagParser::MediaFileInfo &mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine, bool quiet, QObject *parent = nullptr);
     ~MediaFileInfoObject() override;
 
     TagParser::MediaFileInfo &fileInfo();
@@ -207,12 +208,14 @@ public:
 
 public Q_SLOTS:
     void applyChanges();
+    bool rename(const QString &newPath);
 
 private:
     TagParser::MediaFileInfo &m_f;
     TagParser::Diagnostics &m_diag;
     QJSEngine *m_engine;
     QList<TagObject *> m_tags;
+    bool m_quiet;
 };
 
 inline TagParser::MediaFileInfo &MediaFileInfoObject::fileInfo()

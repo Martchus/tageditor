@@ -20,6 +20,8 @@
 
 #include <c++utilities/conversion/binaryconversion.h>
 #include <c++utilities/conversion/conversionexception.h>
+#include <c++utilities/conversion/stringbuilder.h>
+#include <c++utilities/io/path.h>
 
 #include <qtutilities/misc/compat.h>
 
@@ -33,6 +35,7 @@
 #include <QJSValueIterator>
 #include <QRegularExpression>
 
+#include <filesystem>
 #include <iostream>
 #include <limits>
 #include <type_traits>
@@ -558,11 +561,13 @@ void TagObject::applyChanges()
     }
 }
 
-MediaFileInfoObject::MediaFileInfoObject(TagParser::MediaFileInfo &mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine, QObject *parent)
+MediaFileInfoObject::MediaFileInfoObject(
+    TagParser::MediaFileInfo &mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine, bool quiet, QObject *parent)
     : QObject(parent)
     , m_f(mediaFileInfo)
     , m_diag(diag)
     , m_engine(engine)
+    , m_quiet(quiet)
 {
 }
 
@@ -619,6 +624,29 @@ void MediaFileInfoObject::applyChanges()
     for (auto *const tag : m_tags) {
         tag->applyChanges();
     }
+}
+
+bool MediaFileInfoObject::rename(const QString &newPath)
+{
+    const auto from = m_f.path();
+    const auto fromNative = std::filesystem::path(CppUtilities::makeNativePath(from));
+    const auto toRelUtf8 = newPath.toUtf8();
+    const auto toRelView = CppUtilities::PathStringView(toRelUtf8.data(), static_cast<std::size_t>(toRelUtf8.size()));
+    const auto toNative = fromNative.parent_path().append(CppUtilities::makeNativePath(toRelView));
+    const auto toView = CppUtilities::extractNativePath(toNative.native());
+    try {
+        m_f.stream().close();
+        std::filesystem::rename(fromNative, toNative);
+        m_f.reportPathChanged(toView);
+        m_f.stream().open(m_f.path(), std::ios_base::in | std::ios_base::out | std::ios_base::binary);
+    } catch (const std::runtime_error &e) {
+        m_diag.emplace_back(TagParser::DiagLevel::Critical, e.what(), CppUtilities::argsToString("renaming \"", from, "\" to \"", toView));
+        return false;
+    }
+    if (!m_quiet) {
+        std::cout << " - Renamed \"" << from << "\" to \"" << toView << "\"\n";
+    }
+    return true;
 }
 
 } // namespace Cli

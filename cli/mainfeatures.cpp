@@ -494,6 +494,7 @@ public:
 private:
     static void addWarnings(Diagnostics &diag, const std::string &context, const QList<QQmlError> &warnings);
 
+    const SetTagInfoArgs &args;
     int argc;
     QCoreApplication app;
     Diagnostics diag;
@@ -510,7 +511,8 @@ private:
  * - Logs status/problems directly in accordance with other parts of the CLI.
  */
 JavaScriptProcessor::JavaScriptProcessor(const SetTagInfoArgs &args)
-    : argc(0)
+    : args(args)
+    , argc(0)
     , app(argc, nullptr)
     , utility(new UtilityObject(&engine))
 {
@@ -567,7 +569,7 @@ JavaScriptProcessor::JavaScriptProcessor(const SetTagInfoArgs &args)
  */
 QJSValue JavaScriptProcessor::callMain(MediaFileInfo &mediaFileInfo, Diagnostics &diag)
 {
-    auto fileInfoObject = MediaFileInfoObject(mediaFileInfo, diag, &engine);
+    auto fileInfoObject = MediaFileInfoObject(mediaFileInfo, diag, &engine, args.quietArg.isPresent());
     auto fileInfoObjectValue = engine.newQObject(&fileInfoObject);
     auto context = argsToString("executing JavaScript for ", mediaFileInfo.fileName());
     utility->setDiag(&context, &diag);
