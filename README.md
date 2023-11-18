@@ -543,8 +543,10 @@ by selecting the Fusion style.
 
 ---
 
-Per monitor DPI awareness (v2) is not working out of the box but experimental support
-[can be enabled](https://github.com/Martchus/syncthingtray#enable-experimental-support-for-windows-per-monitor-dpi-awareness-v2).
+Tag Editor supports
+[PMv2](https://docs.microsoft.com/en-us/windows/win32/hidpi/high-dpi-desktop-application-development-on-windows#per-monitor-and-per-monitor-v2-dpi-awareness)
+out of the box as of Qt 6. You may tweak settings according to the
+[Qt documentation](https://doc.qt.io/qt-6/highdpi.html#configuring-windows).
 
 ## Copyright notice and license
 Copyright © 2015-2023 Marius Kittler
