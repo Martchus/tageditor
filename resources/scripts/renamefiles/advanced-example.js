@@ -137,7 +137,7 @@ if (fileInfo.currentSuffix === "tmp") {
 var fields = []
 
 // get the artist (preferably album artist), remove invalid characters and add it to fields array
-var artist = validFileName(tag.albumartist || tag.artist)
+var artist = validFileName(tag.albumArtist || tag.artist)
 if (includeArtist && !isPartOfCollection(tag) && notEmpty(artist)) {
     fields.push(trailingBracketsStripped(firstValue(artist)))
 }
@@ -219,7 +219,7 @@ if (distDir) {
     } else if (tag.comment.includes("single")) {
         path.push("singles");
     }
-    var artist = validDirectoryName(firstValue(tag.albumartist || tag.artist))
+    var artist = validDirectoryName(firstValue(tag.albumArtist || tag.artist))
     if (isPartOfCollection(tag)) {
         path.push(collectionsDir)
     } else if (notEmpty(artist) && !isMiscFile(tag)) {

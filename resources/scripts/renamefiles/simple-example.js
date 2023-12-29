@@ -22,7 +22,7 @@ if (!fileInfo.hasAudioTracks && !fileInfo.hasVideoTracks) {
 }
 
 // make new filename
-const fieldsToInclude = [tag.albumartist || tag.artist, tag.album, tag.trackPos || infoFromFileName.trackPos, tag.title || infoFromFileName.title]
+const fieldsToInclude = [tag.albumArtist || tag.artist, tag.album, tag.trackPos || infoFromFileName.trackPos, tag.title || infoFromFileName.title]
 let newName = ""
 for (let field of fieldsToInclude) {
     field = field.toString()
