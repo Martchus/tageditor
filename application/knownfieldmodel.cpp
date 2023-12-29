@@ -209,6 +209,8 @@ const char *KnownFieldModel::fieldName(KnownField field)
         return QT_TR_NOOP("License");
     case KnownField::TermsOfUse:
         return QT_TR_NOOP("Terms of use");
+    case KnownField::PublisherWebpage:
+        return QT_TR_NOOP("Publisher webpage");
     default:
         return "";
     }
@@ -327,6 +329,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
          mkItem(KnownField::ProductionCopyright, Qt::Unchecked),
          mkItem(KnownField::License, Qt::Unchecked),
          mkItem(KnownField::TermsOfUse, Qt::Unchecked),
+         mkItem(KnownField::PublisherWebpage, Qt::Unchecked),
     });
     // clang-format on
 }
