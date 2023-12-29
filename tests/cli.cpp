@@ -1164,12 +1164,12 @@ void CliTests::testJsonExport()
     cout << "\nJSON export" << endl;
     string stdout, stderr;
 
-    const auto file(testFilePath("matroska_wave1/test3.mkv"));
-    const auto expectedJsonPath(testFilePath("matroska_wave1-test3.json"));
+    const auto file = testFilePath("matroska_wave1/test3.mkv");
+    const auto expectedJson = readFile(testFilePath("matroska_wave1-test3.json"));
     const char *const args[] = { "tageditor", "export", "--pretty", "-f", file.data(), nullptr };
     TESTUTILS_ASSERT_EXEC(args);
     const char *const jqArgs[]
-        = { "jq", "--argfile", "expected", expectedJsonPath.data(), "--argjson", "actual", stdout.data(), "-n", "$actual == $expected", nullptr };
+        = { "jq", "--argjson", "expected", expectedJson.data(), "--argjson", "actual", stdout.data(), "-n", "$actual == $expected", nullptr };
     const auto *const logJsonExport = std::getenv(PROJECT_VARNAME_UPPER "_LOG_JQ_INVOCATION");
     execHelperAppInSearchPath("jq", jqArgs, stdout, stderr, !logJsonExport || !std::strlen(logJsonExport));
     CPPUNIT_ASSERT_EQUAL(""s, stderr);
