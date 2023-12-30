@@ -1,24 +1,21 @@
+import * as helpers from "helpers.js"
+
 const lyricsCache = {};
 const coverCache = {};
 const albumColumn = 1;
 
 export function queryLyrics(searchCriteria) {
-    return cacheValue(lyricsCache, searchCriteria.title + "_" + searchCriteria.artist, () => {
+    return helpers.cacheValue(lyricsCache, searchCriteria.title + "_" + searchCriteria.artist, () => {
         utility.log(" - Querying lyrics for '" + searchCriteria.title + "' from '" + searchCriteria.artist + "' ...");
         return queryLyricsFromProviders(["Tekstowo", "MakeItPersonal"], searchCriteria)
     });
 }
 
 export function queryCover(searchCriteria) {
-    return cacheValue(coverCache, searchCriteria.album + "_" + searchCriteria.artist, () => {
+    return helpers.cacheValue(coverCache, searchCriteria.album + "_" + searchCriteria.artist, () => {
         utility.log(" - Querying cover art for '" + searchCriteria.album + "' from '" + searchCriteria.artist + "' ...");
         return queryCoverFromProvider("MusicBrainz", searchCriteria);
     });
-}
-
-function cacheValue(cache, key, generator) {
-    const cachedValue = cache[key];
-    return cachedValue ? cachedValue : (cache[key] = generator());
 }
 
 function waitFor(signal) {

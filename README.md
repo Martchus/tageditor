@@ -372,7 +372,8 @@ Here are some Bash examples which illustrate getting and setting tag information
     - The script needs to export a `main()` function. This function is invoked for every file and
       passed an object representing the current file as first argument.
     - Checkout the file `testfiles/set-tags.js` in this repository for an example that applies basic
-      fixes and tries to fetch lyrics and cover art.
+      fixes and tries to fetch lyrics and cover art when according settings are passed (e.g.
+      `--script-settings addCover=1 addLyrics=1`).
     - For debugging, the option `--pedantic debug` is very useful. You may also add
       `--script-settings dryRun=1` and check for that setting within the script as shown in the
       mentioned example script.
@@ -400,6 +401,11 @@ Here are some Bash examples which illustrate getting and setting tag information
       file without modifying it by returning a falsy value). If the specified path is relative, it
       is interpreted relative to current directory of the file (and *not* to the current working
       directory of the tag editor).
+    - It is also possible to open another file via `utility.openFile(path)`. This makes it possible
+      to copy tags over from another file, e.g. to insert tags back from original files that have
+      been lost when converting to a different format. The mentioned example script `set-tags.js`
+      also demonstrates this for covers and lyrics when according script settings are passed (e.g.
+      `--script-settings addCover=1 originalDir=… originalExt=…`).
 
 ##### Further useful commands
 * Let the tag editor return with a non-zero exit code even if only non-fatal problems have been encountered

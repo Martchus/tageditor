@@ -59,6 +59,8 @@ constexpr auto nativeUtf16Encoding = TagParser::TagTextEncoding::
 #endif
     ;
 
+const std::string UtilityObject::s_defaultContext = std::string("executing JavaScript");
+
 UtilityObject::UtilityObject(QJSEngine *engine)
     : QObject(engine)
     , m_engine(engine)
@@ -86,9 +88,8 @@ void UtilityObject::diag(const QString &level, const QString &message, const QSt
         { QStringLiteral("information"), TagParser::DiagLevel::Information },
         { QStringLiteral("debug"), TagParser::DiagLevel::Debug },
     });
-    static const auto defaultContext = std::string("executing JavaScript");
     m_diag->emplace_back(mapping.value(level.toLower(), TagParser::DiagLevel::Debug), message.toStdString(),
-        context.isEmpty() ? (m_context ? *m_context : defaultContext) : context.toStdString());
+        context.isEmpty() ? (m_context ? *m_context : s_defaultContext) : context.toStdString());
 }
 
 int UtilityObject::exec()
@@ -125,6 +126,25 @@ QJSValue UtilityObject::readFile(const QString &path)
         }
     }
     return QJSValue();
+}
+
+QJSValue UtilityObject::openFile(const QString &path)
+{
+    if (!m_diag) {
+        return QJSValue();
+    }
+    auto mediaFileInfo = std::make_unique<TagParser::MediaFileInfo>(path.toStdString());
+    auto feedback = TagParser::AbortableProgressFeedback();
+    try {
+        mediaFileInfo->open(true);
+        mediaFileInfo->parseEverything(*m_diag, feedback);
+    } catch (const std::exception &e) {
+        m_diag->emplace_back(TagParser::DiagLevel::Critical, CppUtilities::argsToString("Unable to open \"", mediaFileInfo->path(), "\": ", e.what()),
+            m_context ? *m_context : s_defaultContext);
+        return QJSValue();
+    }
+    auto mediaFileInfoObj = new MediaFileInfoObject(std::move(mediaFileInfo), *m_diag, m_engine, false, m_engine);
+    return m_engine->newQObject(mediaFileInfoObj);
 }
 
 QString UtilityObject::formatName(const QString &str) const
@@ -571,6 +591,13 @@ MediaFileInfoObject::MediaFileInfoObject(
 {
 }
 
+MediaFileInfoObject::MediaFileInfoObject(
+    std::unique_ptr<TagParser::MediaFileInfo> &&mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine, bool quiet, QObject *parent)
+    : MediaFileInfoObject(*mediaFileInfo.get(), diag, engine, quiet, parent)
+{
+    m_f_owned = std::move(mediaFileInfo);
+}
+
 MediaFileInfoObject::~MediaFileInfoObject()
 {
 }
@@ -580,9 +607,19 @@ QString MediaFileInfoObject::path() const
     return QString::fromStdString(m_f.path());
 }
 
+bool MediaFileInfoObject::isPathRelative() const
+{
+    return QFileInfo(path()).isRelative();
+}
+
 QString MediaFileInfoObject::name() const
 {
     return QString::fromStdString(m_f.fileName());
+}
+
+QString MediaFileInfoObject::nameWithoutExtension() const
+{
+    return QString::fromStdString(m_f.fileName(true));
 }
 
 QString MediaFileInfoObject::extension() const

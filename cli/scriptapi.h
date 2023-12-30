@@ -54,6 +54,7 @@ public Q_SLOTS:
     QJSValue readEnvironmentVariable(const QString &variable, const QJSValue &defaultValue = QJSValue()) const;
     QJSValue readDirectory(const QString &path);
     QJSValue readFile(const QString &path);
+    QJSValue openFile(const QString &path);
 
     QString formatName(const QString &str) const;
     QString fixUmlauts(const QString &str) const;
@@ -63,13 +64,14 @@ public Q_SLOTS:
     QJSValue queryMakeItPersonal(const QJSValue &songDescription);
     QJSValue queryTekstowo(const QJSValue &songDescription);
 
-    QByteArray convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format);
+    QByteArray convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format = QString());
 
 private:
     static QtGui::SongDescription makeSongDescription(const QJSValue &obj);
 
     QJSEngine *m_engine;
     const std::string *m_context;
+    static const std::string s_defaultContext;
     TagParser::Diagnostics *m_diag;
 };
 
@@ -186,7 +188,9 @@ inline TagParser::Tag &TagObject::tag()
 class MediaFileInfoObject : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString path READ path)
+    Q_PROPERTY(bool pathRelative READ isPathRelative)
     Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QString nameWithoutExtension READ nameWithoutExtension)
     Q_PROPERTY(QString extension READ extension)
     Q_PROPERTY(QString containingDirectory READ containingDirectory)
     Q_PROPERTY(QString savePath READ savePath WRITE setSavePath)
@@ -195,11 +199,15 @@ class MediaFileInfoObject : public QObject {
 public:
     explicit MediaFileInfoObject(
         TagParser::MediaFileInfo &mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine, bool quiet, QObject *parent = nullptr);
+    explicit MediaFileInfoObject(std::unique_ptr<TagParser::MediaFileInfo> &&mediaFileInfo, TagParser::Diagnostics &diag, QJSEngine *engine,
+        bool quiet, QObject *parent = nullptr);
     ~MediaFileInfoObject() override;
 
     TagParser::MediaFileInfo &fileInfo();
     QString path() const;
+    bool isPathRelative() const;
     QString name() const;
+    QString nameWithoutExtension() const;
     QString extension() const;
     QString containingDirectory() const;
     QString savePath() const;
@@ -212,6 +220,7 @@ public Q_SLOTS:
 
 private:
     TagParser::MediaFileInfo &m_f;
+    std::unique_ptr<TagParser::MediaFileInfo> m_f_owned;
     TagParser::Diagnostics &m_diag;
     QJSEngine *m_engine;
     QList<TagObject *> m_tags;

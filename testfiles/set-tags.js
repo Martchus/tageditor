@@ -57,10 +57,28 @@ function addTotalNumberOfTracks(file, tag) {
     }
 }
 
+function addFieldFromOriginalFile(file, tag, fieldName) {
+    const originalFile = helpers.openOriginalFile(file);
+    if (!originalFile) {
+        return false;
+    }
+    utility.diag("debug", "Trying to take over " + fieldName + " from \"" + originalFile.path + "\".");
+    const contents = helpers.readFieldContents(originalFile, fieldName);
+    if (!contents.length) {
+        utility.diag("debug", "No " + fieldName + " found in original file.");
+        return false;
+    }
+    tag.fields[fieldName] = contents;
+    return true;
+}
+
 function addLyrics(file, tag) {
     const fields = tag.fields;
     if (fields.lyrics.length) {
         return; // skip if already assigned
+    }
+    if (addFieldFromOriginalFile(file, tag, "lyrics")) {
+        return; // skip fetching via meta-data search if lyrics could be taken over from original file
     }
     const firstTitle = fields.title?.[0]?.content;
     const firstArtist = fields.artist?.[0]?.content;
@@ -73,6 +91,17 @@ function addCover(file, tag) {
     const fields = tag.fields;
     if (fields.cover.length) {
         return; // skip if already assigned
+    }
+    if (addFieldFromOriginalFile(file, tag, "cover")) {
+        // ensure the cover's resolution is below a certain size to avoid bloating the file
+        const convertedCovers = [];
+        const maxSizeInt = parseInt(settings.coverMaxSize || 512);
+        const maxSize = Qt.size(maxSizeInt, maxSizeInt);
+        for (const cover of fields.cover) {
+            convertedCovers.push(utility.convertImage(cover, maxSize));
+        }
+        fields.cover = convertedCovers;
+        return; // skip fetching via meta-data search if cover could be taken over from original file
     }
     const firstAlbum = fields.album?.[0]?.content?.replace(/ \(.*\)/, '');
     const firstArtist = fields.artist?.[0]?.content;
