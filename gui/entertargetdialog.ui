@@ -189,7 +189,7 @@
    <extends>QLineEdit</extends>
    <header location="global">qtutilities/widgets/clearlineedit.h</header>
   </customwidget>
-  </customwidgets>
+ </customwidgets>
  <tabstops>
   <tabstop>levelSpinBox</tabstop>
   <tabstop>levelNameLineEdit</tabstop>
