@@ -190,6 +190,16 @@
    <header location="global">qtutilities/widgets/clearlineedit.h</header>
   </customwidget>
   </customwidgets>
+ <tabstops>
+  <tabstop>levelSpinBox</tabstop>
+  <tabstop>levelNameLineEdit</tabstop>
+  <tabstop>tracksListView</tabstop>
+  <tabstop>chaptersListView</tabstop>
+  <tabstop>editionsListView</tabstop>
+  <tabstop>attachmentsListView</tabstop>
+  <tabstop>abortPushButton</tabstop>
+  <tabstop>confirmPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

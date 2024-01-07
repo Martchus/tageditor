@@ -60,6 +60,11 @@
    <header location="global">qtutilities/widgets/clearlineedit.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>musicBrainzUrlLineEdit</tabstop>
+  <tabstop>lyricWikiUrlLineEdit</tabstop>
+  <tabstop>coverArtArchiveUrlLineEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

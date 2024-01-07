@@ -755,6 +755,19 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>includeSubdirsCheckBox</tabstop>
+  <tabstop>pasteScriptPushButton</tabstop>
+  <tabstop>toggleScriptSourcePushButton</tabstop>
+  <tabstop>javaScriptPlainTextEdit</tabstop>
+  <tabstop>currentTreeView</tabstop>
+  <tabstop>previewTreeView</tabstop>
+  <tabstop>abortClosePushButton</tabstop>
+  <tabstop>generatePreviewPushButton</tabstop>
+  <tabstop>applyChangingsPushButton</tabstop>
+  <tabstop>scriptFilePathLineEdit</tabstop>
+  <tabstop>selectScriptFilePushButton</tabstop>
+ </tabstops>
  <resources>
   <include location="../resources/icons.qrc"/>
  </resources>

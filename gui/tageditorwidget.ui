@@ -450,6 +450,7 @@ currently shown tag.</string>
   </customwidget>
  </customwidgets>
  <tabstops>
+  <tabstop>renamePushButton</tabstop>
   <tabstop>tagSelectionComboBox</tabstop>
   <tabstop>keepPreviousValuesPushButton</tabstop>
   <tabstop>tagOptionsPushButton</tabstop>

@@ -160,6 +160,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>insertTitleFromFilenameCheckBox</tabstop>
+  <tabstop>trimWhitespacesCheckBox</tabstop>
+  <tabstop>formatNamesCheckBox</tabstop>
+  <tabstop>fixUmlautsCheckBox</tabstop>
+  <tabstop>customSubstitutionGroupBox</tabstop>
+  <tabstop>regularExpressionLineEdit</tabstop>
+  <tabstop>replacementLineEdit</tabstop>
+  <tabstop>fieldsListView</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

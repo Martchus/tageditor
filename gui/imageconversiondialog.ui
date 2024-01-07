@@ -169,6 +169,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>widthSpinBox</tabstop>
+  <tabstop>heightSpinBox</tabstop>
+  <tabstop>formatComboBox</tabstop>
+  <tabstop>aspectRatioComboBox</tabstop>
+  <tabstop>abortPushButton</tabstop>
+  <tabstop>confirmPushButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

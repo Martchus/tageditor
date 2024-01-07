@@ -239,6 +239,20 @@ another position would prevent rewriting the entire file</string>
    <container>1</container>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>forceRewriteCheckBox</tabstop>
+  <tabstop>minPaddingSpinBox</tabstop>
+  <tabstop>maxPaddingSpinBox</tabstop>
+  <tabstop>preferredPaddingSpinBox</tabstop>
+  <tabstop>tagPosBeforeDataRadioButton</tabstop>
+  <tabstop>tagPosAfterDataRadioButton</tabstop>
+  <tabstop>tagPosKeepRadioButton</tabstop>
+  <tabstop>tagPosForceCheckBox</tabstop>
+  <tabstop>indexPosBeforeDataRadioButton</tabstop>
+  <tabstop>indexPosAfterDataRadioButton</tabstop>
+  <tabstop>indexPosKeepRadioButton</tabstop>
+  <tabstop>indexPosForceCheckBox</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

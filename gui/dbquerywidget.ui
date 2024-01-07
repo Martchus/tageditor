@@ -382,6 +382,19 @@
    <header location="global">qtutilities/widgets/clearspinbox.h</header>
   </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>abortPushButton</tabstop>
+  <tabstop>searchPushButton</tabstop>
+  <tabstop>applyPushButton</tabstop>
+  <tabstop>trackSpinBox</tabstop>
+  <tabstop>titleLineEdit</tabstop>
+  <tabstop>albumLineEdit</tabstop>
+  <tabstop>artistLineEdit</tabstop>
+  <tabstop>fieldsListView</tabstop>
+  <tabstop>overrideCheckBox</tabstop>
+  <tabstop>autoInsertCheckBox</tabstop>
+  <tabstop>resultsTreeView</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

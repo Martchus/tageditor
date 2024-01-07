@@ -73,6 +73,13 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>addPushButton</tabstop>
+  <tabstop>extractPushButton</tabstop>
+  <tabstop>restorePushButton</tabstop>
+  <tabstop>clearPushButton</tabstop>
+  <tabstop>treeView</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
