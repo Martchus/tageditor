@@ -101,7 +101,7 @@ on the same filesystem as the file you are editing. Forcing a rewrite can improv
 editor will not even try to see whether it could be avoided and can thus skip computations that can take a notable
 time for big Matroska files.
 
-Of course being able to avoid a rewrite would still be more optimal. Checkout the previous section how for to achieve
+Of course being able to avoid a rewrite would still be more optimal. Checkout the previous section for how to achieve
 that. To improve performance further when avoiding a rewrite, put the tag at the end (CLI option `--tag-pos back`).
 Then the tag editor will not even try to put tags at the front and can thus skip a few computations. (Avoiding a
 rewrite is still not a good idea in general.)
