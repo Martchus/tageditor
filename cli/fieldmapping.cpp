@@ -8,7 +8,7 @@ using namespace TagParser;
 namespace Cli {
 namespace FieldMapping {
 
-static constexpr auto fieldMapping = std::array<Mapping, 100>{ {
+static constexpr auto fieldMapping = MappingType{ {
     { "Title", KnownField::Title },
     { "Album", KnownField::Album },
     { "Artist", KnownField::Artist },
@@ -143,7 +143,7 @@ TagParser::KnownField knownField(const char *fieldDenotation, std::size_t fieldD
     return KnownField::Invalid;
 }
 
-const std::array<Mapping, 99> &mapping()
+const MappingType &mapping()
 {
     return fieldMapping;
 }
