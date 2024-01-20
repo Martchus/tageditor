@@ -22,6 +22,7 @@
 #include <c++utilities/conversion/conversionexception.h>
 #include <c++utilities/conversion/stringbuilder.h>
 #include <c++utilities/io/path.h>
+#include <c++utilities/tests/testutils.h>
 
 #include <qtutilities/misc/compat.h>
 
@@ -145,6 +146,46 @@ QJSValue UtilityObject::openFile(const QString &path)
     }
     auto mediaFileInfoObj = new MediaFileInfoObject(std::move(mediaFileInfo), *m_diag, m_engine, false, m_engine);
     return m_engine->newQObject(mediaFileInfoObj);
+}
+
+QJSValue UtilityObject::runProcess(const QString &path, const QJSValue &args, int timeout)
+{
+    auto res = m_engine->newObject();
+#ifdef CPP_UTILITIES_HAS_EXEC_APP
+    auto pathUtf8 = path.toUtf8();
+    auto argsUtf8 = QByteArrayList();
+    auto argsUtf8Array = std::vector<const char *>();
+    if (args.isArray()) {
+        const auto size = args.property(QStringLiteral("length")).toUInt();
+        argsUtf8.reserve(size);
+        argsUtf8Array.reserve(static_cast<std::size_t>(size) + 2);
+        for (auto i = quint32(); i != size; ++i) {
+            argsUtf8.emplace_back(args.property(i).toString().toUtf8());
+        }
+    }
+    argsUtf8Array.emplace_back(pathUtf8.data());
+    for (const auto &argUtf8 : argsUtf8) {
+        argsUtf8Array.emplace_back(argUtf8.data());
+    }
+    argsUtf8Array.emplace_back(nullptr);
+    auto output = std::string(), errors = std::string();
+    try {
+        auto exitStatus = CppUtilities::execHelperAppInSearchPath(pathUtf8.data(), argsUtf8Array.data(), output, errors, false, timeout);
+#ifndef CPP_UTILITIES_BOOST_PROCESS
+        if (WIFEXITED(exitStatus)) {
+            exitStatus = WEXITSTATUS(exitStatus);
+            res.setProperty(QStringLiteral("status"), exitStatus);
+        }
+#else
+        res.setProperty(QStringLiteral("status"), exitStatus);
+#endif
+    } catch (const std::runtime_error &e) {
+        res.setProperty(QStringLiteral("error"), QString::fromUtf8(e.what()));
+    }
+    res.setProperty(QStringLiteral("stdout"), QString::fromStdString(output));
+    res.setProperty(QStringLiteral("stderr"), QString::fromStdString(errors));
+#endif
+    return res;
 }
 
 QString UtilityObject::formatName(const QString &str) const

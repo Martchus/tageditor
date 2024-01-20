@@ -55,6 +55,7 @@ public Q_SLOTS:
     QJSValue readDirectory(const QString &path);
     QJSValue readFile(const QString &path);
     QJSValue openFile(const QString &path);
+    QJSValue runProcess(const QString &path, const QJSValue &args, int timeout = -1);
 
     QString formatName(const QString &str) const;
     QString fixUmlauts(const QString &str) const;
