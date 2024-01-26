@@ -160,7 +160,7 @@ QJSValue UtilityObject::runProcess(const QString &path, const QJSValue &args, in
         argsUtf8.reserve(size);
         argsUtf8Array.reserve(static_cast<std::size_t>(size) + 2);
         for (auto i = quint32(); i != size; ++i) {
-            argsUtf8.emplace_back(args.property(i).toString().toUtf8());
+            argsUtf8.append(args.property(i).toString().toUtf8());
         }
     }
     argsUtf8Array.emplace_back(pathUtf8.data());
