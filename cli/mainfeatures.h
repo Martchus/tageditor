@@ -50,6 +50,7 @@ struct SetTagInfoArgs {
     CppUtilities::ConfigValueArgument preserveModificationTimeArg;
     CppUtilities::ConfigValueArgument preserveMuxingAppArg;
     CppUtilities::ConfigValueArgument preserveWritingAppArg;
+    CppUtilities::ConfigValueArgument preserveTotalFieldsArg;
     CppUtilities::ConfigValueArgument jsArg;
     CppUtilities::ConfigValueArgument jsSettingsArg;
     CppUtilities::OperationArgument setTagInfoArg;

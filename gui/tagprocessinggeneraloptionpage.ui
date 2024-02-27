@@ -159,6 +159,16 @@
         </property>
        </widget>
       </item>
+      <item>
+       <widget class="QCheckBox" name="convertTotalFieldsCheckBox">
+        <property name="toolTip">
+         <string>Ensures fields usually holding values like &quot;3/15&quot; such as the track position are actually stored as such (and &lt;i&gt;not&lt;/i&gt; as two separate fields for the position and total values). This is required for the tag editor to support handling such separately stored total values at all. So far this only affects Vorbis Comments where it will convert the fields TRACKTOTAL/DISCTOTAL/PARTTOTAL to be included in the TRACKNUMBER/DISCNUMBER/PARTNUMBER fields.</string>
+        </property>
+        <property name="text">
+         <string>Convert total fields (see tooltip for details)</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

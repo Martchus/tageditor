@@ -391,7 +391,8 @@ void displayTagInfo(
     // parse specified fields
     const auto fields = parseFieldDenotations(fieldsArg, true);
 
-    MediaFileInfo fileInfo;
+    auto fileInfo = MediaFileInfo();
+    fileInfo.setFileHandlingFlags(fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::ConvertTotalFields);
     for (const char *file : filesArg.values()) {
         Diagnostics diag;
         AbortableProgressFeedback progress; // FIXME: actually use the progress object
@@ -708,6 +709,9 @@ void setTagInfo(const SetTagInfoArgs &args)
     }
     if (args.preserveWritingAppArg.isPresent()) {
         fileInfo.setFileHandlingFlags(fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::PreserveWritingApplication);
+    }
+    if (!args.preserveTotalFieldsArg.isPresent()) {
+        fileInfo.setFileHandlingFlags(fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::ConvertTotalFields);
     }
 
     // set backup path

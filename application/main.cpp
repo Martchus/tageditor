@@ -85,6 +85,9 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , preserveModificationTimeArg("preserve-modification-time", '\0', "preserves the file's modification time")
     , preserveMuxingAppArg("preserve-muxing-app", '\0', "preserves the file's muxing app meta-data value")
     , preserveWritingAppArg("preserve-writing-app", '\0', "preserves the file's writing app meta-data value")
+    , preserveTotalFieldsArg("preserve-total-fields", '\0',
+          "preserves the TRACKTOTAL/DISCTOTAL/PARTTOTAL fields in Vorbis Comments (which are otherwise automatically included into the "
+          "TRACKNUMBER/DISCNUMBER/PARTNUMBER fields)")
     , jsArg("script", 'j', "modifies tag fields via the specified JavaScript", { "path" })
     , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --script", { "key=value" })
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
@@ -142,7 +145,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
         &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
         &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
         &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg,
-        &preserveMuxingAppArg, &preserveWritingAppArg, &jsArg, &jsSettingsArg, &verboseArg, &pedanticArg, &quietArg, &outputFilesArg });
+        &preserveMuxingAppArg, &preserveWritingAppArg, &preserveTotalFieldsArg, &jsArg, &jsSettingsArg, &verboseArg, &pedanticArg, &quietArg,
+        &outputFilesArg });
 }
 
 } // namespace Cli

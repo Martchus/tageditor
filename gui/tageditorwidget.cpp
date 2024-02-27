@@ -835,6 +835,11 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         m_currentDir = fileInfo.absolutePath();
         m_fileName = fileInfo.fileName();
     }
+    // set flags that are also important when parsing
+    auto &generalSettings = Settings::values().tagPocessing;
+    auto flags = m_fileInfo.fileHandlingFlags();
+    CppUtilities::modFlagEnum(flags, MediaFileHandlingFlags::ConvertTotalFields, generalSettings.convertTotalFields);
+    m_fileInfo.setFileHandlingFlags(flags);
     // write diagnostics to m_diagReparsing if making results are available
     m_makingResultsAvailable &= sameFile;
     Diagnostics &diag = m_makingResultsAvailable ? m_diagReparsing : m_diag;
@@ -1166,12 +1171,11 @@ bool TagEditorWidget::startSaving()
     m_fileInfo.setMaxPadding(fileLayoutSettings.maxPadding);
     m_fileInfo.setPreferredPadding(fileLayoutSettings.preferredPadding);
     m_fileInfo.setBackupDirectory(settings.editor.backupDirectory);
-    if (generalSettings.preserveMuxingApp) {
-        m_fileInfo.setFileHandlingFlags(m_fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::PreserveMuxingApplication);
-    }
-    if (generalSettings.preserveWritingApp) {
-        m_fileInfo.setFileHandlingFlags(m_fileInfo.fileHandlingFlags() | MediaFileHandlingFlags::PreserveWritingApplication);
-    }
+    auto flags = m_fileInfo.fileHandlingFlags();
+    CppUtilities::modFlagEnum(flags, MediaFileHandlingFlags::PreserveMuxingApplication, generalSettings.preserveMuxingApp);
+    CppUtilities::modFlagEnum(flags, MediaFileHandlingFlags::PreserveWritingApplication, generalSettings.preserveWritingApp);
+    CppUtilities::modFlagEnum(flags, MediaFileHandlingFlags::ConvertTotalFields, generalSettings.convertTotalFields);
+    m_fileInfo.setFileHandlingFlags(flags);
     const auto startThread = [this, preserveModificationTime = settings.tagPocessing.preserveModificationTime] {
         // define functions to show the saving progress and to actually applying the changes
         auto showPercentage([this](AbortableProgressFeedback &progress) {

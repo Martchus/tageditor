@@ -82,6 +82,7 @@ struct TagProcessing {
     bool preserveModificationTime = false;
     bool preserveMuxingApp = false;
     bool preserveWritingApp = false;
+    bool convertTotalFields = true;
     TagParser::TagCreationSettings creationSettings;
     FileLayout fileLayout;
 };

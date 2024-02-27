@@ -131,6 +131,7 @@ void restore()
         = settings.value(QStringLiteral("preservemodificationtime"), v.tagPocessing.preserveModificationTime).toBool();
     v.tagPocessing.preserveMuxingApp = settings.value(QStringLiteral("preservemuxingapp"), v.tagPocessing.preserveMuxingApp).toBool();
     v.tagPocessing.preserveWritingApp = settings.value(QStringLiteral("preservewritingapp"), v.tagPocessing.preserveWritingApp).toBool();
+    v.tagPocessing.convertTotalFields = settings.value(QStringLiteral("converttotalfields"), v.tagPocessing.convertTotalFields).toBool();
     settings.beginGroup(QStringLiteral("id3v1"));
     switch (settings.value(QStringLiteral("usage"), 0).toInt()) {
     case 1:
@@ -270,6 +271,7 @@ void save()
     settings.setValue(QStringLiteral("preservemodificationtime"), v.tagPocessing.preserveModificationTime);
     settings.setValue(QStringLiteral("preservemuxingapp"), v.tagPocessing.preserveMuxingApp);
     settings.setValue(QStringLiteral("preservewritingapp"), v.tagPocessing.preserveWritingApp);
+    settings.setValue(QStringLiteral("converttotalfields"), v.tagPocessing.convertTotalFields);
     settings.beginGroup(QStringLiteral("id3v1"));
     settings.setValue(QStringLiteral("usage"), static_cast<int>(v.tagPocessing.creationSettings.id3v1usage));
     settings.endGroup();
