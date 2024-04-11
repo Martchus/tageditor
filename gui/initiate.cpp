@@ -7,12 +7,13 @@
 #include "resources/config.h"
 #include "resources/qtconfig.h"
 
+#include <QApplication> // ensure QGuiApplication is defined before resources.h for desktop file name
+
 #include <qtutilities/resources/importplugin.h>
 #include <qtutilities/resources/qtconfigarguments.h>
 #include <qtutilities/resources/resources.h>
 #include <qtutilities/settingsdialog/qtsettings.h>
 
-#include <QApplication>
 #include <QMessageBox>
 
 ENABLE_QT_RESOURCES_OF_STATIC_DEPENDENCIES
