@@ -240,6 +240,7 @@ bool MainWindow::event(QEvent *event)
     auto &settings = Settings::values();
     switch (event->type()) {
     case QEvent::PaletteChange:
+        settings.qt.reevaluatePaletteAndDefaultIconTheme();
         updateStyleSheet();
         break;
     case QEvent::Close:
