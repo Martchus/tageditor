@@ -552,7 +552,7 @@ void TagObject::applyChanges()
     auto context = !m_tag.target().isEmpty() || m_tag.type() == TagParser::TagType::MatroskaTag
         ? CppUtilities::argsToString(m_tag.typeName(), " targeting ", m_tag.targetString())
         : std::string(m_tag.typeName());
-    m_diag.emplace_back(TagParser::DiagLevel::Debug, "applying changes", std::move(context));
+    m_diag.emplace_back(TagParser::DiagLevel::Information, "applying changes", std::move(context));
     if (m_fields.isUndefined()) {
         return;
     }
@@ -593,7 +593,7 @@ void TagObject::applyChanges()
                 continue;
             }
             auto &value = values.emplace_back(tagValueObj->toTagValue(encoding));
-            m_diag.emplace_back(TagParser::DiagLevel::Debug,
+            m_diag.emplace_back(TagParser::DiagLevel::Information,
                 value.isNull()
                     ? CppUtilities::argsToString(" - delete ", propertyName.toStdString(), '[', i, ']')
                     : (tagValueObj->initialContent().isUndefined()
