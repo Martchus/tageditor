@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
     ConfigValueArgument timeSpanFormatArg("time-span-format", '\0', "specifies the output format for time spans", { "measures/colons/seconds" });
     timeSpanFormatArg.setPreDefinedCompletionValues("measures colons seconds");
     // verbose option
-    ConfigValueArgument verboseArg("verbose", 'v', "be verbose, print debug and info messages");
+    ConfigValueArgument verboseArg("verbose", 'v', "be verbose, print info messages (use \"--pedantic debug\" to print debug messages as well)");
     // pedantic options
     ConfigValueArgument pedanticArg("pedantic", '\0',
         "return non-zero exit code if a non-fatal problem has been encountered that is at least as severe as the specified severity (or critical if "
