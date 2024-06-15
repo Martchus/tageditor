@@ -2325,7 +2325,7 @@ another position would prevent rewriting the entire file</source>
     </message>
     <message>
         <location filename="../gui/picturepreviewselection.ui" line="149"/>
-        <location filename="../gui/picturepreviewselection.cpp" line="796"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="799"/>
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2350,288 +2350,288 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="178"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
         <source>Other</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="178"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
         <source>32x32 File icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="178"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
         <source>Other file icon</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="178"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
         <source>Cover (front)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
         <source>Cover (back)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
         <source>Leaflet page</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
         <source>Media (e. g. label side of CD)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="179"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
         <source>Lead artist/performer/soloist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
         <source>Artist/performer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
         <source>Conductor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
         <source>Band/Orchestra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
         <source>Composer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
         <source>Lyricist/text writer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="180"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
         <source>Recording Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="182"/>
         <source>During recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="182"/>
         <source>During performance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="182"/>
         <source>Movie/video screen capture</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="182"/>
         <source>A bright coloured fish</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="181"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="182"/>
         <source>Illustration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="182"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="183"/>
         <source>Band/artist logotype</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="182"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="183"/>
         <source>Publisher/Studio logotype</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="277"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="278"/>
         <source>The attached image format is not supported.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="405"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="408"/>
         <source>Select a picture to add as cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="428"/>
-        <location filename="../gui/picturepreviewselection.cpp" line="578"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="431"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="581"/>
         <source>Enter/confirm MIME type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="428"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="431"/>
         <source>Confirm or enter the MIME type of the selected file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="451"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="454"/>
         <source>An IO error occurred when parsing the specified cover file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="473"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="476"/>
         <source>Unable to load image from clipboard.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="854"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="857"/>
         <source>Resize/convert assigned image</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="301"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="302"/>
         <source>Unable to save image from clipboard.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="309"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="310"/>
         <source>Enter MIME type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="309"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="310"/>
         <source>Enter the MIME type for the pasted image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="270"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="271"/>
         <source>The attached image can&apos;t be found. It is supposed to be stored as external file &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="554"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="557"/>
         <source>Cover - %1 - %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="435"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="438"/>
         <source>The selected file is very large (for a cover). Do you want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="449"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="452"/>
         <source>Unable to parse specified cover file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="494"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="497"/>
         <source>There is no cover to remove.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="510"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="513"/>
         <source>There is no image attached to be extracted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="514"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="517"/>
         <source>Where do you want to save the cover?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="525"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="528"/>
         <source>The cover has extracted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="527"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="530"/>
         <source>Unable to write to output file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="520"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="523"/>
         <source>Unable to open output file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="805"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="808"/>
         <source>The attached image can&apos;t be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="555"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="558"/>
         <source>Cover - %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="540"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="543"/>
         <source>There is no image attached.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="579"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="582"/>
         <source>Confirm or enter the MIME type of the selected file. This merely changes the &lt;i&gt;assumed&lt;/i&gt; format. &lt;i&gt;No&lt;/i&gt; image format conversion done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="608"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="611"/>
         <source>JPEG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="608"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="611"/>
         <source>PNG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="609"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="612"/>
         <source>Ignore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="609"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="612"/>
         <source>Keep</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="609"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="612"/>
         <source>Keep by expanding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="624"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="627"/>
         <source>Unable to scale image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="794"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="797"/>
         <source>No image (of the selected type) attached.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="816"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="819"/>
         <source>Unable to display attached image.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="825"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="828"/>
         <source>Change</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="840"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="843"/>
         <source>Paste from clipboard as JPEG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="844"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="847"/>
         <source>Paste from clipboard as PNG</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="851"/>
+        <location filename="../gui/picturepreviewselection.cpp" line="854"/>
         <source>Change MIME-type</source>
         <translation type="unfinished"></translation>
     </message>
