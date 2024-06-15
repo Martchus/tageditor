@@ -597,13 +597,13 @@ void TagObject::applyChanges()
                 value.isNull()
                     ? CppUtilities::argsToString(" - delete ", propertyName.toStdString(), '[', i, ']')
                     : (tagValueObj->initialContent().isUndefined()
-                            ? CppUtilities::argsToString(
-                                " - set ", propertyName.toStdString(), '[', i, "] to '", printJsValue(tagValueObj->content()), '\'')
-                            : ((tagValueObj->content().equals(tagValueObj->initialContent()))
-                                    ? CppUtilities::argsToString(" - set ", propertyName.toStdString(), '[', i, "] to '",
-                                        printJsValue(tagValueObj->content()), "\' (no change)")
-                                    : CppUtilities::argsToString(" - change ", propertyName.toStdString(), '[', i, "] from '",
-                                        printJsValue(tagValueObj->initialContent()), "' to '", printJsValue(tagValueObj->content()), '\''))),
+                              ? CppUtilities::argsToString(
+                                    " - set ", propertyName.toStdString(), '[', i, "] to '", printJsValue(tagValueObj->content()), '\'')
+                              : ((tagValueObj->content().equals(tagValueObj->initialContent()))
+                                        ? CppUtilities::argsToString(" - set ", propertyName.toStdString(), '[', i, "] to '",
+                                              printJsValue(tagValueObj->content()), "\' (no change)")
+                                        : CppUtilities::argsToString(" - change ", propertyName.toStdString(), '[', i, "] from '",
+                                              printJsValue(tagValueObj->initialContent()), "' to '", printJsValue(tagValueObj->content()), '\''))),
                 std::string());
         }
         // assign cover values of ID3v2/VorbisComment tags as front-cover with no description
@@ -613,6 +613,7 @@ void TagObject::applyChanges()
                 setId3v2CoverValues(static_cast<TagParser::Id3v2Tag *>(&m_tag), std::move(values));
                 continue;
             case TagParser::TagType::VorbisComment:
+            case TagParser::TagType::OggVorbisComment:
                 setId3v2CoverValues(static_cast<TagParser::VorbisComment *>(&m_tag), std::move(values));
                 continue;
             default:;

@@ -938,7 +938,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                     value.setDescription(description.value(), TagTextEncoding::Utf8);
                                 }
                                 if (parts.size() > 1u + firstPartIsDriveLetter && fieldType == KnownField::Cover
-                                    && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment)) {
+                                    && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment || tagType == TagType::OggVorbisComment)) {
                                     const auto typeSpec = parts[1 + firstPartIsDriveLetter];
                                     const auto coverType = id3v2CoverType(typeSpec);
                                     if (coverType == invalidCoverType) {
@@ -990,6 +990,7 @@ void setTagInfo(const SetTagInfoArgs &args)
                                 setId3v2CoverValues(static_cast<Id3v2Tag *>(tag), std::move(convertedId3v2CoverValues));
                                 break;
                             case TagType::VorbisComment:
+                            case TagType::OggVorbisComment:
                                 setId3v2CoverValues(static_cast<VorbisComment *>(tag), std::move(convertedId3v2CoverValues));
                                 break;
                             default:;

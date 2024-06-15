@@ -171,7 +171,8 @@ bool PicturePreviewSelection::setup(PreviousValueHandling previousValueHandling)
         setEnabled(false);
         return false;
     }
-    if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
+    if (const auto tagType = m_tag->type();
+        m_field == KnownField::Cover && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment || tagType == TagType::OggVorbisComment)) {
         m_ui->switchTypeComboBox->setHidden(false);
         m_ui->switchTypeLabel->setHidden(false);
         if (!m_ui->switchTypeComboBox->count()) {
@@ -364,12 +365,14 @@ void PicturePreviewSelection::apply()
     if (!m_tag) {
         return;
     }
-    if (m_field == KnownField::Cover && (m_tag->type() == TagType::Id3v2Tag || m_tag->type() == TagType::VorbisComment)) {
+    if (const auto tagType = m_tag->type();
+        m_field == KnownField::Cover && (tagType == TagType::Id3v2Tag || tagType == TagType::VorbisComment || tagType == TagType::OggVorbisComment)) {
         switch (m_tag->type()) {
         case TagType::Id3v2Tag:
             pushId3v2CoverValues(static_cast<Id3v2Tag *>(m_tag), m_field, m_values);
             break;
         case TagType::VorbisComment:
+        case TagType::OggVorbisComment:
             pushId3v2CoverValues(static_cast<VorbisComment *>(m_tag), m_field, m_values);
             break;
         default:;
