@@ -3261,7 +3261,7 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1275"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1274"/>
         <source>Saving has been canceled and there is/are %1 warning(s) </source>
         <translation>
             <numerusform>Saving has been canceled and there is %1 warning </numerusform>
@@ -3269,7 +3269,7 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1278"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1277"/>
         <source>Saving has been canceled and there is/are %1 warning(s).</source>
         <translation>
             <numerusform>Saving has been canceled and there is %1 warning.</numerusform>
@@ -3277,7 +3277,7 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1286"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1285"/>
         <source>The tags have been saved, but there is/are %1 warning(s) </source>
         <translation>
             <numerusform>The tags have been saved, but there is %1 warning</numerusform>
@@ -3285,8 +3285,8 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1276"/>
-        <location filename="../gui/tageditorwidget.cpp" line="1287"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1275"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1286"/>
         <source>and %1 error(s).</source>
         <translation>
             <numerusform>and %1 error.</numerusform>
@@ -3295,7 +3295,7 @@ Error in line %1: %3</source>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="875"/>
-        <location filename="../gui/tageditorwidget.cpp" line="1216"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1215"/>
         <source>unknown error</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3320,12 +3320,12 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1280"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1279"/>
         <source>Saving tags has been canceled.</source>
         <translation type="unfinished"></translation>
     </message>
     <message numerus="yes">
-        <location filename="../gui/tageditorwidget.cpp" line="1289"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1288"/>
         <source>The tags have been saved, but there is/are %1 warning(s).</source>
         <translation>
             <numerusform>The tags have been saved, but there is %1 warning.</numerusform>
@@ -3333,133 +3333,133 @@ Error in line %1: %3</source>
         </translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1294"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1293"/>
         <source>The tags have been saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1313"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1312"/>
         <source>The tags could not be saved. Checkout the info box for details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1319"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1318"/>
         <source>Saving file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1321"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1320"/>
         <source>Tried to save file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1340"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1339"/>
         <source>Automatic tag management</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1341"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1340"/>
         <source>The container format of the selected file is not supported. The file can be treated as MP3 file (an ID3 tag according to the settings will be created). This might break the file. Do you want to continue?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1344"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1343"/>
         <source>Treat file as MP3 file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1356"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1364"/>
         <source>The currently opened file changed on the disk.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1369"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1377"/>
         <source>Unable to close the file because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1381"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1389"/>
         <source>Closing file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1382"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1390"/>
         <source>Unable to close file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1383"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1391"/>
         <source>Tried to close file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1390"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1398"/>
         <source>The file has been closed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1397"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1405"/>
         <source>Unable to rename the file because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1403"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1411"/>
         <source>Renaming file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1404"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1412"/>
         <source>New file name:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1439"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1447"/>
         <source>Unable to rename file: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1440"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1448"/>
         <source>Tried to rename file: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1447"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1455"/>
         <source>The file has been renamed.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1454"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1462"/>
         <source>Unable to save file information because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1458"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1466"/>
         <source>No file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1463"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1471"/>
         <source>No file information available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1472"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1480"/>
         <source>Unable to open file &quot;%1&quot;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1480"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1488"/>
         <source>Unable to write to file &quot;%1&quot;.
 %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1495"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1503"/>
         <source>Save file information - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1497"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1505"/>
         <source>Unable to open file.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3475,52 +3475,52 @@ Error in line %1: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1597"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1605"/>
         <source>A tag (with the selected target) already exists.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1593"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1601"/>
         <source>The tag can not be created.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1624"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1632"/>
         <source>Unable to remove the tag because no file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1620"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1628"/>
         <source>Unable to remove the tag because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1314"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1313"/>
         <source>The tags could not be saved because an IO error occurred: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1583"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1591"/>
         <source>Unable to add a tag because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1587"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1595"/>
         <source>Unable to add a tag because no file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1688"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1696"/>
         <source>Unable to change the target because no file is opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1692"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1700"/>
         <source>Can not change the target of the selected tag because the tag does not support targets.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tageditorwidget.cpp" line="1684"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1692"/>
         <source>Unable to change the target because the current process hasn&apos;t been finished yet.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3600,7 +3600,7 @@ currently shown tag.</source>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="323"/>
-        <location filename="../gui/tageditorwidget.cpp" line="1345"/>
+        <location filename="../gui/tageditorwidget.cpp" line="1344"/>
         <source>Abort</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3689,1002 +3689,1002 @@ currently shown tag.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="241"/>
+        <location filename="../gui/tagfieldedit.cpp" line="243"/>
         <source>Keep previous value only if not present in the next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="241"/>
+        <location filename="../gui/tagfieldedit.cpp" line="243"/>
         <source>Keep previous value even if present in next file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="333"/>
-        <location filename="../gui/tagfieldedit.cpp" line="370"/>
-        <location filename="../gui/tagfieldedit.cpp" line="414"/>
-        <location filename="../gui/tagfieldedit.cpp" line="436"/>
-        <location filename="../gui/tagfieldedit.cpp" line="451"/>
-        <location filename="../gui/tagfieldedit.cpp" line="497"/>
+        <location filename="../gui/tagfieldedit.cpp" line="335"/>
+        <location filename="../gui/tagfieldedit.cpp" line="372"/>
+        <location filename="../gui/tagfieldedit.cpp" line="416"/>
+        <location filename="../gui/tagfieldedit.cpp" line="438"/>
+        <location filename="../gui/tagfieldedit.cpp" line="453"/>
+        <location filename="../gui/tagfieldedit.cpp" line="499"/>
         <source>empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="372"/>
+        <location filename="../gui/tagfieldedit.cpp" line="374"/>
         <source>Blues</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="372"/>
+        <location filename="../gui/tagfieldedit.cpp" line="374"/>
         <source>A capella</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="372"/>
+        <location filename="../gui/tagfieldedit.cpp" line="374"/>
         <source>Abstract</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="372"/>
+        <location filename="../gui/tagfieldedit.cpp" line="374"/>
         <source>Acid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="372"/>
+        <location filename="../gui/tagfieldedit.cpp" line="374"/>
         <source>Acid Jazz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="372"/>
+        <location filename="../gui/tagfieldedit.cpp" line="374"/>
         <source>Acid Punk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Acoustic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Alternative</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Alternative Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Ambient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Anime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Art Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Audio Theatre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="373"/>
+        <location filename="../gui/tagfieldedit.cpp" line="375"/>
         <source>Audiobook</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Avantgarde</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Ballad</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Baroque</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Bass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Beat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Bebop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Bhangra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Big Band</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="374"/>
+        <location filename="../gui/tagfieldedit.cpp" line="376"/>
         <source>Big Beat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>Black Metal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>Bluegrass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>Booty Bass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>Breakbeat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>BritPop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>Cabaret</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>Celtic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="375"/>
+        <location filename="../gui/tagfieldedit.cpp" line="377"/>
         <source>Chamber Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="376"/>
+        <location filename="../gui/tagfieldedit.cpp" line="378"/>
         <source>Chanson</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="376"/>
+        <location filename="../gui/tagfieldedit.cpp" line="378"/>
         <source>Chillout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="376"/>
+        <location filename="../gui/tagfieldedit.cpp" line="378"/>
         <source>Chorus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="376"/>
+        <location filename="../gui/tagfieldedit.cpp" line="378"/>
         <source>Christian Gangsta Rap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="376"/>
+        <location filename="../gui/tagfieldedit.cpp" line="378"/>
         <source>Christian Rap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="376"/>
+        <location filename="../gui/tagfieldedit.cpp" line="378"/>
         <source>Christian Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="376"/>
+        <location filename="../gui/tagfieldedit.cpp" line="378"/>
         <source>Classic Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Classical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Club</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Club-House</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Comedy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Contemporary Christian</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Country</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Crossover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="377"/>
+        <location filename="../gui/tagfieldedit.cpp" line="379"/>
         <source>Cult</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Dance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Dance Hall</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Darkwave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Death Metal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Disco</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Downtempo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Dream</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="378"/>
+        <location filename="../gui/tagfieldedit.cpp" line="380"/>
         <source>Drum &amp; Bass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Drum Solo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Dub</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Dubstep</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Duet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Easy Listening</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>EBM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Eclectic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Electro</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="379"/>
+        <location filename="../gui/tagfieldedit.cpp" line="381"/>
         <source>Electroclash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Electronic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Emo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Ethnic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Euro-House</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Euro-Techno</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Eurodance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Experimental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="380"/>
+        <location filename="../gui/tagfieldedit.cpp" line="382"/>
         <source>Fast Fusion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Folk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Folk-Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Folklore</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Freestyle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Funk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Fusion</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>G-Funk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Game</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Gangsta</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="381"/>
+        <location filename="../gui/tagfieldedit.cpp" line="383"/>
         <source>Garage</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Garage Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Global</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Goa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Gospel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Gothic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Gothic Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Grunge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="382"/>
+        <location filename="../gui/tagfieldedit.cpp" line="384"/>
         <source>Hard Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>Hardcore Techno</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>Heavy Metal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>Hip-Hop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>House</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>Humour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>IDM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>Illbient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>Indie</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="383"/>
+        <location filename="../gui/tagfieldedit.cpp" line="385"/>
         <source>Indie Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="384"/>
+        <location filename="../gui/tagfieldedit.cpp" line="386"/>
         <source>Industrial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="384"/>
+        <location filename="../gui/tagfieldedit.cpp" line="386"/>
         <source>Industro-Goth</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="384"/>
+        <location filename="../gui/tagfieldedit.cpp" line="386"/>
         <source>Instrumental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="384"/>
+        <location filename="../gui/tagfieldedit.cpp" line="386"/>
         <source>Instrumental Pop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="384"/>
+        <location filename="../gui/tagfieldedit.cpp" line="386"/>
         <source>Instrumental Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="384"/>
+        <location filename="../gui/tagfieldedit.cpp" line="386"/>
         <source>Jam Band</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="384"/>
+        <location filename="../gui/tagfieldedit.cpp" line="386"/>
         <source>Jazz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Jazz &amp; Funk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Jpop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Jungle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Krautrock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Latin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Leftfield</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Lo-Fi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Lounge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="385"/>
+        <location filename="../gui/tagfieldedit.cpp" line="387"/>
         <source>Math Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>Meditative</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>Merengue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>Metal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>Musical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>National Folk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>Native US</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>Negerpunk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="386"/>
+        <location filename="../gui/tagfieldedit.cpp" line="388"/>
         <source>Neoclassical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>Neue Deutsche Welle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>New Age</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>New Romantic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>New Wave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>Noise</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>Nu-Breakz</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>Oldies</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="387"/>
+        <location filename="../gui/tagfieldedit.cpp" line="389"/>
         <source>Opera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Podcast</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Polka</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Polsk Punk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Pop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Pop-Folk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Pop/Funk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Porn Groove</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Post-Punk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="388"/>
+        <location filename="../gui/tagfieldedit.cpp" line="390"/>
         <source>Post-Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="389"/>
+        <location filename="../gui/tagfieldedit.cpp" line="391"/>
         <source>Power Ballad</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="389"/>
+        <location filename="../gui/tagfieldedit.cpp" line="391"/>
         <source>Pranks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="389"/>
+        <location filename="../gui/tagfieldedit.cpp" line="391"/>
         <source>Primus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="389"/>
+        <location filename="../gui/tagfieldedit.cpp" line="391"/>
         <source>Progressive Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="389"/>
+        <location filename="../gui/tagfieldedit.cpp" line="391"/>
         <source>Psychedelic</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="389"/>
+        <location filename="../gui/tagfieldedit.cpp" line="391"/>
         <source>Psychedelic Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="389"/>
+        <location filename="../gui/tagfieldedit.cpp" line="391"/>
         <source>Psytrance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Punk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Punk Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Rap</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Rave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Reggae</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Retro</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Revival</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Rhythmic Soul</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="390"/>
+        <location filename="../gui/tagfieldedit.cpp" line="392"/>
         <source>Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Rock &amp; Roll</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Salsa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Samba</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Satire</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Shoegaze</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Showtunes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Ska</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Slow Jam</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="391"/>
+        <location filename="../gui/tagfieldedit.cpp" line="393"/>
         <source>Slow Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Sonata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Soul</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Sound Clip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Soundtrack</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Southern Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Space</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Space Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Speech</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="392"/>
+        <location filename="../gui/tagfieldedit.cpp" line="394"/>
         <source>Swing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Symphonic Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Symphony</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Synthpop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Tango</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Techno</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Techno-Industrial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Terror</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="393"/>
+        <location filename="../gui/tagfieldedit.cpp" line="395"/>
         <source>Thrash Metal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>Top 40</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>Trailer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>Trance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>Tribal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>Trip-Hop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>Trop Rock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>Vocal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="394"/>
+        <location filename="../gui/tagfieldedit.cpp" line="396"/>
         <source>World Music</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="446"/>
+        <location filename="../gui/tagfieldedit.cpp" line="448"/>
         <source>of</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="492"/>
+        <location filename="../gui/tagfieldedit.cpp" line="494"/>
         <source>Description</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="512"/>
+        <location filename="../gui/tagfieldedit.cpp" line="514"/>
         <source>no widget for editing this field type available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="713"/>
+        <location filename="../gui/tagfieldedit.cpp" line="712"/>
         <source>The value of this field could not be read from the file because it couldn&apos;t be converted properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="719"/>
+        <location filename="../gui/tagfieldedit.cpp" line="718"/>
         <source>The field can not be applied when saving the file and will be lost.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="741"/>
+        <location filename="../gui/tagfieldedit.cpp" line="749"/>
         <source>Restore value as it is currently present in the file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagfieldedit.cpp" line="931"/>
+        <location filename="../gui/tagfieldedit.cpp" line="939"/>
         <source>restore to value from %1 (%2)</source>
         <translation type="unfinished"></translation>
     </message>
