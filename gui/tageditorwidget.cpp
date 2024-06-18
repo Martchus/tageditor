@@ -820,7 +820,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
     }
 
     // clear previous results and status
-    m_tags.clear();
+    invalidateTags();
     m_fileInfo.clearParsingResults();
     if (!sameFile) {
         // close last file if possibly open
@@ -935,7 +935,7 @@ void TagEditorWidget::showFile(char result, const QString &ioError)
     m_tags.clear();
     m_fileInfo.tags(m_tags);
     // show notification if no existing tag(s) could be found
-    if (!m_tags.size()) {
+    if (m_tags.empty()) {
         m_ui->parsingNotificationWidget->appendLine(tr("There is no (supported) tag assigned."));
     }
 
@@ -1150,8 +1150,7 @@ bool TagEditorWidget::startSaving()
     }
 
     // tags might get invalidated
-    m_tags.clear();
-    foreachTagEdit([](TagEdit *edit) { edit->setTag(nullptr, false); });
+    invalidateTags();
     // show abort button
     m_ui->abortButton->setHidden(false);
     m_ui->abortButton->setEnabled(true);
@@ -1344,6 +1343,15 @@ bool TagEditorWidget::confirmCreationOfId3TagForUnsupportedFile()
     msgBox.addButton(tr("Treat file as MP3 file"), QMessageBox::AcceptRole);
     msgBox.addButton(tr("Abort"), QMessageBox::RejectRole);
     return msgBox.exec() == 0;
+}
+
+/*!
+ * \brief Clears all tags and ensures none of the edits still reference it.
+ */
+void TagEditorWidget::invalidateTags()
+{
+    foreachTagEdit([](TagEdit *edit) { edit->setTag(nullptr, false); });
+    m_tags.clear();
 }
 
 /*!

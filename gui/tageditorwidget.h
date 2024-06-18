@@ -131,6 +131,7 @@ private:
     void updateKeepPreviousValuesButton();
     void insertTitleFromFilename();
     bool confirmCreationOfId3TagForUnsupportedFile();
+    void invalidateTags();
 
     // UI
     std::unique_ptr<Ui::TagEditorWidget> m_ui;

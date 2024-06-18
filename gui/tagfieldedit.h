@@ -87,6 +87,7 @@ private:
     bool updateValue(TagParser::Tag *tag, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear);
     bool updateValue(
         const TagParser::TagValue &value, PreviousValueHandling previousValueHandling = PreviousValueHandling::Clear, bool resetRestoreButton = true);
+    bool updatePictureSelection(PreviousValueHandling previousValueHandling);
     QAction *setupRestoreAction();
     QAction *setupLockAction();
     void showRestoreAction();

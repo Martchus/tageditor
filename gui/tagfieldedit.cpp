@@ -115,6 +115,8 @@ void TagFieldEdit::setTagField(
             setupUi();
         }
         updateValue(previousValueHandling);
+    } else {
+        updatePictureSelection(previousValueHandling);
     }
 }
 
@@ -541,10 +543,7 @@ bool TagFieldEdit::updateValue(PreviousValueHandling previousValueHandling)
 
     // set an empty value
     bool updated = updateValue(TagValue(), previousValueHandling);
-    if (m_pictureSelection) {
-        // pass the last tag if present so the picture selection can operate on that tag instance and won't be disabled
-        updated = m_pictureSelection->setTagField(m_tags->isEmpty() ? nullptr : m_tags->back(), m_field, previousValueHandling) || updated;
-    }
+    updated = updatePictureSelection(previousValueHandling) || updated;
     return updated;
 }
 
@@ -726,6 +725,15 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         }
     }
     return updated;
+}
+
+/*!
+ * \brief Internally called to update the picture selection.
+ */
+bool TagFieldEdit::updatePictureSelection(PreviousValueHandling previousValueHandling)
+{
+    // pass the last tag if present so the picture selection can operate on that tag instance and won't be disabled
+    return m_pictureSelection ? m_pictureSelection->setTagField(m_tags->isEmpty() ? nullptr : m_tags->back(), m_field, previousValueHandling) : false;
 }
 
 /*!
