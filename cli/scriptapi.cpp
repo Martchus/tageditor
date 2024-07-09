@@ -35,6 +35,7 @@
 #include <QJSEngine>
 #include <QJSValueIterator>
 #include <QRegularExpression>
+#include <QTimer>
 
 #include <filesystem>
 #include <iostream>
@@ -93,8 +94,11 @@ void UtilityObject::diag(const QString &level, const QString &message, const QSt
         context.isEmpty() ? (m_context ? *m_context : s_defaultContext) : context.toStdString());
 }
 
-int UtilityObject::exec()
+int UtilityObject::exec(int timeout)
 {
+    if (timeout > 0) {
+        QTimer::singleShot(timeout, this, [this] { exit(EXIT_FAILURE); });
+    }
     return QCoreApplication::exec();
 }
 

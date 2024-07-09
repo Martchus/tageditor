@@ -18,9 +18,11 @@ export function queryCover(searchCriteria) {
     });
 }
 
-function waitFor(signal) {
+function waitFor(signal, timeout = 10000) {
     signal.connect(() => { utility.exit(); });
-    utility.exec();
+    if (utility.exec(timeout) !== 0) {
+        utility.log(" - Query timed out (timeout: " + (timeout / 1000) + " seconds)");
+    }
 }
 
 function queryLyricsFromProvider(provider, searchCriteria) {
