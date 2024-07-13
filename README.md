@@ -266,6 +266,9 @@ Here are some Bash examples which illustrate getting and setting tag information
   ```
 
 ##### Modifying tags and track attributes
+
+<a name="writing-tags"></a>
+
 * Sets title, album, artist, cover and track number of all \*.m4a files in the specified directory:  
   ```
   tageditor set title="Title of "{1st,2nd,3rd}" file" title="Title of "{4..16}"th file" \
