@@ -81,9 +81,9 @@ Taking advantage of padding is currently not supported when dealing with Ogg str
 dealing with raw FLAC streams).
 
 ### Avoid rewriting files
-As explained in the "Backup/temporary files" section, this is not a good idea as the temporary file that is created
-when rewriting the entire file also serves as backup. However, if you nevertheless want to avoid rewriting the file as
-much as possible, set the following in the GUI's "File layout" settings:
+As explained in the "[Backup/temporary files](#backuptemporary-files)" section, this is not a good idea as the
+temporary file that is created when rewriting the entire file also serves as backup. However, if you nevertheless
+want to avoid rewriting the file as much as possible, set the following in the GUI's "File layout" settings:
 
 * "Force rewrite…" option: unchecked
 * "Use preferred position…" options: unchecked
@@ -96,10 +96,10 @@ arguments mentioned in previous sections).
 ### Improve performance
 Editing big files (especially Matroska files) can take some time. To improve the performance, put the index at the
 end of the file (CLI option `--index-pos back`) because then the size of the index will never have to be recalculated.
-Also follow the advice from the "Backup/temporary files" section to force rewriting and to put the temporary directory
-on the same filesystem as the file you are editing. Forcing a rewrite can improve the performance because then the tag
-editor will not even try to see whether it could be avoided and can thus skip computations that can take a notable
-time for big Matroska files.
+Also follow the advice from the "[Backup/temporary files](#backuptemporary-files)" section to force rewriting and to
+put the temporary directory on the same filesystem as the file you are editing. Forcing a rewrite can improve the
+performance because then the tag editor will not even try to see whether it could be avoided and can thus skip
+computations that can take a notable time for big Matroska files.
 
 Of course being able to avoid a rewrite would still be more optimal. Checkout the previous section for how to achieve
 that. To improve performance further when avoiding a rewrite, put the tag at the end (CLI option `--tag-pos back`).
@@ -108,7 +108,7 @@ rewrite is still not a good idea in general.)
 
 ## Download
 ### Source
-See the release section on GitHub.
+See the [release section on GitHub](https://github.com/Martchus/tageditor/releases).
 
 ### Packages and binaries
 * Arch Linux
@@ -196,7 +196,7 @@ Checkout the settings dialog. You can
 - set whether unknown/unsupported tags should be ignored/kept or removed.
 - set whether ID3v1 and ID3v2 tags should be edited together or separately.
 - set the directory used to store temporary files.
-- set the desired file layout options (see section "File layout options").
+- set the desired file layout options (see section "[File layout options](#file-layout-options)").
 - enable auto-correction features like trimming whitespaces.
 
 Settings of the GUI do not affect the CLI.
@@ -235,7 +235,7 @@ Checkout the available operations and options with `--help`. For a list of all a
 attribute names and modifier, use the CLI option `--print-field-names`.
 
 Note that Windows users must use `tageditor-cli.exe` instead of `tageditor.exe` or use Mintty as terminal.
-Checkout the "Windows-specific issues" section for details.
+Checkout the "[Windows-specific issues](#windows-specific-issues)" section for details.
 
 #### Examples
 Here are some Bash examples which illustrate getting and setting tag information:
@@ -539,8 +539,9 @@ The following caveats can be worked around by using the CLI-wrapper instead of t
 file that ends with `-cli.exe`. Alternatively you may use Mintty (e.g. via MSYS2) which is also not affected by
 those issues:
 
-* The console's codepage is set to UTF-8 to ensure point *3.* of the "Text encoding" section is handled correctly.
-  This may not work well under older Windows versions. Use `set ENABLE_CP_UTF8=0` if this is not wanted.
+* The console's codepage is set to UTF-8 to ensure point *3.* of the "[Text encoding](#text-encoding--unicode-support)"
+  section is handled correctly. This may not work well under older Windows versions. Use `set ENABLE_CP_UTF8=0` if this
+  is not wanted.
 * The main application is built as a GUI application. To nevertheless enable console output it is attaching to the
   parent processes' console. However, this prevents redirections to work in most cases. If redirections are needed,
   use `set ENABLE_CONSOLE=0` to disable that behavior.
