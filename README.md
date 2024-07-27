@@ -548,9 +548,8 @@ those issues:
 
 ---
 
-The dark mode introduced with Windows 10 is not affecting traditional desktop applications but
-[can be enabled](https://github.com/Martchus/syncthingtray#tweak-gui-settings-for-dark-mode-under-windows)
-by selecting the Fusion style.
+Dark mode should work out of the box under Windows 11 and can otherwise be enabled by
+[selecting the Fusion style](https://github.com/Martchus/syncthingtray#tweak-gui-settings-for-dark-mode-under-windows).
 
 ---
 
