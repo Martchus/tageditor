@@ -152,6 +152,7 @@ See the [release section on GitHub](https://github.com/Martchus/tageditor/releas
           issues about it.
         * the Qt 6 based version is stable and preferable but only supports Windows 10 version 1809 and newer
         * the Qt 5 based version should still work on older versions down to Windows 7 although this is not regularly checked
+        * The Universal CRT needs to be [installed](https://learn.microsoft.com/en-us/cpp/windows/universal-crt-deployment#central-deployment).
         * Binaries are signed with the GPG key
           [`B9E36A7275FC61B464B67907E06FE8F53CDC6A4C`](https://keyserver.ubuntu.com/pks/lookup?search=B9E36A7275FC61B464B67907E06FE8F53CDC6A4C&fingerprint=on&op=index).
     * there is also a [Chocolatey package](https://community.chocolatey.org/packages/tageditor) maintained by bcurran3
