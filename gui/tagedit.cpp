@@ -390,29 +390,27 @@ void TagEdit::setupUi()
 void TagEdit::removeEdit(QWidget *edit)
 {
     edit->deleteLater();
-    // the left layout might contain the edit
-    const auto leftIndex = m_layoutLeft->indexOf(edit);
-    if (leftIndex > 0) {
-        // delete label as well
-        if (QWidget *const label = m_layoutLeft->labelForField(edit)) {
-            label->deleteLater();
+
+    // delete edit from the left layout if it is contained by it
+    if (const auto leftIndex = m_layoutLeft->indexOf(edit); leftIndex > 0) {
+        auto *const item1 = m_layoutLeft->itemAt(leftIndex - 1), *const item2 = m_layoutLeft->itemAt(leftIndex);
+        item1->widget()->deleteLater();
+        m_layoutLeft->removeItem(item1);
+        m_layoutLeft->removeItem(item2);
+        delete item1;
+        delete item2;
+        return;
+    }
+
+    // delete edit from the right layout if it is contained by it
+    if (const auto rightIndex = m_layoutRight->indexOf(edit); rightIndex > 0) {
+        auto *const labelItem = m_layoutRight->itemAt(rightIndex - 1);
+        m_layoutRight->removeWidget(edit);
+        if (labelItem && labelItem->widget()) {
+            labelItem->widget()->deleteLater();
+            m_layoutRight->removeWidget(labelItem->widget());
         }
-        m_layoutLeft->removeWidget(edit);
-        return;
     }
-    // or the right layout might contain the edit
-    const auto rightIndex = m_layoutRight->indexOf(edit);
-    if (rightIndex < 0) {
-        return;
-    }
-    // delete label as well
-    QLayoutItem *const labelItem = m_layoutRight->itemAt(rightIndex - 1);
-    m_layoutRight->removeWidget(edit);
-    if (!labelItem || !labelItem->widget()) {
-        return;
-    }
-    labelItem->widget()->deleteLater();
-    m_layoutRight->removeWidget(labelItem->widget());
 }
 
 /*!
