@@ -51,7 +51,7 @@
 #include <QStyle>
 #include <QTemporaryFile>
 #include <QTreeView>
-#include <QtConcurrent>
+#include <QtConcurrent/QtConcurrentRun>
 
 #include <algorithm>
 #include <filesystem>
@@ -151,7 +151,7 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     connect(m_ui->renamePushButton, &QPushButton::clicked, this, &TagEditorWidget::renameFile);
 
     //  misc
-    connect(m_ui->abortButton, &QPushButton::clicked, [this] {
+    connect(m_ui->abortButton, &QPushButton::clicked, this, [this] {
         m_abortClicked = true;
         m_ui->makingNotificationWidget->setText(tr("Cancelling ..."));
         m_ui->abortButton->setEnabled(false);
@@ -235,7 +235,8 @@ bool TagEditorWidget::event(QEvent *event)
     case QEvent::DragEnter:
     case QEvent::Drop: {
         auto *dropEvent = static_cast<QDropEvent *>(event);
-        for (const auto &url : dropEvent->mimeData()->urls()) {
+        const auto urls = dropEvent->mimeData()->urls();
+        for (const auto &url : urls) {
             if (url.scheme() == QLatin1String("file")) {
                 event->accept();
                 if (event->type() == QEvent::Drop) {
@@ -537,7 +538,7 @@ void TagEditorWidget::updateTagManagementMenu()
             case ContainerFormat::Webm:
                 // tag format supports targets (Matroska tags are currently the only tag format supporting targets.)
                 label = tr("Matroska tag");
-                connect(m_addTagMenu->addAction(label), &QAction::triggered,
+                connect(m_addTagMenu->addAction(label), &QAction::triggered, this,
                     std::bind(&TagEditorWidget::addTag, this, [this](MediaFileInfo &file) -> TagParser::Tag * {
                         if (file.container()) {
                             EnterTargetDialog targetDlg(this);
@@ -732,7 +733,7 @@ void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &position)
 {
     QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoTreeView->selectionModel()->selectedIndexes().isEmpty());
-    connect(&copyAction, &QAction::triggered, [this] {
+    connect(&copyAction, &QAction::triggered, this, [this] {
         const auto selection = m_infoTreeView->selectionModel()->selectedIndexes();
         if (!selection.isEmpty()) {
             QStringList text;
@@ -828,7 +829,8 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         // set path of file info
         m_currentPath = path;
         m_fileInfo.setSaveFilePath(string());
-        m_fileInfo.setPath(std::string(toNativeFileName(path).data()));
+        const auto nativeFileName = toNativeFileName(path);
+        m_fileInfo.setPath(std::string(nativeFileName.data(), static_cast<std::size_t>(nativeFileName.size())));
         // update file name and directory
         const QFileInfo fileInfo(path);
         m_lastDir = m_currentDir;

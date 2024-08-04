@@ -17,8 +17,6 @@
 #include <QFileDialog>
 #include <QMessageBox>
 
-#include <fstream>
-
 using namespace std;
 using namespace CppUtilities;
 using namespace QtUtilities;
@@ -101,7 +99,8 @@ void AttachmentsEdit::addFile(const QString &path)
     attachment->setIgnored(true);
     Diagnostics diag;
     AbortableProgressFeedback progress; // FIXME: actually use the progress object
-    attachment->setFile(toNativeFileName(path).data(), diag, progress);
+    auto nativeFileName = toNativeFileName(path);
+    attachment->setFile(std::string_view(nativeFileName.data(), static_cast<std::size_t>(nativeFileName.size())), diag, progress);
     // TODO: show diag messages
     m_addedAttachments << attachment;
     m_model->addAttachment(-1, attachment, true, path);
@@ -133,11 +132,12 @@ void AttachmentsEdit::extractSelected()
                 if (!fileName.isEmpty()) {
                     auto *data = attachment->data();
                     auto &input = attachment->data()->stream();
-                    NativeFileStream file;
+                    auto file = NativeFileStream();
+                    auto nativeFileName = toNativeFileName(fileName);
                     file.exceptions(ios_base::badbit | ios_base::failbit);
                     try {
                         input.seekg(static_cast<std::streamoff>(data->startOffset()), std::ios_base::beg);
-                        file.open(toNativeFileName(fileName).data(), ios_base::out | ios_base::binary);
+                        file.open(nativeFileName.data(), ios_base::out | ios_base::binary);
                         CopyHelper<0x1000> helper;
                         helper.copy(input, file, data->size());
                     } catch (const std::ios_base::failure &failure) {
