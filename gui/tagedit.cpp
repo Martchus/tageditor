@@ -15,6 +15,8 @@
 #include <QSplitter>
 #include <QVBoxLayout>
 
+#include <utility>
+
 using namespace std;
 using namespace std::placeholders;
 using namespace CppUtilities;
@@ -223,7 +225,7 @@ QString TagEdit::generateLabel() const
  */
 void TagEdit::clear()
 {
-    for (TagFieldEdit *const edit : m_widgets) {
+    for (TagFieldEdit *const edit : std::as_const(m_widgets)) {
         edit->clear();
     }
 }
@@ -233,7 +235,7 @@ void TagEdit::clear()
  */
 void TagEdit::restore()
 {
-    for (TagFieldEdit *const edit : m_widgets) {
+    for (TagFieldEdit *const edit : std::as_const(m_widgets)) {
         edit->restore();
     }
 }
@@ -247,13 +249,13 @@ void TagEdit::apply()
     case Settings::UnsupportedFieldHandling::Discard:
         // remove all old fields of all tags to discard
         // all unsupported values
-        for (Tag *const tag : m_tags) {
+        for (Tag *const tag : std::as_const(m_tags)) {
             tag->removeAllFields();
         }
         break;
     default:;
     }
-    for (TagFieldEdit *const edit : m_widgets) {
+    for (TagFieldEdit *const edit : std::as_const(m_widgets)) {
         edit->apply();
     }
 }
@@ -267,7 +269,7 @@ void TagEdit::apply()
 void TagEdit::invalidate()
 {
     // remove current widgets
-    for (QWidget *const edit : m_widgets) {
+    for (QWidget *const edit : std::as_const(m_widgets)) {
         removeEdit(edit);
     }
     m_widgets.clear();
@@ -293,7 +295,7 @@ void TagEdit::setupUi()
     setUpdatesEnabled(false);
     if (m_tags.empty()) {
         // there are no tags assigned -> remove all editing controls
-        for (QWidget *const edit : m_widgets) {
+        for (QWidget *const edit : std::as_const(m_widgets)) {
             removeEdit(edit);
         }
         m_widgets.clear();
@@ -414,7 +416,7 @@ void TagEdit::removeEdit(QWidget *edit)
  */
 void TagEdit::assignTags()
 {
-    for (TagFieldEdit *const edit : m_widgets) {
+    for (TagFieldEdit *const edit : std::as_const(m_widgets)) {
         edit->setTagField(m_tags, edit->field(), m_previousValueHandling, true);
     }
 }
