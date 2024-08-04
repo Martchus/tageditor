@@ -303,13 +303,12 @@ void TagEdit::setupUi()
 
     // there are tags assigned
     // setup editing controls
-    TagFieldEdit *edit = nullptr;
     auto rowLeft = 0, rowRight = 0;
     for (const auto &item : Settings::values().editor.fields.items()) {
         const auto field = static_cast<KnownField>(item.id().toInt());
         if (!item.isChecked() || !hasField(field)) {
             // the field is either disabled or it is not supported by at least one of the assigned tags
-            if ((edit = m_widgets.value(field))) {
+            if (auto *const edit = m_widgets.value(field)) {
                 m_widgets.remove(field);
                 removeEdit(edit);
             }
@@ -317,8 +316,7 @@ void TagEdit::setupUi()
         }
 
         // the field is not disabled and the field is supported by at least one of the assigned tags
-        edit = m_widgets.value(field, nullptr);
-        if (edit) {
+        if (auto *edit = m_widgets.value(field)) {
             // we have already an edit for the field -> try to recycle it
             // the order might have changed
             int prevIndex; // stores the previous index (NOT row)
@@ -328,8 +326,7 @@ void TagEdit::setupUi()
                 // these fields are shown at the right side
                 prevIndex = m_layoutRight->indexOf(edit);
                 if (prevIndex > 0 && (rowRight * 2 + 1) != prevIndex) {
-                    QLayoutItem *item1 = m_layoutRight->itemAt(prevIndex - 1);
-                    QLayoutItem *item2 = m_layoutRight->itemAt(prevIndex);
+                    auto *const item1 = m_layoutRight->itemAt(prevIndex - 1), *const item2 = m_layoutRight->itemAt(prevIndex);
                     m_layoutRight->removeItem(item1);
                     m_layoutRight->removeItem(item2);
                     m_layoutRight->insertItem(rowRight * 2, item1);
@@ -340,9 +337,8 @@ void TagEdit::setupUi()
                 // the other fields are shown at the left side
                 prevIndex = m_layoutLeft->indexOf(edit);
                 if (prevIndex >= 0 && (rowLeft * 2 + 1) != prevIndex) {
-                    QLayoutItem *item1 = m_layoutLeft->itemAt(prevIndex - 1);
-                    QLayoutItem *item2 = m_layoutLeft->itemAt(prevIndex);
-                    QWidget *label = item1->widget();
+                    auto *const item1 = m_layoutLeft->itemAt(prevIndex - 1), *const item2 = m_layoutLeft->itemAt(prevIndex);
+                    auto *const label = item1->widget();
                     m_layoutLeft->removeItem(item1);
                     m_layoutLeft->removeItem(item2);
                     delete item1;
@@ -359,13 +355,13 @@ void TagEdit::setupUi()
             switch (field) {
             case KnownField::Cover:
             case KnownField::Lyrics:
-                // editing widgets for these fields will be show at the right side (m_layoutRight)
+                // editing widgets for these fields are added at the right side (m_layoutRight)
                 m_layoutRight->insertWidget(rowRight * 2, new QLabel(item.label(), this));
                 edit->setContentsMargins(10, 0, 0, 0);
                 m_layoutRight->insertWidget(rowRight * 2 + 1, edit);
                 break;
             default:
-                // editing widgets for the other fields will be show at the left side (m_layoutLeft)
+                // editing widgets for the other fields are added at the left side (m_layoutLeft)
                 m_layoutLeft->insertRow(rowLeft, item.label(), edit);
             }
             m_widgets.insert(field, edit);
