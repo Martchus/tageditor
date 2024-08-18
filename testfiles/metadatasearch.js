@@ -34,7 +34,7 @@ function queryLyricsFromProvider(provider, searchCriteria) {
         waitFor(model.lyricsAvailable);
     }
     const lyrics = model.lyricsValue(model.index(0, 0));
-    if (lyrics && lyrics.startsWith("Bots have beat this API")) {
+    if (lyrics && (lyrics.startsWith("Bots have beat this API") || lyrics.includes("lyrics.wikia"))) {
         return undefined;
     }
     return lyrics;
