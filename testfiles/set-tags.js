@@ -74,8 +74,8 @@ function addFieldFromOriginalFile(file, tag, fieldName) {
 
 function addLyrics(file, tag) {
     const fields = tag.fields;
-    if (fields.lyrics.length) {
-        return; // skip if already assigned
+    if (!fields.lyrics || fields.lyrics.length) {
+        return; // skip if not supported by tag format or already assigned
     }
     if (addFieldFromOriginalFile(file, tag, "lyrics")) {
         return; // skip fetching via meta-data search if lyrics could be taken over from original file
@@ -89,8 +89,8 @@ function addLyrics(file, tag) {
 
 function addCover(file, tag) {
     const fields = tag.fields;
-    if (fields.cover.length) {
-        return; // skip if already assigned
+    if (!fields.cover || fields.cover.length) {
+        return; // skip if not supported by tag format or already assigned
     }
     if (addFieldFromOriginalFile(file, tag, "cover")) {
         // ensure the cover's resolution is below a certain size to avoid bloating the file
@@ -113,7 +113,7 @@ function addCover(file, tag) {
 function addMiscFields(file, tag) {
     // assume the number of disks is always one for now
     const fields = tag.fields;
-    if (!fields.disk.length) {
+    if (fields.disk && !fields.disk.length) {
         fields.disk = "1/1";
     }
     const dir = file.containingDirectory.toLowerCase();
