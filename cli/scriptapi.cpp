@@ -486,7 +486,7 @@ std::string TagObject::printJsValue(const QJSValue &value)
 {
     const auto str = value.toString();
     for (const auto c : str) {
-        if (!c.isPrint()) {
+        if (c.isNonCharacter() || (!c.isSpace() && !c.isPrint())) {
             return "[binary]";
         }
     }
