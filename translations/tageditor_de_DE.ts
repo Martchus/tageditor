@@ -5390,7 +5390,12 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/knownfieldmodel.cpp" line="351"/>
+        <location filename="../application/knownfieldmodel.cpp" line="215"/>
+        <source>Store description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="354"/>
         <source>Field</source>
         <translation type="unfinished"></translation>
     </message>
