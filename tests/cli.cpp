@@ -1195,7 +1195,7 @@ void CliTests::testScriptProcessing()
     TESTUTILS_ASSERT_EXEC_EXIT_STATUS(args, EXIT_PARSING_FAILURE);
     CPPUNIT_ASSERT(testContainsSubstrings(stderr,
         { "executing JavaScript for othertest-itunes.m4a: entering main() function", "settings: set:title, set:artist, dryRun", "tag: MP4/iTunes tag",
-            "supported fields: album, albumArtist, arranger, ", "soundEngineer, title, track", "MP4/iTunes tag: applying changes",
+            "supported fields: album, albumArtist, arranger, ", "soundEngineer, storeDescription, title, track", "MP4/iTunes tag: applying changes",
             " - change title[0] from 'Sad Song' to 'foo'", " - change artist[0] from 'Oasis' to 'bar'",
             "executing JavaScript for othertest-itunes.m4a: done with return value: true", "Changes are about to be applied" }));
     CPPUNIT_ASSERT(testContainsSubstrings(

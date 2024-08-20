@@ -102,7 +102,8 @@ namespace Cli {
     "      purchasingdate recordinglocation compositionlocation composernationality\n"                                                               \
     "      playcounter measure tuning isrc mcdi isbn barcode catalognumber labelcode\n"                                                              \
     "      lccn imdb tmdb tvdb purchaseitem purchaseinfo purchaseowner purchaseprice\n"                                                              \
-    "      purchasecurrency copyright productioncopyright license termsofuse publisherwebpage"
+    "      purchasecurrency copyright productioncopyright license termsofuse publisherwebpage\n"                                                     \
+    "      storedescription"
 
 #define TRACK_ATTRIBUTE_NAMES "name tracknumber enabled=yes enabled=no forced=yes forced=no default=yes default=no"
 
