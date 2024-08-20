@@ -118,6 +118,7 @@ See the [release section on GitHub](https://github.com/Martchus/tageditor/releas
 * Tumbleweed, Leap, Fedora
     * RPM \*.spec files and binaries are available via openSUSE Build Service
         * remarks
+            * Install preferably the `tageditor-qt6` package if available for your OS.
             * Be sure to add the repository that matches the version of your OS and to keep it
               in sync when upgrading.
             * The linked download pages might be incomplete, use the repositories URL for a full
