@@ -106,6 +106,28 @@ that. To improve performance further when avoiding a rewrite, put the tag at the
 Then the tag editor will not even try to put tags at the front and can thus skip a few computations. (Avoiding a
 rewrite is still not a good idea in general.)
 
+## Matroska-related remarks
+The Matroska container format (and WebM which is based on Matroska) are breaking with common conventions. Therefore
+not all CLI examples mentioned below make sense to use on such files.
+
+Generally, one Matroska file can have multiple tags and each tag has a "target" which decides to what the fields of
+the tag apply to, e.g. the song or the whole album. So when using the CLI or the GUI you need to be aware to what
+tag/target to add fields to.
+
+Matroska also does *not* use one combined field for the track/disk number and total like other formats do. It instead
+uses the separate fields `part` and `totalparts` which again need to be added to a tag of the desired target (e.g.
+50/"ALBUM" for the track number and total).
+
+Checkout the official [Matroska documentation on tagging](https://matroska.org/technical/tagging.html) for details.
+It also contains examples for [audio content](https://matroska.org/technical/tagging-audio-example.html) and
+[video content](https://matroska.org/technical/tagging-video-example.html).
+
+Note that Tag Editor does *not* support the XML format mentioned on the Matroska documentation. In the GUI you can
+simply add/remove/edit tags and their targets via the controls at the top of the editor. In the settings you can also
+specify that tags of certain targets should be added automatically when loading a file. When using the CLI you can
+specify that a field should be added to a tag of a certain target by specifying the target *before* that field. You
+can also explicitly remove tags of certain targets. Examples of the concrete CLI usage can be found below.
+
 ## Download
 ### Source
 See the [release section on GitHub](https://github.com/Martchus/tageditor/releases).
@@ -234,7 +256,10 @@ The tag editor also features a MusicBrainz, Cover Art Archive and LyricWiki sear
 tageditor <operation> [options]
 ```
 Checkout the available operations and options with `--help`. For a list of all available field names, track
-attribute names and modifier, use the CLI option `--print-field-names`.
+attribute names and modifier, use the CLI option `--print-field-names`. Not all fields are supported by all
+tag/container formats. Most notably, the Matroska container format does not use `track`/`disk` to store the
+track/disk number and total in one field. Instead, the fields `part` and `totalparts` need to be used on the
+desired target.
 
 Note that Windows users must use `tageditor-cli.exe` instead of `tageditor.exe` or use Mintty as terminal.
 Checkout the "[Windows-specific issues](#windows-specific-issues)" section for details.
