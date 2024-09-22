@@ -41,6 +41,7 @@
 #include <iostream>
 #include <limits>
 #include <type_traits>
+#include <utility>
 
 #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
 QT_BEGIN_NAMESPACE
@@ -168,7 +169,7 @@ QJSValue UtilityObject::runProcess(const QString &path, const QJSValue &args, in
         }
     }
     argsUtf8Array.emplace_back(pathUtf8.data());
-    for (const auto &argUtf8 : argsUtf8) {
+    for (const auto &argUtf8 : std::as_const(argsUtf8)) {
         argsUtf8Array.emplace_back(argUtf8.data());
     }
     argsUtf8Array.emplace_back(nullptr);
