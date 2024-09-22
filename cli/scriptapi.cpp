@@ -162,7 +162,7 @@ QJSValue UtilityObject::runProcess(const QString &path, const QJSValue &args, in
     auto argsUtf8Array = std::vector<const char *>();
     if (args.isArray()) {
         const auto size = args.property(QStringLiteral("length")).toUInt();
-        argsUtf8.reserve(size);
+        argsUtf8.reserve(static_cast<QByteArrayList::size_type>(size));
         argsUtf8Array.reserve(static_cast<std::size_t>(size) + 2);
         for (auto i = quint32(); i != size; ++i) {
             argsUtf8.append(args.property(i).toString().toUtf8());

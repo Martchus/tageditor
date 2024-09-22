@@ -552,7 +552,8 @@ JavaScriptProcessor::JavaScriptProcessor(const SetTagInfoArgs &args)
     if (args.jsSettingsArg.isPresent()) {
         for (const auto *const setting : args.jsSettingsArg.values()) {
             if (const auto *const value = std::strchr(setting, '=')) {
-                settings.setProperty(QString::fromUtf8(setting, value - setting), QJSValue(QString::fromUtf8(value + 1)));
+                settings.setProperty(
+                    QString::fromUtf8(setting, static_cast<QString::size_type>(value - setting)), QJSValue(QString::fromUtf8(value + 1)));
             } else {
                 settings.setProperty(QString::fromUtf8(setting), QJSValue());
             }
