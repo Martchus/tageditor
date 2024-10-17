@@ -18,7 +18,7 @@ struct Mapping {
 
 const char *fieldDenotation(TagParser::KnownField knownField);
 TagParser::KnownField knownField(const char *fieldDenotation, std::size_t fieldDenotationSize);
-using MappingType = std::array<Mapping, 103>;
+using MappingType = std::array<Mapping, 104>;
 const MappingType &mapping();
 
 } // namespace FieldMapping
