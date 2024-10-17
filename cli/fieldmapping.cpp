@@ -111,6 +111,7 @@ static constexpr auto fieldMapping = MappingType{ {
     { "PublisherWebpage", KnownField::PublisherWebpage },
     { "StoreDescription", KnownField::StoreDescription },
     { "MediaType", KnownField::MediaType },
+    { "Website", KnownField::Website },
 } };
 
 const char *fieldDenotation(TagParser::KnownField knownField)
