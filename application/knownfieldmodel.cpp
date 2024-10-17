@@ -213,6 +213,8 @@ const char *KnownFieldModel::fieldName(KnownField field)
         return QT_TR_NOOP("Publisher webpage");
     case KnownField::StoreDescription:
         return QT_TR_NOOP("Store description");
+    case KnownField::MediaType:
+        return QT_TR_NOOP("Media type");
     default:
         return "";
     }
@@ -333,6 +335,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
          mkItem(KnownField::TermsOfUse, Qt::Unchecked),
          mkItem(KnownField::PublisherWebpage, Qt::Unchecked),
          mkItem(KnownField::StoreDescription, Qt::Unchecked),
+         mkItem(KnownField::MediaType, Qt::Unchecked),
     });
     // clang-format on
 }

@@ -204,7 +204,7 @@ if (WIDGETS_GUI OR QUICK_GUI)
 endif ()
 
 # find tagparser
-find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 12.3.0 REQUIRED)
+find_package(tagparser${CONFIGURATION_PACKAGE_SUFFIX} 12.4.0 REQUIRED)
 use_tag_parser()
 
 # enable experimental JSON export
