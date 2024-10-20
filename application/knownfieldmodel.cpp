@@ -215,8 +215,8 @@ const char *KnownFieldModel::fieldName(KnownField field)
         return QT_TR_NOOP("Store description");
     case KnownField::MediaType:
         return QT_TR_NOOP("Media type");
-    case KnownField::Website:
-        return QT_TR_NOOP("Website");
+    case KnownField::PerformerWebpage:
+        return QT_TR_NOOP("PerformerWebpage");
     case KnownField::ContentRating:
         return QT_TR_NOOP("Content rating");
     default:
@@ -340,7 +340,7 @@ KnownFieldModel::KnownFieldModel(QObject *parent, DefaultSelection defaultSelect
          mkItem(KnownField::PublisherWebpage, Qt::Unchecked),
          mkItem(KnownField::StoreDescription, Qt::Unchecked),
          mkItem(KnownField::MediaType, Qt::Unchecked),
-         mkItem(KnownField::Website, Qt::Unchecked),
+         mkItem(KnownField::PerformerWebpage, Qt::Unchecked),
          mkItem(KnownField::ContentRating, Qt::Unchecked),
     });
     // clang-format on

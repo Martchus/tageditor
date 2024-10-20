@@ -111,7 +111,7 @@ static constexpr auto fieldMapping = MappingType{ {
     { "PublisherWebpage", KnownField::PublisherWebpage },
     { "StoreDescription", KnownField::StoreDescription },
     { "MediaType", KnownField::MediaType },
-    { "Website", KnownField::Website },
+    { "PerformerWebpage", KnownField::PerformerWebpage },
     { "ContentRating", KnownField::ContentRating },
 } };
 

@@ -103,7 +103,7 @@ namespace Cli {
     "      playcounter measure tuning isrc mcdi isbn barcode catalognumber labelcode\n"                                                              \
     "      lccn imdb tmdb tvdb purchaseitem purchaseinfo purchaseowner purchaseprice\n"                                                              \
     "      purchasecurrency copyright productioncopyright license termsofuse publisherwebpage\n"                                                     \
-    "      storedescription mediatype website contentrating"
+    "      storedescription mediatype performerwebpage contentrating"
 
 #define TRACK_ATTRIBUTE_NAMES "name tracknumber enabled=yes enabled=no forced=yes forced=no default=yes default=no"
 
