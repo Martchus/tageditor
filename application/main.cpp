@@ -58,7 +58,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , addAttachmentArg("add-attachment", '\0', "adds a new attachment", { "path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type" })
     , updateAttachmentArg(
           "update-attachment", '\0', "updates an existing attachment", { "path=some/file", "name=Some name", "desc=Some desc", "mime=mime/type" })
-    , removeAttachmentArg("remove-attachment", '\0', "removes an existing attachment")
+    , removeAttachmentArg("remove-attachment", '\0', "removes an existing attachment", { "name=to_remove" })
     , removeExistingAttachmentsArg(
           "remove-existing-attachments", 'r', "removes ALL existing attachments (to remove a specific attachment use --remove-attachment)")
     , minPaddingArg("min-padding", '\0',
@@ -92,7 +92,7 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --script", { "key=value" })
     , coverTypeDelimiterArg("cover-type-delimiter", '\0',
           "specifies the delimiter for providing cover type and description after the cover path (defaults to \":\" so the default syntax for cover "
-          "values is \"path:cover-type:description\")")
+          "values is \"path:cover-type:description\")", { "delimiter" })
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setRequiredValueCount(Argument::varValueCount);
@@ -110,9 +110,6 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     updateAttachmentArg.setConstraints(0, Argument::varValueCount);
     updateAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
     updateAttachmentArg.setPreDefinedCompletionValues("name id path desc mime");
-    removeAttachmentArg.setRequiredValueCount(1);
-    removeAttachmentArg.setValueNames({ "name=to_remove" });
-    removeAttachmentArg.setCombinable(true);
     removeAttachmentArg.setConstraints(0, Argument::varValueCount);
     removeAttachmentArg.setPreDefinedCompletionValues("name id");
     removeAttachmentArg.setValueCompletionBehavior(ValueCompletionBehavior::PreDefinedValues | ValueCompletionBehavior::AppendEquationSign);
@@ -133,8 +130,6 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     jsArg.setValueCompletionBehavior(ValueCompletionBehavior::Files);
     jsSettingsArg.setValueCompletionBehavior(ValueCompletionBehavior::AppendEquationSign);
     jsSettingsArg.setRequiredValueCount(Argument::varValueCount);
-    coverTypeDelimiterArg.setValueNames({ "delimiter" });
-    coverTypeDelimiterArg.setRequiredValueCount(1);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setExample(PROJECT_NAME
         " set title=\"Title of \"{1st,2nd,3rd}\" file\" title=\"Title of \"{4..16}\"th file\" album=\"The Album\" -f /some/dir/*.m4a\n" PROJECT_NAME
