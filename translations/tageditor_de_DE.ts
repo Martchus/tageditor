@@ -5395,7 +5395,22 @@ Remarks
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../application/knownfieldmodel.cpp" line="354"/>
+        <location filename="../application/knownfieldmodel.cpp" line="217"/>
+        <source>Media type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="219"/>
+        <source>PerformerWebpage</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="221"/>
+        <source>Content rating</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../application/knownfieldmodel.cpp" line="363"/>
         <source>Field</source>
         <translation type="unfinished"></translation>
     </message>
