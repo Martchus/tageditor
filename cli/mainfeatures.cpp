@@ -912,7 +912,8 @@ void setTagInfo(const SetTagInfoArgs &args)
                             const auto denotedValue = relevantDenotedValue->value;
                             const auto firstPartIsDriveLetter = denotedValue.size() >= 2 && denotedValue[1] == ':' ? 1u : 0u;
                             const auto maxParts = std::size_t(3u + firstPartIsDriveLetter);
-                            const auto parts = splitStringSimple<std::vector<std::string_view>>(denotedValue, ":", static_cast<int>(maxParts));
+                            const auto parts = splitStringSimple<std::vector<std::string_view>>(
+                                denotedValue, args.coverTypeDelimiterArg.firstValueOr(":"), static_cast<int>(maxParts));
                             const auto path = parts.empty()
                                 ? std::string_view()
                                 : (firstPartIsDriveLetter ? std::string_view(denotedValue.data(), parts[0].size() + parts[1].size() + 1)

@@ -53,6 +53,7 @@ struct SetTagInfoArgs {
     CppUtilities::ConfigValueArgument preserveTotalFieldsArg;
     CppUtilities::ConfigValueArgument jsArg;
     CppUtilities::ConfigValueArgument jsSettingsArg;
+    CppUtilities::ConfigValueArgument coverTypeDelimiterArg;
     CppUtilities::OperationArgument setTagInfoArg;
 };
 

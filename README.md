@@ -372,7 +372,8 @@ Here are some Bash examples which illustrate getting and setting tag information
   tageditor set cover=":front-cover" cover0="/path/to/back-cover.jpg:back-cover:The description" -f foo.mp3
   ```
 
-    - The general syntax is `path:cover-type:description`. The cover type and description are optional.
+    - The general syntax is `path:cover-type:description`. The cover type and description are optional. The
+      delimiter can be changed via `--cover-type-delimiter` which is useful if the path includes a `:`.
     - The `0` after the 2nd `cover` is required. Otherwise the 2nd cover would only be set in the 2nd file (which
       is not even specified in this example).
     - In this example the front cover is removed (by passing an empty path) and the back cover set to the specified

@@ -90,6 +90,9 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
           "TRACKNUMBER/DISCNUMBER/PARTNUMBER fields)")
     , jsArg("script", 'j', "modifies tag fields via the specified JavaScript", { "path" })
     , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --script", { "key=value" })
+    , coverTypeDelimiterArg("cover-type-delimiter", '\0',
+          "specifies the delimiter for providing cover type and description after the cover path (defaults to \":\" so the default syntax for cover "
+          "values is \"path:cover-type:description\")")
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setRequiredValueCount(Argument::varValueCount);
@@ -130,6 +133,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     jsArg.setValueCompletionBehavior(ValueCompletionBehavior::Files);
     jsSettingsArg.setValueCompletionBehavior(ValueCompletionBehavior::AppendEquationSign);
     jsSettingsArg.setRequiredValueCount(Argument::varValueCount);
+    coverTypeDelimiterArg.setValueNames({ "delimiter" });
+    coverTypeDelimiterArg.setRequiredValueCount(1);
     setTagInfoArg.setCallback(std::bind(Cli::setTagInfo, std::cref(*this)));
     setTagInfoArg.setExample(PROJECT_NAME
         " set title=\"Title of \"{1st,2nd,3rd}\" file\" title=\"Title of \"{4..16}\"th file\" album=\"The Album\" -f /some/dir/*.m4a\n" PROJECT_NAME
@@ -145,8 +150,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
         &id3v2UsageArg, &id3InitOnCreateArg, &id3TransferOnRemovalArg, &mergeMultipleSuccessiveTagsArg, &id3v2VersionArg, &encodingArg,
         &removeTargetArg, &addAttachmentArg, &updateAttachmentArg, &removeAttachmentArg, &removeExistingAttachmentsArg, &minPaddingArg,
         &maxPaddingArg, &prefPaddingArg, &tagPosArg, &indexPosArg, &forceRewriteArg, &backupDirArg, &layoutOnlyArg, &preserveModificationTimeArg,
-        &preserveMuxingAppArg, &preserveWritingAppArg, &preserveTotalFieldsArg, &jsArg, &jsSettingsArg, &verboseArg, &pedanticArg, &quietArg,
-        &outputFilesArg });
+        &preserveMuxingAppArg, &preserveWritingAppArg, &preserveTotalFieldsArg, &jsArg, &jsSettingsArg, &coverTypeDelimiterArg, &verboseArg,
+        &pedanticArg, &quietArg, &outputFilesArg });
 }
 
 } // namespace Cli
