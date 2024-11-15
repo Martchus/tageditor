@@ -440,7 +440,16 @@ Here are some Bash examples which illustrate getting and setting tag information
       to copy tags over from another file, e.g. to insert tags back from original files that have
       been lost when converting to a different format. The mentioned example script `set-tags.js`
       also demonstrates this for covers and lyrics when according script settings are passed (e.g.
-      `--script-settings addCover=1 originalDir=… originalExt=…`).
+      `--script-settings addCover=1 originalDir=… originalExt=…`). Example:
+      ```
+      cd '/…/music'
+      find 'artist/album' -iname '*.m4a' -exec tageditor set \
+        --pedantic debug \
+        --script /…/tageditor/testfiles/set-tags.js \
+        --script-settings dryRun=1 originalDir='../music-lossless' originalExt=.flac addCover=1 addLyrics=1 \
+        --temp-dir /…/tmp/tageditor \
+        --files {} \+
+      ```
 
 ##### Further useful commands
 * Let the tag editor return with a non-zero exit code even if only non-fatal problems have been encountered
