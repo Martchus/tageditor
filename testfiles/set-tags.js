@@ -10,7 +10,7 @@ export function main(file) {
     // submit changes from the JavaScript-context to the tag editor application; does not save changes to disk yet
     file.applyChanges();
 
-    // return a falsy value to skip the file after all
+    // return true to actually apply the changes or false to skip the file
     return !helpers.isTruthy(settings.dryRun);
 }
 

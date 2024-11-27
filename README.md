@@ -405,14 +405,21 @@ Here are some Bash examples which illustrate getting and setting tag information
       passed an object representing the current file as first argument. The file only modified if
       `main()` returns a truthy value or `undefined`; otherwise the file is skipped completely (and
       thus not modified at all, so values passed via `--values` are not applied).
+    - Checkout the file `testfiles/resize-covers.js` in this repository that scales all cover images
+      in a file down to the specified maximum size. It can be invoked like this:
+      ```
+      tageditor set --pedantic debug --script testfiles/resize-covers.js --script-settings coverSize=512 coverFormat=JPEG` -f …
+      ```
     - Checkout the file `testfiles/set-tags.js` in this repository for an example that applies basic
-      fixes and tries to fetch lyrics and cover art when according settings are passed (e.g.
-      `--script-settings addCover=1 addLyrics=1`).
+      fixes and tries to fetch lyrics and cover art when according settings are passed. It can be
+      invoked like this:
+      ```
+      tageditor set --pedantic debug --script testfiles/set-tags.js --script-settings addCover=1 addLyrics=1
+      ```
     - For debugging, the option `--pedantic debug` is very useful. You may also add
       `--script-settings dryRun=1` and check for that setting within the script as shown in
-      `testfiles/set-tags.js`.
-    - Common tag fields are exposed as object properties as shown in the mentioned example file
-      `testfiles/set-tags.js`.
+      `testfiles/resize-covers.js` and `testfiles/set-tags.js`.
+    - Common tag fields are exposed as object properties as shown in the mentioned example files.
         - Only properties for fields that are supported by the tag are added to the "fields" object.
         - Adding properties of unsupported fields manually does not work; those will just be ignored.
         - The properties for fields that are absent in the tag have an empty array assigned. You may
