@@ -65,7 +65,7 @@ public Q_SLOTS:
     QJSValue queryMakeItPersonal(const QJSValue &songDescription);
     QJSValue queryTekstowo(const QJSValue &songDescription);
 
-    QByteArray convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format = QString());
+    QByteArray convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format = QString(), int quality = -1);
 
 private:
     static QtGui::SongDescription makeSongDescription(const QJSValue &obj);

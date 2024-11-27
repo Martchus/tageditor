@@ -223,7 +223,7 @@ QJSValue UtilityObject::queryTekstowo(const QJSValue &songDescription)
     return m_engine->newQObject(QtGui::queryTekstowo(makeSongDescription(songDescription)));
 }
 
-QByteArray UtilityObject::convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format)
+QByteArray UtilityObject::convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format, int quality)
 {
     auto image = QImage::fromData(imageData);
     if (image.isNull()) {
@@ -237,7 +237,7 @@ QByteArray UtilityObject::convertImage(const QByteArray &imageData, const QSize 
     }
     auto newData = QByteArray();
     auto buffer = QBuffer(&newData);
-    auto res = buffer.open(QIODevice::WriteOnly) && image.save(&buffer, format.isEmpty() ? "JPEG" : format.toUtf8().data());
+    auto res = buffer.open(QIODevice::WriteOnly) && image.save(&buffer, format.isEmpty() ? "JPEG" : format.toUtf8().data(), quality);
     return res ? newData : imageData;
 }
 
