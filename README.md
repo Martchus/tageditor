@@ -405,20 +405,21 @@ Here are some Bash examples which illustrate getting and setting tag information
       passed an object representing the current file as first argument. The file only modified if
       `main()` returns a truthy value or `undefined`; otherwise the file is skipped completely (and
       thus not modified at all, so values passed via `--values` are not applied).
-    - Checkout the file `testfiles/resize-covers.js` in this repository that scales all cover images
-      in a file down to the specified maximum size. It can be invoked like this:
+    - Checkout the file `resources/scripts/scriptapi/resize-covers.js` in this repository that
+      scales all cover images in a file down to the specified maximum size. It can be invoked like
+      this:
       ```
-      tageditor set --pedantic debug --script testfiles/resize-covers.js --script-settings coverSize=512 coverFormat=JPEG` -f …
+      tageditor set --pedantic debug --script resources/scripts/scriptapi/resize-covers.js --script-settings coverSize=512 coverFormat=JPEG` -f …
       ```
-    - Checkout the file `testfiles/set-tags.js` in this repository for an example that applies basic
-      fixes and tries to fetch lyrics and cover art when according settings are passed. It can be
-      invoked like this:
+    - Checkout the file `resources/scripts/scriptapi/set-tags.js` in this repository for an example
+      that applies basic fixes and tries to fetch lyrics and cover art when according settings are
+      passed. It can be invoked like this:
       ```
-      tageditor set --pedantic debug --script testfiles/set-tags.js --script-settings addCover=1 addLyrics=1
+      tageditor set --pedantic debug --script resources/scripts/scriptapi/set-tags.js --script-settings addCover=1 addLyrics=1
       ```
     - For debugging, the option `--pedantic debug` is very useful. You may also add
       `--script-settings dryRun=1` and check for that setting within the script as shown in
-      `testfiles/resize-covers.js` and `testfiles/set-tags.js`.
+      `resources/scripts/scriptapi/resize-covers.js` and `resources/scripts/scriptapi/set-tags.js`.
     - Common tag fields are exposed as object properties as shown in the mentioned example files.
         - Only properties for fields that are supported by the tag are added to the "fields" object.
         - Adding properties of unsupported fields manually does not work; those will just be ignored.
@@ -430,8 +431,8 @@ Here are some Bash examples which illustrate getting and setting tag information
           one of those types to set the value of those fields. The string-representation of the
           assigned content will then be converted automatically to what's needed internally.
     - The `utility` object exposes useful methods, e.g. for logging and controlling the event loop.
-    - Checkout the file `testfiles/http.js` in this repository for an example of using XHR and
-      controlling the event loop.
+    - Checkout the file `resources/scripts/scriptapi/http.js` in this repository for an example of
+      using XHR and controlling the event loop.
     - The script runs after tags are added/removed (according to options like `--id3v1-usage`).
       So the tags present during script execution don't necessarily represent tags that are actually
       present in the file on disk (but rather the tags that will be present after saving the file).
@@ -452,7 +453,7 @@ Here are some Bash examples which illustrate getting and setting tag information
       cd '/…/music'
       find 'artist/album' -iname '*.m4a' -exec tageditor set \
         --pedantic debug \
-        --script /…/tageditor/testfiles/set-tags.js \
+        --script /…/tageditor/resources/scripts/scriptapi/set-tags.js \
         --script-settings dryRun=1 originalDir='../music-lossless' originalExt=.flac addCover=1 addLyrics=1 \
         --temp-dir /…/tmp/tageditor \
         --files {} \+

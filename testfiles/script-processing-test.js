@@ -1,4 +1,4 @@
-import * as helpers from "helpers.js"
+import * as helpers from "../resources/scripts/scriptapi/helpers.js"
 
 export function main(file) {
     utility.diag("debug", Object.keys(settings).join(", "), "settings");
