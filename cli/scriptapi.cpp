@@ -223,17 +223,36 @@ QJSValue UtilityObject::queryTekstowo(const QJSValue &songDescription)
     return m_engine->newQObject(QtGui::queryTekstowo(makeSongDescription(songDescription)));
 }
 
-QByteArray UtilityObject::convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format, int quality)
+/*!
+ * \brief Resizes an image converting it to the specified \a format using the specified \a quality.
+ * \returns Returns the converted image or in case the conversion is not possible the original \a imageData.
+ * \remarks
+ * - In case \a maxSize is zero the original size will be kept. In this case the conversion to the specified
+ *   \a format with the specified \a quality will always be done.
+ * - In case \a maxSize is non-zero the image will be resized so its width and height are smaller or equal to
+ *   the specified \a maxSize. The aspect ratio of the image is preserved. If the width and height are both
+ *   already smaller or equal to \a maxSize no conversion is done and the original \a imageData is returned.
+ * - In case you always want to convert the image to ensure \a format and \a quality are applied, set \a force
+ *   to true.
+ */
+QByteArray UtilityObject::convertImage(const QByteArray &imageData, const QSize &maxSize, const QString &format, int quality, bool force)
 {
     auto image = QImage::fromData(imageData);
+    auto imageChanged = false;
     if (image.isNull()) {
         return imageData;
     }
-    if (!maxSize.isNull() && (image.width() > maxSize.width() || image.height() > maxSize.height())) {
+    if (maxSize.isNull()) {
+        imageChanged = true;
+    } else if (image.width() > maxSize.width() || image.height() > maxSize.height()) {
         image = image.scaled(maxSize.width(), maxSize.height(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        imageChanged = true;
         if (image.isNull()) {
             return imageData;
         }
+    }
+    if (!imageChanged && !force) {
+        return imageData;
     }
     auto newData = QByteArray();
     auto buffer = QBuffer(&newData);
