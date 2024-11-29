@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/scripts">
+        <file>helpers.js</file>
+        <file>http.js</file>
+        <file>metadatasearch.js</file>
+        <file>resize-covers.js</file>
+        <file>set-tags.js</file>
+    </qresource>
+</RCC>

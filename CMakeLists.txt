@@ -249,6 +249,7 @@ endif ()
 if (JS_PROVIDER STREQUAL Qml)
     list(APPEND HEADER_FILES cli/scriptapi.h)
     list(APPEND SRC_FILES cli/scriptapi.cpp)
+    list(APPEND SRC_FILES resources/scripts/scriptapi/scriptapi.qrc)
 endif ()
 
 # include modules to apply configuration

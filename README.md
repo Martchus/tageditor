@@ -409,14 +409,18 @@ Here are some Bash examples which illustrate getting and setting tag information
       scales all cover images in a file down to the specified maximum size. It can be invoked like
       this:
       ```
-      tageditor set --pedantic debug --script resources/scripts/scriptapi/resize-covers.js --script-settings coverSize=512 coverFormat=JPEG` -f …
+      tageditor set --pedantic debug --script :/scripts/resize-covers.js --script-settings coverSize=512 coverFormat=JPEG` -f …
       ```
+      Note that this example uses a path starting with `:/scripts/…` to use the built-in version of
+      that script. In case you want to modify the script you can of course grab it from this code
+      repository, do the editing and then just specify a normal path.
     - Checkout the file `resources/scripts/scriptapi/set-tags.js` in this repository for an example
       that applies basic fixes and tries to fetch lyrics and cover art when according settings are
       passed. It can be invoked like this:
       ```
-      tageditor set --pedantic debug --script resources/scripts/scriptapi/set-tags.js --script-settings addCover=1 addLyrics=1
+      tageditor set --pedantic debug --script :/scripts/set-tags.js --script-settings addCover=1 addLyrics=1
       ```
+      The remark about the path from the previous point applies here as well.
     - For debugging, the option `--pedantic debug` is very useful. You may also add
       `--script-settings dryRun=1` and check for that setting within the script as shown in
       `resources/scripts/scriptapi/resize-covers.js` and `resources/scripts/scriptapi/set-tags.js`.
@@ -453,7 +457,7 @@ Here are some Bash examples which illustrate getting and setting tag information
       cd '/…/music'
       find 'artist/album' -iname '*.m4a' -exec tageditor set \
         --pedantic debug \
-        --script /…/tageditor/resources/scripts/scriptapi/set-tags.js \
+        --script :/scripts/set-tags.js \
         --script-settings dryRun=1 originalDir='../music-lossless' originalExt=.flac addCover=1 addLyrics=1 \
         --temp-dir /…/tmp/tageditor \
         --files {} \+
