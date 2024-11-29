@@ -405,18 +405,20 @@ Here are some Bash examples which illustrate getting and setting tag information
       passed an object representing the current file as first argument. The file only modified if
       `main()` returns a truthy value or `undefined`; otherwise the file is skipped completely (and
       thus not modified at all, so values passed via `--values` are not applied).
-    - Checkout the file `resources/scripts/scriptapi/resize-covers.js` in this repository that
-      scales all cover images in a file down to the specified maximum size. It can be invoked like
-      this:
+    - Checkout the file
+      [`resources/scripts/scriptapi/resize-covers.js`](resources/scripts/scriptapi/resize-covers.js)
+      in this repository that scales all cover images in a file down to the specified maximum size.
+      It can be invoked like this:
       ```
       tageditor set --pedantic debug --script :/scripts/resize-covers.js --script-settings coverSize=512 coverFormat=JPEG` -f …
       ```
       Note that this example uses a path starting with `:/scripts/…` to use the built-in version of
       that script. In case you want to modify the script you can of course grab it from this code
       repository, do the editing and then just specify a normal path.
-    - Checkout the file `resources/scripts/scriptapi/set-tags.js` in this repository for an example
-      that applies basic fixes and tries to fetch lyrics and cover art when according settings are
-      passed. It can be invoked like this:
+    - Checkout the file
+      [`resources/scripts/scriptapi/set-tags.js`](resources/scripts/scriptapi/set-tags.js) in this
+      repository for an example that applies basic fixes and tries to fetch lyrics and cover art
+      when according settings are passed. It can be invoked like this:
       ```
       tageditor set --pedantic debug --script :/scripts/set-tags.js --script-settings addCover=1 addLyrics=1
       ```
