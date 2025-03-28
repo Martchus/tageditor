@@ -613,7 +613,7 @@ out of the box as of Qt 6. You may tweak settings according to the
 [Qt documentation](https://doc.qt.io/qt-6/highdpi.html#configuring-windows).
 
 ## Copyright notice and license
-Copyright © 2015-2024 Marius Kittler
+Copyright © 2015-2025 Marius Kittler
 
 All code is licensed under [GPL-2-or-later](LICENSE).
 
