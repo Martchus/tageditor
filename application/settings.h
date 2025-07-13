@@ -124,7 +124,7 @@ struct Settings {
 };
 
 Settings &values();
-void restore();
+void restore(QSettings &settings);
 void save();
 
 } // namespace Settings

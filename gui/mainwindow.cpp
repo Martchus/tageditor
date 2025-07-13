@@ -19,6 +19,9 @@
 #include <qtutilities/misc/desktoputils.h>
 #include <qtutilities/misc/dialogutils.h>
 #include <qtutilities/misc/trylocker.h>
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+#include <qtutilities/settingsdialog/optioncategory.h>
+#endif
 
 #include <c++utilities/conversion/stringconversion.h>
 #include <c++utilities/io/path.h>
@@ -73,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent)
     , m_aboutDlg(nullptr)
     , m_settingsDlg(nullptr)
     , m_dbQueryWidget(nullptr)
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+    , m_updateSettingsDlg(nullptr)
+#endif
 {
     // setup UI
     m_ui->setupUi(this);
@@ -108,6 +114,11 @@ MainWindow::MainWindow(QWidget *parent)
     // restore locked
     setLayoutLocked(settings.mainWindow.layoutLocked);
 
+    // add action for updater if setup tools are enabled
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+    auto *const updaterAction = m_ui->menu->addAction(QIcon::fromTheme(QStringLiteral("install")), tr("Check for updates"));
+#endif
+
     // connect signals and slots, install event filter
     //  menu: application
     connect(m_ui->actionNew_window, &QAction::triggered, this, &MainWindow::showNewWindow);
@@ -130,6 +141,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->actionRename_files, &QAction::triggered, this, &MainWindow::showRenameFilesDlg);
     //  menu: help
     connect(m_ui->actionAbout, &QAction::triggered, this, &MainWindow::showAboutDlg);
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+    connect(updaterAction, &QAction::triggered, this, &MainWindow::showUpdaterDialog);
+#endif
     // tag editor widget
     connect(m_ui->tagEditorWidget, &TagEditorWidget::nextFileSelected, this, static_cast<void (MainWindow::*)(void)>(&MainWindow::selectNextFile));
     connect(m_ui->tagEditorWidget, &TagEditorWidget::fileStatusChanged, this, &MainWindow::handleFileStatusChange);
@@ -415,6 +429,24 @@ void MainWindow::showAboutDlg()
         m_aboutDlg->activateWindow();
     }
 }
+
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+/*!
+ * \brief Shows the updater dialog.
+ */
+void MainWindow::showUpdaterDialog()
+{
+    if (!m_updateSettingsDlg) {
+        m_updateSettingsDlg = new UpdateDialog(this);
+        m_updateSettingsDlg->page()->setRestartHandler(m_restartHandler.requester());
+    }
+    if (m_updateSettingsDlg->isHidden()) {
+        m_updateSettingsDlg->showNormal();
+    } else {
+        m_updateSettingsDlg->activateWindow();
+    }
+}
+#endif
 
 /*!
  * \brief MainWindow::showNewWindow

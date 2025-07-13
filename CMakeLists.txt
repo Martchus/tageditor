@@ -184,10 +184,15 @@ set(REQUIRED_ICONS
     window-new)
 
 # find c++utilities
+option(SETUP_TOOLS "enables setup tools; needs qtutilities built with this option as well" OFF)
+set(CPP_UTILITIES_REQUIRED_VERSION 5.23.0)
+if (SETUP_TOOLS)
+    set(CPP_UTILITIES_REQUIRED_VERSION 5.29.0)
+endif ()
 set(CONFIGURATION_PACKAGE_SUFFIX
     ""
     CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
-find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} 5.23.0 REQUIRED)
+find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} ${CPP_UTILITIES_REQUIRED_VERSION} REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
@@ -196,10 +201,14 @@ use_standard_filesystem()
 
 # find qtutilities
 if (WIDGETS_GUI OR QUICK_GUI)
+    set(QT_UTILITIES_REQUIRED_VERSION 6.12.0)
+    if (SETUP_TOOLS)
+        set(QT_UTILITIES_REQUIRED_VERSION 6.18.0)
+    endif ()
     set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES
         "${CONFIGURATION_PACKAGE_SUFFIX}"
         CACHE STRING "sets the suffix for qtutilities")
-    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} 6.12.0 REQUIRED)
+    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} ${QT_UTILITIES_REQUIRED_VERSION} REQUIRED)
     use_qt_utilities()
 endif ()
 
@@ -232,6 +241,13 @@ if (ENABLE_JSON_EXPORT)
 
     # add compile definitions
     list(APPEND META_PRIVATE_COMPILE_DEFINITIONS ${META_PROJECT_VARNAME_UPPER}_JSON_EXPORT)
+endif ()
+
+# configure whether setup tools are enabled
+if (SETUP_TOOLS)
+    list(APPEND META_PRIVATE_COMPILE_DEFINITIONS ${META_PROJECT_VARNAME_UPPER}_SETUP_TOOLS_ENABLED)
+    list(APPEND REQUIRED_ICONS install)
+    use_crypto()
 endif ()
 
 # add Qt modules which can not be detected automatically

@@ -7,6 +7,10 @@
 #include <tagparser/mediafileinfo.h>
 #include <tagparser/tagvalue.h>
 
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+#include <qtutilities/setup/updater.h>
+#endif
+
 #include <QByteArray>
 #include <QMainWindow>
 
@@ -52,6 +56,9 @@ public Q_SLOTS:
     void setLayoutLocked(bool locked);
     void toggleLayoutLocked();
     void startParsing(const QString &path);
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+    void respawnIfRestartRequested();
+#endif
 
 protected:
     bool event(QEvent *event) override;
@@ -76,6 +83,9 @@ private Q_SLOTS:
 
     // misc
     void showAboutDlg();
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+    void showUpdaterDialog();
+#endif
     void showRenameFilesDlg();
     void spawnExternalPlayer();
     void initDbQueryWidget();
@@ -96,7 +106,18 @@ private:
     QtUtilities::SettingsDialog *m_settingsDlg;
     std::unique_ptr<RenameFilesDialog> m_renameFilesDlg;
     DbQueryWidget *m_dbQueryWidget;
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+    QtUtilities::RestartHandler m_restartHandler;
+    QtUtilities::UpdateDialog *m_updateSettingsDlg;
+#endif
 };
+
+#ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
+inline void MainWindow::respawnIfRestartRequested()
+{
+    m_restartHandler.respawnIfRestartRequested();
+}
+#endif
 
 } // namespace QtGui
 

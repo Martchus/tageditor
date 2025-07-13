@@ -45,10 +45,8 @@ Settings &values()
     return settings;
 }
 
-void restore()
+void restore(QSettings &settings)
 {
-    auto s = QtUtilities::getSettings(QStringLiteral(PROJECT_NAME));
-    auto &settings = *s;
     auto &v = values();
     v.error = QtUtilities::errorMessageForSettings(settings);
 
