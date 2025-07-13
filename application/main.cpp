@@ -92,7 +92,8 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
     , jsSettingsArg("script-settings", '\0', "passes settings to the JavaScript specified via --script", { "key=value" })
     , coverTypeDelimiterArg("cover-type-delimiter", '\0',
           "specifies the delimiter for providing cover type and description after the cover path (defaults to \":\" so the default syntax for cover "
-          "values is \"path:cover-type:description\")", { "delimiter" })
+          "values is \"path:cover-type:description\")",
+          { "delimiter" })
     , setTagInfoArg("set", 's', "sets the specified tag information and attachments")
 {
     docTitleArg.setRequiredValueCount(Argument::varValueCount);

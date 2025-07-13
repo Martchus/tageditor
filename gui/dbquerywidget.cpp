@@ -464,8 +464,7 @@ void DbQueryWidget::applyMatchingResults(TagEdit *tagEdit)
             selectionModel->select(rowIndex, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
         }
 
-        m_tagEditorWidget->addParsingNotificationLine(
-            tr("Inserted search result row %1 (with title \"%2\", album \"%3\" and artist \"%4\").")
+        m_tagEditorWidget->addParsingNotificationLine(tr("Inserted search result row %1 (with title \"%2\", album \"%3\" and artist \"%4\").")
                 .arg(row + 1)
                 .arg(tagValueToQString(rowTitle), tagValueToQString(rowAlbum), tagValueToQString(rowArtist)));
 

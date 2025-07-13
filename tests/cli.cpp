@@ -526,7 +526,7 @@ bool bufferContains(const char *buffer, size_t bufferSize, const char *needle, s
     for (const char *const bufferEnd = buffer + bufferSize, *const needleEnd = needle + needleSize; buffer != bufferEnd; ++buffer) {
         const char *needleIterator = needle;
         for (const char *bufferIterator = buffer; needleIterator != needleEnd && *needleIterator == *bufferIterator;
-             ++needleIterator, ++bufferIterator)
+            ++needleIterator, ++bufferIterator)
             ;
         if (needleIterator >= needleEnd) {
             return true;
@@ -1195,8 +1195,8 @@ void CliTests::testScriptProcessing()
     TESTUTILS_ASSERT_EXEC_EXIT_STATUS(args, EXIT_PARSING_FAILURE);
     CPPUNIT_ASSERT(testContainsSubstrings(stderr,
         { "executing JavaScript for othertest-itunes.m4a: entering main() function", "settings: set:title, set:artist, dryRun", "tag: MP4/iTunes tag",
-            "supported fields: album, albumArtist, arranger, ", "soundEngineer, storeDescription, synopsis, title, track", "MP4/iTunes tag: applying changes",
-            " - change title[0] from 'Sad Song' to 'foo'", " - change artist[0] from 'Oasis' to 'bar'",
+            "supported fields: album, albumArtist, arranger, ", "soundEngineer, storeDescription, synopsis, title, track",
+            "MP4/iTunes tag: applying changes", " - change title[0] from 'Sad Song' to 'foo'", " - change artist[0] from 'Oasis' to 'bar'",
             "executing JavaScript for othertest-itunes.m4a: done with return value: true", "Changes are about to be applied" }));
     CPPUNIT_ASSERT(testContainsSubstrings(
         stdout, { "Loading JavaScript file", script.data(), "Setting tag information for", file.data(), "Changes have been applied." }));

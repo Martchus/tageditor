@@ -1058,7 +1058,7 @@ bool TagEditorWidget::applyEntriesAndSaveChangings()
     if (container && container->supportsTitle()) {
         QLayout *const docTitleLayout = m_ui->docTitleWidget->layout();
         for (std::size_t i = 0, count = min<std::size_t>(static_cast<std::size_t>(docTitleLayout->count()), container->segmentCount()); i < count;
-             ++i) {
+            ++i) {
             container->setTitle(static_cast<ClearLineEdit *>(docTitleLayout->itemAt(static_cast<int>(i))->widget())->text().toUtf8().data(), i);
         }
     }
