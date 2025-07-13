@@ -574,39 +574,6 @@
     </message>
 </context>
 <context>
-    <name>QtGui</name>
-    <message>
-        <location filename="../gui/tageditorwidget.cpp" line="126"/>
-        <source>Add tag</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.cpp" line="130"/>
-        <source>Remove tag</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.cpp" line="134"/>
-        <source>Change target</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.cpp" line="143"/>
-        <source>Parsing notifications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.cpp" line="144"/>
-        <source>Applying notifications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../gui/tageditorwidget.cpp" line="156"/>
-        <source>Cancelling ...</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>QtGui::AttachmentsEdit</name>
     <message>
         <location filename="../gui/attachmentsedit.ui" line="6"/>
@@ -804,77 +771,77 @@
         </translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="468"/>
+        <location filename="../gui/dbquerywidget.cpp" line="467"/>
         <source>Inserted search result row %1 (with title &quot;%2&quot;, album &quot;%3&quot; and artist &quot;%4&quot;).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="531"/>
+        <location filename="../gui/dbquerywidget.cpp" line="530"/>
         <source>Retrieving cover art to be applied ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="554"/>
+        <location filename="../gui/dbquerywidget.cpp" line="553"/>
         <source>Retrieving lyrics to be applied ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="584"/>
+        <location filename="../gui/dbquerywidget.cpp" line="583"/>
         <source>Use selected row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="589"/>
+        <location filename="../gui/dbquerywidget.cpp" line="588"/>
         <source>Copy value</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="592"/>
+        <location filename="../gui/dbquerywidget.cpp" line="591"/>
         <source>Refresh results</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="596"/>
+        <location filename="../gui/dbquerywidget.cpp" line="595"/>
         <source>Show cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="598"/>
+        <location filename="../gui/dbquerywidget.cpp" line="597"/>
         <source>Show lyrics</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="600"/>
+        <location filename="../gui/dbquerywidget.cpp" line="599"/>
         <source>Show in browser</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="651"/>
+        <location filename="../gui/dbquerywidget.cpp" line="650"/>
         <source>Retrieving cover art ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="675"/>
+        <location filename="../gui/dbquerywidget.cpp" line="674"/>
         <source>Retrieving lyrics ...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="688"/>
+        <location filename="../gui/dbquerywidget.cpp" line="687"/>
         <source>No web URL available</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="692"/>
+        <location filename="../gui/dbquerywidget.cpp" line="691"/>
         <source>Unable to open URL: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="700"/>
+        <location filename="../gui/dbquerywidget.cpp" line="699"/>
         <source>Cover - %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/dbquerywidget.cpp" line="725"/>
+        <location filename="../gui/dbquerywidget.cpp" line="724"/>
         <source>Lyrics - %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1283,15 +1250,6 @@ Remarks
         <location filename="../gui/filebrowsergeneraloptionpage.ui" line="36"/>
         <source>Read only</source>
         <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>QtGui::FileFilterProxyModel</name>
-    <message>
-        <location filename="../gui/filefilterproxymodel.cpp" line="7"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
     </message>
 </context>
 <context>
@@ -2042,15 +2000,6 @@ another position would prevent rewriting the entire file</source>
     </message>
 </context>
 <context>
-    <name>QtGui::InfoWidgetBase</name>
-    <message>
-        <location filename="../gui/infowidgetbase.cpp" line="26"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>QtGui::LyricsWikiaResultsModel</name>
     <message>
         <location filename="../dbquery/lyricswikia.cpp" line="58"/>
@@ -2096,12 +2045,6 @@ another position would prevent rewriting the entire file</source>
 </context>
 <context>
     <name>QtGui::MainWindow</name>
-    <message>
-        <location filename="../gui/mainwindow.cpp" line="51"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message>
         <location filename="../gui/mainwindow.ui" line="14"/>
         <source>Tag editor</source>
@@ -2288,7 +2231,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="215"/>
+        <location filename="../gui/mainwindow.cpp" line="229"/>
         <source>Lock layout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2298,37 +2241,42 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="193"/>
+        <location filename="../gui/mainwindow.cpp" line="119"/>
+        <source>Check for updates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/mainwindow.cpp" line="207"/>
         <source>Unlock layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="249"/>
+        <location filename="../gui/mainwindow.cpp" line="263"/>
         <source>Unable to close while the file operation is still ongoing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="372"/>
+        <location filename="../gui/mainwindow.cpp" line="386"/>
         <source>No file opened.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="409"/>
+        <location filename="../gui/mainwindow.cpp" line="423"/>
         <source>A tag editing utility supporting ID3, MP4 (iTunes style), Vorbis and Matroska tags.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="539"/>
+        <location filename="../gui/mainwindow.cpp" line="571"/>
         <source>Unable to show the next file because it can&apos;t be found anymore.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="549"/>
+        <location filename="../gui/mainwindow.cpp" line="581"/>
         <source>Open file - </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="561"/>
+        <location filename="../gui/mainwindow.cpp" line="593"/>
         <source>Save changes as - </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2350,22 +2298,7 @@ another position would prevent rewriting the entire file</source>
     </message>
 </context>
 <context>
-    <name>QtGui::NotificationModel</name>
-    <message>
-        <location filename="../gui/notificationmodel.cpp" line="15"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>QtGui::PathLineEdit</name>
-    <message>
-        <location filename="../gui/pathlineedit.cpp" line="17"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message>
         <location filename="../gui/pathlineedit.cpp" line="56"/>
         <source>Select directory ...</source>
@@ -2384,12 +2317,6 @@ another position would prevent rewriting the entire file</source>
 </context>
 <context>
     <name>QtGui::PicturePreviewSelection</name>
-    <message>
-        <location filename="../gui/picturepreviewselection.cpp" line="30"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message>
         <location filename="../gui/picturepreviewselection.ui" line="6"/>
         <source>Form</source>
@@ -2778,12 +2705,6 @@ another position would prevent rewriting the entire file</source>
 </context>
 <context>
     <name>QtGui::RenameFilesDialog</name>
-    <message>
-        <location filename="../gui/renamefilesdialog.cpp" line="25"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message numerus="yes">
         <location filename="../gui/renamefilesdialog.cpp" line="215"/>
         <source>%1 files/directories processed</source>
@@ -3021,12 +2942,6 @@ Error in line %1: %3</source>
 <context>
     <name>QtGui::SettingsDialog</name>
     <message>
-        <location filename="../gui/settingsdialog.cpp" line="349"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../gui/settingsdialog.cpp" line="660"/>
         <source>Tag processing</source>
         <translation type="unfinished"></translation>
@@ -3044,12 +2959,6 @@ Error in line %1: %3</source>
 </context>
 <context>
     <name>QtGui::TagEdit</name>
-    <message>
-        <location filename="../gui/tagedit.cpp" line="20"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message>
         <location filename="../gui/tagedit.cpp" line="216"/>
         <source> with different targets</source>
@@ -3292,6 +3201,36 @@ Error in line %1: %3</source>
             <numerusform>and %1 error.</numerusform>
             <numerusform>and %1 errors.</numerusform>
         </translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="126"/>
+        <source>Add tag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="130"/>
+        <source>Remove tag</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="134"/>
+        <source>Change target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="143"/>
+        <source>Parsing notifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="144"/>
+        <source>Applying notifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../gui/tageditorwidget.cpp" line="156"/>
+        <source>Cancelling ...</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="877"/>
@@ -3682,12 +3621,6 @@ currently shown tag.</source>
 </context>
 <context>
     <name>QtGui::TagFieldEdit</name>
-    <message>
-        <location filename="../gui/tagfieldedit.cpp" line="49"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message>
         <location filename="../gui/tagfieldedit.cpp" line="243"/>
         <source>Keep previous value only if not present in the next file</source>
@@ -4853,7 +4786,7 @@ Remarks
 <context>
     <name>RenamingUtility::FileSystemItemModel</name>
     <message>
-        <location filename="../renamingutility/filesystemitemmodel.cpp" line="15"/>
+        <location filename="../renamingutility/filesystemitemmodel.cpp" line="17"/>
         <source></source>
         <comment>Necessary for lupdate.</comment>
         <translation></translation>
@@ -4878,15 +4811,6 @@ Remarks
     <name>RenamingUtility::FilteredFileSystemItemModel</name>
     <message>
         <location filename="../renamingutility/filteredfilesystemitemmodel.cpp" line="5"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
-</context>
-<context>
-    <name>RenamingUtility::RemamingEngine</name>
-    <message>
-        <location filename="../renamingutility/renamingengine.cpp" line="17"/>
         <source></source>
         <comment>Necessary for lupdate.</comment>
         <translation></translation>
@@ -5006,22 +4930,7 @@ Remarks
     </message>
 </context>
 <context>
-    <name>RenamingUtility::ScriptFunctions</name>
-    <message>
-        <location filename="../renamingutility/scriptfunctions.cpp" line="23"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
-</context>
-<context>
     <name>Settings::KnownFieldModel</name>
-    <message>
-        <location filename="../application/knownfieldmodel.cpp" line="9"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message>
         <location filename="../application/knownfieldmodel.cpp" line="19"/>
         <source>Title</source>
@@ -5540,12 +5449,6 @@ Remarks
 </context>
 <context>
     <name>Settings::TargetLevelModel</name>
-    <message>
-        <location filename="../application/targetlevelmodel.cpp" line="10"/>
-        <source></source>
-        <comment>Necessary for lupdate.</comment>
-        <translation></translation>
-    </message>
     <message>
         <location filename="../application/targetlevelmodel.cpp" line="14"/>
         <source>unspecified, everything</source>
