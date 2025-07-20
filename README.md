@@ -107,12 +107,12 @@ Then the tag editor will not even try to put tags at the front and can thus skip
 rewrite is still not a good idea in general.)
 
 ## Matroska-related remarks
-The Matroska container format (and WebM which is based on Matroska) are breaking with common conventions. Therefore
-not all CLI examples mentioned below make sense to use on such files.
+The Matroska container format (and WebM, which is based on Matroska) deviates from common conventions. As a result,
+not all CLI examples provided below are applicable to these file types.
 
-Generally, one Matroska file can have multiple tags and each tag has a "target" which decides to what the fields of
-the tag apply to, e.g. the song or the whole album. So when using the CLI or the GUI you need to be aware to what
-tag/target to add fields to.
+In general, a single Matroska file can contain multiple tags, each with a *target* that determines what the tag's
+fields apply to - such as an individual song or the entire album. When using the CLI or GUI, it is important to be
+mindful of which tag/target you are adding fields to.
 
 Matroska also does *not* use one combined field for the track/disk number and total like other formats do. It instead
 uses the separate fields `part` and `totalparts` which again need to be added to a tag of the desired target (e.g.
@@ -479,10 +479,10 @@ Here are some Bash examples which illustrate getting and setting tag information
           warnings and critical messages when those files are truncated or have a broken index.
 
 ## Text encoding / unicode support
-1. It is possible to set the preferred encoding used *within* the tags via CLI option ``--encoding``
+1. It is possible to set the preferred encoding used *within* the tags via CLI option `--encoding`
    and in the GUI settings.
-   * However, in the GUI this only affects visible fields. In the CLI only specified fields are
-     affected. So reencoding all text fields is currently not supported.
+   * In the GUI this only affects visible fields. In the CLI this only affects specified fields.
+     Reencoding all text fields is currently not supported.
    * The option is ignored (with a warning) when the specified encoding is not supported by the
      tag format.
 2. The CLI assumes all arguments to be UTF-8 encoded (no matter which preferred encoding is specified)
@@ -574,24 +574,25 @@ When enabled, the following additional dependencies are required (only at build-
       writable location (e.g. `DESTDIR="temporary/install/dir" ninja install`) and move the files from there to
       the desired location afterwards.
 
-## TODOs and known problems
-* Support more formats (JPEG/EXIF, PDF metadata, Theora in Ogg, ...)
-* Allow adding tags to specific streams when dealing with Ogg
-* Set tag information concurrently if multiple files have been specified (CLI)
-* Support adding cue-sheet to FLAC files
-* Generally improve the CLI to make its use more convenient and cover more use-cases
+## Limitations
+The following features are notably missing:
+
+* Only a limited number of container and audio formats is supported. Support for further file types like JPEG/EXIF,
+  PDF metadata and Theora in Ogg has *not* been implemented yet.
+* Adding cue-sheet to FLAC files is not possible yet.
 
 ### Known problems and caveats
-* Large file information is not shown when using Qt WebEngine or the GUI becomes unresponsive. Use the feature to parse the full
-  file structure in combination with the Qt WebEngine-based view with caution.
+* Large file information is not shown when using Qt WebEngine or the GUI becomes unresponsive. Use the feature
+  to parse the full file structure in combination with the Qt WebEngine-based view with caution.
 * It is recommend to create backups before editing because I can not test whether the underlying library
-  works with all kinds of files (when forcing rewrite a backup is always created).
-* More TODOs and bugs are tracked in the [issue section at GitHub](https://github.com/Martchus/tageditor/issues).
+  works with all kinds of files. When forcing rewrite a backup is always created.
+* More TODOs and bugs are tracked in the [issue section on GitHub](https://github.com/Martchus/tageditor/issues).
 
 ### Windows-specific issues
-The following caveats can be worked around by using the CLI-wrapper instead of the main executable. This is the
-file that ends with `-cli.exe`. Alternatively you may use Mintty (e.g. via MSYS2) which is also not affected by
-those issues:
+When using the CLI it is recommend to use the CLI-wrapper instead of the main executable. This is the file that ends
+with `-cli.exe`. Alternatively you may use Mintty (e.g. via MSYS2) as terminal.
+
+Otherwise, be aware of the following issues:
 
 * The console's codepage is set to UTF-8 to ensure point *3.* of the "[Text encoding](#text-encoding--unicode-support)"
   section is handled correctly. This may not work well under older Windows versions. Use `set ENABLE_CP_UTF8=0` if this
@@ -599,11 +600,6 @@ those issues:
 * The main application is built as a GUI application. To nevertheless enable console output it is attaching to the
   parent processes' console. However, this prevents redirections to work in most cases. If redirections are needed,
   use `set ENABLE_CONSOLE=0` to disable that behavior.
-
----
-
-Dark mode should work out of the box under Windows 11 and can otherwise be enabled by
-[selecting the Fusion style](https://github.com/Martchus/syncthingtray#tweak-gui-settings-for-dark-mode-under-windows).
 
 ---
 
