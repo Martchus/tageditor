@@ -187,7 +187,7 @@ set(REQUIRED_ICONS
 option(SETUP_TOOLS "enables setup tools; needs qtutilities built with this option as well" OFF)
 set(CPP_UTILITIES_REQUIRED_VERSION 5.23.0)
 if (SETUP_TOOLS)
-    set(CPP_UTILITIES_REQUIRED_VERSION 5.29.0)
+    set(CPP_UTILITIES_REQUIRED_VERSION 5.30.0)
 endif ()
 set(CONFIGURATION_PACKAGE_SUFFIX
     ""

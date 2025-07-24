@@ -17,6 +17,7 @@
 #ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
 #include <qtutilities/setup/updater.h>
 
+#include <c++utilities/misc/signingkeys.h>
 #include <c++utilities/misc/verification.h>
 #endif
 
@@ -33,19 +34,10 @@ using namespace CppUtilities;
 
 namespace QtGui {
 
-// define public key and signature extension depending on verification backend
+// define public key and signature extension
 #ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
-// clang-format off
 #define SYNCTHINGTRAY_SIGNATURE_EXTENSION ".openssl.sig"
-constexpr auto signingKeyOpenSSL = std::string_view(
-    R"(-----BEGIN EC PUBLIC KEY-----
-MIGbMBAGByqGSM49AgEGBSuBBAAjA4GGAAQAWJAn1E7ZE5Q6H69oaV5sqCIppJdg
-4bXDan9dJv6GOg70/t7q2CvwcwUXhV4FvCZxCHo25+rWYINfqKU2Utul8koAx8tK
-59ohfOzI63I+CC76GfX41uRGU0P5i6hS7o/hgBLiVXqT0FgS2BMfmnLMUvUjqnI2
-YQM7C55/5BM5Vrblkow=
------END EC PUBLIC KEY-----
-)");
-// clang-format on
+constexpr auto signingKeyOpenSSL = SigningKeys::openssl[0];
 #endif
 
 static void showSettingsError(const QString &settingsError)
