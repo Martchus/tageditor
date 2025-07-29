@@ -765,7 +765,7 @@ void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &position)
 {
     QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoWebView->selectedText().isEmpty());
-    connect(&copyAction, &QAction::triggered, [this] { QGuiApplication::clipboard()->setText(m_infoWebView->selectedText()); });
+    connect(&copyAction, &QAction::triggered, this, [this] { QGuiApplication::clipboard()->setText(m_infoWebView->selectedText()); });
     QAction saveAction(QIcon::fromTheme(QStringLiteral("document-save")), tr("Save ..."), nullptr);
     saveAction.setDisabled(m_fileInfoHtml.isEmpty());
     connect(&saveAction, &QAction::triggered, this, &TagEditorWidget::saveFileInfo);
