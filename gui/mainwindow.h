@@ -74,6 +74,7 @@ private Q_SLOTS:
     void showSaveAsDlg();
     void handleFileStatusChange(bool opened, bool hasTag);
     void handleCurrentPathChanged(const QString &newPath);
+    void handleFileModelIndexExpanded(const QModelIndex &index);
     void updateStyleSheet();
 
     // settings
@@ -100,6 +101,7 @@ private:
     // models
     QFileSystemModel *m_fileModel;
     FileFilterProxyModel *m_fileFilterModel;
+    QPersistentModelIndex m_selectedIndex;
     bool m_internalFileSelection;
     // dialogs
     QtUtilities::AboutDialog *m_aboutDlg;

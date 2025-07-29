@@ -151,6 +151,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_ui->tagEditorWidget, &TagEditorWidget::currentPathChanged, this, &MainWindow::handleCurrentPathChanged);
     //  misc
     connect(m_ui->pathLineEdit, &QLineEdit::textEdited, this, &MainWindow::pathEntered);
+    connect(m_ui->filesTreeView, &QTreeView::expanded, this, &MainWindow::handleFileModelIndexExpanded);
     connect(m_ui->filesTreeView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::fileSelected);
     connect(
         m_ui->selectNextCommandLinkButton, &QCommandLinkButton::clicked, this, static_cast<void (MainWindow::*)(void)>(&MainWindow::selectNextFile));
@@ -352,16 +353,30 @@ void MainWindow::handleCurrentPathChanged(const QString &newPath)
     m_internalFileSelection = true;
     if (const auto index = m_fileFilterModel->mapFromSource(m_fileModel->index(newPath)); index.isValid()) {
         if (auto *const selectionModel = m_ui->filesTreeView->selectionModel(); !selectionModel->isSelected(index)) {
+            m_selectedIndex = index;
             selectionModel->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
             m_ui->filesTreeView->scrollTo(index, QAbstractItemView::PositionAtCenter);
             m_ui->pathLineEdit->setText(QFileInfo(newPath).dir().path());
             m_ui->pathLineEdit->setProperty("classNames", QStringList());
             updateStyle(m_ui->pathLineEdit);
         }
+    } else {
+        m_selectedIndex = QModelIndex();
     }
     m_internalFileSelection = false;
     // ensure this is the active window
     activateWindow();
+}
+
+/*!
+ * \brief Scrolls to the selected index after its parent \a index has been expanded.
+ */
+void MainWindow::handleFileModelIndexExpanded(const QModelIndex &index)
+{
+    if (m_selectedIndex.isValid() && index == m_selectedIndex.parent()) {
+        m_ui->filesTreeView->scrollTo(m_selectedIndex, QAbstractItemView::PositionAtCenter);
+        m_selectedIndex = QModelIndex();
+    }
 }
 
 /*!
