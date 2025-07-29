@@ -256,7 +256,6 @@ bool TagEditorWidget::event(QEvent *event)
                     }
                     startParsing(path, true);
 #else
-                    emit currentPathChanged(url.path());
                     startParsing(url.path(), true);
 #endif
                 }
@@ -827,7 +826,7 @@ bool TagEditorWidget::startParsing(const QString &path, bool forceRefresh)
         // close last file if possibly open
         m_fileInfo.close();
         // set path of file info
-        m_currentPath = path;
+        emit currentPathChanged(m_currentPath = path);
         m_fileInfo.setSaveFilePath(string());
         const auto nativeFileName = toNativeFileName(path);
         m_fileInfo.setPath(std::string(nativeFileName.data(), static_cast<std::size_t>(nativeFileName.size())));

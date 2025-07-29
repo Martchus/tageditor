@@ -350,12 +350,13 @@ void MainWindow::handleCurrentPathChanged(const QString &newPath)
 {
     // ensure the current file is still selected
     m_internalFileSelection = true;
-    const QModelIndex index = m_fileFilterModel->mapFromSource(m_fileModel->index(newPath));
-    if (index.isValid()) {
-        m_ui->filesTreeView->selectionModel()->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
-        m_ui->pathLineEdit->setText(QFileInfo(newPath).dir().path());
-        m_ui->pathLineEdit->setProperty("classNames", QStringList());
-        updateStyle(m_ui->pathLineEdit);
+    if (const auto index = m_fileFilterModel->mapFromSource(m_fileModel->index(newPath)); index.isValid()) {
+        if (auto *const selectionModel = m_ui->filesTreeView->selectionModel(); !selectionModel->isSelected(index)) {
+            selectionModel->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+            m_ui->pathLineEdit->setText(QFileInfo(newPath).dir().path());
+            m_ui->pathLineEdit->setProperty("classNames", QStringList());
+            updateStyle(m_ui->pathLineEdit);
+        }
     }
     m_internalFileSelection = false;
     // ensure this is the active window
