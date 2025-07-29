@@ -353,6 +353,7 @@ void MainWindow::handleCurrentPathChanged(const QString &newPath)
     if (const auto index = m_fileFilterModel->mapFromSource(m_fileModel->index(newPath)); index.isValid()) {
         if (auto *const selectionModel = m_ui->filesTreeView->selectionModel(); !selectionModel->isSelected(index)) {
             selectionModel->setCurrentIndex(index, QItemSelectionModel::Rows | QItemSelectionModel::ClearAndSelect);
+            m_ui->filesTreeView->scrollTo(index, QAbstractItemView::PositionAtCenter);
             m_ui->pathLineEdit->setText(QFileInfo(newPath).dir().path());
             m_ui->pathLineEdit->setProperty("classNames", QStringList());
             updateStyle(m_ui->pathLineEdit);
