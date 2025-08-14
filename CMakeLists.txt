@@ -12,6 +12,7 @@ set(META_APP_DESCRIPTION
     "A tageditor with Qt GUI and command line interface. Supports MP4 (iTunes), ID3, Vorbis, Opus, FLAC and Matroska")
 set(META_GUI_OPTIONAL true)
 set(META_JS_SRC_DIR renamingutility)
+set(META_TEST_REQUIRE_MAIN_TARGET ON)
 set(META_VERSION_MAJOR 3)
 set(META_VERSION_MINOR 9)
 set(META_VERSION_PATCH 6)
