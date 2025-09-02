@@ -95,7 +95,7 @@ namespace Cli {
     "      subtitle leadperformer arranger conductor director assistantdirector\n"                                                                   \
     "      directorofphotography soundengineer artdirector productiondesigner choregrapher\n"                                                        \
     "      costumedesigner actor character writtenby screenplayby editedby producer\n"                                                               \
-    "      coproducer exectiveproducer distributedby masteredby encodedby mixedby\n"                                                                 \
+    "      coproducer executiveproducer distributedby masteredby encodedby mixedby\n"                                                                 \
     "      remixedby productionstudio thanksto publisher mood originalmediatype\n"                                                                   \
     "      contenttype subject keywords summary synopsis initialkey period lawrating\n"                                                              \
     "      encodingdate taggingdate originalreleasedate digitalizationdate writingdate\n"                                                            \
