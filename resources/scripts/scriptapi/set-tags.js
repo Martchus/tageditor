@@ -103,6 +103,16 @@ function addCover(file, tag) {
         fields.cover = convertedCovers;
         return; // skip fetching via meta-data search if cover could be taken over from original file
     }
+    const coverFileNames = (typeof settings.coverFiles === "string" ? settings.coverFileNames : "folder.jpg,cover.jpg").split(",");
+    for (const coverFileName of coverFileNames) {
+        const coverPath = [file.containingDirectory, coverFileName].join("/");
+        const coverData = utility.readFile(coverPath);
+        if (coverData instanceof ArrayBuffer) {
+            utility.diag("debug", "using cover from " + coverPath);
+            fields.cover = coverData;
+            return;
+        }
+    }
     const firstAlbum = fields.album?.[0]?.content?.replace(/ \(.*\)/, '');
     const firstArtist = fields.artist?.[0]?.content;
     if (firstAlbum && firstArtist) {
