@@ -127,7 +127,7 @@ QJSValue UtilityObject::readDirectory(const QString &path)
 QJSValue UtilityObject::readFile(const QString &path)
 {
     if (auto file = QFile(path); file.open(QFile::ReadOnly)) {
-        if (auto data = file.readAll(); file.error() != QFile::NoError) {
+        if (auto data = file.readAll(); file.error() == QFile::NoError) {
             return m_engine->toScriptValue(std::move(data));
         }
     }
