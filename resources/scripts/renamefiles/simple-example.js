@@ -30,7 +30,7 @@ for (let field of fieldsToInclude) {
         field = field.padStart(tag.trackTotal.toString().length, "0")
     }
     if (field && field.length !== 0) {
-        newName = newName.concat(newName.length === 0 ? "" : " - ", field.toString().replace(/[\/\\]/gi, " - ").replace(/[<>?!*|:\"\n\f\r]/gi, ""))
+        newName = newName.concat(newName.length === 0 ? "" : " - ", field.toString().replace(/[\/\\]/gi, " - ").replace(/[<>?!*|:\"\n\f\r]/gi, "").replace(/&/, "and"))
     }
 }
 newName = newName.concat(".", fileInfo.suitableSuffix || fileInfo.currentSuffix)

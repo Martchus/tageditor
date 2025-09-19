@@ -55,12 +55,12 @@ function appropriateDigitCount(pos, total) {
 // returns a copy of the specified \a name with characters that might be avoided in file names striped out
 function validFileName(name) {
     return name !== undefined ? name.replace(/[\/\\]/gi, " - ").replace(
-        /[<>?!*|:\"\n\f\r]/gi, "") : ""
+        /[<>?!*|:\"\n\f\r]/gi, "").replace(/&/, "and") : ""
 }
 // returns a copy of the specified \a name with characters that might be avoided in directory names striped out.
 function validDirectoryName(name) {
     return name !== undefined ? name.replace(/[\/\\]/gi, " - ").replace(
-        /[<>?!*|:\".\n\f\r]/gi, "") : ""
+        /[<>?!*|:\".\n\f\r]/gi, "").replace(/&/, "and") : ""
 }
 // strips tags from the beginning or end of the string if configured
 function tagsStripped(name) {
