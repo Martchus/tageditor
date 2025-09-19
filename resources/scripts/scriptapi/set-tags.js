@@ -43,8 +43,8 @@ function clearPersonalFields(file, tag) {
 
 function addTotalNumberOfTracks(file, tag) {
     const track = tag.fields.track;
-    if (track.find(value => !value.content.total) === undefined) {
-        return; // skip if already assigned
+    if (track.find(value => typeof value.content === "object" && !value.content.total) === undefined) {
+        return; // skip if track is not a position in set at all or if a total is already assigned
     }
     const extension = file.extension;
     const dirItems = utility.readDirectory(file.containingDirectory) || [];
