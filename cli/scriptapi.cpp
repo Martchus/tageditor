@@ -695,7 +695,11 @@ QString MediaFileInfoObject::extension() const
 
 QString MediaFileInfoObject::containingDirectory() const
 {
-    return QString::fromStdString(m_f.containingDirectory());
+    auto dir = QString::fromStdString(m_f.containingDirectory());
+    if (dir.isEmpty()) {
+        dir = QChar('.');
+    }
+    return dir;
 }
 
 QString MediaFileInfoObject::savePath() const
