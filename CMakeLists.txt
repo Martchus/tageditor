@@ -193,7 +193,13 @@ endif ()
 set(CONFIGURATION_PACKAGE_SUFFIX
     ""
     CACHE STRING "sets the suffix for find_package() calls to packages configured via c++utilities")
-find_package(c++utilities${CONFIGURATION_PACKAGE_SUFFIX} ${CPP_UTILITIES_REQUIRED_VERSION} REQUIRED)
+set(PACKAGE_NAMESPACE
+    ""
+    CACHE STRING "sets the prefix for find_package() calls to packages configured via c++utilities")
+if (PACKAGE_NAMESPACE)
+    set(PACKAGE_NAMESPACE_PREFIX "${PACKAGE_NAMESPACE}-")
+endif ()
+find_package(${PACKAGE_NAMESPACE_PREFIX}c++utilities${CONFIGURATION_PACKAGE_SUFFIX} ${CPP_UTILITIES_REQUIRED_VERSION} REQUIRED)
 use_cpp_utilities()
 include(BasicConfig)
 
@@ -209,7 +215,7 @@ if (WIDGETS_GUI OR QUICK_GUI)
     set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES
         "${CONFIGURATION_PACKAGE_SUFFIX}"
         CACHE STRING "sets the suffix for qtutilities")
-    find_package(qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} ${QT_UTILITIES_REQUIRED_VERSION} REQUIRED)
+    find_package(${PACKAGE_NAMESPACE_PREFIX}qtutilities${CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES} ${QT_UTILITIES_REQUIRED_VERSION} REQUIRED)
     use_qt_utilities()
 endif ()
 
