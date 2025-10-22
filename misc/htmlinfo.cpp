@@ -38,6 +38,7 @@
 #include <QStringBuilder>
 #include <QXmlStreamWriter>
 #ifdef QT_DEBUG
+#include <QDebug>
 #include <QFile>
 #endif
 
@@ -1190,8 +1191,10 @@ QByteArray generateInfo(const MediaFileInfo &file, Diagnostics &diag, Diagnostic
     gen.mkDoc();
 #ifdef QT_DEBUG
     QFile test(QStringLiteral("/tmp/test.xhtml"));
-    test.open(QFile::WriteOnly | QFile::Truncate);
-    test.write(gen.res());
+    auto ok = test.open(QFile::WriteOnly | QFile::Truncate) && test.write(gen.res()) == gen.res().size() && test.flush();
+    if (!ok) {
+        qDebug() << "Unable to write /tmp/test.xhtml: " << test.errorString();
+    }
 #endif
     return gen.res();
 }
