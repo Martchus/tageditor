@@ -1187,10 +1187,10 @@ private:
  */
 QByteArray generateInfo(const MediaFileInfo &file, Diagnostics &diag, Diagnostics &diagReparsing)
 {
-    Generator gen(file, diag, diagReparsing);
+    auto gen = Generator(file, diag, diagReparsing);
     gen.mkDoc();
 #ifdef QT_DEBUG
-    QFile test(QStringLiteral("/tmp/test.xhtml"));
+    auto test = QFile(QStringLiteral("/tmp/test.xhtml"));
     auto ok = test.open(QFile::WriteOnly | QFile::Truncate) && test.write(gen.res()) == gen.res().size() && test.flush();
     if (!ok) {
         qDebug() << "Unable to write /tmp/test.xhtml: " << test.errorString();
