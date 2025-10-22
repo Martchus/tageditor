@@ -31,8 +31,15 @@ inline ItemStatus FilteredFileSystemItemModel::statusFilter() const
 
 inline void FilteredFileSystemItemModel::setStatusFilter(ItemStatus statusFilter)
 {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    beginFilterChange();
+#endif
     m_statusFilter = statusFilter;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 10, 0)
+    endFilterChange();
+#else
     invalidateFilter();
+#endif
 }
 
 } // namespace RenamingUtility
