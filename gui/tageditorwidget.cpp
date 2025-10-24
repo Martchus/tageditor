@@ -1310,7 +1310,7 @@ void TagEditorWidget::showSavingResult(QString ioError, bool processingError, bo
         // fatal errors occurred
 
         // -> show status
-        static const QString processingErrorMsg = tr("The tags could not be saved. Checkout the info box for details.");
+        static const QString processingErrorMsg = tr("The tags could not be saved. Check out the info box for details.");
         static const QString ioErrorMsg = tr("The tags could not be saved because an IO error occurred: %1");
         const auto errorMsg = !ioError.isEmpty() ? ioErrorMsg.arg(ioError) : processingErrorMsg;
         auto msgBox = new QMessageBox(this);

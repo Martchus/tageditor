@@ -3284,7 +3284,7 @@ Error in line %1: %3</source>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="1313"/>
-        <source>The tags could not be saved. Checkout the info box for details.</source>
+        <source>The tags could not be saved. Check out the info box for details.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

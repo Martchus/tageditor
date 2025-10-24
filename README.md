@@ -101,7 +101,7 @@ put the temporary directory on the same filesystem as the file you are editing. 
 performance because then the tag editor will not even try to see whether it could be avoided and can thus skip
 computations that can take a notable time for big Matroska files.
 
-Of course being able to avoid a rewrite would still be more optimal. Checkout the previous section for how to achieve
+Of course being able to avoid a rewrite would still be more optimal. Check out the previous section for how to achieve
 that. To improve performance further when avoiding a rewrite, put the tag at the end (CLI option `--tag-pos back`).
 Then the tag editor will not even try to put tags at the front and can thus skip a few computations. (Avoiding a
 rewrite is still not a good idea in general.)
@@ -118,7 +118,7 @@ Matroska also does *not* use one combined field for the track/disk number and to
 uses the separate fields `part` and `totalparts` which again need to be added to a tag of the desired target (e.g.
 50/"ALBUM" for the track number and total).
 
-Checkout the official [Matroska documentation on tagging](https://matroska.org/technical/tagging.html) for details.
+Check out the official [Matroska documentation on tagging](https://matroska.org/technical/tagging.html) for details.
 It also contains examples for [audio content](https://matroska.org/technical/tagging-audio-example.html) and
 [video content](https://matroska.org/technical/tagging-video-example.html).
 
@@ -134,7 +134,7 @@ See the [release section on GitHub](https://github.com/Martchus/tageditor/releas
 
 ### Packages and binaries
 * Arch Linux
-    * for PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs) or
+    * for PKGBUILDs check out [my GitHub repository](https://github.com/Martchus/PKGBUILDs) or
       [the AUR](https://aur.archlinux.org/packages?SeB=m&K=Martchus)
     * there is also a [binary repository](https://martchus.dyn.f3l.de/repo/arch/ownstuff)
 * Tumbleweed, Leap, Fedora
@@ -159,7 +159,7 @@ See the [release section on GitHub](https://github.com/Martchus/tageditor/releas
     * available as package `tageditor` from the
       [official repositories](https://voidlinux.org/packages/?q=tageditor)
 * Other GNU/Linux systems
-    * for generic, self-contained binaries checkout the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
+    * for generic, self-contained binaries check out the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
         * Requires glibc>=2.26, OpenGL and libX11
             * openSUSE Leap 15, Fedora 27, Debian 10 and Ubuntu 18.04 are recent enough (be sure
               the packages `libglx0`, `libopengl0` and `libegl1` are installed on Debian/Ubuntu)
@@ -168,7 +168,7 @@ See the [release section on GitHub](https://github.com/Martchus/tageditor/releas
         * Binaries are signed with the GPG key
           [`B9E36A7275FC61B464B67907E06FE8F53CDC6A4C`](https://keyserver.ubuntu.com/pks/lookup?search=B9E36A7275FC61B464B67907E06FE8F53CDC6A4C&fingerprint=on&op=index).
 * Windows
-    * for binaries checkout the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
+    * for binaries check out the [release section on GitHub](https://github.com/Martchus/tageditor/releases)
         * Windows SmartScreen will likely block the execution (you'll get a window saying "Windows protected your PC");
           right click on the executable, select properties and tick the checkbox to allow the execution
         * Antivirus software often **wrongly** considers the executable harmful. This is a known problem. Please don't create
@@ -179,11 +179,11 @@ See the [release section on GitHub](https://github.com/Martchus/tageditor/releas
         * Binaries are signed with the GPG key
           [`B9E36A7275FC61B464B67907E06FE8F53CDC6A4C`](https://keyserver.ubuntu.com/pks/lookup?search=B9E36A7275FC61B464B67907E06FE8F53CDC6A4C&fingerprint=on&op=index).
     * there is also a [Chocolatey package](https://community.chocolatey.org/packages/tageditor) maintained by bcurran3
-    * for mingw-w64 PKGBUILDs checkout [my GitHub repository](https://github.com/Martchus/PKGBUILDs)
+    * for mingw-w64 PKGBUILDs check out [my GitHub repository](https://github.com/Martchus/PKGBUILDs)
 
 ## Usage
 The Tag Editor has a Qt-based GUI and a command line interface. For a C++ library
-interface checkout the underlying tagparser library.
+interface check out the underlying tagparser library.
 
 ### GUI
 The GUI should be self-explaining - a lot of the UI elements have tooltips with further explanations.
@@ -214,7 +214,7 @@ This screenshot shows the experimental MusicBrainz/LyricWiki search.
 ![main window/Plasma 5/dark Breeze theme](/resources/screenshots/mainwindow-1366x768.png?raw=true)
 
 #### Settings
-Checkout the settings dialog. You can
+Check out the settings dialog. You can
 - customize which fields the editor shows and in which order.
 - change settings regarding the tag processing (ID3 version(s) to be used, preferred character set, usage of padding, ...).
 - set whether unknown/unsupported tags should be ignored/kept or removed.
@@ -255,14 +255,14 @@ The tag editor also features a MusicBrainz, Cover Art Archive and LyricWiki sear
 ```
 tageditor <operation> [options]
 ```
-Checkout the available operations and options with `--help`. For a list of all available field names, track
+Check out the available operations and options with `--help`. For a list of all available field names, track
 attribute names and modifier, use the CLI option `--print-field-names`. Not all fields are supported by all
 tag/container formats. Most notably, the Matroska container format does not use `track`/`disk` to store the
 track/disk number and total in one field. Instead, the fields `part` and `totalparts` need to be used on the
 desired target.
 
 Note that Windows users must use `tageditor-cli.exe` instead of `tageditor.exe` or use Mintty as terminal.
-Checkout the "[Windows-specific issues](#windows-specific-issues)" section for details.
+Check out the "[Windows-specific issues](#windows-specific-issues)" section for details.
 
 #### Examples
 Here are some Bash examples which illustrate getting and setting tag information:
@@ -326,7 +326,7 @@ Here are some Bash examples which illustrate getting and setting tag information
     --remove-target target-level=50 --remove-target target-level=30 \
     --files file.mka
   ```
-  For more information checkout the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).
+  For more information check out the [Matroska specification](https://matroska.org/technical/specs/tagging/index.html).
 
 * Sets custom fields:  
   ```
@@ -400,12 +400,12 @@ Here are some Bash examples which illustrate getting and setting tag information
     - This feature is still experimental. The script API is still subject to change.
     - The script needs to be ECMAScript as supported by the Qt framework.
     - This feature requires the tag editor to be configured with Qt QML as JavaScript provider at
-      compile time. Checkout the build instructions under "Building with Qt GUI" for details.
+      compile time. Check out the build instructions under "Building with Qt GUI" for details.
     - The script needs to export a `main()` function. This function is invoked for every file and
       passed an object representing the current file as first argument. The file only modified if
       `main()` returns a truthy value or `undefined`; otherwise the file is skipped completely (and
       thus not modified at all, so values passed via `--values` are not applied).
-    - Checkout the file
+    - Check out the file
       [`resources/scripts/scriptapi/resize-covers.js`](resources/scripts/scriptapi/resize-covers.js)
       in this repository that scales all cover images in a file down to the specified maximum size.
       It can be invoked like this:
@@ -415,7 +415,7 @@ Here are some Bash examples which illustrate getting and setting tag information
       Note that this example uses a path starting with `:/scripts/…` to use the built-in version of
       that script. In case you want to modify the script you can of course grab it from this code
       repository, do the editing and then just specify a normal path.
-    - Checkout the file
+    - Check out the file
       [`resources/scripts/scriptapi/set-tags.js`](resources/scripts/scriptapi/set-tags.js) in this
       repository for an example that applies basic fixes and tries to fetch lyrics and cover art
       when according settings are passed. It can be invoked like this:
@@ -437,7 +437,7 @@ Here are some Bash examples which illustrate getting and setting tag information
           one of those types to set the value of those fields. The string-representation of the
           assigned content will then be converted automatically to what's needed internally.
     - The `utility` object exposes useful methods, e.g. for logging and controlling the event loop.
-    - Checkout the file `resources/scripts/scriptapi/http.js` in this repository for an example of
+    - Check out the file `resources/scripts/scriptapi/http.js` in this repository for an example of
       using XHR and controlling the event loop.
     - The script runs after tags are added/removed (according to options like `--id3v1-usage`).
       So the tags present during script execution don't necessarily represent tags that are actually
@@ -492,7 +492,7 @@ Here are some Bash examples which illustrate getting and setting tag information
 ## Build instructions
 The application depends on [c++utilities](https://github.com/Martchus/cpp-utilities) and
 [tagparser](https://github.com/Martchus/tagparser) and is built the same way as these libraries.
-For basic instructions checkout the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
+For basic instructions check out the README file of [c++utilities](https://github.com/Martchus/cpp-utilities).
 When the Qt GUI is enabled, Qt and [qtutilities](https://github.com/Martchus/qtutilities) are required, too.
 
 To avoid building c++utilities/tagparser/qtutilities separately, follow the instructions under
