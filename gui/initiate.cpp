@@ -36,7 +36,7 @@ namespace QtGui {
 
 // define public key and signature extension
 #ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
-#define SYNCTHINGTRAY_SIGNATURE_EXTENSION ".openssl.sig"
+#define TAGEDITOR_SIGNATURE_EXTENSION ".openssl.sig"
 #endif
 
 static void showSettingsError(const QString &settingsError)
@@ -68,7 +68,7 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     // initialize updater
 #ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
     auto *const nam = new QNetworkAccessManager;
-    auto updateHandler = QtUtilities::UpdateHandler(s.get(), nam);
+    auto updateHandler = QtUtilities::UpdateHandler(QString(), QStringLiteral(TAGEDITOR_SIGNATURE_EXTENSION), s.get(), nam);
     nam->setParent(&updateHandler);
     auto verificationErrorMsgBox = QtUtilities::VerificationErrorMessageBox();
     updateHandler.updater()->setVerifier([&verificationErrorMsgBox](const QtUtilities::Updater::Update &update) {
