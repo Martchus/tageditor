@@ -121,7 +121,7 @@ set(TEST_SRC_FILES tests/cli.cpp)
 set(EXCLUDED_FILES cli/scriptapi.h cli/scriptapi.cpp)
 
 set(TS_FILES translations/${META_PROJECT_NAME}_de_DE.ts translations/${META_PROJECT_NAME}_zh_CN.ts
-             translations/${META_PROJECT_NAME}_en_US.ts)
+             translations/${META_PROJECT_NAME}_ja_JP.ts translations/${META_PROJECT_NAME}_en_US.ts)
 
 set(ICON_FILES resources/icons/hicolor/scalable/apps/${META_PROJECT_NAME}.svg)
 
