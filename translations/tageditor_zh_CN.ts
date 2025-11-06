@@ -1815,32 +1815,32 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::HttpResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="356"/>
+        <location filename="../dbquery/dbquery.cpp" line="360"/>
         <source>&lt;p&gt;Do you want to redirect form &lt;i&gt;%1&lt;/i&gt; to &lt;i&gt;%2&lt;/i&gt;?&lt;/p&gt;</source>
         <translation>&lt;p&gt;您是否要将表单从 &lt;i&gt;%1&lt;/i&gt; 重定向至 &lt;i&gt;%2&lt;/i&gt;？&lt;/p&gt;</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="357"/>
+        <location filename="../dbquery/dbquery.cpp" line="361"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="362"/>
+        <location filename="../dbquery/dbquery.cpp" line="366"/>
         <source>Redirection to: </source>
         <translation>重定向至： </translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="340"/>
+        <location filename="../dbquery/dbquery.cpp" line="344"/>
         <source>Server replied no data.</source>
         <translation>服务器未返回数据。</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="377"/>
+        <location filename="../dbquery/dbquery.cpp" line="381"/>
         <source>Aborted by user.</source>
         <translation>被用户取消。</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="402"/>
+        <location filename="../dbquery/dbquery.cpp" line="406"/>
         <source>Internal error: context for cover reply invalid</source>
         <translation>内部错误：封面返回上下文无效</translation>
     </message>
@@ -2239,7 +2239,7 @@ another position would prevent rewriting the entire file</source>
         <translation>保存（已输入标签）并另存为(&amp;A)...</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="229"/>
+        <location filename="../gui/mainwindow.cpp" line="227"/>
         <source>Lock layout</source>
         <translation>锁定布局</translation>
     </message>
@@ -2249,17 +2249,17 @@ another position would prevent rewriting the entire file</source>
         <translation>Ctrl+Shift+S</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="119"/>
+        <location filename="../gui/mainwindow.cpp" line="117"/>
         <source>Check for updates</source>
         <translation>检查更新</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="207"/>
+        <location filename="../gui/mainwindow.cpp" line="205"/>
         <source>Unlock layout</source>
         <translation>解锁布局</translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="263"/>
+        <location filename="../gui/mainwindow.cpp" line="260"/>
         <source>Unable to close while the file operation is still ongoing.</source>
         <translation>无法在文件操作仍在进行时关闭文件。</translation>
     </message>
@@ -2661,52 +2661,52 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::QueryResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="166"/>
+        <location filename="../dbquery/dbquery.cpp" line="170"/>
         <source>Song title</source>
         <translation>歌曲标题</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="168"/>
+        <location filename="../dbquery/dbquery.cpp" line="172"/>
         <source>Album</source>
         <translation>专辑</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="170"/>
+        <location filename="../dbquery/dbquery.cpp" line="174"/>
         <source>Artist</source>
         <translation>艺术家</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="174"/>
+        <location filename="../dbquery/dbquery.cpp" line="178"/>
         <source>Year</source>
         <translation>年份</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="176"/>
+        <location filename="../dbquery/dbquery.cpp" line="180"/>
         <source>Track</source>
         <translation>轨道号</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="178"/>
+        <location filename="../dbquery/dbquery.cpp" line="182"/>
         <source>Total tracks</source>
         <translation>总轨道数</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="172"/>
+        <location filename="../dbquery/dbquery.cpp" line="176"/>
         <source>Genre</source>
         <translation>流派</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="180"/>
+        <location filename="../dbquery/dbquery.cpp" line="184"/>
         <source>Disk</source>
         <translation>唱片号</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="236"/>
+        <location filename="../dbquery/dbquery.cpp" line="240"/>
         <source>Fetching cover is not implemented for this provider</source>
         <translation>此提供者未实现封面获取功能</translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="275"/>
+        <location filename="../dbquery/dbquery.cpp" line="279"/>
         <source>Fetching lyrics is not implemented for this provider</source>
         <translation>此提供者尚未实现歌词获取功能</translation>
     </message>
@@ -2965,12 +2965,12 @@ Error in line %1: %3</source>
 <context>
     <name>QtGui::TagEdit</name>
     <message>
-        <location filename="../gui/tagedit.cpp" line="216"/>
+        <location filename="../gui/tagedit.cpp" line="215"/>
         <source> with different targets</source>
         <translation> 针对不同的目标</translation>
     </message>
     <message>
-        <location filename="../gui/tagedit.cpp" line="218"/>
+        <location filename="../gui/tagedit.cpp" line="217"/>
         <source> targeting %1</source>
         <translation> 目标 %1</translation>
     </message>

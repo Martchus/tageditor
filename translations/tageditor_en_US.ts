@@ -1815,32 +1815,32 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::HttpResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="356"/>
+        <location filename="../dbquery/dbquery.cpp" line="360"/>
         <source>&lt;p&gt;Do you want to redirect form &lt;i&gt;%1&lt;/i&gt; to &lt;i&gt;%2&lt;/i&gt;?&lt;/p&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="357"/>
+        <location filename="../dbquery/dbquery.cpp" line="361"/>
         <source>Search</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="362"/>
+        <location filename="../dbquery/dbquery.cpp" line="366"/>
         <source>Redirection to: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="340"/>
+        <location filename="../dbquery/dbquery.cpp" line="344"/>
         <source>Server replied no data.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="377"/>
+        <location filename="../dbquery/dbquery.cpp" line="381"/>
         <source>Aborted by user.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="402"/>
+        <location filename="../dbquery/dbquery.cpp" line="406"/>
         <source>Internal error: context for cover reply invalid</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2237,7 +2237,7 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="229"/>
+        <location filename="../gui/mainwindow.cpp" line="227"/>
         <source>Lock layout</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2247,17 +2247,17 @@ another position would prevent rewriting the entire file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="119"/>
+        <location filename="../gui/mainwindow.cpp" line="117"/>
         <source>Check for updates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="207"/>
+        <location filename="../gui/mainwindow.cpp" line="205"/>
         <source>Unlock layout</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/mainwindow.cpp" line="263"/>
+        <location filename="../gui/mainwindow.cpp" line="260"/>
         <source>Unable to close while the file operation is still ongoing.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2659,52 +2659,52 @@ another position would prevent rewriting the entire file</source>
 <context>
     <name>QtGui::QueryResultsModel</name>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="166"/>
+        <location filename="../dbquery/dbquery.cpp" line="170"/>
         <source>Song title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="168"/>
+        <location filename="../dbquery/dbquery.cpp" line="172"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="170"/>
+        <location filename="../dbquery/dbquery.cpp" line="174"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="174"/>
+        <location filename="../dbquery/dbquery.cpp" line="178"/>
         <source>Year</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="176"/>
+        <location filename="../dbquery/dbquery.cpp" line="180"/>
         <source>Track</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="178"/>
+        <location filename="../dbquery/dbquery.cpp" line="182"/>
         <source>Total tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="172"/>
+        <location filename="../dbquery/dbquery.cpp" line="176"/>
         <source>Genre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="180"/>
+        <location filename="../dbquery/dbquery.cpp" line="184"/>
         <source>Disk</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="236"/>
+        <location filename="../dbquery/dbquery.cpp" line="240"/>
         <source>Fetching cover is not implemented for this provider</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../dbquery/dbquery.cpp" line="275"/>
+        <location filename="../dbquery/dbquery.cpp" line="279"/>
         <source>Fetching lyrics is not implemented for this provider</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2966,12 +2966,12 @@ Error in line %1: %3</source>
 <context>
     <name>QtGui::TagEdit</name>
     <message>
-        <location filename="../gui/tagedit.cpp" line="216"/>
+        <location filename="../gui/tagedit.cpp" line="215"/>
         <source> with different targets</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../gui/tagedit.cpp" line="218"/>
+        <location filename="../gui/tagedit.cpp" line="217"/>
         <source> targeting %1</source>
         <translation type="unfinished"></translation>
     </message>
