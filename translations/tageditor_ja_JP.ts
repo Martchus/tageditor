@@ -866,7 +866,7 @@
     <message>
         <location filename="../gui/dbquerywidget.ui" line="167"/>
         <source>Song</source>
-        <translation>歌</translation>
+        <translation>曲</translation>
     </message>
     <message>
         <location filename="../gui/dbquerywidget.ui" line="185"/>
