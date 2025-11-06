@@ -31,8 +31,6 @@
 #include <QFileSystemModel>
 #include <QMessageBox>
 
-#include <iomanip>
-
 using namespace std;
 using namespace Utility;
 using namespace QtUtilities;

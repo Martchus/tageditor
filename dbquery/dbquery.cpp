@@ -11,6 +11,10 @@
 
 #include <QMessageBox>
 
+#ifdef CPP_UTILITIES_DEBUG_BUILD
+#include <iostream>
+#endif
+
 using namespace std;
 using namespace Utility;
 using namespace TagParser;

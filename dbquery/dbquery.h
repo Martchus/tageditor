@@ -6,10 +6,6 @@
 #include <QAbstractTableModel>
 #include <QNetworkReply>
 
-#ifdef CPP_UTILITIES_DEBUG_BUILD
-#include <iostream>
-#endif
-
 QT_FORWARD_DECLARE_CLASS(QNetworkReply)
 
 #define TAGEDITOR_ENUM_CLASS enum class
