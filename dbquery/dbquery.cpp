@@ -435,5 +435,3 @@ void HttpResultsModel::parseCoverResults(const QString &albumId, int row, const 
 }
 
 } // namespace QtGui
-
-#include "dbquery.moc"
