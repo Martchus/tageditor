@@ -678,7 +678,8 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     category->assignPages({ new FileBrowserGeneralOptionPage });
     categories << category;
 
-    categories << values().qt.category();
+    auto &qtSettings = ::Settings::qtSettings();
+    categories << qtSettings.category();
 
     categoryModel()->setCategories(categories);
 
@@ -686,7 +687,7 @@ SettingsDialog::SettingsDialog(QWidget *parent)
     setWindowIcon(QIcon::fromTheme(
         QStringLiteral("preferences-other"), QIcon(QStringLiteral(":/tageditor/icons/hicolor/32x32/settingscategories/preferences-other.svg"))));
 
-    connect(this, &SettingsDialog::applied, std::bind(&QtSettings::apply, &::Settings::values().qt));
+    connect(this, &SettingsDialog::applied, std::bind(&QtSettings::apply, &qtSettings));
 }
 
 SettingsDialog::~SettingsDialog()

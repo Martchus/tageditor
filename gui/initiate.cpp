@@ -61,9 +61,8 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
 
     // apply settings specified via command line args after the settings chosen in the GUI to give the CLI options precedence
     auto &settings = Settings::values();
-    settings.qt.disableNotices();
-    settings.qt.apply();
-    qtConfigArgs.applySettings(settings.qt.hasCustomFont());
+    auto &qtSettings = Settings::qtSettings();
+    qtConfigArgs.applySettings(qtSettings.hasCustomFont());
 
     // initialize updater
 #ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
@@ -87,8 +86,6 @@ int runWidgetsGui(int argc, char *argv[], const QtConfigArguments &qtConfigArgs,
     updateHandler.applySettings();
     QtUtilities::UpdateHandler::setMainInstance(&updateHandler);
 #endif
-
-    LOAD_QT_TRANSLATIONS;
 
     showSettingsError(settings.error);
     QObject::connect(&application, &QCoreApplication::aboutToQuit, &saveSettings);

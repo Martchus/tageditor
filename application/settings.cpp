@@ -3,6 +3,7 @@
 #include "./targetlevelmodel.h"
 
 #include "resources/config.h"
+#include "resources/qtconfig.h"
 
 #include <tagparser/backuphelper.h>
 #include <tagparser/mediafileinfo.h>
@@ -39,14 +40,27 @@ DbQuery::DbQuery()
 {
 }
 
+QtUtilities::QtSettings &qtSettings()
+{
+    static auto settings = QtUtilities::QtSettings();
+    return settings;
+}
+
 Settings &values()
 {
-    static Settings settings;
+    static auto settings = Settings();
     return settings;
 }
 
 void restore(QSettings &settings)
 {
+    // load Qt settings and translations; must be done before the first call of Settings::value() for translating check-list models
+    auto &qt = qtSettings();
+    qt.restore(settings);
+    qt.disableNotices();
+    qt.apply();
+    LOAD_QT_TRANSLATIONS;
+
     auto &v = values();
     v.error = QtUtilities::errorMessageForSettings(settings);
 
@@ -216,16 +230,15 @@ void restore(QSettings &settings)
     v.renamingUtility.externalScript = settings.value(QStringLiteral("file")).toString();
     v.renamingUtility.editorScript = settings.value(QStringLiteral("script")).toString();
     settings.endGroup();
-
-    v.qt.restore(settings);
 }
 
 void save()
 {
     auto s = QtUtilities::getSettings(QStringLiteral(PROJECT_NAME));
     auto &settings = *s;
-    auto &v = values();
+    qtSettings().save(settings);
 
+    auto &v = values();
     settings.beginGroup(QStringLiteral("editor"));
     settings.setValue(QStringLiteral("adoptfields"), static_cast<int>(v.editor.adoptFields));
     settings.setValue(QStringLiteral("saveandshownextonenter"), v.editor.saveAndShowNextOnEnter);
@@ -316,8 +329,6 @@ void save()
     settings.setValue(QStringLiteral("file"), v.renamingUtility.externalScript);
     settings.setValue(QStringLiteral("script"), v.renamingUtility.editorScript);
     settings.endGroup();
-
-    v.qt.save(settings);
 
     settings.sync();
     v.error = QtUtilities::errorMessageForSettings(settings);

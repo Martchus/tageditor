@@ -251,10 +251,9 @@ void MainWindow::startParsing(const QString &path)
  */
 bool MainWindow::event(QEvent *event)
 {
-    auto &settings = Settings::values();
     switch (event->type()) {
     case QEvent::PaletteChange:
-        settings.qt.reevaluatePaletteAndDefaultIconTheme();
+        Settings::qtSettings().reevaluatePaletteAndDefaultIconTheme();
         updateStyleSheet();
         break;
     case QEvent::Close:
@@ -266,11 +265,14 @@ bool MainWindow::event(QEvent *event)
         }
 
         // save settings
-        settings.mainWindow.geometry = saveGeometry();
-        settings.mainWindow.state = saveState();
-        settings.mainWindow.currentFileBrowserDirectory = currentDirectory();
-        settings.mainWindow.layoutLocked = isLayoutLocked();
-        settings.dbQuery.widgetShown = m_ui->dbQueryDockWidget->isVisible();
+        {
+            auto &settings = Settings::values();
+            settings.mainWindow.geometry = saveGeometry();
+            settings.mainWindow.state = saveState();
+            settings.mainWindow.currentFileBrowserDirectory = currentDirectory();
+            settings.mainWindow.layoutLocked = isLayoutLocked();
+            settings.dbQuery.widgetShown = m_ui->dbQueryDockWidget->isVisible();
+        }
         break;
     default:;
     }

@@ -120,9 +120,9 @@ struct Settings {
     MainWindow mainWindow;
     DbQuery dbQuery;
     RenamingUtility renamingUtility;
-    QtUtilities::QtSettings qt;
 };
 
+QtUtilities::QtSettings &qtSettings();
 Settings &values();
 void restore(QSettings &settings);
 void save();
