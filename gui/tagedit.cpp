@@ -189,9 +189,8 @@ bool TagEdit::hasAutoCorrectionBeenApplied() const
 }
 
 /*!
- * \brief Generates a label for the currently assigned tags.
- *
- * (Used as combo box item for the tag edit.)
+ * \brief Generates a label for the currently assigned tags, e.g. "Vorbis comment".
+ * \remarks Used as combo box item for the tag edit.
  */
 QString TagEdit::generateLabel() const
 {
