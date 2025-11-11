@@ -3407,12 +3407,12 @@ Error in line %1: %3</source>
         <location filename="../gui/tageditorwidget.ui" line="412"/>
         <location filename="../gui/tageditorwidget.cpp" line="623"/>
         <source>Clear previous values</source>
-        <translation>清除之前的值</translation>
+        <translation>丢弃上一个文件的标签值</translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="626"/>
         <source>Keep previous values in same dir</source>
-        <translation>保留之前的值在同一目录中</translation>
+        <translation>保留在同一目录中的上一文件的值</translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.cpp" line="1606"/>
@@ -3487,14 +3487,14 @@ opening the next file.
 Keeping these values might be useful when
 tagging multiple files of the same album.</source>
         <translation>允许您选择在打开下一个文件时
-是否清除先前打开文件的值。
+是否丢弃先前打开文件的值。
 保留这些值在为同一专辑的多个文件添加标签时可能很有用。</translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="160"/>
         <location filename="../gui/tageditorwidget.cpp" line="629"/>
         <source>Keep previous values</source>
-        <translation>保留之前的值</translation>
+        <translation>保留上一文件的标签值</translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="173"/>
@@ -3616,12 +3616,12 @@ currently shown tag.</source>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="420"/>
         <source>Keep previous values, but only if both files are in the same directory</source>
-        <translation>保留之前的值，但仅当两个文件位于同一目录下时才适用</translation>
+        <translation>保留上一文件的值，但仅当两个文件位于同一目录下时才适用</translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="428"/>
         <source>Keep previous values, regardless where the files are stored</source>
-        <translation>保留之前的值，无论文件存储在何处</translation>
+        <translation>保留上一文件的值，无论文件存储在何处</translation>
     </message>
     <message>
         <location filename="../gui/tageditorwidget.ui" line="440"/>
