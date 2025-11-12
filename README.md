@@ -559,6 +559,9 @@ When enabled, the following additional dependencies are required (only at build-
     -DCMAKE_BUILD_TYPE=Release \
     -DLANGUAGE_FILE_ISO_639_2="/usr/share/iso-codes/json/iso_639-2.json" \
     -DCMAKE_INSTALL_PREFIX="/install/prefix" \
+    -DQT_PACKAGE_PREFIX:STRING=Qt6 \
+    -DKF_PACKAGE_PREFIX:STRING=KF6 \
+    -DBUILTIN_TRANSLATIONS:BOOL=ON \
     "$SOURCES/subdirs/tageditor"
    ```
     * Replace `/install/prefix` with the directory where you want to install.
