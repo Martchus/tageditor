@@ -284,6 +284,7 @@ include(TestTarget)
 include(AppTarget)
 include(ShellCompletion)
 include(ConfigHeader)
+include(Sphinx)
 
 # create desktop file using previously defined meta data
 add_desktop_file()
