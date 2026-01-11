@@ -88,7 +88,7 @@ const char *KnownFieldModel::fieldName(KnownField field)
     case KnownField::DirectorOfPhotography:
         return QT_TR_NOOP("Director of photography");
     case KnownField::SoundEngineer:
-        return QT_TR_NOOP("Sounc engineer");
+        return QT_TR_NOOP("Sound engineer");
     case KnownField::ArtDirector:
         return QT_TR_NOOP("Art director");
     case KnownField::ProductionDesigner:

@@ -5122,7 +5122,7 @@ Remarks
     </message>
     <message>
         <location filename="../application/knownfieldmodel.cpp" line="91"/>
-        <source>Sounc engineer</source>
+        <source>Sound engineer</source>
         <translation>调音师</translation>
     </message>
     <message>
