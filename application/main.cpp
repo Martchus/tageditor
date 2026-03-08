@@ -155,9 +155,10 @@ SetTagInfoArgs::SetTagInfoArgs(Argument &filesArg, Argument &verboseArg, Argumen
 int main(int argc, char *argv[])
 {
     // setup argument parser
-    ArgumentParser parser;
-    CMD_UTILS_CONVERT_ARGS_TO_UTF8;
     SET_APPLICATION_INFO;
+    CMD_UTILS_CONVERT_ARGS_TO_UTF8;
+    CMD_UTILS_START_CONSOLE;
+    ArgumentParser parser;
     QT_CONFIG_ARGUMENTS qtConfigArgs;
     ConfigValueArgument timeSpanFormatArg("time-span-format", '\0', "specifies the output format for time spans", { "measures/colons/seconds" });
     timeSpanFormatArg.setPreDefinedCompletionValues("measures colons seconds");
@@ -240,7 +241,6 @@ int main(int argc, char *argv[])
             defaultFileArg.isPresent() && !defaultFileArg.values().empty() ? fromNativeFileName(defaultFileArg.values().front()) : QString(),
             renamingUtilityArg.isPresent());
 #else
-        CMD_UTILS_START_CONSOLE;
         cerr << EscapeCodes::Phrases::Error
              << "The tag editor has not been built with Qt widgets GUI support. Use --help to show the options of the CLI." << endl;
 #endif
