@@ -617,4 +617,6 @@ All code is licensed under [GPL-2-or-later](LICENSE).
 ## Attribution for 3rd party content
 * The program icon is based on icons taken from the [KDE/Breeze](https://invent.kde.org/frameworks/breeze-icons) project.
 * Other icons found in this repository are taken from the [KDE/Breeze](https://invent.kde.org/frameworks/breeze-icons) project
-  (without modification).
+  (without intentional modification, so no copyright for modifications is asserted).
+* The builds found in the release section also bundle icons from the [KDE/Breeze](https://invent.kde.org/frameworks/breeze-icons)
+  project (without intentional modification, so no copyright for modifications is asserted).
