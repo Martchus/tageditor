@@ -79,7 +79,7 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     m_ui->overrideCheckBox->setChecked(values().dbQuery.override);
 
     // setup menu
-    const auto searchIcon = QIcon::fromTheme(QStringLiteral("search"));
+    const auto searchIcon = QIcon::fromTheme(QStringLiteral("search-symbolic"));
     const auto enableLegacyProvider = qEnvironmentVariableIntValue(PROJECT_VARNAME_UPPER "_ENABLE_LEGACY_METADATA_PROVIDERS");
     m_menu->setTitle(tr("New search"));
     m_menu->setIcon(searchIcon);
@@ -103,14 +103,14 @@ DbQueryWidget::DbQueryWidget(TagEditorWidget *tagEditorWidget, QWidget *parent)
     connect(m_searchTekstowoAction, &QAction::triggered, this, &DbQueryWidget::searchTekstowo);
     m_menu->addSeparator();
     m_insertPresentDataAction = m_menu->addAction(tr("Use present data as search criteria"));
-    m_insertPresentDataAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-copy")));
+    m_insertPresentDataAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-copy-symbolic")));
     m_insertPresentDataAction->setEnabled(m_tagEditorWidget->activeTagEdit());
     connect(m_insertPresentDataAction, &QAction::triggered, this, &DbQueryWidget::insertSearchTermsFromActiveTagEdit);
     m_refreshAutomaticallyAction = m_menu->addAction(tr("Start new query automatically when inserting search criteria"));
-    m_refreshAutomaticallyAction->setIcon(QIcon::fromTheme(QStringLiteral("view-refresh")));
+    m_refreshAutomaticallyAction->setIcon(QIcon::fromTheme(QStringLiteral("view-refresh-symbolic")));
     m_refreshAutomaticallyAction->setCheckable(true);
     auto *const clearSearchCriteria = m_menu->addAction(tr("Clear search criteria"));
-    clearSearchCriteria->setIcon(QIcon::fromTheme(QStringLiteral("edit-clear")));
+    clearSearchCriteria->setIcon(QIcon::fromTheme(QStringLiteral("edit-clear-symbolic")));
     connect(clearSearchCriteria, &QAction::triggered, this, &DbQueryWidget::clearSearchCriteria);
     m_ui->searchPushButton->setMenu(m_menu);
 
@@ -585,18 +585,18 @@ void DbQueryWidget::showResultsContextMenu(const QPoint &pos)
     }
 #ifndef QT_NO_CLIPBOARD
     if (hasSelection) {
-        contextMenu.addAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy value"), this, &DbQueryWidget::copySelectedResult);
+        contextMenu.addAction(QIcon::fromTheme(QStringLiteral("edit-copy-symbolic")), tr("Copy value"), this, &DbQueryWidget::copySelectedResult);
     }
 #endif
-    contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-refresh")), tr("Refresh results"), m_lastSearchAction, &QAction::trigger);
+    contextMenu.addAction(QIcon::fromTheme(QStringLiteral("view-refresh-symbolic")), tr("Refresh results"), m_lastSearchAction, &QAction::trigger);
     if (hasSelection) {
         contextMenu.addSeparator();
         contextMenu.addAction(
-            QIcon::fromTheme(QStringLiteral("view-preview")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
+            QIcon::fromTheme(QStringLiteral("view-preview-symbolic")), tr("Show cover"), this, &DbQueryWidget::fetchAndShowCoverForSelection);
         contextMenu.addAction(
-            QIcon::fromTheme(QStringLiteral("view-media-lyrics")), tr("Show lyrics"), this, &DbQueryWidget::fetchAndShowLyricsForSelection);
+            QIcon::fromTheme(QStringLiteral("view-media-lyrics-symbolic")), tr("Show lyrics"), this, &DbQueryWidget::fetchAndShowLyricsForSelection);
         contextMenu.addAction(
-            QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
+            QIcon::fromTheme(QStringLiteral("internet-web-browser-symbolic")), tr("Show in browser"), this, &DbQueryWidget::openSelectionInBrowser);
     }
     if (!contextMenu.isEmpty()) {
         contextMenu.addSeparator();

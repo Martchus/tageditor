@@ -46,8 +46,8 @@
         <string>Rename file</string>
        </property>
        <property name="icon">
-        <iconset theme="edit-rename">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="edit-rename-symbolic">
+         </iconset>
        </property>
       </widget>
      </item>
@@ -200,8 +200,8 @@ and none of the actions under
              <string>Restore</string>
             </property>
             <property name="icon">
-             <iconset theme="document-revert">
-              <normaloff>.</normaloff>.</iconset>
+             <iconset theme="document-revert-symbolic">
+              </iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -227,8 +227,8 @@ currently shown tag.</string>
              <string>Clear</string>
             </property>
             <property name="icon">
-             <iconset theme="edit-clear">
-              <normaloff>.</normaloff>.</iconset>
+             <iconset theme="edit-clear-symbolic">
+              </iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -323,8 +323,8 @@ currently shown tag.</string>
         <string>Abort</string>
        </property>
        <property name="icon">
-        <iconset theme="process-stop">
-         <normaloff>.</normaloff>.</iconset>
+        <iconset theme="process-stop-symbolic">
+         </iconset>
        </property>
       </widget>
      </item>
@@ -434,7 +434,7 @@ currently shown tag.</string>
    </property>
    <property name="icon">
     <iconset theme="autocorrection">
-     <normaloff>.</normaloff>.</iconset>
+     </iconset>
    </property>
    <property name="text">
     <string>Manage tags automatically when loading file</string>

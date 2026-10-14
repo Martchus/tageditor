@@ -165,8 +165,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="document-save">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-save-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>Save &amp;entered tags</string>
@@ -180,8 +180,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-delete">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-delete-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Delete all tags</string>
@@ -195,8 +195,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="document-revert">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-revert-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Close</string>
@@ -207,8 +207,8 @@
   </action>
   <action name="actionSelect_next_file">
    <property name="icon">
-    <iconset theme="go-next">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="go-next-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Select next file</string>
@@ -219,8 +219,8 @@
   </action>
   <action name="actionRename_files">
    <property name="icon">
-    <iconset theme="edit-rename">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-rename-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Rename files using tags</string>
@@ -231,8 +231,8 @@
   </action>
   <action name="actionOpen">
    <property name="icon">
-    <iconset theme="document-open">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-open-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Open</string>
@@ -246,8 +246,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="edit-copy">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-copy-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Save file information as HTML document</string>
@@ -258,8 +258,8 @@
   </action>
   <action name="actionSelect_next_file_and_save_current">
    <property name="icon">
-    <iconset theme="go-next">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="go-next-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>Select &amp;next file and save current</string>
@@ -270,8 +270,8 @@
   </action>
   <action name="actionAbout">
    <property name="icon">
-    <iconset theme="help-about">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="help-about-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;About</string>
@@ -279,8 +279,8 @@
   </action>
   <action name="actionQuit">
    <property name="icon">
-    <iconset theme="application-exit">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="application-exit-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Quit</string>
@@ -288,8 +288,8 @@
   </action>
   <action name="actionSettings">
    <property name="icon">
-    <iconset theme="preferences-other">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="preferences-other-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Settings</string>
@@ -303,8 +303,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="document-revert">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-revert-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Reload (reverts all changes!)</string>
@@ -318,8 +318,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="media-playback-start">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="media-playback-start-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Play (external player)</string>
@@ -330,8 +330,8 @@
   </action>
   <action name="actionOpen_MusicBrainz_search">
    <property name="icon">
-    <iconset theme="edit-find">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="edit-find-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Toggle metadata search</string>
@@ -345,8 +345,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset theme="document-save-as">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="document-save-as-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>Save (entered tags) &amp;as ...</string>
@@ -357,8 +357,8 @@
   </action>
   <action name="lockLayout">
    <property name="icon">
-    <iconset theme="lock">
-     <normaloff>.</normaloff>.</iconset>
+    <iconset theme="lock-symbolic">
+     </iconset>
    </property>
    <property name="text">
     <string>&amp;Lock layout</string>
@@ -366,7 +366,7 @@
   </action>
   <action name="actionNew_window">
    <property name="icon">
-    <iconset theme="window-new"/>
+    <iconset theme="window-new-symbolic"/>
    </property>
    <property name="text">
     <string>New window</string>

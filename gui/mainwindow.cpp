@@ -114,7 +114,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // add action for updater if setup tools are enabled
 #ifdef TAGEDITOR_SETUP_TOOLS_ENABLED
-    auto *const updaterAction = m_ui->menu->addAction(QIcon::fromTheme(QStringLiteral("install")), tr("Check for updates"));
+    auto *const updaterAction = m_ui->menu->addAction(QIcon::fromTheme(QStringLiteral("install-symbolic")), tr("Check for updates"));
 #endif
 
     // connect signals and slots, install event filter
@@ -203,7 +203,7 @@ void MainWindow::setLayoutLocked(bool locked)
         m_ui->fileSelectionDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
         m_ui->dbQueryDockWidget->setFeatures(QDockWidget::NoDockWidgetFeatures);
         m_ui->lockLayout->setText(tr("Unlock layout"));
-        m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("unlock")));
+        m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("unlock-symbolic")));
         return;
     }
 
@@ -225,7 +225,7 @@ void MainWindow::setLayoutLocked(bool locked)
     m_ui->dbQueryDockWidget->setFeatures(features | QDockWidget::DockWidgetClosable);
     if (change) {
         m_ui->lockLayout->setText(tr("Lock layout"));
-        m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("lock")));
+        m_ui->lockLayout->setIcon(QIcon::fromTheme(QStringLiteral("lock-symbolic")));
     }
 }
 

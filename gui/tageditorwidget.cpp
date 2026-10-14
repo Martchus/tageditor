@@ -125,15 +125,15 @@ TagEditorWidget::TagEditorWidget(QWidget *parent)
     m_tagOptionsMenu->addSeparator();
     m_addTagMenu = new QMenu(tr("Add tag"), m_tagOptionsMenu);
     m_addTagMenu->setEnabled(false);
-    m_addTagMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-add")));
+    m_addTagMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-add-symbolic")));
     m_tagOptionsMenu->addMenu(m_addTagMenu);
     m_removeTagMenu = new QMenu(tr("Remove tag"), m_tagOptionsMenu);
     m_removeTagMenu->setEnabled(false);
-    m_removeTagMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-delete")));
+    m_removeTagMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-delete-symbolic")));
     m_tagOptionsMenu->addMenu(m_removeTagMenu);
     m_changeTargetMenu = new QMenu(tr("Change target"), m_tagOptionsMenu);
     m_changeTargetMenu->setEnabled(false);
-    m_changeTargetMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-properties")));
+    m_changeTargetMenu->setIcon(QIcon::fromTheme(QStringLiteral("tag-properties-symbolic")));
     m_tagOptionsMenu->addMenu(m_changeTargetMenu);
     m_ui->tagOptionsPushButton->setMenu(m_tagOptionsMenu);
 
@@ -730,7 +730,7 @@ void TagEditorWidget::updateInfoView()
 
 void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &position)
 {
-    QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
+    QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy-symbolic")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoTreeView->selectionModel()->selectedIndexes().isEmpty());
     connect(&copyAction, &QAction::triggered, this, [this] {
         const auto selection = m_infoTreeView->selectionModel()->selectedIndexes();
@@ -762,13 +762,13 @@ void TagEditorWidget::showInfoTreeViewContextMenu(const QPoint &position)
  */
 void TagEditorWidget::showInfoWebViewContextMenu(const QPoint &position)
 {
-    QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy")), tr("Copy"), nullptr);
+    QAction copyAction(QIcon::fromTheme(QStringLiteral("edit-copy-symbolic")), tr("Copy"), nullptr);
     copyAction.setDisabled(m_infoWebView->selectedText().isEmpty());
     connect(&copyAction, &QAction::triggered, this, [this] { QGuiApplication::clipboard()->setText(m_infoWebView->selectedText()); });
-    QAction saveAction(QIcon::fromTheme(QStringLiteral("document-save")), tr("Save ..."), nullptr);
+    QAction saveAction(QIcon::fromTheme(QStringLiteral("document-save-symbolic")), tr("Save ..."), nullptr);
     saveAction.setDisabled(m_fileInfoHtml.isEmpty());
     connect(&saveAction, &QAction::triggered, this, &TagEditorWidget::saveFileInfo);
-    QAction openAction(QIcon::fromTheme(QStringLiteral("internet-web-browser")), tr("Open in browser"), nullptr);
+    QAction openAction(QIcon::fromTheme(QStringLiteral("internet-web-browser-symbolic")), tr("Open in browser"), nullptr);
     openAction.setDisabled(m_fileInfoHtml.isEmpty());
     connect(&openAction, &QAction::triggered, this, &TagEditorWidget::openFileInfoInBrowser);
     QMenu menu;

@@ -834,25 +834,25 @@ void PicturePreviewSelection::showContextMenu(const QPoint &position)
 {
     QMenu menu;
     auto *const addAction = menu.addAction(m_ui->addButton->text());
-    addAction->setIcon(QIcon::fromTheme(QStringLiteral("list-add")));
+    addAction->setIcon(QIcon::fromTheme(QStringLiteral("list-add-symbolic")));
     connect(addAction, &QAction::triggered, this, static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::addOfSelectedType));
 #ifndef QT_NO_CLIPBOARD
     const auto *const clipboard = QGuiApplication::clipboard();
     const auto *const mimeData = clipboard ? clipboard->mimeData() : nullptr;
     if (mimeData && mimeData->hasImage()) {
         auto *const pasteJpegAction = menu.addAction(tr("Paste from clipboard as JPEG"));
-        pasteJpegAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-paste")));
+        pasteJpegAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-paste-symbolic")));
         connect(pasteJpegAction, &QAction::triggered, this,
             static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::pasteOfSelectedTypeAsJpeg));
         auto *const pastePngAction = menu.addAction(tr("Paste from clipboard as PNG"));
-        pastePngAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-paste")));
+        pastePngAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-paste-symbolic")));
         connect(pastePngAction, &QAction::triggered, this,
             static_cast<void (PicturePreviewSelection::*)(void)>(&PicturePreviewSelection::pasteOfSelectedTypeAsPng));
     }
 #endif
     if (m_ui->extractButton->isEnabled()) {
         auto *const mimeAction = menu.addAction(tr("Change MIME-type"));
-        mimeAction->setIcon(QIcon::fromTheme(QStringLiteral("document-properties")));
+        mimeAction->setIcon(QIcon::fromTheme(QStringLiteral("document-properties-symbolic")));
         connect(mimeAction, &QAction::triggered, this, &PicturePreviewSelection::changeMimeTypeOfSelected);
         auto *const convertAction = menu.addAction(tr("Resize/convert assigned image"));
         convertAction->setIcon(QIcon::fromTheme(QStringLiteral("image-resize-symbolic")));
@@ -861,23 +861,23 @@ void PicturePreviewSelection::showContextMenu(const QPoint &position)
     menu.addSeparator();
     if (m_ui->removeButton->isEnabled()) {
         auto *const removeAction = menu.addAction(m_ui->removeButton->text());
-        removeAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-delete")));
+        removeAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-delete-symbolic")));
         connect(removeAction, &QAction::triggered, this, &PicturePreviewSelection::removeSelected);
     }
     if (m_ui->restoreButton->isEnabled()) {
         auto *const restoreAction = menu.addAction(m_ui->restoreButton->text());
-        restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("document-revert")));
+        restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("document-revert-symbolic")));
         connect(restoreAction, &QAction::triggered, std::bind(&PicturePreviewSelection::setup, this, PreviousValueHandling::Clear));
     }
     menu.addSeparator();
     if (m_ui->extractButton->isEnabled()) {
         auto *const extractAction = menu.addAction(m_ui->extractButton->text());
-        extractAction->setIcon(QIcon::fromTheme(QStringLiteral("document-save")));
+        extractAction->setIcon(QIcon::fromTheme(QStringLiteral("document-save-symbolic")));
         connect(extractAction, &QAction::triggered, this, &PicturePreviewSelection::extractSelected);
     }
     if (m_ui->displayButton->isEnabled()) {
         auto *const displayAction = menu.addAction(m_ui->displayButton->text());
-        displayAction->setIcon(QIcon::fromTheme(QStringLiteral("image-x-generic")));
+        displayAction->setIcon(QIcon::fromTheme(QStringLiteral("image-x-generic-symbolic")));
         connect(displayAction, &QAction::triggered, this, &PicturePreviewSelection::displaySelected);
     }
     menu.exec(m_ui->previewGraphicsView->viewport()->mapToGlobal(position));

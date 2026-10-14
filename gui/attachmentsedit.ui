@@ -15,8 +15,8 @@
          <string>Add file</string>
         </property>
         <property name="icon">
-         <iconset theme="list-add">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="list-add-symbolic">
+          </iconset>
         </property>
        </widget>
       </item>
@@ -49,8 +49,8 @@
          <string>Restore attachments</string>
         </property>
         <property name="icon">
-         <iconset theme="document-revert">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="document-revert-symbolic">
+          </iconset>
         </property>
        </widget>
       </item>
@@ -60,8 +60,8 @@
          <string>Clear attachments</string>
         </property>
         <property name="icon">
-         <iconset theme="edit-clear">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="edit-clear-symbolic">
+          </iconset>
         </property>
        </widget>
       </item>

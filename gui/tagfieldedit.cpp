@@ -238,7 +238,7 @@ void TagFieldEdit::setLocked(bool locked)
     }
     m_isLocked = locked;
     if (m_lockAction) {
-        m_lockAction->setIcon(QIcon::fromTheme(locked ? QStringLiteral("object-locked") : QStringLiteral("object-unlocked")));
+        m_lockAction->setIcon(QIcon::fromTheme(locked ? QStringLiteral("object-locked-symbolic") : QStringLiteral("object-unlocked-symbolic")));
         m_lockAction->setToolTip(
             locked ? tr("Keep previous value only if not present in the next file") : tr("Keep previous value even if present in next file"));
     }
@@ -705,7 +705,7 @@ bool TagFieldEdit::updateValue(const TagValue &value, PreviousValueHandling prev
         }
         return updated;
     }
-    const auto pixmap(QIcon::fromTheme(QStringLiteral("emblem-error")).pixmap(16));
+    const auto pixmap(QIcon::fromTheme(QStringLiteral("emblem-error-symbolic")).pixmap(16));
     const auto text([&] {
         QString textValue;
         if (conversionError) {
@@ -745,7 +745,7 @@ QAction *TagFieldEdit::setupRestoreAction()
         return m_restoreAction;
     }
     m_restoreAction = new QAction(this);
-    m_restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-undo")));
+    m_restoreAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-undo-symbolic")));
     m_restoreAction->setToolTip(tr("Restore value as it is currently present in the file"));
     connect(m_restoreAction, &QAction::triggered, this, &TagFieldEdit::handleRestoreButtonClicked);
     // ownership might be transferred to a child widget/layout

@@ -101,8 +101,8 @@
                <string>Open/Examples</string>
               </property>
               <property name="icon">
-               <iconset theme="edit-paste">
-                <normaloff>.</normaloff>.</iconset>
+               <iconset theme="edit-paste-symbolic">
+                </iconset>
               </property>
              </widget>
             </item>
@@ -112,8 +112,8 @@
                <string>Use external file</string>
               </property>
               <property name="icon">
-               <iconset theme="document-open">
-                <normaloff>.</normaloff>.</iconset>
+               <iconset theme="document-open-symbolic">
+                </iconset>
               </property>
              </widget>
             </item>

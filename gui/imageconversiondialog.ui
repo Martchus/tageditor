@@ -145,8 +145,8 @@
          <string>Abort</string>
         </property>
         <property name="icon">
-         <iconset theme="window-close">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="window-close-symbolic">
+          </iconset>
         </property>
        </widget>
       </item>
@@ -159,8 +159,8 @@
          <string>Confirm</string>
         </property>
         <property name="icon">
-         <iconset theme="go-next">
-          <normaloff>.</normaloff>.</iconset>
+         <iconset theme="go-next-symbolic">
+          </iconset>
         </property>
        </widget>
       </item>

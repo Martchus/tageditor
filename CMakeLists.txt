@@ -128,62 +128,60 @@ set(ICON_FILES resources/icons/hicolor/scalable/apps/${META_PROJECT_NAME}.svg)
 set(DOC_FILES README.md)
 
 set(REQUIRED_ICONS
-    window-close
-    document-open
-    edit-clear
-    edit-copy
-    edit-rename
-    emblem-error
-    emblem-warning
-    emblem-information
-    emblem-question
-    object-locked
-    object-unlocked
+    window-close-symbolic
+    document-open-symbolic
+    edit-clear-symbolic
+    edit-copy-symbolic
+    edit-rename-symbolic
+    emblem-error-symbolic
+    emblem-warning-symbolic
+    emblem-information-symbolic
+    emblem-question-symbolic
+    object-locked-symbolic
+    object-unlocked-symbolic
     preferences-other
-    view-refresh
-    view-preview
-    document-open-recent
-    tag-add
-    process-stop
-    edit-find
-    media-playback-start
-    list-add
+    view-refresh-symbolic
+    view-preview-symbolic
+    document-open-recent-symbolic
+    tag-add-symbolic
+    process-stop-symbolic
+    edit-find-symbolic
+    media-playback-start-symbolic
+    list-add-symbolic
     tag
-    dialog-ok-apply
-    help-about
+    dialog-ok-apply-symbolic
+    help-about-symbolic
     preferences-desktop-locale
-    edit-undo
-    document-properties
-    image-x-generic
-    unlock
-    tag-properties
-    edit-rename
-    system-run
-    go-next
+    edit-undo-symbolic
+    document-properties-symbolic
+    image-x-generic-symbolic
+    unlock-symbolic
+    tag-properties-symbolic
+    system-run-symbolic
+    go-next-symbolic
     expand-menu-hover
     autocorrection
-    lock
+    lock-symbolic
     qtcreator
     collapse-menu-hover
-    edit-paste
-    document-save-as
+    edit-paste-symbolic
+    document-save-as-symbolic
     view-list-tree
     document-edit
-    edit-delete
-    search
-    system-search
-    document-revert
-    dialog-ok
+    edit-delete-symbolic
+    search-symbolic
+    system-search-symbolic
+    document-revert-symbolic
+    dialog-ok-symbolic
     preferences-desktop-icons
-    dialog-cancel
-    edit-clear
-    application-exit
-    tag-delete
-    system-file-manager
-    document-save
-    view-media-lyrics
+    dialog-cancel-symbolic
+    application-exit-symbolic
+    tag-delete-symbolic
+    system-file-manager-symbolic
+    document-save-symbolic
+    view-media-lyrics-symbolic
     image-resize-symbolic
-    window-new)
+    window-new-symbolic)
 
 # find c++utilities
 option(SETUP_TOOLS "enables setup tools; needs qtutilities built with this option as well" OFF)
@@ -210,10 +208,7 @@ use_standard_filesystem()
 
 # find qtutilities
 if (WIDGETS_GUI OR QUICK_GUI)
-    set(QT_UTILITIES_REQUIRED_VERSION 6.12.0)
-    if (SETUP_TOOLS)
-        set(QT_UTILITIES_REQUIRED_VERSION 6.18.0)
-    endif ()
+    set(QT_UTILITIES_REQUIRED_VERSION 6.23.0)
     set(CONFIGURATION_PACKAGE_SUFFIX_QTUTILITIES
         "${CONFIGURATION_PACKAGE_SUFFIX}"
         CACHE STRING "sets the suffix for qtutilities")
@@ -256,7 +251,7 @@ endif ()
 # configure whether setup tools are enabled
 if (SETUP_TOOLS)
     list(APPEND META_PRIVATE_COMPILE_DEFINITIONS ${META_PROJECT_VARNAME_UPPER}_SETUP_TOOLS_ENABLED)
-    list(APPEND REQUIRED_ICONS install)
+    list(APPEND REQUIRED_ICONS install-symbolic info-symbolic system-software-update)
     use_crypto()
 endif ()
 

@@ -104,8 +104,8 @@
             <string>Search</string>
            </property>
            <property name="icon">
-            <iconset theme="edit-find">
-             <normaloff>.</normaloff>.</iconset>
+            <iconset theme="edit-find-symbolic">
+             </iconset>
            </property>
           </widget>
          </item>

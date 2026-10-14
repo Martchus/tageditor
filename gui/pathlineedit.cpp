@@ -53,7 +53,7 @@ void PathLineEdit::contextMenuEvent(QContextMenuEvent *event)
 {
     unique_ptr<QMenu> menu(createStandardContextMenu());
     menu->addSeparator();
-    connect(menu->addAction(QIcon::fromTheme(QStringLiteral("document-open")), tr("Select directory ...")), &QAction::triggered, [this] {
+    connect(menu->addAction(QIcon::fromTheme(QStringLiteral("document-open-symbolic")), tr("Select directory ...")), &QAction::triggered, [this] {
         const QString path = QFileDialog::getExistingDirectory(this);
         if (!path.isEmpty()) {
             editText(path);
@@ -63,9 +63,9 @@ void PathLineEdit::contextMenuEvent(QContextMenuEvent *event)
     if (fileInfo.exists()) {
         if (fileInfo.isFile()) {
             connect(
-                menu->addAction(QIcon::fromTheme(QStringLiteral("system-run")), tr("Open")), &QAction::triggered, bind(&openLocalFileOrDir, text()));
+                menu->addAction(QIcon::fromTheme(QStringLiteral("system-run-symbolic")), tr("Open")), &QAction::triggered, bind(&openLocalFileOrDir, text()));
         } else if (fileInfo.isDir()) {
-            connect(menu->addAction(QIcon::fromTheme(QStringLiteral("system-file-manager")), tr("Explore")), &QAction::triggered,
+            connect(menu->addAction(QIcon::fromTheme(QStringLiteral("system-file-manager-symbolic")), tr("Explore")), &QAction::triggered,
                 bind(&openLocalFileOrDir, text()));
         }
     }

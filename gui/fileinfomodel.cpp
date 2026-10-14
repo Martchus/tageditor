@@ -234,7 +234,7 @@ void FileInfoModel::setFileInfo(MediaFileInfo &fileInfo, Diagnostics &diag, Diag
 
 const QIcon &FileInfoModel::informationIcon()
 {
-    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-information")
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-information-symbolic")
 #ifdef GUI_QTWIDGETS
                                                    ,
         QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation)
@@ -245,7 +245,7 @@ const QIcon &FileInfoModel::informationIcon()
 
 const QIcon &FileInfoModel::warningIcon()
 {
-    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-warning")
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-warning-symbolic")
 #ifdef GUI_QTWIDGETS
                                                    ,
         QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning)
@@ -256,7 +256,7 @@ const QIcon &FileInfoModel::warningIcon()
 
 const QIcon &FileInfoModel::errorIcon()
 {
-    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-error")
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-error-symbolic")
 #ifdef GUI_QTWIDGETS
                                                    ,
         QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical)
@@ -267,7 +267,7 @@ const QIcon &FileInfoModel::errorIcon()
 
 const QIcon &FileInfoModel::debugIcon()
 {
-    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-question"));
+    static const QIcon icon = QIcon::fromTheme(QStringLiteral("emblem-question-symbolic"));
     return icon;
 }
 
