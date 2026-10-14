@@ -251,7 +251,7 @@ endif ()
 # configure whether setup tools are enabled
 if (SETUP_TOOLS)
     list(APPEND META_PRIVATE_COMPILE_DEFINITIONS ${META_PROJECT_VARNAME_UPPER}_SETUP_TOOLS_ENABLED)
-    list(APPEND REQUIRED_ICONS install-symbolic info-symbolic system-software-update)
+    list(APPEND REQUIRED_ICONS install-symbolic info-symbolic system-software-update-symbolic)
     use_crypto()
 endif ()
 
