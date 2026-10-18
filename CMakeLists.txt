@@ -130,8 +130,25 @@ set(DOC_FILES README.md)
 set(REQUIRED_ICONS
     window-close-symbolic
     document-open-symbolic
-    edit-clear-symbolic
+    edit-copy
+    edit-clear
+    edit-cut
+    edit-delete
+    edit-paste
+    edit-redo
+    edit-undo
+    edit-select
+    edit-select-all
     edit-copy-symbolic
+    edit-clear-symbolic
+    edit-cut-symbolic
+    edit-delete-symbolic
+    edit-find-symbolic
+    edit-paste-symbolic
+    edit-redo-symbolic
+    edit-undo-symbolic
+    edit-select-symbolic
+    edit-select-all-symbolic
     edit-rename-symbolic
     emblem-error-symbolic
     emblem-warning-symbolic
@@ -145,14 +162,12 @@ set(REQUIRED_ICONS
     document-open-recent-symbolic
     tag-add-symbolic
     process-stop-symbolic
-    edit-find-symbolic
     media-playback-start-symbolic
     list-add-symbolic
     tag
     dialog-ok-apply-symbolic
     help-about-symbolic
     preferences-desktop-locale
-    edit-undo-symbolic
     document-properties-symbolic
     image-x-generic-symbolic
     unlock-symbolic
@@ -163,11 +178,9 @@ set(REQUIRED_ICONS
     autocorrection
     lock-symbolic
     collapse-menu-hover
-    edit-paste-symbolic
     document-save-as-symbolic
     view-list-tree
     document-edit
-    edit-delete-symbolic
     search-symbolic
     system-search-symbolic
     document-revert-symbolic
