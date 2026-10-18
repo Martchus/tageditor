@@ -162,7 +162,6 @@ set(REQUIRED_ICONS
     expand-menu-hover
     autocorrection
     lock-symbolic
-    qtcreator
     collapse-menu-hover
     edit-paste-symbolic
     document-save-as-symbolic
