@@ -182,6 +182,7 @@ set(REQUIRED_ICONS
     view-list-tree
     document-edit
     search-symbolic
+    system-search
     system-search-symbolic
     document-revert-symbolic
     dialog-ok-symbolic
